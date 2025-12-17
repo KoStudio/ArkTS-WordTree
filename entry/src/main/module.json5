@@ -1,0 +1,169 @@
+{
+  "module": {
+    "name": "entry",
+    "type": "entry",
+    "description": "$string:module_desc",
+    "mainElement": "EntryAbility",
+    "deviceTypes": [
+      "phone",
+      "tablet",
+      "2in1"
+    ],
+    "deliveryWithInstall": true,
+    "installationFree": false,
+    "pages": "$profile:main_pages",
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.VIBRATE", //震动
+        //"reason": "$string:review_cfm_btn_review_all"
+      },
+      {
+        "name": "ohos.permission.GET_NETWORK_INFO" //网络状态
+      },
+      {
+        "name": "ohos.permission.INTERNET", // 权限名称 访问网络
+        //        "reason": "$string:init_tab_create", // 可选：权限申请理由（用户授权权限需填写）
+        //        "usedScene": {                       // 可选：权限使用场景
+        //          "abilities": ["MainAbility"],      // 使用权限的Ability列表
+        //          "when": "inuse"                    // 使用时机（inuse/always）
+        //        },
+      },
+      {
+        "name": "ohos.permission.GET_BUNDLE_INFO"  //获取应用版本信息
+      },
+
+      {
+        "name": "ohos.permission.PUBLISH_AGENT_REMINDER",
+        "reason": "$string:set_msg_permission_notification", // 权限用途说明
+        "usedScene": {
+          "abilities": ["EntryAbility"], // 使用该权限的Ability
+          "when": "always" // 使用时机
+        }
+      },
+      //      {
+      //        "name": "ohos.permission.FILE_ACCESS_PERSIST",
+      //        "reason": "$string:shouxie_permit_file_save" //用于手写数据存储
+      //      },
+      {
+        "name": "ohos.permission.MICROPHONE",
+        "reason": "$string:microphone_permission_reason", ///用于语音识别
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "inuse"
+        }
+      },
+//      {
+//        "name": "ohos.permission.READ_MEDIA",
+//        "reason": "$string:image_read_permission_reason",//"需要读取相册权限"
+//        "usedScene": {
+//          "abilities": ["EntryAbility"], // 使用该权限的Ability
+//          "when": "inuse" // 使用时机
+//        }
+//      },
+//      {
+//        "name": "ohos.permission.WRITE_MEDIA",
+//        "reason": "$string:image_write_permission_reason",//保存字卡到相册
+//        "usedScene": {
+//          "abilities": ["EntryAbility"], // 使用该权限的Ability
+//          "when": "inuse" // 使用时机
+//        }
+//      },
+//      {
+//        "name": "ohos.permission.CAMERA",
+//        "reason": "$string:camera_permission_reason", //使用相机扫描字卡
+//        "usedScene": {
+//          "abilities": ["EntryAbility"], // 使用该权限的Ability
+//          "when": "inuse" // 使用时机
+//        }
+//      },
+//      {
+//        "name":"ohos.permission.PRINT", //打印
+//      },
+      //      {
+      //        "name": "ohos.permission.APP_TRACKING_CONSENT",
+      //        "reason": "$string:reason",
+      //        "usedScene": {}
+      //      }
+
+
+    ],
+    "abilities": [
+      {
+        "name": "EntryAbility",
+        "srcEntry": "./ets/entryability/EntryAbility.ets",
+        "description": "$string:EntryAbility_desc",
+        "icon": "$media:layered_image",
+        "label": "$string:app_name",
+        "startWindowIcon": "$media:startIcon",
+        "startWindowBackground": "$color:start_window_background",
+        "exported": true,
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home",
+              "entity.system.share",
+              "entity.system.browsable" //声明为可浏览实体，允许被调起，其它应用可以打开此应用
+            ],
+            "actions": [
+              "action.system.home",
+              "wxentity.action.open",      //微信登录
+              "ohos.want.action.sendData", //打开分享的文件
+              "ohos.want.action.view",        // 查看动作
+              "ohos.want.action.viewData",  // 关键：声明能查看数据
+              "action.system.open",         //打开本地文件
+            ],
+            "uris": [
+//              {
+//                "scheme": "file",                // 必填，声明协议类型为文件,允许打开uri中以file://协议开头标识的本地文件
+//                "type": "general.plain-text",    // 必填，表示支持打开的文件类型
+//                "linkFeature": "FileOpen"        // 必填且大小写敏感，表示此URI的功能为文件打开
+//              },
+//              {
+//                "scheme": "file",
+//                "type": "general.comma-separated-values-text",
+//                "linkFeature": "FileOpen"
+//              },
+//
+//
+//              {
+//                "scheme": "file",
+//                "type": "com.zhika.hzkb",
+//                "linkFeature": "FileOpen"
+//              },
+//              {
+//                "scheme": "file",
+//                "type": "application/hzkb",
+//                "linkFeature": "FileOpen" // 关键标识
+//              },
+
+             ]
+          }
+        ]
+      }
+    ],
+    "extensionAbilities": [
+      {
+        "name": "EntryBackupAbility",
+        "srcEntry": "./ets/entrybackupability/EntryBackupAbility.ets",
+        "type": "backup",
+        "exported": false,
+        "metadata": [
+          {
+            "name": "ohos.extension.backup",
+            "resource": "$profile:backup_config"
+          }
+        ],
+      }
+    ],
+    "metadata": [ // 配置信息如下
+      {
+        "name": "client_id",
+        "value": "6917590008180488968"//华为登录用， OAuth 2.0客户端ID（凭据），也是AppID
+      }
+    ],
+    "querySchemes": [
+      "weixin",    //微信登录
+      "wxopensdk"  //微信登录
+    ]
+  }
+}

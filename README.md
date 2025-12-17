@@ -1,3 +1,2 @@
 
-
-# ArkTS-WordTree
+# ArkTS-CNVocabulary

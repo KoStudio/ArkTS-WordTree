@@ -1,0 +1,41 @@
+{
+  "apiType": "stageMode",
+  "buildOption": {
+  },
+  "buildOptionSet": [
+    {
+      "name": "debug", // 调试模式下的选项
+      "debuggable": true, // 可调试
+      "arkOptions": {
+        "obfuscation": {
+          "ruleOptions": {
+            "enable": false // 调试模式通常关闭混淆
+          }
+        }
+      }
+    },
+    {
+      "name": "release",//发布模式下的选项
+      "debuggable": false, // 不可调试
+      "arkOptions": {
+        "obfuscation": {
+          "ruleOptions": {
+            "enable": true, //开启混淆
+            "files": [
+              "./obfuscation-rules.txt"//指定混淆规则文件
+            ]
+          }
+        }
+      }
+    }
+
+  ],
+  "targets": [
+    {
+      "name": "default"
+    },
+    {
+      "name": "ohosTest",
+    }
+  ]
+}

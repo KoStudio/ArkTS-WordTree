@@ -1,0 +1,79 @@
+{
+  "color": [
+    {"name": "start_window_background"           , "value": "#FFFFFF"     },
+
+    {"name": "colorPrimary"                      , "value": "#2F9852"     },
+    {"name": "colorPrimaryDark"                  , "value": "#2F9954"     },
+    {"name": "colorAccent"                       , "value": "#DD4236"     },
+    {"name": "colorAccent2"                      , "value": "#F9948C"     },
+
+    {"name": "color_obscure"                     , "value": "#EFEFF4"     },
+    {"name": "color_background"                  , "value": "#FFFFFF"     },
+    {"name": "color_light"                       , "value": "#FFFFFF"     },
+    {"name": "color_clear"                       , "value": "#00000000"   },
+    {"name": "color_link"                        , "value": "#0066CC"     },
+    {"name": "color_dark"                        , "value": "#000000"     },
+    {"name": "color_text"                        , "value": "#111111"     },
+    {"name": "color_text2"                       , "value": "#555555"     },
+    {"name": "color_title"                       , "value": "#373737"     },
+    {"name": "color_line"                        , "value": "#E1E1E1"     },
+    {"name": "color_ripple"                      , "value": "#585858"     },
+    {"name": "color_text_marked"                 , "value": "#E14374"     },
+    {"name": "color_text_touched"                , "value": "#E9967A"     },
+
+    {"name": "color_black"                       , "value": "#353535"     },
+    {"name": "color_white"                       , "value": "#FFFFFF"     },
+    {"name": "color_red"                         , "value": "#FF0000"     },
+    {"name": "color_green"                       , "value": "#00FF00"     },
+    {"name": "color_blue"                        , "value": "#0000FF"     },
+    {"name": "color_cyan"                        , "value": "#38C9E7"     },
+    {"name": "color_gray"                        , "value": "#999999"     },
+    {"name": "color_gray_light"                  , "value": "#DDDDDD"     },
+    {"name": "color_pink"                        , "value": "#e39cad"     },
+    {"name": "color_gold"                        , "value": "#FFD700"     },
+    {"name": "color_vinered"                     , "value": "#8e0000"     },
+    {"name": "color_yellow"                      , "value": "#FFFF00"     },
+    {"name": "color_translucent"                 , "value": "#55000000"   },
+    {"name": "color_translucent_dark"            , "value": "#CC000000"   },
+    {"name": "color_transparent"                 , "value": "#00000000"   },
+
+    {"name": "color_search"                      , "value": "#EFEFF4"     },
+    {"name": "color_foot"                        , "value": "#434a54"     },
+    {"name": "color_footTint"                    , "value": "#eeeeee"     },
+    {"name": "color_card"                        , "value": "#FFFFFF"     },
+    {"name": "color_detail"                      , "value": "#666666"     },
+
+    {"name": "color_nav_bg"                      , "value": "#2F9852"     },
+    {"name": "color_nav_text"                    , "value": "#FFFFFF"     },
+    {"name": "color_nav_tint"                    , "value": "#FFFFFF"     },
+    {"name": "color_main_tab_bg"                 , "value": "#002F9852"   },
+    {"name": "color_main_tab_tint"               , "value": "#FFFFFF"     },
+    {"name": "color_main_tab_selected"           , "value": "#DD4236"     },
+    {"name": "color_switch_tint"                 , "value": "#2AA940"     },
+    {"name": "color_btn_bg"                      , "value": "#2AA940"     },
+    {"name": "color_btn_bg_down"                 , "value": "#37633F"     },
+
+    {"name": "color_list_section_bg_cate_1"      , "value": "#579E4E"     },
+    {"name": "color_list_section_bg_cate_2"      , "value": "#6CBFCC"     },
+    {"name": "color_list_section_bg_cate_3"      , "value": "#B1CC4F"     },
+
+    {"name": "color_list_sep_txt_1"              , "value": "#4D95EB"     },
+    {"name": "color_list_sep_txt_2"              , "value": "#FAC13D"     },
+    {"name": "color_list_sep_txt_3"              , "value": "#43CDC0"     },
+
+    {"name": "color_quiz_scope_favorite_star"    , "value": "#FF8C00"     },
+    {"name": "color_quiz_result_studyharder"     , "value": "#E60112"     },
+    {"name": "color_quiz_result_good"            , "value": "#38AF69"     },
+    {"name": "color_quiz_result_welldone"        , "value": "#F89C04"     },
+    {"name": "color_quiz_result_no"              , "value": "#33A1C5"     },
+
+    { "name": "color_learn_card"                 , "value": "#ffeab5"    },
+    { "name": "color_learn_card_disable"         , "value": "#e8e8e8"    },
+
+    { "name": "color_dict_title"                 , "value": "#2F9852"    },
+    { "name": "color_dict_subtitle"              , "value": "#8d918d"    },
+    { "name": "color_dict_pos"                   , "value": "#347e85"    },
+    { "name": "color_dict_detail"                , "value": "#717a81"    },
+    { "name": "color_dict_bg"                    , "value": "#ffffff"    }
+  ]
+}

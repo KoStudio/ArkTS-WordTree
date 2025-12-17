@@ -1,0 +1,84 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "debug",
+        "type": "HarmonyOS",
+        "material": {
+          "storeFile": "/Users/huminghua/Desktop/Ko-Android-Key/Ko-Harmony_key/ko_oh_keystore.p12",
+          "storePassword": "0000001F863393C4E47915FF575CC56CBD06A3A63B540A0F3CD7C1E157AA6C251EC4A51CDCF10286772DD6EBA85070",
+          "keyAlias": "toeic_key",
+          "keyPassword": "0000001F48EEAEB8499AE18A80957B78ED571B98E2C2418743D33E929A675156DD42EAC3FE7B9B1CA6C028DEE97E2D",
+          "signAlg": "SHA256withECDSA",
+          "profile": "/Users/huminghua/Desktop/Ko-Android-Key/Ko-Harmony_key/profiles/toeicvocabulary/ko_hm_profile_toeic_vocabulary_inapp_debugDebug.p7b",
+          "certpath": "/Users/huminghua/Desktop/Ko-Android-Key/Ko-Harmony_key/ko_certificate_debug.cer"
+        }
+      },
+      {
+        "name": "release",
+        "type": "HarmonyOS",
+        "material": {
+          "storeFile": "/Users/huminghua/Desktop/Ko-Android-Key/Ko-Harmony_key/ko_oh_keystore.p12",
+          "storePassword": "0000001F9EF6B887638C9DE5D06D3589D6071B22FBC11B7912F6E250A3C9EFEBAFDF28D10525DD3727AC1EB92ABFF8",
+          "keyAlias": "toeic_key",
+          "keyPassword": "0000001F67E181C3935953C9595D02E456F58D23A236F2E0F2AD219CEC2403D44CFA798D1067FE033771F054F214AD",
+          "signAlg": "SHA256withECDSA",
+          "profile": "/Users/huminghua/Desktop/Ko-Android-Key/Ko-Harmony_key/profiles/toeicvocabulary/ko_hm_profile_toeic_vocabulary_inapp_releaseRelease.p7b",
+          "certpath": "/Users/huminghua/Desktop/Ko-Android-Key/Ko-Harmony_key/ko_certificate_release.cer"
+        }
+      }
+    ],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "debug",
+        "targetSdkVersion": "5.0.5(17)",
+        "compatibleSdkVersion": "5.0.5(17)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+          "strictMode": {
+            "caseSensitiveCheck": true,
+            "useNormalizedOHMUrl": true
+          }
+        }
+      },
+      {
+        "name": "release",
+        //此模式对应的release签名，只能用于上传到huawei，不能安装调试，因此这里无法使用，暂不删除。by ko 2025.08.29
+        "signingConfig": "release",
+        "targetSdkVersion": "5.0.5(17)",
+        "compatibleSdkVersion": "5.0.5(17)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+          "strictMode": {
+            "caseSensitiveCheck": true,
+            "useNormalizedOHMUrl": true
+          }
+        }
+      }
+    ],
+    "buildModeSet": [
+      {
+        "name": "debug",
+      },
+      {
+        "name": "release"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default",
+            "release"
+          ]
+        }
+      ]
+    }
+  ]
+}
