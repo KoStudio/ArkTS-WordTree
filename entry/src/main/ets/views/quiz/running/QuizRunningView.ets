@@ -331,7 +331,7 @@ export struct QuizRunningView {
     //Question
     const isEiwa         = QuizManager.shared.questionType === QuestionType.Eiwa
     this.lblNoText       = `${curNo}/${allCnt}`;
-    this.lblQuestionText = isEiwa ? question.wordEn : question.wordJp;
+    this.lblQuestionText = isEiwa ? question.titleEn : question.titleCn1;
 
     //Answer
     const answers    = QuizManager.shared.getAnswerTextOfShowingQuestion()

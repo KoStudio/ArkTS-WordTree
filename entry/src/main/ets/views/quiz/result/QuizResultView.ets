@@ -203,7 +203,7 @@ export struct QuizResultView {
       ///mid
       Column(){
 
-        Text(`${word.wordEn}`)
+        Text(`${word.titleEn}`)
           .fontSize(18)
           .fontColor($r('app.color.color_text'))
           .margin({left: 15})

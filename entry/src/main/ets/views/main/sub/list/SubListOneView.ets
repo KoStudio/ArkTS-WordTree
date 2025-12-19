@@ -73,7 +73,7 @@ export struct SubListOneView {
                 this.handleRowClick(sectionIndex, rowIndex)
               })
               .margin({ bottom: 1 })
-            },(word: WordUser, rowIndex: number)=>`${word.wordEn}_${rowIndex}`)
+            },(word: WordUser, rowIndex: number)=>`${word.titleEn}_${rowIndex}`)
 
           }
         }, (section: string, sectionIndex: number) => `${section}_${sectionIndex}`)
@@ -136,7 +136,7 @@ export struct SubListOneView {
       ///left
       Column(){
 
-        Text(`${word.wordEn}`)
+        Text(`${word.titleEn}`)
           .fontSize(18)
           .fontColor($r('app.color.color_text'))
 

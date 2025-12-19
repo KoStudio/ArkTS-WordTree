@@ -6,11 +6,11 @@
         "type": "HarmonyOS",
         "material": {
           "storeFile": "/Users/huminghua/Desktop/Ko-Android-Key/Ko-Harmony_key/ko_oh_keystore.p12",
-          "storePassword": "0000001F863393C4E47915FF575CC56CBD06A3A63B540A0F3CD7C1E157AA6C251EC4A51CDCF10286772DD6EBA85070",
+          "storePassword": "0000001F59542E7B0B3DF765F8A0B2CB1A1F13AC6B07BD5DF0EA7D5696F05E3404449B7E78241261BE0061502F3774",
           "keyAlias": "toeic_key",
-          "keyPassword": "0000001F48EEAEB8499AE18A80957B78ED571B98E2C2418743D33E929A675156DD42EAC3FE7B9B1CA6C028DEE97E2D",
+          "keyPassword": "0000001F34812F2BBF1CCB720A8DAB3F4C8B405030E6F10D4F4A5B54422C26CEF4A4F4CCC5C62AB1685E6739D7B5E0",
           "signAlg": "SHA256withECDSA",
-          "profile": "/Users/huminghua/Desktop/Ko-Android-Key/Ko-Harmony_key/profiles/toeicvocabulary/ko_hm_profile_toeic_vocabulary_inapp_debugDebug.p7b",
+          "profile": "/Users/huminghua/Desktop/Ko-Android-Key/Ko-Harmony_key/profiles/wordtree/ko_hm_profile_wordtree_inapp_debugDebug.p7b",
           "certpath": "/Users/huminghua/Desktop/Ko-Android-Key/Ko-Harmony_key/ko_certificate_debug.cer"
         }
       },
@@ -19,11 +19,11 @@
         "type": "HarmonyOS",
         "material": {
           "storeFile": "/Users/huminghua/Desktop/Ko-Android-Key/Ko-Harmony_key/ko_oh_keystore.p12",
-          "storePassword": "0000001F9EF6B887638C9DE5D06D3589D6071B22FBC11B7912F6E250A3C9EFEBAFDF28D10525DD3727AC1EB92ABFF8",
+          "storePassword": "0000001FA65C5731CC12B716C5DA2C1332929905BC9CD1A44B232525B94F7BA9793BF109EC17B00920BAF2DAAF57A0",
           "keyAlias": "toeic_key",
-          "keyPassword": "0000001F67E181C3935953C9595D02E456F58D23A236F2E0F2AD219CEC2403D44CFA798D1067FE033771F054F214AD",
+          "keyPassword": "0000001F0BEA19642697F330BF9536AC1BC5B8AF114C47CFB48DD4D895FA0C5F024204EBAEFCC7288F4730C348683D",
           "signAlg": "SHA256withECDSA",
-          "profile": "/Users/huminghua/Desktop/Ko-Android-Key/Ko-Harmony_key/profiles/toeicvocabulary/ko_hm_profile_toeic_vocabulary_inapp_releaseRelease.p7b",
+          "profile": "/Users/huminghua/Desktop/Ko-Android-Key/Ko-Harmony_key/profiles/wordtree/ko_hm_profile_wordtree_inapp_releaseRelease.p7b",
           "certpath": "/Users/huminghua/Desktop/Ko-Android-Key/Ko-Harmony_key/ko_certificate_release.cer"
         }
       }

@@ -114,12 +114,12 @@ export struct DeletedWordsView {
      ///left
      Column(){
 
-       Text(`${rowIndex + 1}. ${word.wordEn}`)
+       Text(`${rowIndex + 1}. ${word.titleEn}`)
          .fontSize(18)
          .fontColor($r('app.color.color_text'))
 
 
-       Text(word.wordJp)
+       Text(word.titleCn1)
          .fontSize(15)
          .fontColor($r('app.color.color_detail'))
          .margin({left: 15, top: 5})

@@ -56,7 +56,7 @@ class QuizConstants {
   // 测试结果常量
   static readonly TEST_RESULT_NONE: number       = 0;   // 未测试
   static readonly TEST_RESULT_CORRECT: number    = 1;   // 正确
-  static readonly TEST_RESULT_WRONG: number      = -1;  // 错误
+  static readonly TEST_RESULT_WRONG: number      = 2;   // 错误 注意WordTree这里是2，不是-1
 }
 
 
@@ -181,13 +181,13 @@ export class QuizManager {
   }
 
   addWrongWord(wrongWord: WordUser): void {
-    if (!this.wrongWords.some(word => word.id === wrongWord.id)) {
+    if (!this.wrongWords.some(word => word.idx === wrongWord.idx)) {
       this.wrongWords.push(wrongWord);
     }
   }
 
   addCorrectWord(correctWord: WordUser): void {
-    if (!this.correctWords.some(word => word.id === correctWord.id)) {
+    if (!this.correctWords.some(word => word.idx === correctWord.idx)) {
       this.correctWords.push(correctWord);
     }
   }
@@ -217,7 +217,7 @@ export class QuizManager {
     // 获取正确答案文本
     const isTextEn: boolean = this.questionType === QuestionType.Waei;
     const correctText: string = isTextEn
-      ? (this.showingQuestion.wordEn || '')
+      ? (this.showingQuestion.titleEn || '')
       : (this.showingQuestion.wordJpClippedString || '');
 
     // 随机选择正确答案位置
@@ -272,8 +272,8 @@ export class QuizManager {
   }
 
   checkSpell(text: string): boolean {
-    if (text && text.length > 0 && this.showingQuestion && this.showingQuestion.wordEn) {
-      const correctTitle = this.showingQuestion.wordEn.trim().toLowerCase();
+    if (text && text.length > 0 && this.showingQuestion && this.showingQuestion.titleEn) {
+      const correctTitle = this.showingQuestion.titleEn.trim().toLowerCase();
       const isCorrect = text.trim().toLowerCase() === correctTitle;
 
       if (this.showingQuestion) {
@@ -433,7 +433,7 @@ export class QuizManager {
 
   private getSortedListFromList(listSrc: WordUser[], requestCount: number): WordUser[] {
     // 按ID排序
-    const sortedList = [...listSrc].sort((a, b) => (a.id || 0) - (b.id || 0));
+    const sortedList = [...listSrc].sort((a, b) => (a.idx || 0) - (b.idx || 0));
     return sortedList.slice(0, Math.min(requestCount, sortedList.length));
   }
 

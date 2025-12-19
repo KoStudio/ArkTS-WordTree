@@ -1,19 +1,32 @@
+import { StringEncoder } from "../../../common/utils/strings/StringEncrypt";
+
 export class Word {
-  id              : number | null = null;
+  idx             : number | null = null;
+  partId          : number | null = null;
+  partName        : string | null = null;
+
   unitId          : number | null = null;
   unitNo          : number | null = null;
-  categoryId      : number | null = null;
-  categoryName    : string | null = null;
-  wordEn          : string | null = null;
-  wordJp          : string | null = null;
-  wordKind        : string | null = null;
-  wordPronounce   : string | null = null;
-  exampleEn       : string | null = null;
-  exampleJp       : string | null = null;
-  redWord         : string | null = null;
   unitName        : string | null = null;
 
+  titleEn         : string | null = null;
+  titleCn1        : string | null = null;
+  // wordKind     : string | null = null;
+  pronEn          : string | null = null;
+  pronUs          : string | null = null;
+  exampleEn1      : string | null = null;
+  exampleCn1      : string | null = null;
+
+
+  get titleEnEncodeToBase64(): string | null {
+    return StringEncoder.encodedToBase64(this.titleEn)
+  }
+
+  get titleEnEncodeAndAddSalt(): string | null {
+    return StringEncoder.encodeAndAddSalt(this.titleEn)
+  }
+
   get wordEnSoundText(): string {
-    return `${this.wordEn}_ti_u`
+    return `${this.titleEn}_ti_u`
   }
 }

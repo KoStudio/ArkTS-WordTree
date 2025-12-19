@@ -6,27 +6,27 @@ export namespace AppSettings {
 
   export class App {
 
-    static readonly projectName     = "Toeic-Vocabulary" // 用于标识 project
-    static readonly appName         = "Toeic-Vocabulary"     // 用于标识 app
+    static readonly projectName     = "WordTree" // 用于标识 project
+    static readonly appName         = "WordTree"     // 用于标识 app
     static readonly appDisplayName  = getString($r('app.string.app_name'))
     static readonly deviceType      = "Harmony"
     static readonly minDisk         = 100 //mb
   }
 
   export class ICP {
-    static readonly code    = "蜀ICP备19021466号-11A"           // 备案号：TOEIC精选词汇
+    static readonly code    = "蜀ICP备19021466号-3A"           // 备案号：单词树
     static readonly title   = "ICP/IP地址/域名信息备案管理系统"    // 备案网址标题
     static readonly addr    = "https://beian.miit.gov.cn/"     // 备案网址
   }
 
   export class Address {
     //static readonly addressQQWxz       = "https://a.app.qq.com/o/simple.jsp?pkgname=com.ko.tools.zhika.huawei"
-    static readonly terms              = "http://sf-sky.dancishu.com/terms.html"
-    static readonly terms_subscription = "http://sf-sky.dancishu.com/terms_subscription.html"
-    static readonly privacy            = "http://sf-sky.dancishu.com/privacy.html"
-    static readonly privacy_kid        = "http://sf-sky.dancishu.com/privacy_kid.html"
-    static readonly contact            = "http://sf-sky.dancishu.com/contact.html"
-    static readonly share_app          = 'https://appgallery.huawei.com/app/detail?id=com.or.toeic.hm.vocabulary'//"http://sf-sky.dancishu.com/index.html"
+    static readonly terms              = "http://www.dancishu.com/terms.html"
+    static readonly terms_subscription = "http://www.dancishu.com/terms_subscription.html"
+    static readonly privacy            = "http://www.dancishu.com/privacy.html"
+    static readonly privacy_kid        = "http://www.dancishu.com/privacy_kid.html"
+    static readonly contact            = "http://www.dancishu.com/contact.html"
+    static readonly share_app          = "http://www.dancishu.com/index.html"//'https://appgallery.huawei.com/app/detail?id=com.ou.hm.wordtree'
   }
 
   export class CfgWeixin {

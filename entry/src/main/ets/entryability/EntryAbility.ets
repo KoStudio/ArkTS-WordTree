@@ -129,6 +129,7 @@ export default class EntryAbility extends UIAbility {
   async initDatas() {
 
 
+    import('../models/datas/book/BookDbAccess')             .then((it) => { it.BookDbAccess.shared })
 
     import('../models/datas/word/WordDbAccess')                   .then((it) => { it.WordDbAccess.shared })
     import('../models/datas/myData/WordUserDbAccess')             .then((it) => { it.WordUserDbAccess.shared })
@@ -163,11 +164,11 @@ export default class EntryAbility extends UIAbility {
     ///这是自动签名获取的：6918705225533654805，不对。
     ///需要使用自己申请的debug或release时的profile，(release签名不能调试，所以只能用申请debug类型的profile)
     ///6917579325076446931
-    ///6917590008180488968 //ToeicVocabulary
+    ///6917592474741463583 //WordTree
     ///
     ///QQ登录需要获取fingerPrint的md5
-    //   fingerprint = "0e5ad763ce8811a91d7de1c38a4f1f200041d4bbb458102a537f6475662298ff"//汉字卡
-    //   fingerprintMd5 = "f138c6c6c06a0dc45c1031345e34b5aa" //汉字卡
+    //   fingerprint = "0e5ad763ce8811a91d7de1c38a4f1f200041d4bbb458102a537f6475662298ff"//单词树
+    //   fingerprintMd5 = "f138c6c6c06a0dc45c1031345e34b5aa" //单词树
     //
     // if (DebugFlg.isDebugMode()) {
     //   BundleUtils.getBundleAppIdentifier()

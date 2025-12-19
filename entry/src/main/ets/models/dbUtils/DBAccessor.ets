@@ -9,7 +9,7 @@ import { StringEncoder } from '../../common/utils/strings/StringEncrypt';
  * 数据库操作参数类型定义
  * 支持：字符串(string)、数字(number)、布尔值(boolean)、null四种类型
  */
-export type ParamType = relationalStore.ValueType //string | number | boolean | null;
+export type ParamType = relationalStore.ValueType// | relationalStore.UTCTime //string | number | boolean | null;
 
 export interface SqlObj {
   sql: string

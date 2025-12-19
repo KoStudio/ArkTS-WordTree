@@ -80,7 +80,7 @@ export struct SubReviewView {
                 this.handleRowClick(sectionIndex, rowIndex)
               })
               .margin({ bottom: 1 })
-            },(word: WordUser, rowIndex: number)=>`${word.wordEn}_${rowIndex}`)
+            },(word: WordUser, rowIndex: number)=>`${word.titleEn}_${rowIndex}`)
 
           }
         }, (section: string, sectionIndex: number) => `${section}_${sectionIndex}`)
@@ -140,12 +140,12 @@ export struct SubReviewView {
       ///left
       Column(){
 
-        Text(`${word.wordEn}`)
+        Text(`${word.titleEn}`)
           .fontSize(18)
           .fontColor($r('app.color.color_text'))
 
 
-        Text(word.wordJp)
+        Text(word.titleCn1)
           .fontSize(15)
           .fontColor($r('app.color.color_detail'))
           .margin({left: 15, top: 5})

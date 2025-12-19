@@ -157,7 +157,7 @@ export struct WordCardOne {
   buildWordTitleRow() {
     Row(){
       // 英文单词
-      Text(this.word.wordEn)
+      Text(this.word.titleEn)
         .fontColor('#000000')
         .maxFontSize(30)
         .minFontSize(0.1)
@@ -179,7 +179,7 @@ export struct WordCardOne {
   // 构建发音显示行
   @Builder
   buildPronunciationRow() {
-    Text(`[${this.word.wordPronounce}]`)
+    Text(`[${this.word.pronEn}]`)
       .width('100%')
       .fontSize(18)
       .fontColor('#56B43B')
@@ -203,7 +203,7 @@ export struct WordCardOne {
           .backgroundColor(Color.White)
 
       }else{
-        Text(this.word.wordJp)
+        Text(this.word.titleCn1)
           .width('100%')
           .fontSize(18)
           .minFontScale(0.1)
@@ -272,7 +272,7 @@ export struct WordCardOne {
     Column({ space: 5 }) {
       // 英文例句
       WordClickableText({
-        text:this.word.exampleEn || '',
+        text:this.word.exampleEn1 || '',
         highlightWords: this.getHilightTexts(),
         onWordClick:(word: string)=>{
           this.onClickedText(word)
@@ -294,7 +294,7 @@ export struct WordCardOne {
         }else{
 
           // 日文例句
-          Text(this.word.exampleJp)
+          Text(this.word.exampleCn1)
             .width('100%')
             .fontSize(18)
             .fontColor('#555555')
@@ -411,7 +411,7 @@ export struct WordCardOne {
   }
 
   getHilightTexts(): string [] {
-    const word = this.word.wordEn || ''
+    const word = this.word.titleEn || ''
     const redWord = this.word.redWord || ''
     return [
       word,
@@ -425,7 +425,7 @@ export struct WordCardOne {
   }
 
   getCategoryIcon():Resource{
-    return TEUtility.getCategoryIcon(this.word.categoryId)
+    return TEUtility.getCategoryIcon(this.word.partId)
   }
 
   getWordKindIcon():Resource {

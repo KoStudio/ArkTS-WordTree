@@ -247,7 +247,7 @@ export struct WordCardsView {
 
             onClickedBtnExamplePron:(wd: WordUser)=>{
               // this.playSound(wd.exampleEn)
-              this.actionPlayExampleSound(wd.exampleEn)
+              this.actionPlayExampleSound(wd.exampleEn1)
             },
             onClickedText:(text: string)=>{
               this.showingDictText = text
@@ -296,7 +296,7 @@ export struct WordCardsView {
   }
 
   async showInfo(){
-    this.isEnableContrast = await this.recordManager.isExistsSound(this.word.wordEn!)
+    this.isEnableContrast = await this.recordManager.isExistsSound(this.word.titleEn!)
   }
 
   ///显示转到测验或挑战页面的弹出选项
@@ -373,7 +373,7 @@ export struct WordCardsView {
             onAppear: () => {
 
               ///开始录音
-              this.recordManager.startRecord(this.word.wordEn)
+              this.recordManager.startRecord(this.word.titleEn)
 
             },
 
@@ -476,7 +476,7 @@ export struct WordCardsView {
 
   async actionContrast(){
     //听
-    this.recordManager.startPlay(this.word.wordEn!)
+    this.recordManager.startPlay(this.word.titleEn!)
   }
 
   async preLoadSound() {
@@ -500,7 +500,7 @@ export struct WordCardsView {
       await this.preLoadOneSound(this.words[page].wordEnSoundText)
 
       ///预 加载 例句发音
-      await this.preLoadOneSound(this.words[page].exampleEn)
+      await this.preLoadOneSound(this.words[page].exampleEn1)
     }
 
   }
@@ -564,7 +564,7 @@ export struct WordCardsView {
     //例句
     if (SettingManager.shared.autoPlaySoundEx) {
       //排队播放
-      await AudioPlayer.shared.prepareToPlay(this.word.exampleEn)
+      await AudioPlayer.shared.prepareToPlay(this.word.exampleEn1)
     }
 
   }

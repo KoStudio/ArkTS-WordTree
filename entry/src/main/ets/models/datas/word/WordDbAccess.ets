@@ -4,45 +4,50 @@ import { ResName, ResPath } from '../../../app/constants/ResPath';
 import { DebugLog } from '../../../app/debug/DebugLog';
 import { AppLanguage } from '../../../common/components/Language/AppLanguage';
 import { LanguageManager } from '../../../common/components/Language/LanguageManager';
-import { lang_en_us } from '../../../common/components/Sounds/Cloud/CSoundDbAccessor/CDBSound';
+import { StringEncoder } from '../../../common/utils/strings/StringEncrypt';
 import { DBAccessor } from '../../dbUtils/DBAccessor';
 import { DbPrepareUtils } from '../../dbUtils/DBPrepare';
 import { ResultSetTool } from '../../dbUtils/ResultSetTool';
 import { Word } from './Word';
+import { WordDetail } from './WordDetail';
 
-
-// ============================================================
-// 数据库表结构定义 - Word表
-// ============================================================
-namespace WordTable {
-  export const NAME = "Word";
+export namespace WordTable {
+  export const Table_Name         = "Word";
+  export const TableOnline_Name   = "WordOnlineTemp";
 
   export namespace Col {
-    export const id            = "id";
-    export const categoryId    = "categoryId";
-    export const categoryName  = "categoryName";
-    export const unitId        = "unitId";
-    export const unitName      = "unitName";
-    export const unitNo        = "unitNo";
-    export const wordEn        = "wordEn";
-    export const wordKind      = "wordKind";
-    export const wordPronounce = "wordPronounce";
-    export const wordJp        = "wordJp";
-    export const exampleEn     = "exampleEn";
-    export const exampleJp     = "exampleJp";
-    export const redWord       = "redWord";
+    export const IDX          = "item0";
+    export const PARTID       = "item1";
+    export const PARTNAME     = "item2";
+    export const UNITID       = "item3";
+    export const UNITNAME     = "item4";
+    export const UNITNO       = "item5";
+    export const TITLEEN      = "item6";
+    export const PRONEN       = "item7";
+    export const PRONUS       = "item8";
+    export const TITLECN1     = "item9";
+    export const TITLECN2     = "item10";
+    export const TITLECN3     = "item11";
+    export const WORDIMAGE    = "item12";
+    export const WORDCHANGE   = "item13";
+    export const SYNWORDS     = "item14";
+    export const ASYNWORDS    = "item15";
+    export const EXAMPLEEN1   = "item16";
+    export const EXAMPLECN1   = "item17";
+    export const EXAMPLEEN2   = "item18";
+    export const EXAMPLECN2   = "item19";
+    export const EXAMPLEEN3   = "item20";
+    export const EXAMPLECN3   = "item21";
+    export const USEDPHRASE   = "item22";
+    export const EN2EN        = "item23";
+    export const DISCRIMINATE = "item24";
   }
 }
 
-/**
- * Word数据库访问类 - 只读访问基础单词数据
- * 类似Swift中的Repository模式或Kotlin中的DAO模式
- */
 export class WordDbAccess {
   private static instance: WordDbAccess | null = null;
   private db: DBAccessor | null = null;
 
-  // 单例模式，类似Swift的static let shared = WordDbAccess()
   public static get shared(): WordDbAccess {
     if (!WordDbAccess.instance) {
       WordDbAccess.instance = new WordDbAccess();
@@ -54,126 +59,100 @@ export class WordDbAccess {
     this.init();
   }
 
-  async init(){
-    // 只读数据库，isReadOnly设置为true
+  async init() {
     this.db = new DBAccessor(this.dbPath, null, true);
     await DbPrepareUtils.prepareDbIfNeeds(this, this.getResPath());
   }
 
   private get dbPath(): string {
-      return this.getResPath().filePath
+    return this.getResPath().filePath;
   }
 
   private getResPath(): ResPath {
-    if (LanguageManager.getCurrentLanguage() === AppLanguage.Traditional) {
-      return ResName.Word_Cnt
-    }
-    return ResName.Word_Cns
+    return LanguageManager.getCurrentLanguage() === AppLanguage.Traditional
+      ? ResName.Word_Cnt
+      : ResName.Word_Cns;
   }
 
-  // ==========================================================
-  // 基础查询方法
-  // ==========================================================
-
-  /**
-   * 检查数据库是否可访问
-   * 类似Kotlin中的suspend fun isDbAccessible(): Boolean
-   */
   async isDbOpenable(): Promise<boolean> {
     const word = await this.getWordById(1);
     return word !== null;
   }
 
-  /**
-   * 根据ID查询单词
-   * 类似Swift的func getWord(by id: Int) async -> Word?
-   */
   async getWordById(id: number): Promise<Word | null> {
     if (!this.db) return null;
 
-    const sql = `SELECT * FROM ${WordTable.NAME} WHERE ${WordTable.Col.id} = ?`;
+    const sql = `SELECT * FROM ${WordTable.Table_Name} WHERE ${WordTable.Col.IDX} = ?`;
     return await this.db.getData(sql, [id], (rs: relationalStore.ResultSet) => this.createWordFromResultSet(rs));
   }
 
-  /**
-   * 查询所有单词
-   * 类似Kotlin的suspend fun getAllWords(): List<Word>
-   */
   async getAllWords(): Promise<Word[] | null> {
     if (!this.db) return null;
 
-    const sql = `SELECT * FROM ${WordTable.NAME}`;
+    const sql = `SELECT * FROM ${WordTable.Table_Name}`;
     return await this.db.getDatas(sql, [], (rs: relationalStore.ResultSet) => this.createWordFromResultSet(rs));
   }
 
-  /**
-   * 根据分类ID查询单词
-   */
-  async getWordsByCategoryId(categoryId: number): Promise<Word[] | null> {
+  async getWordsByPartId(partId: number): Promise<Word[] | null> {
     if (!this.db) return null;
 
-    const sql = `SELECT * FROM ${WordTable.NAME} WHERE ${WordTable.Col.categoryId} = ?`;
-    return await this.db.getDatas(sql, [categoryId], (rs: relationalStore.ResultSet) => this.createWordFromResultSet(rs));
+    const sql = `SELECT * FROM ${WordTable.Table_Name} WHERE ${WordTable.Col.PARTID} = ?`;
+    return await this.db.getDatas(sql, [partId], (rs: relationalStore.ResultSet) => this.createWordFromResultSet(rs));
   }
 
-  /**
-   * 根据单元ID查询单词
-   */
   async getWordsByUnitId(unitId: number): Promise<Word[] | null> {
     if (!this.db) return null;
 
-    const sql = `SELECT * FROM ${WordTable.NAME} WHERE ${WordTable.Col.unitId} = ?`;
+    const sql = `SELECT * FROM ${WordTable.Table_Name} WHERE ${WordTable.Col.UNITID} = ?`;
     return await this.db.getDatas(sql, [unitId], (rs: relationalStore.ResultSet) => this.createWordFromResultSet(rs));
   }
 
 
-  /**
-   * 从ResultSet创建Word对象
-   * 类似Kotlin的private fun cursorToWord(cursor: Cursor): Word
-   */
+  async getWordsCount(): Promise<number> {
+    if (!this.db) return 0;
+    const sql = `SELECT COUNT(*) FROM ${WordTable.Table_Name}`;
+    return await this.db.getCount(sql);
+  }
+
+  async getWordsCountByPart(partId: number): Promise<number> {
+    if (!this.db) return 0;
+    const sql = `SELECT COUNT(*) FROM ${WordTable.Table_Name} WHERE ${WordTable.Col.PARTID} = ?`;
+    return await this.db.getCount(sql, [partId]);
+  }
+
+  async getWordsCountByUnit(unitId: number): Promise<number> {
+    if (!this.db) return 0;
+    const sql = `SELECT COUNT(*) FROM ${WordTable.Table_Name} WHERE ${WordTable.Col.UNITID} = ?`;
+    return await this.db.getCount(sql, [unitId]);
+  }
+
+  async getWordDetailByTitleEn(titleEn: string | null): Promise<WordDetail | null> {
+    if (!this.db || !titleEn) return null;
+
+    const titleEnBase64 = StringEncoder.encodedToBase64(titleEn)
+    if (!titleEnBase64) return null;
+
+
+    const sql = `SELECT * FROM ${WordTable.Table_Name} WHERE ${WordTable.Col.TITLEEN} = ? LIMIT 1`;
+    return await this.db.getData(sql, [titleEnBase64], (rs: relationalStore.ResultSet) => this.createWordDetailFromResultSet(rs));
+  }
+
   private createWordFromResultSet(rs: relationalStore.ResultSet): Word {
     const word = new Word();
 
     try {
-      const idIndex = rs.getColumnIndex(WordTable.Col.id);
-      if (idIndex >= 0) word.id = rs.getLong(idIndex);
-
-      const categoryIdIndex = rs.getColumnIndex(WordTable.Col.categoryId);
-      if (categoryIdIndex >= 0) word.categoryId = rs.getLong(categoryIdIndex);
-
-      const categoryNameIndex = rs.getColumnIndex(WordTable.Col.categoryName);
-      if (categoryNameIndex >= 0) word.categoryName = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.categoryName);
-
-      const unitIdIndex = rs.getColumnIndex(WordTable.Col.unitId);
-      if (unitIdIndex >= 0) word.unitId = rs.getLong(unitIdIndex);
-
-      const unitNameIndex = rs.getColumnIndex(WordTable.Col.unitName);
-      if (unitNameIndex >= 0) word.unitName = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.unitName);
-
-      const unitNoIndex = rs.getColumnIndex(WordTable.Col.unitNo);
-      if (unitNoIndex >= 0) word.unitNo = rs.getLong(unitNoIndex);
-
-      const wordEnIndex = rs.getColumnIndex(WordTable.Col.wordEn);
-      if (wordEnIndex >= 0) word.wordEn = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.wordEn);
-
-      const wordJpIndex = rs.getColumnIndex(WordTable.Col.wordJp);
-      if (wordJpIndex >= 0) word.wordJp = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.wordJp);
-
-      const wordKindIndex = rs.getColumnIndex(WordTable.Col.wordKind);
-      if (wordKindIndex >= 0) word.wordKind = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.wordKind);
-
-      const wordPronounceIndex = rs.getColumnIndex(WordTable.Col.wordPronounce);
-      if (wordPronounceIndex >= 0) word.wordPronounce = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.wordPronounce);
-
-      const exampleEnIndex = rs.getColumnIndex(WordTable.Col.exampleEn);
-      if (exampleEnIndex >= 0) word.exampleEn = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.exampleEn)?.trim() || '';
-
-      const exampleJpIndex = rs.getColumnIndex(WordTable.Col.exampleJp);
-      if (exampleJpIndex >= 0) word.exampleJp = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.exampleJp);
-
-      const redWordIndex = rs.getColumnIndex(WordTable.Col.redWord);
-      if (redWordIndex >= 0) word.redWord = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.redWord);
-
+      word.idx      = rs.getLong(rs.getColumnIndex(WordTable.Col.IDX));
+      word.partId   = rs.getLong(rs.getColumnIndex(WordTable.Col.PARTID));
+      word.partName = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.PARTNAME);
+      word.unitId   = rs.getLong(rs.getColumnIndex(WordTable.Col.UNITID));
+      word.unitName = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.UNITNAME);
+      word.unitNo   = rs.getLong(rs.getColumnIndex(WordTable.Col.UNITNO));
+      word.titleEn  = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.TITLEEN);
+      word.pronEn   = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.PRONEN);
+      word.pronUs   = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.PRONUS);
+      word.titleCn1 = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.TITLECN1);
+      word.exampleEn1 = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.EXAMPLEEN1);
+      word.exampleCn1 = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.EXAMPLECN1);
     } catch (error) {
       DebugLog.e(`WordDbAccess: 创建Word对象失败 - ${error}`);
     }
@@ -181,33 +160,39 @@ export class WordDbAccess {
     return word;
   }
 
-  /**
-   * 获取单词总数
-   */
-  async getWordsCount(): Promise<number> {
-    if (!this.db) return 0;
+  private createWordDetailFromResultSet(rs: relationalStore.ResultSet): WordDetail {
+    const wordDetail = new WordDetail();
 
-    const sql = `SELECT COUNT(*) FROM ${WordTable.NAME}`;
-    return await this.db.getCount(sql);
-  }
+    try {
+      wordDetail.idx        = rs.getLong(rs.getColumnIndex(WordTable.Col.IDX));
+      wordDetail.partId     = rs.getLong(rs.getColumnIndex(WordTable.Col.PARTID));
+      wordDetail.partName   = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.PARTNAME);
+      wordDetail.unitId     = rs.getLong(rs.getColumnIndex(WordTable.Col.UNITID));
+      wordDetail.unitName   = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.UNITNAME);
+      wordDetail.unitNo     = rs.getLong(rs.getColumnIndex(WordTable.Col.UNITNO));
+      wordDetail.titleEn    = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.TITLEEN);
+      wordDetail.pronEn     = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.PRONEN);
+      wordDetail.pronUs     = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.PRONUS);
+      wordDetail.titleCn1   = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.TITLECN1);
+      wordDetail.titleCn2   = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.TITLECN2);
+      wordDetail.titleCn3   = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.TITLECN3);
+      wordDetail.wordImage  = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.WORDIMAGE);
+      wordDetail.wordChange = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.WORDCHANGE);
+      wordDetail.synWords   = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.SYNWORDS);
+      wordDetail.asynWords  = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.ASYNWORDS);
+      wordDetail.exampleEn1 = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.EXAMPLEEN1);
+      wordDetail.exampleCn1 = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.EXAMPLECN1);
+      wordDetail.exampleEn2 = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.EXAMPLEEN2);
+      wordDetail.exampleCn2 = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.EXAMPLECN2);
+      wordDetail.exampleEn3 = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.EXAMPLEEN3);
+      wordDetail.exampleCn3 = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.EXAMPLECN3);
+      wordDetail.usedPhrase = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.USEDPHRASE);
+      wordDetail.en2En      = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.EN2EN);
+      wordDetail.discriminate = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.DISCRIMINATE);
+    } catch (error) {
+      DebugLog.e(`WordDbAccess: 创建WordDetail对象失败 - ${error}`);
+    }
 
-  /**
-   * 获取分类下的单词数量
-   */
-  async getWordsCountByCategory(categoryId: number): Promise<number> {
-    if (!this.db) return 0;
-
-    const sql = `SELECT COUNT(*) FROM ${WordTable.NAME} WHERE ${WordTable.Col.categoryId} = ?`;
-    return await this.db.getCount(sql, [categoryId]);
-  }
-
-  /**
-   * 获取单元下的单词数量
-   */
-  async getWordsCountByUnit(unitId: number): Promise<number> {
-    if (!this.db) return 0;
-
-    const sql = `SELECT COUNT(*) FROM ${WordTable.NAME} WHERE ${WordTable.Col.unitId} = ?`;
-    return await this.db.getCount(sql, [unitId]);
+    return wordDetail;
   }
 }

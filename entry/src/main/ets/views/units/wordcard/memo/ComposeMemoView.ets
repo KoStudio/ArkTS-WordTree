@@ -88,7 +88,7 @@ export struct ComposeMemoView {
   }
 
   getNavTitle(): ResourceStr | null | undefined {
-    return this.word.wordEn
+    return this.word.titleEn
   }
 
   // === 导航菜单 ===

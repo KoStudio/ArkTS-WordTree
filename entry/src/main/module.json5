@@ -158,7 +158,7 @@
     "metadata": [ // 配置信息如下
       {
         "name": "client_id",
-        "value": "6917590008180488968"//华为登录用， OAuth 2.0客户端ID（凭据），也是AppID
+        "value": "6917592474741463583"//单词树 华为登录用， OAuth 2.0客户端ID（凭据），也是AppID
       }
     ],
     "querySchemes": [

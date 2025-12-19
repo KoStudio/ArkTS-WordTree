@@ -185,7 +185,7 @@ private createDataJson(): string {
 
         // 返回 interface 对象（不能 new）
         const json: UserExampleJson = {
-          serial_no        : w.id,
+          serial_no        : w.idx,
           last_result_type : lastResultTypeValue,
           num_of_succeeded : w.correctedTimes,
           num_of_failed    : w.wrangTimes,
@@ -232,7 +232,7 @@ private restoreAllExamples(userExamples: UserExample[], onProgress: (percent: nu
     const serialNo = ue.serialNo;
     if (!serialNo) return;
 
-    const word = words.find(w => w.id === serialNo);
+    const word = words.find(w => w.idx === serialNo);
     if (!word) return;
 
     word.lastResultType = ue.lastResultType === UserExample.iOS_LastResultType.Succeed
@@ -260,8 +260,8 @@ private restoreAllExamples(userExamples: UserExample[], onProgress: (percent: nu
 
     WordUserDbAccess.shared.saveWordUser(word)
 
-    if (word.id && word.isDeleted()) {
-      WordUserDbAccess.shared.setWordDeletedStatus(word.id, word.isDeleted())
+    if (word.idx && word.isDeleted()) {
+      WordUserDbAccess.shared.setWordDeletedStatus(word.idx, word.isDeleted())
     }
   });
 }

@@ -261,7 +261,7 @@ export struct SpellRunningView {
     //Question
     this.lblNoText           = `${curNo}/${allCnt}`;
     this.lblQuestionText     = question.wordJpClippedString;
-    this.lblCorrectAnswer    = question.wordEn;
+    this.lblCorrectAnswer    = question.titleEn;
 
     //重置
     this.txtAnswerText       = ''

@@ -1,4 +1,6 @@
+import { StringEncoder } from "../../../common/utils/strings/StringEncrypt";
 import { TEUtility } from "../../../common/utils/TEUtility";
+import { ResultSetTool } from "../../dbUtils/ResultSetTool";
 import { SearchConstants } from "../model/SearchManager";
 import { Word } from "../word/Word";
 import { WordUserDbAccess } from "./WordUserDbAccess";
@@ -6,53 +8,49 @@ import { WordUserDbAccess } from "./WordUserDbAccess";
 // ============================================================
 @ObservedV2
 export class WordUser extends Word {
-  // 用户数据字段
- @Trace favoriteLevel  : number = 0;
- @Trace learnTimes     : number = 0;
- @Trace correctedTimes : number = 0;
- @Trace wrangTimes     : number = 0;
- @Trace lastResultType : number = 0;
- @Trace wrangYear      : number = 0;
- @Trace wrangMonth     : number = 0;
- @Trace wrangDay       : number = 0;
- @Trace memo           : string | null = null;
- @Trace deleted        : boolean = false;
+
+  // ================== 常量 ==================
+  public static readonly KShareMemo_MemoText   : string = "kMemoText"
+  public static readonly KShareMemo_AuthorName : string = "kAuthorName"
+  public static readonly KShareMemo_MemoId     : string = "kMemoId"
 
   public static readonly Deleted_Yes = 1;
   public static readonly Deleted_No  = 0;
 
-  constructor(init?: Partial<WordUser>) {
-    super(); // 调用 Word 构造函数
-    if (init) {
-      // 手动赋值每个字段
-      if (init.id !== undefined)            this.id = init.id;
-      if (init.unitId !== undefined)        this.unitId = init.unitId;
-      if (init.unitNo !== undefined)        this.unitNo = init.unitNo;
-      if (init.categoryId !== undefined)    this.categoryId = init.categoryId;
-      if (init.categoryName !== undefined)  this.categoryName = init.categoryName;
-      if (init.wordEn !== undefined)        this.wordEn = init.wordEn;
-      if (init.wordJp !== undefined)        this.wordJp = init.wordJp;
-      if (init.wordKind !== undefined)      this.wordKind = init.wordKind;
-      if (init.wordPronounce !== undefined) this.wordPronounce = init.wordPronounce;
-      if (init.exampleEn !== undefined)     this.exampleEn = init.exampleEn;
-      if (init.exampleJp !== undefined)     this.exampleJp = init.exampleJp;
-      if (init.redWord !== undefined)       this.redWord = init.redWord;
-      if (init.unitName !== undefined)      this.unitName = init.unitName;
 
-      if (init.favoriteLevel !== undefined)  this.favoriteLevel = init.favoriteLevel;
-      if (init.learnTimes !== undefined)     this.learnTimes = init.learnTimes;
-      if (init.correctedTimes !== undefined) this.correctedTimes = init.correctedTimes;
-      if (init.wrangTimes !== undefined)     this.wrangTimes = init.wrangTimes;
-      if (init.lastResultType !== undefined) this.lastResultType = init.lastResultType;
-      if (init.wrangYear !== undefined)      this.wrangYear = init.wrangYear;
-      if (init.wrangMonth !== undefined)     this.wrangMonth = init.wrangMonth;
-      if (init.wrangDay !== undefined)       this.wrangDay = init.wrangDay;
-      if (init.memo !== undefined)           this.memo = init.memo;
-      if (init.deleted !== undefined)        this.deleted = init.deleted;
-    }
+  // 用户数据字段
+  // @Trace titleEn        : string  = ""
+
+
+  @Trace favoriteLevel  : number = 0;
+  @Trace learnTimes     : number = 0;
+  @Trace correctedTimes : number = 0;
+  @Trace wrangTimes     : number = 0;
+  @Trace lastResultType : number = 0;
+  // @Trace wrangYear      : number = 0;
+  // @Trace wrangMonth     : number = 0;
+  // @Trace wrangDay       : number = 0;
+  @Trace wrangDate      : Date | null = null
+  // @Trace unitId         : number  = 0
+  // @Trace partId         : number  = 0
+
+  @Trace memo           : string | null = null;
+  @Trace shareMemos     : Array<Record<string, string>> = []
+
+  @Trace deleted        : boolean = false;
+
+
+  get wrangYear(): number {
+    return this.wrangDate?.getFullYear() || 0
   }
 
+  get wrangMonth(): number {
+    return (this.wrangDate?.getMonth() ?? 0) + 1
+  }
 
+  get wrangDay(): number {
+    return this.wrangDate?.getDate() ?? 0
+  }
 
   // MARK: - 工具方法
   isDeleted(): boolean {
@@ -62,7 +60,7 @@ export class WordUser extends Word {
   // 获取裁剪后的日语文本（类似Swift的computed property）
   get wordJpClippedString(): string {
     // return this.wordJp ? this.wordJp.split(',')[0] : '';
-    return TEUtility.clipString(this.wordJp)
+    return TEUtility.clipString(this.titleCn1)
   }
 
   // 获取错误日期字符串
@@ -84,9 +82,10 @@ export class WordUser extends Word {
       this.wrangTimes++;
 
       const now       = new Date();
-      this.wrangYear  = now.getFullYear();
-      this.wrangMonth = now.getMonth() + 1;
-      this.wrangDay   = now.getDate();
+      // this.wrangYear  = now.getFullYear();
+      // this.wrangMonth = now.getMonth() + 1;
+      // this.wrangDay   = now.getDate();
+      this.wrangDate = now
     }
   }
 
@@ -101,8 +100,8 @@ export class WordUser extends Word {
 
   public async changeDeletedWord(toDelete: boolean): Promise<void> {
     this.deleted = toDelete
-    if (this.id) {
-      await WordUserDbAccess.shared.setWordDeletedStatus(this.id, toDelete)
+    if (this.idx) {
+      await WordUserDbAccess.shared.setWordDeletedStatus(this.titleEn, toDelete)//.setWordDeletedStatus(this.id, toDelete)
     }
 
   }

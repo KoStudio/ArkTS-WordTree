@@ -82,44 +82,44 @@ export class SearchManager {
 
     const userMap   = new Map<number, WordUser>();
     for (const u of wordUsers) {
-      if (u.id !== null) {
-        userMap.set(u.id, u);
+      if (u.idx !== null) {
+        userMap.set(u.idx, u);
       }
     }
 
     const merged: WordUser[] = words.map(w => {
-      const existed = w.id !== null ? userMap.get(w.id) : null;
+      const existed = w.idx !== null ? userMap.get(w.idx) : null;
 
       if (existed) {
         // 覆盖基本字段
-        existed.wordEn        = w.wordEn;
-        existed.wordJp        = w.wordJp;
+        existed.titleEn        = w.titleEn;
+        existed.titleCn1        = w.titleCn1;
         existed.wordKind      = w.wordKind;
-        existed.wordPronounce = w.wordPronounce;
-        existed.exampleEn     = w.exampleEn;
-        existed.exampleJp     = w.exampleJp;
+        existed.pronEn = w.pronEn;
+        existed.exampleEn1     = w.exampleEn1;
+        existed.exampleCn1     = w.exampleCn1;
         existed.redWord       = w.redWord;
         existed.unitId        = w.unitId;
         existed.unitNo        = w.unitNo;
         existed.unitName      = w.unitName;
-        existed.categoryId    = w.categoryId;
-        existed.categoryName  = w.categoryName;
+        existed.partId    = w.partId;
+        existed.partName  = w.partName;
         return existed;
       }
 
       // 没有用户记录 → 创建新的 WordUser（手动赋值）
       const newWord = new WordUser();
-      newWord.id            = w.id;
+      newWord.idx            = w.idx;
       newWord.unitId        = w.unitId;
       newWord.unitNo        = w.unitNo;
-      newWord.categoryId    = w.categoryId;
-      newWord.categoryName  = w.categoryName;
-      newWord.wordEn        = w.wordEn;
-      newWord.wordJp        = w.wordJp;
+      newWord.partId    = w.partId;
+      newWord.partName  = w.partName;
+      newWord.titleEn        = w.titleEn;
+      newWord.titleCn1        = w.titleCn1;
       newWord.wordKind      = w.wordKind;
-      newWord.wordPronounce = w.wordPronounce;
-      newWord.exampleEn     = w.exampleEn;
-      newWord.exampleJp     = w.exampleJp;
+      newWord.pronEn = w.pronEn;
+      newWord.exampleEn1     = w.exampleEn1;
+      newWord.exampleCn1     = w.exampleCn1;
       newWord.redWord       = w.redWord;
       newWord.unitName      = w.unitName;
 
@@ -175,8 +175,8 @@ export class SearchManager {
       }
 
       // 分类变化时创建新分类
-      if (currentCategoryId !== word.categoryId) {
-        currentCategoryId = word.categoryId;
+      if (currentCategoryId !== word.partId) {
+        currentCategoryId = word.partId;
         currentCategory   = this.createCategoryFromWord(word);
         this.categories.push(currentCategory);
       }
@@ -204,7 +204,7 @@ export class SearchManager {
     unit.unitId     = word.unitId || 0;
     unit.unitNo     = word.unitNo || 0;
     unit.unitName   = word.unitName || '';
-    unit.categoryId = word.categoryId || 0;
+    unit.categoryId = word.partId || 0;
     unit.words = [];
     return unit;
   }
@@ -214,8 +214,8 @@ export class SearchManager {
    */
   private createCategoryFromWord(word: WordUser): Category {
     const category        = new Category();
-    category.categoryId   = word.categoryId || 0;
-    category.categoryName = word.categoryName  || '';
+    category.categoryId   = word.partId || 0;
+    category.categoryName = word.partName  || '';
     category.units = [];
     return category;
   }
@@ -302,7 +302,7 @@ export class SearchManager {
     const liveWords: WordUser[] = this.getAliveWords();
 
     for (const word of liveWords) {
-      if (ids.includes(word.id ?? 0)) {
+      if (ids.includes(word.idx ?? 0)) {
         array.push(word);
       }
     }
@@ -322,7 +322,7 @@ export class SearchManager {
    * 根据单词ID获取单词
    */
   getWordById(id: number): WordUser | undefined {
-    return this.allWords.find(word => word.id === id);
+    return this.allWords.find(word => word.idx === id);
   }
 
   /**
@@ -516,8 +516,8 @@ export class SearchManager {
     let   aliveWords  = this.getAliveWords();
 
     return aliveWords.filter(word => {
-      const en = (word.wordEn || '').toLowerCase();
-      const jp = word.wordJp || '';
+      const en = (word.titleEn || '').toLowerCase();
+      const jp = word.titleCn1 || '';
 
       // 优先检查开头匹配，速度更快
       return en.startsWith(lowerSearch) ||
@@ -531,8 +531,8 @@ export class SearchManager {
    * 安全比较器：按 wordEn 忽略大小写排序（不使用 localeCompare 的 options）
    */
   private compareByWordEn(a: WordUser, b: WordUser): number {
-    const A : string = (a.wordEn || '').toLowerCase();
-    const B : string = (b.wordEn || '').toLowerCase();
+    const A : string = (a.titleEn || '').toLowerCase();
+    const B : string = (b.titleEn || '').toLowerCase();
 
     if (A < B) return -1;
     if (A > B) return  1;
@@ -556,7 +556,7 @@ export class SearchManager {
         return;
       }
 
-      const firstChar: string = ((word.wordEn || '').substring(0, 1) || '#').toLowerCase();
+      const firstChar: string = ((word.titleEn || '').substring(0, 1) || '#').toLowerCase();
       sectionWords.addSectionWithData(firstChar, word);
     });
 
@@ -573,15 +573,15 @@ export class SearchManager {
 
     // 排序：先按 categoryId，然后按 wordEn
     filtedWords.sort((a, b) => {
-      const aCat : number = a.categoryId ?? 0;
-      const bCat : number = b.categoryId ?? 0;
+      const aCat : number = a.partId ?? 0;
+      const bCat : number = b.partId ?? 0;
 
       if (aCat !== bCat) {
         return aCat - bCat;
       }
 
-      const A : string = (a.wordEn || '').toLowerCase();
-      const B : string = (b.wordEn || '').toLowerCase();
+      const A : string = (a.titleEn || '').toLowerCase();
+      const B : string = (b.titleEn || '').toLowerCase();
 
       if (A < B) return -1;
       if (A > B) return  1;
@@ -589,7 +589,7 @@ export class SearchManager {
     });
 
     filtedWords.forEach(word => {
-      sectionWords.addSectionWithData(word.categoryName ?? '', word);
+      sectionWords.addSectionWithData(word.partName ?? '', word);
     });
 
     return sectionWords;
@@ -756,7 +756,7 @@ export class SearchManager {
       if (isEnglishAnswer) {
         // 英→日测试时，排除与问题文本日语相同的单词
         if (questionTextJp !== word.wordJpClippedString) {
-          texts.push(word.wordEn || '');
+          texts.push(word.titleEn || '');
         }
       } else {
         // 日→英测试时，使用日语的裁剪文本

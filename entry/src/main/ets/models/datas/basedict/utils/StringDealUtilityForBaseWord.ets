@@ -7,12 +7,12 @@ type DealTransform = (partStr: string) => string | null;
  * Created by huminghua on 2017/10/31.
  */
 
-export class StringDealUtility {
+export class StringDealUtilityForBaseWord {
 
   ///查找英文单字
   static matchEnWords(srcStr: string | null): Array<string> {
     const RegEnword = "([A-Za-z']+)";
-    return StringDealUtility.matchRegex(srcStr, RegEnword);
+    return StringDealUtilityForBaseWord.matchRegex(srcStr, RegEnword);
   }
 
   ///匹配正则表达式
@@ -43,7 +43,7 @@ export class StringDealUtility {
   }
 
   public static removedDuplications(srcStr: string | null): string | null {
-    return StringDealUtility.removedDuplicationsWithSeperator(
+    return StringDealUtilityForBaseWord.removedDuplicationsWithSeperator(
       srcStr,
       BaseWordConstants.TitleTextJp.wordsSperator,
       BaseWordConstants.TitleTextJp.wordsSubSperator
@@ -63,7 +63,7 @@ export class StringDealUtility {
 
     const tempList: Array<string> = [];
 
-    return StringDealUtility.dealInternal(
+    return StringDealUtilityForBaseWord.dealInternal(
       srcStr,
       seperator,
       subSeperator,
@@ -79,14 +79,14 @@ export class StringDealUtility {
   }
 
   public static clipIfNeeds(srcStr: string | null): string | null {
-    return StringDealUtility.clipIfNeedsMaxParts(
+    return StringDealUtilityForBaseWord.clipIfNeedsMaxParts(
       srcStr,
       BaseWordConstants.TitleTextJp.wordsMaxPart
     );
   }
 
   public static clipIfNeedsMaxParts(srcStr: string | null, maxParts: number): string | null {
-    return StringDealUtility.clipIfNeedsFull(
+    return StringDealUtilityForBaseWord.clipIfNeedsFull(
       srcStr,
       BaseWordConstants.TitleTextJp.wordsSperator,
       BaseWordConstants.TitleTextJp.wordsSubSperator,
@@ -108,7 +108,7 @@ export class StringDealUtility {
 
     const tempList: Array<string> = [];
 
-    return StringDealUtility.dealInternal(
+    return StringDealUtilityForBaseWord.dealInternal(
       srcStr,
       seperator,
       subSeperator,

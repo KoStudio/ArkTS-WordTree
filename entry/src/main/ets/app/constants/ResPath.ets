@@ -29,6 +29,14 @@ export class ResPath {
  */
 export class ResName {
 
+  // Book
+  static readonly Book = new ResPath("Book", "Datas/0_Books/0_BookCate/BookList.sqlite.zip");
+
+
+  // //CigenCns
+  // static readonly Cigen_Cns = new ResPath("Cigen_Cns", "Datas/0_Books/0_BookCate/BookList.sqlite.zip");
+
+
   // Word_Cns
   static readonly Word_Cns = new ResPath("Word_Cns", "Datas/Word_Cns.sqlite");
 
@@ -46,10 +54,11 @@ export class ResName {
    */
   static get allDatabases(): ResPath[] {
     return [
-      ResName.Word_Cns,
-      ResName.Word_Cnt,
-      ResName.BaseDict_Cns,
-      ResName.BaseDict_Cnt
+      ResName.Book,
+      // ResName.Word_Cns,
+      // ResName.Word_Cnt,
+      // ResName.BaseDict_Cns,
+      // ResName.BaseDict_Cnt
     ];
   }
 }

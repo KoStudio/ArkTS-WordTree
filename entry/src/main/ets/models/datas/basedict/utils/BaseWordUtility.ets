@@ -1,6 +1,6 @@
 import { getString } from '../../../../common/utils/ResourceUtils';
 import { BaseWordConstants } from './BaseWordConstants';
-import { StringDealUtility } from './StringDealUtility';
+import { StringDealUtilityForBaseWord } from './StringDealUtilityForBaseWord';
 
 /**
  * 每一个翻译包含： 词性 + 单字翻译
@@ -204,9 +204,9 @@ export class BaseWordUtility {
 
     const result: TitleItem[] = [];
     for (const item of titleItems) {
-      let processedTitle: string | null = StringDealUtility.removedDuplications(item.title);
+      let processedTitle: string | null = StringDealUtilityForBaseWord.removedDuplications(item.title);
       if (maxParts !== 0) {
-        processedTitle = StringDealUtility.clipIfNeedsMaxParts(processedTitle, maxParts);
+        processedTitle = StringDealUtilityForBaseWord.clipIfNeedsMaxParts(processedTitle, maxParts);
       }
       const newItem: TitleItem = {
         pos: item.pos,
@@ -226,7 +226,7 @@ export class BaseWordUtility {
       return item.pos ? `${item.pos}.${item.title}` : item.title;
     });
 
-    const joinedStr = StringDealUtility.joinTexts(dstTexts, BaseWordConstants.TitleTextJp.linesSeperator);
+    const joinedStr = StringDealUtilityForBaseWord.joinTexts(dstTexts, BaseWordConstants.TitleTextJp.linesSeperator);
     return joinedStr ?? '';
   }
 
