@@ -12,10 +12,10 @@ export struct TextButton {
   @Param bgColor          : ResourceColor    = $r('app.color.color_btn_bg')
   @Param bgColorPressed   : ResourceColor    = $r('app.color.color_btn_bg_down')
   @Param buttonType       : ButtonType       = ButtonType.Normal
-  @Param radius           : number | string  = 6
-  @Param textPadding      : Padding | number = 6
+  @Param radius           : number | string  = 4
+  @Param textPadding      : Padding | number = 10
   @Param minWidth         : number           = 88
-  @Param maxHeight        : number           = 32
+  @Param maxHeight        : number           = 40
   @Param isEnabled        : boolean          = true
 
   // 内部状态管理

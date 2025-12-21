@@ -50,8 +50,10 @@
     {"name": "color_main_tab_tint"               , "value": "#9E9E9E"     },
     {"name": "color_main_tab_selected"           , "value": "#80CA56"     },
     {"name": "color_switch_tint"                 , "value": "#2AA940"     },
-    {"name": "color_btn_bg"                      , "value": "#2AA940"     },
-    {"name": "color_btn_bg_down"                 , "value": "#37633F"     },
+    {"name": "color_btn_bg"                      , "value": "#474B7E"     },
+    {"name": "color_btn_bg_down"                 , "value": "#303F9F"     },
+    {"name": "color_btn_bg2"                     , "value": "#2AA940"     },
+    {"name": "color_btn_bg2_down"                , "value": "#37633F"     },
 
     {"name": "color_list_section_bg_cate_1"      , "value": "#579E4E"     },
     {"name": "color_list_section_bg_cate_2"      , "value": "#6CBFCC"     },

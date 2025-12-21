@@ -15,6 +15,8 @@ class BookPrefKeys {
 // ============================================================
 // MARK: - BookManager (Singleton)
 // ============================================================
+
+@ObservedV2
 export class BookManager {
 
   // -----------------------------
@@ -32,8 +34,8 @@ export class BookManager {
   // -----------------------------
   // Data
   // -----------------------------
-  public books       : Book[]      = []
-  public currentBook : Book | null = null
+  @Trace public books       : Book[]      = []
+  @Trace public currentBook : Book | null = null
 
   private pref: preferences.Preferences | null = null
 
