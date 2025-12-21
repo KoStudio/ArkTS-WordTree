@@ -131,9 +131,10 @@ export default class EntryAbility extends UIAbility {
 
     import('../models/datas/book/BookDbAccess')             .then((it) => { it.BookDbAccess.shared })
 
-    import('../models/datas/word/WordDbAccess')                   .then((it) => { it.WordDbAccess.shared })
+    // import('../models/datas/word/WordDbAccess')                   .then((it) => { it.WordDbAccess.shared })
     import('../models/datas/myData/WordUserDbAccess')             .then((it) => { it.WordUserDbAccess.shared })
     import('../models/datas/model/SearchManager')                 .then((it) => { it.SearchManager.shared })
+    import('../models/datas/book/BookManager')                    .then((it) => { it.BookManager.shared })
     import('../models/datas/basedict/BaseWordDbAccess')           .then((it) => { it.BaseWordDbAccess.shared })
 
 

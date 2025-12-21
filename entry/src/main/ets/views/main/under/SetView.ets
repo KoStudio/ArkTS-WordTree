@@ -10,8 +10,6 @@ import { ShareUtils } from "../../../common/utils/ShareUtils";
 import { ItemOption, Toast } from "../../../common/utils/Toast";
 import { SettingManager } from "../../../models/managers/setting/SettingManager";
 import { UserManager } from "../../../models/managers/user/UserManager";
-import { UserData, UserDataJson } from "../../../models/managers/userdata/UserData";
-import { UserDataManager } from "../../../models/managers/userdata/UserDataManager";
 import { NavTo } from "../../../pages/NavPathManager";
 import { LogOffViewConfig } from "../../login/LogOffView";
 import { LoadingDialog } from "@kit.ArkUI";
@@ -56,7 +54,7 @@ export struct SetView {
   @Local userManager:      UserManager = UserManager.shared
   @Local isLogin:          boolean     = UserManager.shared.isLogin()
 
-  @Local userData:         UserData    = new UserData()
+  // @Local userData:         UserData    = new UserData()
 
 
   @Local subTitleForBackup?: ResourceStr
@@ -529,42 +527,42 @@ export struct SetView {
   }
 
   updateBackupRestoreSubtitle() {
-    if (this.userData.updateDate) {
-      const dateStr = DateUtils.toDateTimeString(this.userData.updateDate)
-      this.subTitleForBackup  =  $r('app.string.set_txt_data_last_backup', dateStr)
-      this.subTitleForRestore =  $r('app.string.set_txt_data_to_restore')
-    }else {
-      this.subTitleForBackup  = undefined
-      this.subTitleForRestore = undefined
-    }
+    // if (this.userData.updateDate) {
+    //   const dateStr = DateUtils.toDateTimeString(this.userData.updateDate)
+    //   this.subTitleForBackup  =  $r('app.string.set_txt_data_last_backup', dateStr)
+    //   this.subTitleForRestore =  $r('app.string.set_txt_data_to_restore')
+    // }else {
+    //   this.subTitleForBackup  = undefined
+    //   this.subTitleForRestore = undefined
+    // }
 
   }
 
   private loadUserData(){
     if (!UserManager.shared.isLogin()) {
-      this.userData.userId       = null
-      this.userData.createDate   = null
-      this.userData.updateDate   = null
-      this.userData.userDataAddr = null
+      // this.userData.userId       = null
+      // this.userData.createDate   = null
+      // this.userData.updateDate   = null
+      // this.userData.userDataAddr = null
 
       //更新UI
       this.updateBackupRestoreSubtitle()
       return
     }
 
-    UserDataManager.shared.loadUserData((succeed: boolean, msg: string | null, UserDataJsons: UserDataJson[] | null) => {
-
-      if (UserDataJsons != null && UserDataJsons?.length > 0) {
-        const oneData             =  UserData.fromJson(UserDataJsons[0])
-        this.userData.userId       = oneData.userId
-        this.userData.createDate   = oneData.createDate
-        this.userData.updateDate   = oneData.updateDate
-        this.userData.userDataAddr = oneData.userDataAddr
-      }
-
-      //更新UI
-      this.updateBackupRestoreSubtitle()
-    })
+    // UserDataManager.shared.loadUserData((succeed: boolean, msg: string | null, UserDataJsons: UserDataJson[] | null) => {
+    //
+    //   if (UserDataJsons != null && UserDataJsons?.length > 0) {
+    //     const oneData             =  UserData.fromJson(UserDataJsons[0])
+    //     this.userData.userId       = oneData.userId
+    //     this.userData.createDate   = oneData.createDate
+    //     this.userData.updateDate   = oneData.updateDate
+    //     this.userData.userDataAddr = oneData.userDataAddr
+    //   }
+    //
+    //   //更新UI
+    //   this.updateBackupRestoreSubtitle()
+    // })
   }
 
   ///显示会员信息
@@ -684,17 +682,17 @@ export struct SetView {
         //////////////////////////////////////////////////////////
 
         Toast.showCustomDialog(()=> { this.buildLoadingDialog($r('app.string.set_msg_backuping'))}, false)
-        UserDataManager.shared.uploadUserData((success: boolean, msg: string | null) => {
-          // LoadingUtility.hideLoading()
-          Toast.closeCustomDialog()
-
-          if (success) {
-            Toast.showMessage($r('app.string.set_msg_backup_done'))
-            this.loadUserData()
-          }else{
-            Toast.showMessage(`${$r('app.string.set_msg_backup_failed') }: ${msg}`)
-          }
-        })
+        // UserDataManager.shared.uploadUserData((success: boolean, msg: string | null) => {
+        //   // LoadingUtility.hideLoading()
+        //   Toast.closeCustomDialog()
+        //
+        //   if (success) {
+        //     Toast.showMessage($r('app.string.set_msg_backup_done'))
+        //     this.loadUserData()
+        //   }else{
+        //     Toast.showMessage(`${$r('app.string.set_msg_backup_failed') }: ${msg}`)
+        //   }
+        // })
 
       }}
     })
@@ -715,29 +713,29 @@ export struct SetView {
       primaryButton: {value: $r('app.string.set_alert_restore_btn_yes'), action: () => {
 
         //恢复 用户数据
-        if (!this.userData) {
-          Toast.showMessage($r("app.string.set_msg_restore_no_found"))
-          return
-        }
+        // if (!this.userData) {
+        //   Toast.showMessage($r("app.string.set_msg_restore_no_found"))
+        //   return
+        // }
 
 
         Toast.showCustomDialog(()=> { this.buildLoadingDialog($r('app.string.set_msg_restoreing'))}, false)
-        UserDataManager.shared.restoreDataJson((percent: number) => {}, (success: boolean, msg: string | null) => {
-          Toast.closeCustomDialog()
-
-          if (success) {
-            Toast.showMessage($r('app.string.set_msg_restore_done'))
-
-            ///重新加载当前页面数据
-            this.loadUserData()
-
-            //检查 DB结构，刷新缓存
-            //this.refreshDbAndCache()
-
-          }else{
-            Toast.showMessage(`${$r('app.string.set_msg_restore_failed') }: ${msg}`)
-          }
-        })
+        // UserDataManager.shared.restoreDataJson((percent: number) => {}, (success: boolean, msg: string | null) => {
+        //   Toast.closeCustomDialog()
+        //
+        //   if (success) {
+        //     Toast.showMessage($r('app.string.set_msg_restore_done'))
+        //
+        //     ///重新加载当前页面数据
+        //     this.loadUserData()
+        //
+        //     //检查 DB结构，刷新缓存
+        //     //this.refreshDbAndCache()
+        //
+        //   }else{
+        //     Toast.showMessage(`${$r('app.string.set_msg_restore_failed') }: ${msg}`)
+        //   }
+        // })
 
 
       }}

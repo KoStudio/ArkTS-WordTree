@@ -76,7 +76,7 @@ struct Index {
       Stack() {
 
         //首页 背景图片
-        this.buildBg()
+        // this.buildBg()
 
         Column(){
           this.buildNavBar()
@@ -134,13 +134,13 @@ struct Index {
     NavBarView({
       title: this.navTitle(),
 
-      navBarBgColor: this.selectedIndex === 0 ? $r('app.color.color_transparent') : $r('app.color.colorPrimary'),
-      navBarTitleColor: this.selectedIndex === 0 ? '#2F9852' : $r('app.color.color_white'),
+      navBarBgColor:  $r('app.color.colorPrimary'),
+      navBarTitleColor: $r('app.color.color_white'),
 
       // 左侧按钮数组（只有一个图标按钮）
       leftButtons: [
         {
-          icon: $r('app.media.btn_set_1'), //set
+          icon: $r('app.media.ic_menu'), //set
           onClick: () => {
             SetViewConfig.open()
           }
@@ -150,9 +150,13 @@ struct Index {
       // 右侧按钮数组
       rightButtons: [
         {
-          icon: $r('app.media.btn_iap_1'), //iap
-          onClick: () => { this.isShowMemberView = true }//显示会员页面
-        }
+          icon: $r('app.media.search'),
+          onClick: () => {  }
+        },
+        {
+          icon: $r('app.media.ic_more'),
+          onClick: () => {  }
+        },
       ]
     })
       .height(50)
@@ -165,9 +169,8 @@ struct Index {
     switch (this.selectedIndex){
       case 0: return $r('app.string.nav_title_main_learn')
       case 1: return $r('app.string.nav_title_main_list')
-      case 2: return $r('app.string.nav_title_main_quiz')
-      case 3: return $r('app.string.nav_title_main_review')
-      case 4: return $r('app.string.nav_title_main_report')
+      case 2: return $r('app.string.nav_title_main_review')
+      case 3: return $r('app.string.nav_title_main_report')
       default : return $r('app.string.nav_title_main_learn')
     }
   }
@@ -188,23 +191,17 @@ struct Index {
       }
       .tabBar(this.tabBuilder(1, $r('app.string.tab_title_list'), $r("app.media.tab_f_1_1")))
 
-      //quiz
-      TabContent() {
-        SubTestView({isShowing: this.selectedIndex === 2})
-      }
-      .tabBar(this.tabBuilder(2, $r('app.string.tab_title_quiz'), $r("app.media.tab_f_2_1")))
-
       //review
       TabContent() {
-        SubReviewView({isShowing: this.selectedIndex === 3})
+        SubReviewView({isShowing: this.selectedIndex === 2})
       }
-      .tabBar(this.tabBuilder(3, $r('app.string.tab_title_review'), $r("app.media.tab_f_3_1")))
+      .tabBar(this.tabBuilder(2, $r('app.string.tab_title_review'), $r("app.media.tab_f_3_1")))
 
       //report
       TabContent() {
-        SubReportView({isShowing: this.selectedIndex === 4})
+        SubReportView({isShowing: this.selectedIndex === 3})
       }
-      .tabBar(this.tabBuilder(4, $r('app.string.tab_title_report'), $r("app.media.tab_f_4_1")))
+      .tabBar(this.tabBuilder(3, $r('app.string.tab_title_report'), $r("app.media.tab_f_4_1")))
 
 
     }
@@ -227,7 +224,7 @@ struct Index {
     Column({space: 8}) {
       TintImage({
         src: icon,
-        colorStr:this.selectedIndex === index ? '#fa9576' : '#FFFFFF',
+        colorStr: this.selectedIndex === index ? '#80CA56' : '#9E9E9E',
         iconSize: 20
       })
       // Image(icon)
@@ -237,7 +234,8 @@ struct Index {
 
       Text(title)
         .fontSize('12')
-        .fontColor(this.selectedIndex === index ? '#fa9576': '#FFFFFF')
+        .fontColor($r('app.color.color_main_tab_tint'))
+        .fontColor(this.selectedIndex === index ? '#80CA56': '#9E9E9E')
     }
     .justifyContent(FlexAlign.SpaceAround)
 

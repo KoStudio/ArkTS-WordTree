@@ -81,6 +81,7 @@ export struct SubReportView {
       .width('100%')
       .height('100%')
     }
+    .border({width: {bottom: 1}, color: $r('app.color.color_gray_light')})
   }
 
 

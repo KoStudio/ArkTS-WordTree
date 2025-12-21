@@ -24,7 +24,26 @@ export class Book {
   static equals(lhs: Book, rhs: Book): boolean {
     return lhs.bookId === rhs.bookId;
   }
+  constructor(json?: Record<string, Object>) {
+    if (json) {
+      this.bookId       = (json['bookId']       as number)  ?? null
+      this.bookName     = (json['bookName']     as string)  ?? null
+      this.categoryName = (json['categoryName'] as string)  ?? null
+      this.textDb       = (json['textDb']       as string)  ?? null
+      this.golds        = (json['golds']        as number)  ?? null
+      this.unitsCount   = (json['unitsCount']   as number)  ?? null
+      this.wordsCount   = (json['wordsCount']   as number)  ?? null
+      this.visible      = (json['visible']      as boolean) ?? null
+    }
+  }
 
+
+  // MARK: - JSON Helper
+
+  static fromArray(arr: Object[] | null): Book[] {
+    if (!arr) return []
+    return arr.map(o => new Book(o as Record<string, Object>))
+  }
   // // ====== 状态属性 ======
   // /**
   //  * 判断是否为当前正在学习的书籍

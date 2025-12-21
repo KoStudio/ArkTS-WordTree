@@ -1,5 +1,9 @@
 import { dAppCBookDbFolderPath, isDebugMode } from "../../../../../../app/constants/AppDefines";
 import { createFolderIfNeeds } from "../../../../../../app/constants/AppFunctions";
+import { Book } from "../../../../../../models/datas/book/Book";
+import { BookDbAccess } from "../../../../../../models/datas/book/BookDbAccess";
+import { Word } from "../../../../../../models/datas/word/Word";
+import { WordDbAccess } from "../../../../../../models/datas/word/WordDbAccess";
 import { AppCfgManager } from "../../../../../../models/managers/servercfg/AppCfgManager";
 import { TimeToManager } from "../../../../../../models/managers/timeto/TimeToManager";
 import { FileUtility } from "../../../../../utils/FileUtility";
@@ -187,8 +191,10 @@ export class CBookManager {
       return book?.bookId != null;
     }
 
-    const lesson = (await new LessonDbAccessor(baseName).getAllLessons())?.[0] ?? null;
-    return lesson?.texts != null && lesson.texts !== "";
+    // const lesson = (await new LessonDbAccessor(baseName).getAllLessons())?.[0] ?? null;
+    // return lesson?.texts != null && lesson.texts !== "";
+    const words: Word[] | null = (await new WordDbAccess(baseName).getAllWords()) ?? null;
+    return (words?.length ?? 0)> 0
   }
 
   /**

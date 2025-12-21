@@ -4,10 +4,12 @@ import { ResName, ResPath } from '../../../app/constants/ResPath';
 import { DebugLog } from '../../../app/debug/DebugLog';
 import { AppLanguage } from '../../../common/components/Language/AppLanguage';
 import { LanguageManager } from '../../../common/components/Language/LanguageManager';
+import { CBookManager } from '../../../common/components/Sounds/Cloud/Download/CBook/CBookManager';
 import { StringEncoder } from '../../../common/utils/strings/StringEncrypt';
 import { DBAccessor } from '../../dbUtils/DBAccessor';
-import { DbPrepareUtils } from '../../dbUtils/DBPrepare';
+import { DBPrepareProtocol, DbPrepareUtils } from '../../dbUtils/DBPrepare';
 import { ResultSetTool } from '../../dbUtils/ResultSetTool';
+import { AppCfgManager } from '../../managers/servercfg/AppCfgManager';
 import { Word } from './Word';
 import { WordDetail } from './WordDetail';
 
@@ -44,34 +46,46 @@ export namespace WordTable {
   }
 }
 
-export class WordDbAccess {
-  private static instance: WordDbAccess | null = null;
-  private db: DBAccessor | null = null;
+export class WordDbAccess implements DBPrepareProtocol {
+  private textDb: string | null;
+  // private db: DBAccessor | null = null;
 
-  public static get shared(): WordDbAccess {
-    if (!WordDbAccess.instance) {
-      WordDbAccess.instance = new WordDbAccess();
+  constructor(textDb: string | null) {
+    this.textDb = textDb;
+
+    if (this.resDb) {
+      //this.db = new DBAccessor(this.resDb.filePath, null);
     }
-    return WordDbAccess.instance;
-  }
 
-  private constructor() {
     this.init();
   }
 
-  async init() {
-    this.db = new DBAccessor(this.dbPath, null, true);
-    await DbPrepareUtils.prepareDbIfNeeds(this, this.getResPath());
+  private get dbPath(): string | null {
+    if (!this.textDb) {
+      return null
+    }
+
+    /// 使用CBook的开关是否是ON， 并且 下载的Cbook是否存在
+    if (AppCfgManager.shared.isCBook_Useable_is_ON()
+      && CBookManager.shared.isExistBookDb(this.textDb)){
+      return CBookManager.shared.cbookDbPath(this.textDb)
+    }
+
+    return this.resDb?.filePath ?? null
   }
 
-  private get dbPath(): string {
-    return this.getResPath().filePath;
+  private get db(): DBAccessor {
+    return new DBAccessor(this.dbPath, null);
   }
 
-  private getResPath(): ResPath {
-    return LanguageManager.getCurrentLanguage() === AppLanguage.Traditional
-      ? ResName.Word_Cnt
-      : ResName.Word_Cns;
+  private get resDb(): ResPath | null {
+    return this.textDb ? ResName.allDatabases.find((it) => it.name === this.textDb) ?? null : null;
+  }
+
+  private async init(){
+    if (this.resDb) {
+      await DbPrepareUtils.prepareDbIfNeeds(this, this.resDb)
+    }
   }
 
   async isDbOpenable(): Promise<boolean> {

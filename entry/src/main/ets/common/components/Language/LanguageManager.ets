@@ -101,7 +101,7 @@ export class LanguageManager {
 
   private static async resetDatas(){
 
-    await WordDbAccess.shared.init()
+    // await WordDbAccess.shared.init()
     await BaseWordDbAccess.shared.init()
     SearchManager.shared.refreshData()
   }

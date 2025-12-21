@@ -2,8 +2,8 @@
   "color": [
     {"name": "start_window_background"           , "value": "#FFFFFF"     },
 
-    {"name": "colorPrimary"                      , "value": "#2F9852"     },
-    {"name": "colorPrimaryDark"                  , "value": "#2F9954"     },
+    {"name": "colorPrimary"                      , "value": "#474B7E"     },
+    {"name": "colorPrimaryDark"                  , "value": "#303F9F"     },
     {"name": "colorAccent"                       , "value": "#DD4236"     },
     {"name": "colorAccent2"                      , "value": "#F9948C"     },
 
@@ -43,12 +43,12 @@
     {"name": "color_card"                        , "value": "#FFFFFF"     },
     {"name": "color_detail"                      , "value": "#666666"     },
 
-    {"name": "color_nav_bg"                      , "value": "#2F9852"     },
+    {"name": "color_nav_bg"                      , "value": "#474B7E"     },
     {"name": "color_nav_text"                    , "value": "#FFFFFF"     },
     {"name": "color_nav_tint"                    , "value": "#FFFFFF"     },
-    {"name": "color_main_tab_bg"                 , "value": "#002F9852"   },
-    {"name": "color_main_tab_tint"               , "value": "#FFFFFF"     },
-    {"name": "color_main_tab_selected"           , "value": "#DD4236"     },
+    {"name": "color_main_tab_bg"                 , "value": "#F3F4F9"   },
+    {"name": "color_main_tab_tint"               , "value": "#9E9E9E"     },
+    {"name": "color_main_tab_selected"           , "value": "#80CA56"     },
     {"name": "color_switch_tint"                 , "value": "#2AA940"     },
     {"name": "color_btn_bg"                      , "value": "#2AA940"     },
     {"name": "color_btn_bg_down"                 , "value": "#37633F"     },
@@ -70,7 +70,7 @@
     { "name": "color_learn_card"                 , "value": "#ffeab5"    },
     { "name": "color_learn_card_disable"         , "value": "#e8e8e8"    },
 
-    { "name": "color_dict_title"                 , "value": "#2F9852"    },
+    { "name": "color_dict_title"                 , "value": "#474B7E"    },
     { "name": "color_dict_subtitle"              , "value": "#8d918d"    },
     { "name": "color_dict_pos"                   , "value": "#347e85"    },
     { "name": "color_dict_detail"                , "value": "#717a81"    },

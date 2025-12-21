@@ -101,6 +101,7 @@ export struct SubListView {
       .height('100%')
 
     }
+    .border({width: {bottom: 1}, color: $r('app.color.color_gray_light')})
 
   }
   // MARK: - Search Panel

@@ -412,10 +412,8 @@ export struct WordCardOne {
 
   getHilightTexts(): string [] {
     const word = this.word.titleEn || ''
-    const redWord = this.word.redWord || ''
     return [
       word,
-      redWord,
       word + 's',
       word + 'es',
       word + 'ed',
@@ -429,6 +427,7 @@ export struct WordCardOne {
   }
 
   getWordKindIcon():Resource {
-   return TEUtility.getWordKindIcon(this.word.wordKind)
+   // return TEUtility.getWordKindIcon(this.word.wordKind)
+    return $r('app.media.icon')
   }
 }

@@ -437,7 +437,7 @@
     { "name": "setting_msg_done_del_favorite"               , "value": "已成功清空收藏夹。" },
 
 
-    {"name": "nav_title_main_learn"                         , "value": "TOEIC Vocabulary"},
+    {"name": "nav_title_main_learn"                         , "value": "单词树"},
     {"name": "nav_title_main_list"                          , "value": "单词一览"},
     {"name": "nav_title_main_quiz"                          , "value": "测试选择"},
     {"name": "nav_title_main_review"                        , "value": "复习"},

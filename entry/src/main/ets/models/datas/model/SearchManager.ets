@@ -2,6 +2,7 @@ import { DebugFlg } from "../../../app/debug/DebugFlg";
 import { DebugLog } from "../../../app/debug/DebugLog";
 import { SectionDatas } from "../../../common/utils/array/SectionDatas";
 import { TEUtility } from "../../../common/utils/TEUtility";
+import { BookManager } from "../book/BookManager";
 import { WordUser } from "../myData/WordUser";
 import { WordUserDbAccess } from "../myData/WordUserDbAccess";
 import { WordDbAccess } from "../word/WordDbAccess";
@@ -77,28 +78,30 @@ export class SearchManager {
   }
 
   private async loadDataStructures(): Promise<void> {
-    const words     = await WordDbAccess.shared.getAllWords() || [];
+    const textDb      = BookManager.shared.currentBook?.textDb ?? null
+
+    const words     = await (new WordDbAccess(textDb)).getAllWords() || [];
     const wordUsers = await WordUserDbAccess.shared.getAllWordUsers() || [];
 
-    const userMap   = new Map<number, WordUser>();
+    const userMap   = new Map<string, WordUser>();
     for (const u of wordUsers) {
-      if (u.idx !== null) {
-        userMap.set(u.idx, u);
+      if (u.titleEn !== null) {
+        userMap.set(u.titleEn, u);
       }
     }
 
     const merged: WordUser[] = words.map(w => {
-      const existed = w.idx !== null ? userMap.get(w.idx) : null;
+      const existed = w.titleEn !== null ? userMap.get(w.titleEn) : null;
 
       if (existed) {
         // 覆盖基本字段
         existed.titleEn        = w.titleEn;
         existed.titleCn1        = w.titleCn1;
-        existed.wordKind      = w.wordKind;
+        // existed.wordKind      = w.wordKind;
         existed.pronEn = w.pronEn;
         existed.exampleEn1     = w.exampleEn1;
         existed.exampleCn1     = w.exampleCn1;
-        existed.redWord       = w.redWord;
+        // existed.redWord       = w.redWord;
         existed.unitId        = w.unitId;
         existed.unitNo        = w.unitNo;
         existed.unitName      = w.unitName;
@@ -116,11 +119,11 @@ export class SearchManager {
       newWord.partName  = w.partName;
       newWord.titleEn        = w.titleEn;
       newWord.titleCn1        = w.titleCn1;
-      newWord.wordKind      = w.wordKind;
+      // newWord.wordKind      = w.wordKind;
       newWord.pronEn = w.pronEn;
       newWord.exampleEn1     = w.exampleEn1;
       newWord.exampleCn1     = w.exampleCn1;
-      newWord.redWord       = w.redWord;
+      // newWord.redWord       = w.redWord;
       newWord.unitName      = w.unitName;
 
       // 初始化用户字段
@@ -138,10 +141,12 @@ export class SearchManager {
       }
 
       newWord.lastResultType = 0;
-      newWord.wrangYear      = 0;
-      newWord.wrangMonth     = 0;
-      newWord.wrangDay       = 0;
+      // newWord.wrangYear      = 0;
+      // newWord.wrangMonth     = 0;
+      // newWord.wrangDay       = 0;
+      newWord.wrangDate      = null
       newWord.memo           = null;
+      newWord.shareMemos     = []
       newWord.deleted        = false;
 
       return newWord;
