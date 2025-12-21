@@ -16,6 +16,7 @@ import { TintImage } from '../app/views/TintImage';
 import { NavBarView } from '../app/views/NavBarView';
 import { SetViewConfig } from '../views/main/under/SetView';
 import { MemberView } from '../views/setting/member/MemberView';
+import { BookListViewConfig } from '../views/books/BookListView';
 
 
 @Entry
@@ -155,7 +156,7 @@ struct Index {
         },
         {
           icon: $r('app.media.ic_more'),
-          onClick: () => {  }
+          onClick: () => { BookListViewConfig.open() }
         },
       ]
     })

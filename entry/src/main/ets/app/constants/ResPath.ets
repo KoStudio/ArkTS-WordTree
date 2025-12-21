@@ -1,3 +1,4 @@
+import { PathUtility } from "../../common/utils/PathUtility";
 import { AppConstants } from "./AppConstants";
 
 /**
@@ -10,10 +11,16 @@ export class ResPath {
   filePath: string;
 
   constructor(name: string, assetPath: string, filePath: string = AppConstants.dataBasePath + assetPath) {
-    this.name = name;
-    this.assetPath = assetPath;
-    this.filePath = filePath;
-}
+    this.name       = name;
+    this.assetPath  = assetPath;
+    this.filePath   = filePath;
+
+    let ext = PathUtility.getExtension(assetPath)
+    if (ext ==='zip') {
+      this.filePath = AppConstants.dataBasePath + PathUtility.removeSuffix(assetPath) || ''
+    }
+
+  }
 
   /**
    * 获取文件在应用沙箱中的绝对路径

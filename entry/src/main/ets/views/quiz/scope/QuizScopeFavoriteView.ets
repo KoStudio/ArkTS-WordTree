@@ -1,6 +1,6 @@
 import { buildNavTitle } from "../../../app/constants/AppBuilders";
 import { dNavBackIcon } from "../../../app/constants/AppDefines";
-import { Category, Unit } from "../../../models/datas/model/Category_Unit";
+import { Part, Unit } from "../../../models/datas/model/Part_Unit";
 import { SearchConstants, SearchManager } from "../../../models/datas/model/SearchManager";
 import { NavTo } from "../../../pages/NavPathManager";
 import { BgImage } from "../../../app/views/BgImage";

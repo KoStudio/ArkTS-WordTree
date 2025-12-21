@@ -1,7 +1,7 @@
 import { buildNavTitle } from "../../app/constants/AppBuilders";
 import { dNavBackIcon } from "../../app/constants/AppDefines";
 import { SectionDatas } from "../../common/utils/array/SectionDatas";
-import { Category, Unit } from "../../models/datas/model/Category_Unit";
+import { Part, Unit } from "../../models/datas/model/Part_Unit";
 import { SearchConstants, SearchManager } from "../../models/datas/model/SearchManager";
 import {  NavTo } from "../../pages/NavPathManager";
 import json from "@ohos.util.json";
@@ -38,7 +38,7 @@ export struct UnitsView {
 //  @Local private units: Unit[] = []
 
   @Local sectionUnits: SectionDatas<string, Unit> = new SectionDatas()
-  @Local category: Category | null = null
+  @Local category: Part | null = null
 
   private listScroller: ListScroller     = new ListScroller();
   private refreshKey : number = 0
@@ -83,7 +83,7 @@ export struct UnitsView {
   }
 
   getNavTitle(): ResourceStr {
-    return this.category?.categoryName ||  $r('app.string.nav_title_learn_unitlist')
+    return this.category?.partName ||  $r('app.string.nav_title_learn_unitlist')
 
   }
   @Builder buildList(){

@@ -1,6 +1,6 @@
 import { buildNavTitle } from "../../../app/constants/AppBuilders";
 import { dNavBackIcon } from "../../../app/constants/AppDefines";
-import { Category, Unit } from "../../../models/datas/model/Category_Unit";
+import { Part, Unit } from "../../../models/datas/model/Part_Unit";
 import { SearchConstants, SearchManager } from "../../../models/datas/model/SearchManager";
 import { NavTo } from "../../../pages/NavPathManager";
 import { BgImage } from "../../../app/views/BgImage";
@@ -28,7 +28,7 @@ export namespace QuizScopeCategoryViewConfig {
 export struct QuizScopeCategoryView {
 
 
-  @Local categories    :Category[] = []
+  @Local categories    :Part[] = []
 
   private refreshKey   : number                     = 0
   @Local private selectedItemIndex: IndexPath[] = []
@@ -91,7 +91,7 @@ export struct QuizScopeCategoryView {
             alignItems: ItemAlign.Start
           }) {
 
-            ForEach(this.categories, (category: Category, index: number) => {
+            ForEach(this.categories, (category: Part, index: number) => {
 
               Column() {
                 this.buildRowContent(index, category)
@@ -116,7 +116,7 @@ export struct QuizScopeCategoryView {
 
 
   @Builder
-  buildRowContent(index: number, category: Category) {
+  buildRowContent(index: number, category: Part) {
     Stack(){
 
       Image(TEUtility.getCategoryScopeButtonIcon(index))
@@ -137,7 +137,7 @@ export struct QuizScopeCategoryView {
 
         Row(){
 
-          Text(category.categoryName)
+          Text(category.partName)
             .fontSize(16)
             .fontColor($r('app.color.colorPrimary'))
 
@@ -193,7 +193,7 @@ export struct QuizScopeCategoryView {
     }
   }
 
-  getSelectedCategories(): Category[] {
+  getSelectedCategories(): Part[] {
     return this.selectedItemIndex.map((item) => {
       return this.categories[item.row]
     });

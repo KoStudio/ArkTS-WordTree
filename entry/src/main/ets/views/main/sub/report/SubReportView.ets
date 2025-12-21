@@ -234,7 +234,7 @@ export struct SubReportView {
       const category = categories[i];
       const allCount = category.aliveWords.length;
       const curCount = category.correctedWords.length;
-      this.chartData.push(new ChartPart(category.categoryName, allCount, curCount))
+      this.chartData.push(new ChartPart(category.partName, allCount, curCount))
     }
 
   }

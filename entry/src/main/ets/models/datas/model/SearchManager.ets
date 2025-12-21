@@ -6,7 +6,7 @@ import { BookManager } from "../book/BookManager";
 import { WordUser } from "../myData/WordUser";
 import { WordUserDbAccess } from "../myData/WordUserDbAccess";
 import { WordDbAccess } from "../word/WordDbAccess";
-import { Category, Unit } from "./Category_Unit";
+import { Part, Unit } from "./Part_Unit";
 import { Mistake, MistakeHelper } from "./Mistake";
 
 // MARK: - 常量定义（类似Swift的static let或Kotlin的const val）
@@ -55,7 +55,7 @@ export class SearchManager {
   }
 
   // MARK: - 私有属性
-  private categories: Category[] = [];
+  private categories: Part[] = [];
   private units: Unit[] = [];
   private allWords: WordUser[] = [];
 
@@ -168,7 +168,7 @@ export class SearchManager {
     let currentUnitId     : number   | null = -1;
     let currentCategoryId : number   | null = -1;
     let currentUnit       : Unit     | null = null;
-    let currentCategory   : Category | null = null;
+    let currentCategory   : Part | null = null;
 
     // 使用函数式编程处理数据构建
     this.allWords.forEach(word => {
@@ -217,10 +217,10 @@ export class SearchManager {
   /**
    * 从单词创建分类对象
    */
-  private createCategoryFromWord(word: WordUser): Category {
-    const category        = new Category();
-    category.categoryId   = word.partId || 0;
-    category.categoryName = word.partName  || '';
+  private createCategoryFromWord(word: WordUser): Part {
+    const category        = new Part();
+    category.partId   = word.partId || 0;
+    category.partName = word.partName  || '';
     category.units = [];
     return category;
   }
@@ -237,7 +237,7 @@ export class SearchManager {
   /**
    * 获取所有分类
    */
-  getAllCategories(): Category[] {
+  getAllCategories(): Part[] {
     return [...this.categories];
   }
 
@@ -265,7 +265,7 @@ export class SearchManager {
   /**
    * 获取活跃分类（包含活跃单元的分类）
    */
-  getAliveCategories(): Category[] {
+  getAliveCategories(): Part[] {
     return this.categories.filter(category => category.aliveUnits.length > 0);
   }
 
@@ -286,8 +286,8 @@ export class SearchManager {
   /**
    * 根据分类ID获取分类
    */
-  getCategoryById(categoryId: number): Category | undefined {
-    return this.categories.find(category => category.categoryId === categoryId);
+  getCategoryById(categoryId: number): Part | undefined {
+    return this.categories.find(category => category.partId === categoryId);
   }
 
   /**
@@ -382,13 +382,13 @@ export class SearchManager {
     if (categoryId === SearchConstants.CATEGORY_ID_ALL) {
       this.categories.forEach(category => {
         if (category.aliveUnits.length > 0) {
-          sectionedDatas.addSectionWithDatas(category.categoryName, category.aliveUnits);
+          sectionedDatas.addSectionWithDatas(category.partName, category.aliveUnits);
         }
       });
     } else {
       const category = this.getCategoryById(categoryId);
       if (category && category.aliveUnits.length > 0) {
-        sectionedDatas.addSectionWithDatas(category.categoryName, category.aliveUnits);
+        sectionedDatas.addSectionWithDatas(category.partName, category.aliveUnits);
       }
     }
 

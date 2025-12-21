@@ -1,6 +1,6 @@
 import { DebugLog } from "../../../app/debug/DebugLog";
 import { WordUser } from "../myData/WordUser";
-import { Category, Unit } from "./Category_Unit";
+import { Part, Unit } from "./Part_Unit";
 import { Mistake } from "./Mistake";
 import { SearchConstants, SearchManager } from "./SearchManager";
 
@@ -100,7 +100,7 @@ export class QuizManager {
   // 测验数据源
   public unit: Unit | null              = null;                 // 当前单元（用于单元测验）
   public units: Unit[]                  = [];                   // 单元列表（用于全部测验）
-  public categories: Category[]         = [];                   // 分类列表（用于分类测验）
+  public categories: Part[]         = [];                   // 分类列表（用于分类测验）
   public favorites: number[]            = [];                   // 收藏等级列表（用于收藏测验）
   public mistake: Mistake               = Mistake.mistake_All;  // 错误次数（用于错题测验）
   public wrangDate: Date | null         = null;                 // 错误日期（用于复习测验）
@@ -307,7 +307,7 @@ export class QuizManager {
       case QuizType.Category:
         for (const category of this.categories) {
           // 对应 ObjC: wordsWithCategory:
-          const words = SearchManager.shared.getWordsByCategoryId(category.categoryId);
+          const words = SearchManager.shared.getWordsByCategoryId(category.partId);
           if (words && words.length > 0) {
             this.scopeWords.push(...words);
           }

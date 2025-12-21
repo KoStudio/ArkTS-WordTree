@@ -43,9 +43,9 @@ export class Unit {
 }
 
 // MARK: - 分类数据模型
-export class Category {
-  categoryId  : number = 0;
-  categoryName: string = '';
+export class Part {
+  partId  : number = 0;
+  partName: string = '';
   units       : Unit[] = [];
 
   // 计算属性：获取活跃单元（包含未删除单词的单元）
