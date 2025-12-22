@@ -327,10 +327,10 @@
     {"name": "cat_tab_title_still"                          , "value": "未测试"},
 
     {"name": "search_btn_cancel"                            , "value": "取消"   },
-    {"name": "str_unit_no"                                  , "value": "Lesson%s"},
+    {"name": "str_unit_no"                                  , "value": "Unit%s"},
 
-    { "name": "wordcard_result_right"                       , "value": "正确" },
-    { "name": "wordcard_result_wrong"                       , "value": "不正确" },
+    { "name": "wordcard_result_right"                       , "value": "正确:" },
+    { "name": "wordcard_result_wrong"                       , "value": "不正确:" },
     { "name": "wordcard_result_times"                       , "value": "次" },
     { "name": "wordcard_txt_example"                        , "value": "例句" },
     { "name": "wordcard_txt_show_translation"               , "value": "点击显示中文翻译" },

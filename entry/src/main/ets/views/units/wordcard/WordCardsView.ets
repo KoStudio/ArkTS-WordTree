@@ -133,7 +133,7 @@ export struct WordCardsView {
       Stack(){
 
         //背景
-        BgCardImage()
+        // BgCardImage()
 
         Column(){
 
@@ -147,7 +147,7 @@ export struct WordCardsView {
       .width('100%')
       .height('100%')
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
-      //.backgroundColor($r('app.color.color_background'))
+      .backgroundColor($r('app.color.color_background'))
     }
     .hideTitleBar(true) //这里使用buildNavBar
     .title(buildNavTitle(this.getNavTitle())) // 设置导航栏标题
@@ -168,32 +168,44 @@ export struct WordCardsView {
   // === 导航菜单 ===
   buildMenuItems(): CustomNavigationMenuItem[] {
     return [
+      {value: "trash", icon: $r('app.media.trash'), isSvg: true, action: () => {
+
+      } },
+
+      {value: "search", icon: $r('app.media.search'), isSvg: true, action: () => {
+
+      } },
+
       {value: "more", icon: $r('app.media.moreh'), isSvg: true, action: () => {
         this.actionPopmenu()
-      }
-      }
+      } },
     ]
   }
 
 
   @Builder buildHeadView(){
     Stack(){
-      Image($r('app.media.card_subnav_bg'))
-        .width('100%')
-        .height(44)
-        .objectFit(ImageFit.Fill)
+      // Image($r('app.media.card_subnav_bg'))
+      //   .width('100%')
+      //   .height(44)
+      //   .objectFit(ImageFit.Fill)
 
       Row(){
         //left
-        Row({space: 10}){
+        Row({space: 20}){
 
           //正确
           Row(){
+            Image($r('app.media.ic_zhengque'))
+              .width(18)
+              .height(18)
+              .objectFit(ImageFit.Fill)
+
             Text($r('app.string.wordcard_result_right'))
               .fontSize(14)
 
             Text(`${this.word.correctedTimes}`)
-              .fontColor($r('app.color.color_red'))
+              .fontColor($r('app.color.color_green'))
 
             Text($r('app.string.wordcard_result_times'))
               .fontSize(14)
@@ -201,11 +213,16 @@ export struct WordCardsView {
 
           Row(){
             ///不正确
+            Image($r('app.media.ic_buzhengqu'))
+              .width(18)
+              .height(18)
+              .objectFit(ImageFit.Fill)
+
             Text($r('app.string.wordcard_result_wrong'))
               .fontSize(14)
 
             Text(`${this.word.wrangTimes}`)
-              .fontColor($r('app.color.color_blue'))
+              .fontColor($r('app.color.color_red'))
               .fontSize(14)
 
             Text($r('app.string.wordcard_result_times'))
@@ -223,7 +240,7 @@ export struct WordCardsView {
         }
 
       }
-      .padding(0)
+      .padding(5)
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
     }

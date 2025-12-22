@@ -5,7 +5,7 @@ export class Unit {
   unitId     : number     = 0;
   unitName   : string     = '';
   unitNo     : number     = 0;
-  categoryId : number     = 0;
+  partId     : number     = 0;
   words      : WordUser[] = [];
 
   // 计算属性：获取活跃单词（未删除的单词）

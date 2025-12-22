@@ -197,7 +197,7 @@ export struct SubListView {
   loadSubData(index: number){
     switch (index){
       case 0: this.wordsAbc         = SearchManager.shared.queryForCharGroup(this.filtedWords, false); this.indexersAbc      = this.wordsAbc.allSections().map(v => v.charAt(0).toLowerCase());  break;
-      case 1: this.wordsCategory    = SearchManager.shared.queryForCategory(this.filtedWords);         this.indexersCategory = [];                                                               break;
+      case 1: this.wordsCategory    = SearchManager.shared.queryForPart(this.filtedWords);         this.indexersCategory = [];                                                               break;
       case 2: this.wordsFavorite    = SearchManager.shared.queryForFavorite(this.filtedWords);         this.indexersFavorite = [];                                                               break;
       case 3: this.wordsWrang       = SearchManager.shared.queryForWrangTimes(this.filtedWords);       this.indexersWrang    = [];                                                               break;
       case 4: this.wordsStill       = SearchManager.shared.queryForCharGroup(this.filtedWords, true);  this.indexersStill    = this.wordsStill.allSections().map(v => v.charAt(0).toLowerCase()); break;

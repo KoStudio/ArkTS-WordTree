@@ -4,6 +4,7 @@ import { getStringF } from "../../../common/utils/ResourceUtils"
 import { Book } from "../../../models/datas/book/Book"
 import { BookManager } from "../../../models/datas/book/BookManager"
 import { SearchManager } from "../../../models/datas/model/SearchManager"
+import { UnitsViewConfig } from "../../units/UnitsView"
 
 @ComponentV2
 export struct SubLearnView {
@@ -138,13 +139,13 @@ export struct SubLearnView {
     Column({ space: 10 }) {
 
       Row({ space: 10 }) {
-        this.MainButton($r('app.string.main_study_btn_quickremember'), $r('app.media.ic_kuaisujiyi'), '#8ACD2C')
-        this.MainButton($r('app.string.main_study_btn_study'), $r('app.media.ic_xuexi'), '#26C9FF')
+        this.MainButton($r('app.string.main_study_btn_quickremember'), $r('app.media.ic_kuaisujiyi'), '#8ACD2C', ()=>{ UnitsViewConfig.open() })
+        this.MainButton($r('app.string.main_study_btn_study'), $r('app.media.ic_xuexi'), '#26C9FF', ()=>{})
       }
 
       Row({ space: 10 }) {
-        this.MainButton($r('app.string.main_study_btn_test'), $r('app.media.ic_ceyan'), '#A15DFD')
-        this.MainButton($r('app.string.main_study_btn_challenge'), $r('app.media.ic_tiaozhan'), '#FD56A1')
+        this.MainButton($r('app.string.main_study_btn_test'), $r('app.media.ic_ceyan'), '#A15DFD', ()=>{})
+        this.MainButton($r('app.string.main_study_btn_challenge'), $r('app.media.ic_tiaozhan'), '#FD56A1', ()=>{})
       }
     }
   }
@@ -153,7 +154,7 @@ export struct SubLearnView {
 
 
   @Builder
-  MainButton(title: ResourceStr, icon: Resource, bgColor: ResourceColor) {
+  MainButton(title: ResourceStr, icon: Resource, bgColor: ResourceColor, onClick:()=>void) {
     Button() {
       Column({ space: 6 }) {
         Image(icon)
@@ -171,6 +172,7 @@ export struct SubLearnView {
     .type(ButtonType.ROUNDED_RECTANGLE)
     .backgroundColor(bgColor)
     .borderRadius(4)
+    .onClick(onClick)
   }
 
   @Builder

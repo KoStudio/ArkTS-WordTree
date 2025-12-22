@@ -40,7 +40,7 @@ export struct QuizScopeUnitView {
 
   // 更新全局数据
   private async loadData() {
-    this.sectionUnits = SearchManager.shared.getUnitsSectionedByCategory(SearchConstants.CATEGORY_ID_ALL)
+    this.sectionUnits = SearchManager.shared.getUnitsSectionedByPart(SearchConstants.PART_ID_ALL)
   }
 
   build() {

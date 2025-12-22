@@ -17,6 +17,7 @@ import { NavBarView } from '../app/views/NavBarView';
 import { SetViewConfig } from '../views/main/under/SetView';
 import { MemberView } from '../views/setting/member/MemberView';
 import { BookListViewConfig } from '../views/books/BookListView';
+import { StatusBarUtil } from '../common/utils/StatusBarUtils';
 
 
 @Entry
@@ -33,6 +34,9 @@ struct Index {
   @Local refreshSearch           : boolean       = false;
 
   async aboutToAppear(): Promise<void> {
+
+    //设置状栏颜色
+    StatusBarUtil.setStatusBarContentColor('#ffffff')
 
     //隐私弹窗 是否已经同意
     this.isPrivacyAgreed = PrivacyManager.shared.checkAgreement()

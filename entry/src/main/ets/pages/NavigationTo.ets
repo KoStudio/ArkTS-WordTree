@@ -28,7 +28,7 @@ import { BooksOnlineView, BooksOnlineViewConfig } from '../views/books/BooksOnli
 export function navigationTo<T>(name: string, param: T){
 
   if (name === LinkViewConfig.NavKey)                     { LinkView({title: (param as LinkViewConfig.Param).title, url: (param as LinkViewConfig.Param).url})
-  }else if (name === UnitsViewConfig.NavKey)              { UnitsView({categoryId: (param as UnitsViewConfig.Param).categoryId})
+  }else if (name === UnitsViewConfig.NavKey)              { UnitsView()
   }else if (name === UnitWordsViewConfig.NavKey)          { UnitWordsView({unitId: (param as UnitWordsViewConfig.Param).unitId})
   }else if (name === WordCardsViewConfig.NavKey)          { WordCardsView({words: (param as WordCardsViewConfig.Param).words, initIndex: (param as WordCardsViewConfig.Param).initIndex})
   }else if (name === ComposeMemoViewConfig.NavKey)        { ComposeMemoView({word: (param as ComposeMemoViewConfig.Param).word})

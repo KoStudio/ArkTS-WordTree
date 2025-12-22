@@ -42,7 +42,7 @@ export struct QuizScopeCategoryView {
 
   // 更新全局数据
   private async loadData() {
-    this.categories = SearchManager.shared.getAliveCategories()
+    this.categories = SearchManager.shared.getAliveParts()
   }
 
   build() {

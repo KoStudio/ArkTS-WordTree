@@ -307,7 +307,7 @@ export class QuizManager {
       case QuizType.Category:
         for (const category of this.categories) {
           // 对应 ObjC: wordsWithCategory:
-          const words = SearchManager.shared.getWordsByCategoryId(category.partId);
+          const words = SearchManager.shared.getWordsByPartId(category.partId);
           if (words && words.length > 0) {
             this.scopeWords.push(...words);
           }

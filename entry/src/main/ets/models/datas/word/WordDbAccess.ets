@@ -157,16 +157,16 @@ export class WordDbAccess implements DBPrepareProtocol {
     try {
       word.idx      = rs.getLong(rs.getColumnIndex(WordTable.Col.IDX));
       word.partId   = rs.getLong(rs.getColumnIndex(WordTable.Col.PARTID));
-      word.partName = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.PARTNAME);
+      word.partName = ResultSetTool.decodeString(rs, WordTable.Col.PARTNAME);
       word.unitId   = rs.getLong(rs.getColumnIndex(WordTable.Col.UNITID));
-      word.unitName = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.UNITNAME);
+      word.unitName = ResultSetTool.decodeString(rs, WordTable.Col.UNITNAME);
       word.unitNo   = rs.getLong(rs.getColumnIndex(WordTable.Col.UNITNO));
-      word.titleEn  = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.TITLEEN);
-      word.pronEn   = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.PRONEN);
-      word.pronUs   = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.PRONUS);
-      word.titleCn1 = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.TITLECN1);
-      word.exampleEn1 = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.EXAMPLEEN1);
-      word.exampleCn1 = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.EXAMPLECN1);
+      word.titleEn  = ResultSetTool.decodeString(rs, WordTable.Col.TITLEEN);
+      word.pronEn   = ResultSetTool.decodeString(rs, WordTable.Col.PRONEN);
+      word.pronUs   = ResultSetTool.decodeString(rs, WordTable.Col.PRONUS);
+      word.titleCn1 = ResultSetTool.decodeString(rs, WordTable.Col.TITLECN1);
+      word.exampleEn1 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLEEN1);
+      word.exampleCn1 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLECN1);
     } catch (error) {
       DebugLog.e(`WordDbAccess: 创建Word对象失败 - ${error}`);
     }
@@ -180,29 +180,29 @@ export class WordDbAccess implements DBPrepareProtocol {
     try {
       wordDetail.idx        = rs.getLong(rs.getColumnIndex(WordTable.Col.IDX));
       wordDetail.partId     = rs.getLong(rs.getColumnIndex(WordTable.Col.PARTID));
-      wordDetail.partName   = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.PARTNAME);
+      wordDetail.partName   = ResultSetTool.decodeString(rs, WordTable.Col.PARTNAME);
       wordDetail.unitId     = rs.getLong(rs.getColumnIndex(WordTable.Col.UNITID));
-      wordDetail.unitName   = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.UNITNAME);
+      wordDetail.unitName   = ResultSetTool.decodeString(rs, WordTable.Col.UNITNAME);
       wordDetail.unitNo     = rs.getLong(rs.getColumnIndex(WordTable.Col.UNITNO));
-      wordDetail.titleEn    = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.TITLEEN);
-      wordDetail.pronEn     = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.PRONEN);
-      wordDetail.pronUs     = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.PRONUS);
-      wordDetail.titleCn1   = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.TITLECN1);
-      wordDetail.titleCn2   = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.TITLECN2);
-      wordDetail.titleCn3   = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.TITLECN3);
-      wordDetail.wordImage  = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.WORDIMAGE);
-      wordDetail.wordChange = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.WORDCHANGE);
-      wordDetail.synWords   = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.SYNWORDS);
-      wordDetail.asynWords  = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.ASYNWORDS);
-      wordDetail.exampleEn1 = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.EXAMPLEEN1);
-      wordDetail.exampleCn1 = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.EXAMPLECN1);
-      wordDetail.exampleEn2 = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.EXAMPLEEN2);
-      wordDetail.exampleCn2 = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.EXAMPLECN2);
-      wordDetail.exampleEn3 = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.EXAMPLEEN3);
-      wordDetail.exampleCn3 = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.EXAMPLECN3);
-      wordDetail.usedPhrase = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.USEDPHRASE);
-      wordDetail.en2En      = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.EN2EN);
-      wordDetail.discriminate = ResultSetTool.decodeStringOnlyBase64(rs, WordTable.Col.DISCRIMINATE);
+      wordDetail.titleEn    = ResultSetTool.decodeString(rs, WordTable.Col.TITLEEN);
+      wordDetail.pronEn     = ResultSetTool.decodeString(rs, WordTable.Col.PRONEN);
+      wordDetail.pronUs     = ResultSetTool.decodeString(rs, WordTable.Col.PRONUS);
+      wordDetail.titleCn1   = ResultSetTool.decodeString(rs, WordTable.Col.TITLECN1);
+      wordDetail.titleCn2   = ResultSetTool.decodeString(rs, WordTable.Col.TITLECN2);
+      wordDetail.titleCn3   = ResultSetTool.decodeString(rs, WordTable.Col.TITLECN3);
+      wordDetail.wordImage  = ResultSetTool.decodeString(rs, WordTable.Col.WORDIMAGE);
+      wordDetail.wordChange = ResultSetTool.decodeString(rs, WordTable.Col.WORDCHANGE);
+      wordDetail.synWords   = ResultSetTool.decodeString(rs, WordTable.Col.SYNWORDS);
+      wordDetail.asynWords  = ResultSetTool.decodeString(rs, WordTable.Col.ASYNWORDS);
+      wordDetail.exampleEn1 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLEEN1);
+      wordDetail.exampleCn1 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLECN1);
+      wordDetail.exampleEn2 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLEEN2);
+      wordDetail.exampleCn2 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLECN2);
+      wordDetail.exampleEn3 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLEEN3);
+      wordDetail.exampleCn3 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLECN3);
+      wordDetail.usedPhrase = ResultSetTool.decodeString(rs, WordTable.Col.USEDPHRASE);
+      wordDetail.en2En      = ResultSetTool.decodeString(rs, WordTable.Col.EN2EN);
+      wordDetail.discriminate = ResultSetTool.decodeString(rs, WordTable.Col.DISCRIMINATE);
     } catch (error) {
       DebugLog.e(`WordDbAccess: 创建WordDetail对象失败 - ${error}`);
     }

@@ -1,4 +1,5 @@
 import { TintImage } from "../../../app/views/TintImage"
+import { CBookManager } from "../../../common/components/Sounds/Cloud/Download/CBook/CBookManager"
 import { getStringF } from "../../../common/utils/ResourceUtils"
 import { Toast } from "../../../common/utils/Toast"
 import { Book } from "../../../models/datas/book/Book"
@@ -48,12 +49,12 @@ export struct BooksLocalView {
                 }
               })
           )
-          .swipeAction({end: {
+          .swipeAction({end: book.isCurrentBook ? null : {
             builder: () => {
-                if (!book.isCurrentBook){
-                  this.buildSwipeButtons(rowIndex, book)
-                }
-              },
+
+              this.buildSwipeButtons(rowIndex, book)
+
+            },
             onAction: () => { this.confirmRemove(rowIndex, book)}
           }})
 
@@ -168,6 +169,7 @@ export struct BooksLocalView {
       primaryButton: {value: $r('app.string.confirm_btn_yes'), action: async () => {
         //删除
         BookManager.shared.removeBook(book)
+        CBookManager.shared.removeBookDb(book.textDb || '')
         this.loadData()
 
       }}//确认

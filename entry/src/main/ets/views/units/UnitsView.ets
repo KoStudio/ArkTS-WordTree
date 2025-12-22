@@ -20,13 +20,10 @@ export namespace UnitsViewConfig {
   export const NavKey = "UnitsView_show"
 
   ///打开方式
-  export function open(param: Param){
-    NavTo(UnitsViewConfig.NavKey, param, true)
+  export function open(){
+    NavTo(UnitsViewConfig.NavKey, undefined, true)
   }
 
-  export interface Param {
-    categoryId: number
-  }
 
 }
 
@@ -34,7 +31,7 @@ export namespace UnitsViewConfig {
 export struct UnitsView {
 
 
-  @Param categoryId: number = SearchConstants.CATEGORY_ID_ALL
+  @Param categoryId: number = SearchConstants.PART_ID_ALL
 //  @Local private units: Unit[] = []
 
   @Local sectionUnits: SectionDatas<string, Unit> = new SectionDatas()
@@ -58,8 +55,8 @@ export struct UnitsView {
 
   // 更新全局数据
   private async loadData() {
-    this.sectionUnits = SearchManager.shared.getUnitsSectionedByCategory(this.categoryId)
-    this.category  = SearchManager.shared.getCategoryById(this.categoryId) || null
+    this.sectionUnits = SearchManager.shared.getUnitsSectionedByPart(this.categoryId)
+    this.category  = SearchManager.shared.getPartById(this.categoryId) || null
   }
 
   build() {
@@ -134,15 +131,17 @@ export struct UnitsView {
   buildGroupHeader(section: string, index: number) {
     Row({space: 20}){
       //icon
-      TintImage({src: this.getSectionIcon(index), colorStr: '#ffffff', iconSize: 22})
+      // TintImage({src: this.getSectionIcon(index), colorStr: '#ffffff', iconSize: 22})
 
       /// 共0个
       Text(section)
-        .fontColor($r('app.color.color_white'))
-        .fontSize(12)
+        .fontColor($r('app.color.colorPrimary'))
+        .fontSize(13)
+        .fontWeight(FontWeight.Regular)
     }
-    .backgroundColor(this.getSectionBgColor(section))
-    .padding({left: 20,top: 2, bottom: 2 })
+    // .backgroundColor(this.getSectionBgColor(section))
+    .backgroundColor($r('app.color.color_obscure'))
+    .padding({left: 10,top: 2, bottom: 2 })
     .width('100%')
     .height(26)
     .justifyContent(FlexAlign.Start)
@@ -159,7 +158,7 @@ export struct UnitsView {
         Row(){
           Text(getStringF($r('app.string.str_unit_no'), unit.unitId)) //`Lesson${unit.unitNo}`
             .fontSize(16)
-            .fontColor($r('app.color.colorAccent2'))
+            .fontColor($r('app.color.colorPrimaryDark'))
 
           if (unit.unitName){
             Text(unit.unitName)
@@ -174,9 +173,9 @@ export struct UnitsView {
 
         //进度条
         Progress({ value: unit.learnedWords.length, total: unit.aliveWords.length, type: ProgressType.Linear })
-          .foregroundColor($r('app.color.colorAccent2'))
           .backgroundColor($r('app.color.color_obscure'))
-          .height(2)
+          .color($r('app.color.colorAccent2'))
+          .height(5)
           .width('100%')
 
 
@@ -189,7 +188,7 @@ export struct UnitsView {
         .width('100%')
 
       }
-      .padding(10)
+      .padding(6)
       .layoutWeight(1)
 
       //right
@@ -200,7 +199,7 @@ export struct UnitsView {
         }})
       }
     }
-    .padding(16)
+    .padding(10)
     .border({width: {bottom: 1}, color: $r('app.color.color_obscure')})
     .backgroundColor($r('app.color.color_background'))
   }

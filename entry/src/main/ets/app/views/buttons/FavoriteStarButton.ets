@@ -5,8 +5,8 @@ import { WordUser } from "../../../models/datas/myData/WordUser";
 export struct FavoriteStarButton {
 
   @Param @Require word: WordUser;
-  @Param btnWidth: number = 120;
-  @Param btnHeight: number = 28;
+  @Param btnWidth: number = 141;
+  @Param btnHeight: number = 18;
 
   /** 事件：当用户在抬起时确认当前等级会触发该回调 */
   @Event onFavoriteStarButtonClick?: (val: number) => void;

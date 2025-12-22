@@ -31,6 +31,7 @@ export default class EntryAbility extends UIAbility {
     ///初始化SE
     SEService.shared.initialize(this.context)
 
+    ///这里没效果，改成在UI画面index.ets中设置
     ///设置状态栏背景色
     // StatusBarUtil.setStatusBarBackgroundColor(getColor($r('app.color.color_nav_bg')))
     // StatusBarUtil.setStatusBarContentColor(getColor($r('app.color.color_nav_text')))

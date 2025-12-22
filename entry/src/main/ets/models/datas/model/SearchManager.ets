@@ -25,10 +25,10 @@ export class SearchConstants {
   static readonly FAVORITE_LEVEL_5: number     = 5;
 
   // 分类ID常量
-  static readonly CATEGORY_ID_LEVEL_1: number  = 1;
-  static readonly CATEGORY_ID_LEVEL_2: number  = 2;
-  static readonly CATEGORY_ID_LEVEL_3: number  = 3;
-  static readonly CATEGORY_ID_ALL    : number  = -1;
+  // static readonly CATEGORY_ID_LEVEL_1: number  = 1;
+  // static readonly CATEGORY_ID_LEVEL_2: number  = 2;
+  // static readonly CATEGORY_ID_LEVEL_3: number  = 3;
+  static readonly PART_ID_ALL    : number  = -1;
 
   // 错误次数分段常量
   // static readonly WRANG_TIMES_0: number        = 0;
@@ -55,7 +55,7 @@ export class SearchManager {
   }
 
   // MARK: - 私有属性
-  private categories: Part[] = [];
+  private parts: Part[] = [];
   private units: Unit[] = [];
   private allWords: WordUser[] = [];
 
@@ -155,14 +155,14 @@ export class SearchManager {
     this.allWords = merged;
 
     // 构建分类和单元的数据结构
-    this.buildCategoriesAndUnits();
+    this.buildPartsAndUnits();
   }
 
   /**
    * 构建分类和单元的数据结构
    */
-  private buildCategoriesAndUnits(): void {
-    this.categories = [];
+  private buildPartsAndUnits(): void {
+    this.parts = [];
     this.units      = [];
 
     let currentUnitId     : number   | null = -1;
@@ -182,8 +182,8 @@ export class SearchManager {
       // 分类变化时创建新分类
       if (currentCategoryId !== word.partId) {
         currentCategoryId = word.partId;
-        currentCategory   = this.createCategoryFromWord(word);
-        this.categories.push(currentCategory);
+        currentCategory   = this.createPartFromWord(word);
+        this.parts.push(currentCategory);
       }
 
       // 将单词添加到当前单元
@@ -205,24 +205,24 @@ export class SearchManager {
    * 从单词创建单元对象
    */
   private createUnitFromWord(word: WordUser): Unit {
-    const unit = new Unit();
+    const unit      = new Unit();
     unit.unitId     = word.unitId || 0;
     unit.unitNo     = word.unitNo || 0;
     unit.unitName   = word.unitName || '';
-    unit.categoryId = word.partId || 0;
-    unit.words = [];
+    unit.partId     = word.partId || 0;
+    unit.words      = [];
     return unit;
   }
 
   /**
    * 从单词创建分类对象
    */
-  private createCategoryFromWord(word: WordUser): Part {
-    const category        = new Part();
-    category.partId   = word.partId || 0;
-    category.partName = word.partName  || '';
-    category.units = [];
-    return category;
+  private createPartFromWord(word: WordUser): Part {
+    const part        = new Part();
+    part.partId       = word.partId || 0;
+    part.partName     = word.partName  || '';
+    part.units        = [];
+    return part;
   }
 
 
@@ -237,8 +237,8 @@ export class SearchManager {
   /**
    * 获取所有分类
    */
-  getAllCategories(): Part[] {
-    return [...this.categories];
+  getAllPart(): Part[] {
+    return [...this.parts];
   }
 
   /**
@@ -265,8 +265,8 @@ export class SearchManager {
   /**
    * 获取活跃分类（包含活跃单元的分类）
    */
-  getAliveCategories(): Part[] {
-    return this.categories.filter(category => category.aliveUnits.length > 0);
+  getAliveParts(): Part[] {
+    return this.parts.filter(part => part.aliveUnits.length > 0);
   }
 
   /**
@@ -286,20 +286,20 @@ export class SearchManager {
   /**
    * 根据分类ID获取分类
    */
-  getCategoryById(categoryId: number): Part | undefined {
-    return this.categories.find(category => category.partId === categoryId);
+  getPartById(partId: number): Part | undefined {
+    return this.parts.find(part => part.partId === partId);
   }
 
   /**
    * 根据分类ID获取单词
    */
-  getWordsByCategoryId(categoryId: number): WordUser[] {
-    if (categoryId === SearchConstants.CATEGORY_ID_ALL) {
+  getWordsByPartId(partId: number): WordUser[] {
+    if (partId === SearchConstants.PART_ID_ALL) {
       return this.getAliveWords();
     }
 
-    const category = this.getCategoryById(categoryId);
-    return category ? category.aliveWords : [];
+    const part = this.getPartById(partId);
+    return part ? part.aliveWords : [];
   }
 
   getWordsWithIds(ids: number[]): WordUser[] {
@@ -376,19 +376,19 @@ export class SearchManager {
   /**
    * 获取按分类分段的单元数据
    */
-  getUnitsSectionedByCategory(categoryId: number): SectionDatas<string, Unit> {
+  getUnitsSectionedByPart(partId: number): SectionDatas<string, Unit> {
     const sectionedDatas = new SectionDatas<string, Unit>();
 
-    if (categoryId === SearchConstants.CATEGORY_ID_ALL) {
-      this.categories.forEach(category => {
-        if (category.aliveUnits.length > 0) {
-          sectionedDatas.addSectionWithDatas(category.partName, category.aliveUnits);
+    if (partId === SearchConstants.PART_ID_ALL) {
+      this.parts.forEach(part => {
+        if (part.aliveUnits.length > 0) {
+          sectionedDatas.addSectionWithDatas(part.partName, part.aliveUnits);
         }
       });
     } else {
-      const category = this.getCategoryById(categoryId);
-      if (category && category.aliveUnits.length > 0) {
-        sectionedDatas.addSectionWithDatas(category.partName, category.aliveUnits);
+      const part = this.getPartById(partId);
+      if (part && part.aliveUnits.length > 0) {
+        sectionedDatas.addSectionWithDatas(part.partName, part.aliveUnits);
       }
     }
 
@@ -569,14 +569,14 @@ export class SearchManager {
   }
 
   /**
-   * 按 categoryId 进行分段（CategoryName → Words）
+   * 按 partId 进行分段（CategoryName → Words）
    * searchText 可选：模糊查询（仅匹配 wordEn 与 wordJp）
    */
-  queryForCategory(filtedWords: WordUser[]): SectionDatas<string, WordUser> {
+  queryForPart(filtedWords: WordUser[]): SectionDatas<string, WordUser> {
     const sectionWords = new SectionDatas<string, WordUser>();
 
 
-    // 排序：先按 categoryId，然后按 wordEn
+    // 排序：先按 partId，然后按 wordEn
     filtedWords.sort((a, b) => {
       const aCat : number = a.partId ?? 0;
       const bCat : number = b.partId ?? 0;

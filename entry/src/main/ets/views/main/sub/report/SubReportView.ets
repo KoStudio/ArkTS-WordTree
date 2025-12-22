@@ -227,7 +227,7 @@ export struct SubReportView {
     }
 
     ///分类 ChartView
-    let categories = SearchManager.shared.getAllCategories()
+    let categories = SearchManager.shared.getAllPart()
     this.chartData = []
     this.chartData.push(new ChartPart(getString($r('app.string.report_txt_chart_all')), this.cntAll, this.cntCorrected))
     for (let i = 0; i < categories.length; i++) {
