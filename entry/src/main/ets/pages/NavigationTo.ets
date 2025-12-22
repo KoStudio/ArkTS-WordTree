@@ -4,10 +4,10 @@ import { ReclaimView, ReclaimViewConfig } from '../views/setting/ReclaimView';
 import { AdviceView, AdviceViewConfig } from '../views/setting/AdviceView';
 import { LogOffView, LogOffViewConfig } from '../views/login/LogOffView';
 import { LinkView, LinkViewConfig } from '../app/views/LinkView';
-import { UnitsView, UnitsViewConfig } from '../views/units/UnitsView';
-import { UnitWordsView, UnitWordsViewConfig } from '../views/units/UnitWordsView';
-import { WordCardsView, WordCardsViewConfig } from '../views/units/wordcard/WordCardsView';
-import { ComposeMemoView, ComposeMemoViewConfig } from '../views/units/wordcard/memo/ComposeMemoView';
+import { QuickLearnView, QuickLearnViewConfig } from '../views/quicklearn/QuickLearnView';
+import { QuickLearnWordsView, QuickLearnWordsViewConfig } from '../views/quicklearn/QuickLearnWordsView';
+import { WordCardsView, WordCardsViewConfig } from '../views/card/wordcard/WordCardsView';
+import { ComposeMemoView, ComposeMemoViewConfig } from '../views/card/wordcard/memo/ComposeMemoView';
 import { SetView, SetViewConfig } from '../views/main/under/SetView';
 import { DeletedWordsView, DeletedWordsViewConfig } from '../views/setting/DeletedWordsView';
 import { QuizScopeUnitView, QuizScopeUnitViewConfig } from '../views/quiz/scope/QuizScopeUnitView';
@@ -28,8 +28,8 @@ import { BooksOnlineView, BooksOnlineViewConfig } from '../views/books/BooksOnli
 export function navigationTo<T>(name: string, param: T){
 
   if (name === LinkViewConfig.NavKey)                     { LinkView({title: (param as LinkViewConfig.Param).title, url: (param as LinkViewConfig.Param).url})
-  }else if (name === UnitsViewConfig.NavKey)              { UnitsView()
-  }else if (name === UnitWordsViewConfig.NavKey)          { UnitWordsView({unitId: (param as UnitWordsViewConfig.Param).unitId})
+  }else if (name === QuickLearnViewConfig.NavKey)         { QuickLearnView()
+  }else if (name === QuickLearnWordsViewConfig.NavKey)    { QuickLearnWordsView({unitId: (param as QuickLearnWordsViewConfig.Param).unitId})
   }else if (name === WordCardsViewConfig.NavKey)          { WordCardsView({words: (param as WordCardsViewConfig.Param).words, initIndex: (param as WordCardsViewConfig.Param).initIndex})
   }else if (name === ComposeMemoViewConfig.NavKey)        { ComposeMemoView({word: (param as ComposeMemoViewConfig.Param).word})
   }else if (name === BookListViewConfig.NavKey)           { BookListView()

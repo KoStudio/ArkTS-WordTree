@@ -8,30 +8,30 @@ import json from "@ohos.util.json";
 import { IconTintButton } from "../../app/views/buttons/IconTintButton";
 import { getString, getStringF } from "../../common/utils/ResourceUtils";
 import { TintImage } from "../../app/views/TintImage";
-import { UnitWordsViewConfig } from "./UnitWordsView";
-import { WordCardsViewConfig } from "./wordcard/WordCardsView";
+import { QuickLearnWordsViewConfig } from "./QuickLearnWordsView";
+import { WordCardsViewConfig } from "../card/wordcard/WordCardsView";
 import { TEUtility } from "../../common/utils/TEUtility";
 import { BgImage } from "../../app/views/BgImage";
 
 
-export namespace UnitsViewConfig {
+export namespace QuickLearnViewConfig {
 
   ///导航key
-  export const NavKey = "UnitsView_show"
+  export const NavKey = "QuickLearnView_show"
 
   ///打开方式
   export function open(){
-    NavTo(UnitsViewConfig.NavKey, undefined, true)
+    NavTo(QuickLearnViewConfig.NavKey, undefined, true)
   }
 
 
 }
 
 @ComponentV2
-export struct UnitsView {
+export struct QuickLearnView {
 
 
-  @Param categoryId: number = SearchConstants.PART_ID_ALL
+  // @Param categoryId: number = SearchConstants.PART_ID_ALL
 //  @Local private units: Unit[] = []
 
   @Local sectionUnits: SectionDatas<string, Unit> = new SectionDatas()
@@ -55,8 +55,8 @@ export struct UnitsView {
 
   // 更新全局数据
   private async loadData() {
-    this.sectionUnits = SearchManager.shared.getUnitsSectionedByPart(this.categoryId)
-    this.category  = SearchManager.shared.getPartById(this.categoryId) || null
+    this.sectionUnits = SearchManager.shared.getUnitsSectionedByPart(SearchConstants.PART_ID_ALL)
+    // this.category  = SearchManager.shared.getPartById(this.categoryId) || null
   }
 
   build() {
@@ -195,7 +195,7 @@ export struct UnitsView {
       Column(){
         //list 按钮
         IconTintButton({icon: $r('app.media.learn_btn_more_1'), iconColor:'#999999', iconSize: 22, onClickCallBack:()=>{
-          UnitWordsViewConfig.open({unitId: unit.unitId})
+          QuickLearnWordsViewConfig.open({unitId: unit.unitId})
         }})
       }
     }

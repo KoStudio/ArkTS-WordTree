@@ -1,3 +1,4 @@
+import { AppUtility } from "../../../common/utils/AppUtility";
 import { StringEncoder } from "../../../common/utils/strings/StringEncrypt";
 
 export class Word {
@@ -28,5 +29,17 @@ export class Word {
 
   get wordEnSoundText(): string {
     return `${this.titleEn}_ti_u`
+  }
+
+  get titleCn1Clipped(): string {
+    return AppUtility.getClippedStringWithoutKindFrom(this.titleCn1 || '')
+  }
+
+  get titleCn1ClippedShort(): string {
+    return AppUtility.getClippedStringSeperatedFirstPartFrom(this.titleCn1 || '')
+  }
+
+  get titleCn1Kind(): string {
+    return AppUtility.getKindOfString(this.titleCn1 || '')
   }
 }

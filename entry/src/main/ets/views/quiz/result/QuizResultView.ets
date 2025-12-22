@@ -8,7 +8,7 @@ import { SearchConstants } from '../../../models/datas/model/SearchManager'
 import { WordUser } from '../../../models/datas/myData/WordUser'
 import { MemberManager } from '../../../models/managers/member/MemberManager'
 import { NavPathManager, NavPop, NavPopToIndex, NavPopTop, NavTo } from '../../../pages/NavPathManager'
-import { WordCardsViewConfig } from '../../units/wordcard/WordCardsView'
+import { WordCardsViewConfig } from '../../card/wordcard/WordCardsView'
 import { dMemberFlag } from '../../../app/constants/AppDefines';
 import { MemberView } from '../../setting/member/MemberView'
 

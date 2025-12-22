@@ -38,8 +38,8 @@
     {"name": "color_transparent"                 , "value": "#00000000"   },
 
     {"name": "color_search"                      , "value": "#EFEFF4"     },
-    {"name": "color_foot"                        , "value": "#434a54"     },
-    {"name": "color_footTint"                    , "value": "#eeeeee"     },
+    {"name": "color_foot"                        , "value": "#F3F4F9"     },
+    {"name": "color_footTint"                    , "value": "#787878"     },
     {"name": "color_card"                        , "value": "#FFFFFF"     },
     {"name": "color_detail"                      , "value": "#666666"     },
 
@@ -49,10 +49,10 @@
     {"name": "color_main_tab_bg"                 , "value": "#F3F4F9"   },
     {"name": "color_main_tab_tint"               , "value": "#9E9E9E"     },
     {"name": "color_main_tab_selected"           , "value": "#80CA56"     },
-    {"name": "color_switch_tint"                 , "value": "#2AA940"     },
+    {"name": "color_switch_tint"                 , "value": "#66CD40"     },
     {"name": "color_btn_bg"                      , "value": "#474B7E"     },
     {"name": "color_btn_bg_down"                 , "value": "#303F9F"     },
-    {"name": "color_btn_bg2"                     , "value": "#2AA940"     },
+    {"name": "color_btn_bg2"                     , "value": "#66CD40"     },
     {"name": "color_btn_bg2_down"                , "value": "#37633F"     },
 
     {"name": "color_list_section_bg_cate_1"      , "value": "#579E4E"     },
@@ -77,6 +77,15 @@
     {"name": "color_list_index"                  , "value": "#607D89"     },
     {"name": "color_list_index_bg"               , "value": "#00000000"   },
     {"name": "color_list_index_bg_track"         , "value": "#E0E0E0"     },
+
+    {"name": "color_card_bg"                     , "value": "#F1F2F8"     },
+    {"name": "color_card_bg_disable"             , "value": "#D2D2D2"     },
+    {"name": "color_card_title"                  , "value": "#474B7E"     },
+    {"name": "color_card_subtitle"               , "value": "#8399BF"     },
+    {"name": "color_card_detail"                 , "value": "#99A1AF"     },
+
+    {"name": "color_detail_footer_bg"            , "value": "#F3F4F9"     },
+    {"name": "color_detail_footer_tint"          , "value": "#787878"     },
 
     {"name": "color_quiz_scope_favorite_star"    , "value": "#FF8C00"     },
     {"name": "color_quiz_result_studyharder"     , "value": "#E60112"     },

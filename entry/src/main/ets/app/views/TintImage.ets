@@ -21,12 +21,14 @@ export struct TintImage {
         .width(this.iconSize)
         .height(this.iconSize)
         .fillColor(this.colorStr)
+        .objectFit(ImageFit.Fill)
 
     }else{
       // 使用 ArkUI 的 Image 组件
       Image(this.src)
         .width(this.iconSize)
         .height(this.iconSize)
+        .objectFit(ImageFit.Fill)
         .colorFilter(this.getColorFilterMatrix(this.parseColorString(this.colorStr)))
     }
 

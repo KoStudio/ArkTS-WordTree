@@ -169,11 +169,12 @@ export struct WordCardsView {
   buildMenuItems(): CustomNavigationMenuItem[] {
     return [
       {value: "trash", icon: $r('app.media.trash'), isSvg: true, action: () => {
-
+        this.actionTrash()
       } },
 
       {value: "search", icon: $r('app.media.search'), isSvg: true, action: () => {
 
+        this.actionSearch()
       } },
 
       {value: "more", icon: $r('app.media.moreh'), isSvg: true, action: () => {
@@ -316,6 +317,14 @@ export struct WordCardsView {
     this.isEnableContrast = await this.recordManager.isExistsSound(this.word.titleEn!)
   }
 
+  private actionTrash(){
+    this.word.changeDeletedWord(!this.word.isDeleted())
+  }
+
+  private actionSearch(){
+
+  }
+
   ///显示转到测验或挑战页面的弹出选项
   private actionPopmenu(){
     let options: ItemOption[] = []
@@ -372,9 +381,20 @@ export struct WordCardsView {
 
       Blank().layoutWeight(1)
 
-      ///mid roll
-      IconTintButton({icon: this.isRolling ? $r('app.media.card_btn_stop_1') :  $r('app.media.card_btn_roll_1'), iconColor: $r('app.color.color_footTint'), iconSize: 28, onClickCallBack: ()=>{ this.actionRoll() }})
-        .margin({left: 30})
+      //mid
+      Row({space: 20}){
+        ///prev
+        IconTintButton({icon: $r('app.media.arrow_prev_1'), iconColor: $r('app.color.color_footTint'), iconSize: 28, onClickCallBack: ()=>{ this.actionPrev() }})
+
+        ///mid roll
+        IconTintButton({icon: this.isRolling ? $r('app.media.card_btn_stop_1') :  $r('app.media.card_btn_roll_1'), iconColor: $r('app.color.color_footTint'), iconSize: 28, onClickCallBack: ()=>{ this.actionRoll() }})
+
+        ///next
+        IconTintButton({icon: $r('app.media.arrow_next_1'), iconColor: $r('app.color.color_footTint'), iconSize: 28, onClickCallBack: ()=>{ this.actionNext() }})
+
+      }
+      .margin({left: 30})
+
 
       Blank().layoutWeight(1)
 
@@ -465,6 +485,14 @@ export struct WordCardsView {
   ///actions
   actionInfo(){
     this.isShowInfoView = true
+  }
+
+  actionPrev(){
+    this.swiperController.showPrevious()
+  }
+
+  actionNext(){
+    this.swiperController.showNext()
   }
 
   actionRoll(){

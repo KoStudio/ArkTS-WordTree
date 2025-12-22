@@ -5,7 +5,7 @@ import { NavTo } from "../../pages/NavPathManager";
 import { BgImage } from "../../app/views/BgImage";
 import { WordUser } from "../../models/datas/myData/WordUser";
 import { getString } from "../../common/utils/ResourceUtils";
-import { WordCardsViewConfig } from "../units/wordcard/WordCardsView";
+import { WordCardsViewConfig } from "../card/wordcard/WordCardsView";
 import { buildStandardMenu } from "../../app/constants/AppFunctions";
 import { Toast } from "../../common/utils/Toast";
 

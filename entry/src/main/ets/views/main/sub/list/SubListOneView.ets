@@ -1,7 +1,7 @@
 import { SectionDatas } from "../../../../common/utils/array/SectionDatas"
 import { WordUser } from "../../../../models/datas/myData/WordUser"
 import json from "@ohos.util.json"
-import { WordCardsViewConfig } from "../../../units/wordcard/WordCardsView"
+import { WordCardsViewConfig } from "../../../card/wordcard/WordCardsView"
 import { KeyboardAvoidMode } from '@kit.ArkUI';
 import { TEUtility } from "../../../../common/utils/TEUtility";
 

@@ -5,7 +5,7 @@ import { NavTo } from "../../pages/NavPathManager";
 
 import { Word } from "../../models/datas/word/Word";
 import { BgImage } from "../../app/views/BgImage";
-import { WordCardsViewConfig } from "./wordcard/WordCardsView";
+import { WordCardsViewConfig } from "../card/wordcard/WordCardsView";
 import { WordUser } from "../../models/datas/myData/WordUser";
 import { getStringF } from "../../common/utils/ResourceUtils";
 import { TintImage } from "../../app/views/TintImage";
@@ -13,14 +13,14 @@ import { SpeechRecordManager } from "../../common/components/Speech/Recorder/Spe
 import { SpeechRecordDbAccessor } from "../../common/components/Speech/Recorder/SpeechRecordDbAccessor";
 
 
-export namespace UnitWordsViewConfig {
+export namespace QuickLearnWordsViewConfig {
 
   ///导航key
-  export const NavKey = "UnitWordsView_show"
+  export const NavKey = "QuickLearnWordsView_show"
 
   ///打开方式
   export function open(param: Param){
-    NavTo(UnitWordsViewConfig.NavKey, param, true)
+    NavTo(QuickLearnWordsViewConfig.NavKey, param, true)
   }
 
   export interface Param {
@@ -30,7 +30,7 @@ export namespace UnitWordsViewConfig {
 }
 
 @ComponentV2
-export struct UnitWordsView {
+export struct QuickLearnWordsView {
 
 
    @Param @Require unitId: number
@@ -52,11 +52,13 @@ export struct UnitWordsView {
       Stack(){
 
         //通用 背景
-        BgImage()
+        // BgImage()
 
         //构建列表
         this.buildList()
       }
+      .backgroundColor($r('app.color.color_background'))
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       .onAppear(() => {
         this.loadData()
       })
@@ -82,7 +84,7 @@ export struct UnitWordsView {
           .onClick(()=>{
             this.handleRowClick(rowIndex)
           })
-          .margin({ bottom: 1 })
+
         })
       }
       .width('100%')
@@ -101,22 +103,26 @@ export struct UnitWordsView {
   @Builder
   buildRowContent(rowIndex: number, word: WordUser) {
    Row(){
+     Text(`${rowIndex + 1}`)
+       .fontSize(18)
+       .fontColor($r('app.color.color_list_item_detail'))
+       .margin({right: 10})
 
      ///left
      Column(){
 
-       Text(`${rowIndex + 1}. ${word.titleEn}`)
+
+       Text(`${word.titleEn}`)
          .fontSize(18)
-         .fontColor($r('app.color.color_text'))
+         .fontColor($r('app.color.color_list_item_title'))
 
-
-       Text(word.titleCn1)
+       Text(word.titleCn1ClippedShort)
          .fontSize(15)
-         .fontColor($r('app.color.color_detail'))
-         .margin({left: 15, top: 5})
-
+         .fontColor($r('app.color.color_list_item_subtitle'))
+         .margin({left: 5, top: 5})
 
      }
+     .width('100%')
      .justifyContent(FlexAlign.Center)
      .alignItems(HorizontalAlign.Start)
 
@@ -141,8 +147,8 @@ export struct UnitWordsView {
     .width('100%')
     .padding(10)
     .layoutWeight(1)
-    .padding(16)
-    .backgroundColor($r('app.color.color_clear'))
+    .border({width: {bottom: 1}, color: $r('app.color.color_obscure')})
+    .backgroundColor($r('app.color.color_background'))
   }
 
   handleRowClick(rowIndex: number){

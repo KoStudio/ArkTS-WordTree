@@ -1,6 +1,7 @@
 
 
 import common from '@ohos.app.ability.common';
+import { getString } from './ResourceUtils';
 
 // ============================================================
 // 常量定义
@@ -380,11 +381,10 @@ export class AppUtility {
    * - kindStr 词性标识符：如：n,v,vt,vi,adj,adv
    */
   static getTextOfKindString(kindStr: string): string {
-    let rtnStr: string = "";
 
     if (kindStr) {
       // 使用资源引用方式获取本地化字符串
-      const kindMap: Record<string, Resource> = {
+      const kindMap: Record<string, ResourceStr> = {
         "n"        : $r('app.string.word_kind_n'),
         "v"        : $r('app.string.word_kind_v'),
         "vt"       : $r('app.string.word_kind_vt'),
@@ -406,17 +406,12 @@ export class AppUtility {
         "phr"      : $r('app.string.word_kind_phr')
       };
 
-      const resource: Resource | undefined = kindMap[kindStr];
-      if (resource) {
-        // 在实际使用时需要传入 context 来获取字符串值
-        // 这里返回资源对象，调用方需要根据 context 获取实际字符串
-        return kindStr; // 临时返回原值，实际使用时需要处理
-      } else {
-        rtnStr = kindStr;
-      }
+      const resource: ResourceStr | undefined = kindMap[kindStr];
+      return resource ? getString(resource) : kindStr;
     }
 
-    return rtnStr;
+    return kindStr
+
   }
 
   /**

@@ -4,8 +4,8 @@ export struct WordClickableText {
   @Param text:            string         = "";                               // 原始文本
   @Param highlightWords:  string[]       = [];                               // 高亮单词列表
   @Param highlightColor:  ResourceColor  = $r('app.color.color_text_marked'); // 高亮颜色
-  @Param normalColor:     ResourceColor  = $r('app.color.color_text');       // 普通颜色
-  @Param fontSize:        number         = 18;                               // 字体大小
+  @Param normalColor:     ResourceColor  = $r('app.color.color_card_title');       // 普通颜色
+  @Param fontSize:        number         = 20;                               // 字体大小
 
   // 点击单词事件回调
   @Event onWordClick?: (word: string) => void;

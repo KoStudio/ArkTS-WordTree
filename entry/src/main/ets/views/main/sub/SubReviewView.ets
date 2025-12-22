@@ -3,7 +3,7 @@ import { SectionDatas } from "../../../common/utils/array/SectionDatas";
 import { TEUtility } from "../../../common/utils/TEUtility";
 import { QuestionMode, QuizManager, QuizType } from "../../../models/datas/model/QuizManager";
 import { WordUser } from "../../../models/datas/myData/WordUser";
-import { WordCardsViewConfig } from "../../units/wordcard/WordCardsView";
+import { WordCardsViewConfig } from "../../card/wordcard/WordCardsView";
 import { SearchModifier } from "@kit.ArkUI";
 import { SearchManager } from "../../../models/datas/model/SearchManager";
 import { TextStyleButton, TextStyleButtonStyle } from "../../../app/views/buttons/TextStyleButton";
