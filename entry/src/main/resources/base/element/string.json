@@ -72,9 +72,9 @@
 
     { "name": "books_tab_title_mybooks"          , "value": "我的词汇" },
     { "name": "books_tab_title_allbooks"         , "value": "所有词汇" },
-    { "name": "books_txt_info_counts"            , "value": "%1$d个单元，共%2$d个单词" },
+    { "name": "books_txt_info_counts"            , "value": "%d个单元，共%d个单词" },
     { "name": "books_txt_info_downloads"         , "value": "下载%d次" },
-    { "name": "books_txt_info_size"              , "value": "单词:%1$s 发音:%2$s" },
+    { "name": "books_txt_info_size"              , "value": "单词:%s 发音:%s" },
     { "name": "books_txt_info_golds"             , "value": "金币:%d个" },
     { "name": "books_btn_title_to_download"      , "value": "点击下载" },
     { "name": "books_btn_title_downloaded"       , "value": "已下载" },
@@ -86,8 +86,8 @@
     { "name": "books_msg_download_succeed"       , "value": "下载成功！" },
     { "name": "books_msg_download_failed"        , "value": "下载失败,请稍后再试！" },
     { "name": "books_msg_golds_shotage"           , "value": "金币不足" },
-    { "name": "books_msg_golds_needs"             , "value": "需要金币%1$d个， 剩余金币%2$d个。" },
-    { "name": "books_msg_golds_costed"            , "value": "用去金币%1$d个， 剩余金币%2$d个。" },
+    { "name": "books_msg_golds_needs"             , "value": "需要金币%d个， 剩余金币%d个。" },
+    { "name": "books_msg_golds_costed"            , "value": "用去金币%d个， 剩余金币%d个。" },
     { "name": "books_msg_updated_book_txt"       , "value": "更新:%s 词汇成功！" },
     { "name": "books_msg_updated_book_sound"     , "value": "更新:%s 声音成功！" },
     { "name": "books_msg_need_disk_space"        , "value": "磁盘空间不足！" },
@@ -142,7 +142,7 @@
     { "name": "test_btn_start"                  , "value": "Start" },
 
     { "name": "test_running_btn_pause"          , "value": "暂停" },
-    { "name": "test_running_txt_cnt"            , "value": "%1$d/%2$d问" },
+    { "name": "test_running_txt_cnt"            , "value": "%d/%d问" },
 
     { "name": "spell_running_txt_try_again"     , "value": "再试一次" },
     { "name": "spell_running_txt_input_answer"  , "value": "输入答案" },
@@ -152,14 +152,14 @@
     { "name": "spell_running_btn_done"          , "value": "完成" },
 
     { "name": "test_result_rate_txt"            , "value": "正确率" },
-    { "name": "test_result_info"                , "value": "全:%1$d问  正确:%2$d问" },
+    { "name": "test_result_info"                , "value": "全:%d问  正确:%d问" },
     { "name": "test_result_btn_retry"           , "value": "再测一次" },
     { "name": "test_result_btn_mistake"         , "value": "再测一次\n(仅错误单词)" },
     { "name": "test_result_btn_next"            , "value": "下一问题" },
     { "name": "test_result_all_corrected"       , "value": "全部正确" },
     { "name": "test_result_share_app"           , "value": "分享" },
-    { "name": "test_result_share_title"         , "value": "%1$s 正确率:%2$s!" },
-    { "name": "test_result_share_description"   , "value": "我在《单词树》测验 %1$s，正确率:%2$s!  " },
+    { "name": "test_result_share_title"         , "value": "%s 正确率:%s!" },
+    { "name": "test_result_share_description"   , "value": "我在《单词树》测验 %s，正确率:%s!  " },
 
     { "name": "test_result_comment_studyharder" , "value": "Come on!Study harder!" },
     { "name": "test_result_comment_good"        , "value": "Good!Keep it up!" },
@@ -848,6 +848,7 @@
     {"name": "alert_title_confirm"                     , "value": "确认"   },
     {"name": "alert_msg_confirm_remove"                , "value": "确定要删除吗?"   },
 
+    {"name": "confirm_btn_remove"                      , "value": "删除"},
     {"name": "confirm_btn_yes"                         , "value": "是的"},
     {"name": "confirm_btn_no"                          , "value": "不要"},
     {"name": "confirm_btn_ok"                          , "value": "好的"},

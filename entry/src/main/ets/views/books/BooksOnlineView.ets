@@ -1,9 +1,15 @@
 import { buildNavTitle } from "../../app/constants/AppBuilders"
 import { dNavBackIcon } from "../../app/constants/AppDefines"
+import { TextButton } from "../../app/views/buttons/TextButton"
+import { CBookManager } from "../../common/components/Sounds/Cloud/Download/CBook/CBookManager"
+import { getStringF } from "../../common/utils/ResourceUtils"
+import { Toast } from "../../common/utils/Toast"
 import { Book } from "../../models/datas/book/Book"
 import { BookDbAccess } from "../../models/datas/book/BookDbAccess"
 import { Category } from "../../models/datas/book/CategoryManager"
-import { NavTo } from "../../pages/NavPathManager"
+import { NavPopTop, NavTo } from "../../pages/NavPathManager"
+import { LoadingDialog } from "@kit.ArkUI"
+import { BookManager } from "../../models/datas/book/BookManager"
 
 
 export namespace BooksOnlineViewConfig {
@@ -98,19 +104,79 @@ export struct BooksOnlineView {
   buildRowContent(rowIndex: number, book: Book) {
 
     Row(){
-      Text(book.bookName)
-        .fontSize(16)
-        .fontColor($r('app.color.color_text'))
-        .margin({left: 5})
+      Column({space:5}){
+        Text(book.bookName)
+          .fontSize(22)
+          .fontColor($r('app.color.color_list_item_title'))
+
+
+        Text(getStringF($r('app.string.books_txt_info_counts'), book.unitsCount || 0, book.wordsCount || 0))
+          .fontSize(16)
+          .fontColor($r('app.color.color_list_item_subtitle'))
+
+
+
+        Text(getStringF($r('app.string.books_txt_info_golds'), book.golds || 0))
+          .fontSize(15)
+          .fontColor($r('app.color.color_gold'))
+
+
+      }
+      .justifyContent(FlexAlign.Start)
+      .alignItems(HorizontalAlign.Start)
+
+
+      //right
+      Column(){
+
+        TextButton({
+          text: BookManager.shared.books.filter(v => v.bookId === book.bookId).length > 0 ? $r('app.string.books_btn_title_downloaded') :  $r('app.string.books_btn_title_to_download'), //点击下载/已下载
+          bgColor: $r('app.color.color_btn_bg2'),
+          onClickCallBack: ()=>{
+            this.handleRowClick(rowIndex, book)
+          }
+        })
+      }
     }
-    .padding(16)
+    .justifyContent(FlexAlign.SpaceBetween)
+    .width('100%')
+    .padding(10)
     .border({width: {bottom: 1}, color: $r('app.color.color_obscure')})
-    .backgroundColor($r('app.color.color_background'))
+    .backgroundColor(BookManager.shared.books.filter(v => v.bookId === book.bookId).length > 0 ? $r('app.color.color_gray_light') : $r('app.color.color_background'))
   }
 
   handleRowClick(rowIndex: number, book: Book){
 
+    if (BookManager.shared.books.filter(v => v.bookId === book.bookId).length > 0) {
+      //已经下载
+      return
+    }
 
+    Toast.showCustomDialog(()=> { this.buildLoadingDialog($r('app.string.books_msg_download_start_word'))}, false)
+    CBookManager.shared.startUpdateBookCheckIfNeeds(book.textDb, book.bookName, true, (percent: number)=>{
+      Toast.showDebugMessage(`${percent}%..`)
+    },(succeed: boolean, msg: string | null)=>{
+      Toast.closeCustomDialog()
+
+      if (succeed) {
+        Toast.showMessage($r('app.string.books_msg_download_succeed'))
+        BookManager.shared.saveBook(book)
+        BookManager.shared.setCurrentBook(book)
+        NavPopTop()
+      }else{
+        Toast.showMessage($r('app.string.books_msg_download_failed'))
+      }
+
+    })
+
+  }
+
+
+  @Builder
+  buildLoadingDialog(msg?: ResourceStr | null): void {
+    LoadingDialog({
+      content: msg ?? 'loading..'
+    })
   }
 }
 

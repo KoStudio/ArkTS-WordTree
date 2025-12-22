@@ -1,3 +1,5 @@
+import { BookManager } from "./BookManager"
+
 
 export class Book {
 
@@ -32,6 +34,10 @@ export class Book {
   static fromArray(arr: Object[] | null): Book[] {
     if (!arr) return []
     return arr.map(o => new Book(o as Record<string, Object>))
+  }
+
+  get isCurrentBook(): boolean {
+    return BookManager.shared.currentBook?.bookId === this.bookId
   }
 }
 

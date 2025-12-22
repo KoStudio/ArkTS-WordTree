@@ -255,10 +255,28 @@ export class BookManager {
   // MARK: - API
   // ==========================================================
 
-  setBooks(books: Book[]): void {
-    this.books = books
+  saveBook(book: Book){
+    this.books.push(book)
     this.saveBooks()
   }
+
+  removeBook(book: Book): void {
+    // 1️⃣ 从 books 列表中过滤掉该 Book
+    this.books = this.books.filter(item => item.bookId !== book.bookId)
+
+    // 2️⃣ 如果当前选中的书正是被删除的那本，也要清空
+    if (this.currentBook && this.currentBook.bookId === book.bookId) {
+      this.currentBook = null
+      this.saveCurrentBook()
+    }
+
+    // 3️⃣ 保存 books
+    this.saveBooks()
+  }
+  // setBooks(books: Book[]): void {
+  //   this.books = books
+  //   this.saveBooks()
+  // }
 
   setCurrentBook(book: Book | null): void {
     this.currentBook = book

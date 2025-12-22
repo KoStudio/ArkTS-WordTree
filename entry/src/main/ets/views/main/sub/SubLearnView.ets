@@ -3,6 +3,7 @@ import { TextButton } from "../../../app/views/buttons/TextButton"
 import { getStringF } from "../../../common/utils/ResourceUtils"
 import { Book } from "../../../models/datas/book/Book"
 import { BookManager } from "../../../models/datas/book/BookManager"
+import { SearchManager } from "../../../models/datas/model/SearchManager"
 
 @ComponentV2
 export struct SubLearnView {
@@ -10,14 +11,25 @@ export struct SubLearnView {
   @Local bookManager: BookManager = BookManager.shared
   @Local book: Book | null = this.bookManager.currentBook
 
-  @Local learnedCount: number = 0
-  @Local correctedCount: number = 0
-  @Local wrangCount: number = 0
+  @Local unitsCount    : number = 0
+  @Local wordsCount    : number = 0
+
+  @Local cntLearned: number     = 0
+  @Local cntCorrected: number   = 0
+  @Local cntWrang: number       = 0
 
 
   @Monitor('bookManager.currentBook')
   onChangeOfBook(){
-    this.book = this.bookManager.currentBook
+    this.book         = this.bookManager.currentBook
+
+    this.unitsCount   = this.book?.unitsCount ?? 0
+    this.wordsCount   = this.book?.wordsCount ?? 0
+
+    this.cntLearned   = SearchManager.shared.getLearnedWords().length
+    this.cntCorrected = SearchManager.shared.getCorrectedWords().length
+    this.cntWrang     = SearchManager.shared.getWrongWords().length
+
   }
 
   build() {
@@ -57,8 +69,28 @@ export struct SubLearnView {
 
   @Builder InfoCountRow() {
     Row({ space: 20 }) {
-      this.InfoBox(getStringF($r('app.string.main_study_txt_info_units'), this.book?.unitsCount ?? 0), '#66CD40')
-      this.InfoBox(getStringF($r('app.string.main_study_txt_info_words'), this.book?.wordsCount ?? 0), '#26C9FF')
+      // this.InfoBox(getStringF($r('app.string.main_study_txt_info_units'), this.unitsCount ), '#66CD40')
+      // this.InfoBox(getStringF($r('app.string.main_study_txt_info_words'), this.wordsCount), '#26C9FF')
+
+      Text(getStringF($r('app.string.main_study_txt_info_units'), this.unitsCount ))
+        .width('45%')
+        .padding(5)
+        .textAlign(TextAlign.Center)
+        .fontSize(16)
+        .fontColor('#66CD40')
+        .backgroundColor(Color.Transparent)
+        .border({width: 1, color: '#66CD40', radius: 16})
+
+
+      Text(getStringF($r('app.string.main_study_txt_info_words'), this.wordsCount))
+        .width('45%')
+        .padding(5)
+        .textAlign(TextAlign.Center)
+        .fontSize(16)
+        .fontColor('#26C9FF')
+        .backgroundColor(Color.Transparent)
+        .border({width: 1, color: '#26C9FF', radius: 16})
+
     }
     .margin({top: 20})
   }
@@ -76,9 +108,9 @@ export struct SubLearnView {
 
   @Builder InfoLearnTestRow() {
     Row({ space: 8 }) {
-      this.LearnTestItem($r('app.media.ic_yixuexi'), $r('app.string.main_study_txt_info_learned'), `${this.learnedCount}`, '#66CD40')// '已学习'
+      this.LearnTestItem($r('app.media.ic_yixuexi'), $r('app.string.main_study_txt_info_learned'), `${this.cntLearned}`, '#66CD40')// '已学习'
       Blank().width(20)
-      this.LearnTestItem($r('app.media.ic_yiceyan'), $r('app.string.main_study_txt_info_tested'), `${this.correctedCount + this.wrangCount}`, '#26C9FF') //'已测验'
+      this.LearnTestItem($r('app.media.ic_yiceyan'), $r('app.string.main_study_txt_info_tested'), `${this.cntCorrected + this.cntWrang}`, '#26C9FF') //'已测验'
     }
     .margin({top: 10})
 

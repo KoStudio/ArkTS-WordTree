@@ -43,7 +43,7 @@ export class CBookManager {
   /**
    * 启动更新 BookDb Check
    */
-  public startUpdateBookCheckIfNeeds(baseName: string | null, title: string | null = null, finished: ((succeed: boolean, msg: string | null) => void) | null = null): void {
+  public startUpdateBookCheckIfNeeds(baseName: string | null, title: string | null = null, forceDownload: boolean = false, proccessing: ((percent: number) => void) | null = null, finished: ((succeed: boolean, msg: string | null) => void) | null = null): void {
     if (!baseName) return;
 
     /// 判断网络 链接
@@ -69,10 +69,10 @@ export class CBookManager {
     const isExistedCBook          = this.isExistBookDb(baseName);
 
     /// 判断 时间间隔
-    if (TimeToManager.isTimeToByName(keyTimeTo, autoUpdateCheckInterval)) {
+    if (forceDownload || TimeToManager.isTimeToByName(keyTimeTo, autoUpdateCheckInterval)) {
       Toast.showDebugMessage(`CBook[${baseName}]自动更新Check..start..`);
 
-      this.updateBookDbIfNeeds(baseName, (succeed, msg) => {
+      this.updateBookDbIfNeeds(baseName, proccessing, (succeed, msg) => {
         if (succeed) {
 
           ///只有当CBook已经下载过一次后，再次更新才显示消息
@@ -96,7 +96,7 @@ export class CBookManager {
   /**
    * 更新指定 baseName 的 BookDb
    */
-  public updateBookDbIfNeeds(baseName: string, finished: (succeed: boolean, msg: string | null) => void): void {
+  public updateBookDbIfNeeds(baseName: string, proccessing: ((percent: number) => void) | null = null, finished: (succeed: boolean, msg: string | null) => void): void {
 
     ///这里不需要决断本地bundle是否存在，这样可难过服务器任意添加新的Book，只需要控制Book.sqlite即可。
     ///iOS和Android版本 也要去掉这个判断条件  by ko 2025.09.27
@@ -136,7 +136,7 @@ export class CBookManager {
       (percent) => {
         proccessing?.(percent);
       },
-      (url, info, msg) => {
+      async (url, info, msg) => {
         const zipPath    = url;
         const sqlitePath = new CBookDbPath(baseName).sqlite;
 
@@ -154,12 +154,10 @@ export class CBookManager {
             }
 
             // 解压 注意：这里的路径是本地 Book 的目录
-            ZipTool.unzipTo(zipPath, dAppCBookDbFolderPath).then().catch(()=>{
-
-            })
+            await ZipTool.unzipTo(zipPath, dAppCBookDbFolderPath)
 
             // 检查是否能打开
-            if (!this.isCBookOpenable(baseName)) {
+            if (!(await this.isCBookOpenable(baseName))) {
               this.removeBookDb(baseName);
               finished(false, "download finished, but can not open db, and has been removed");
               return;
