@@ -4,6 +4,9 @@ import {  NavTo } from "../../pages/NavPathManager";
 import { TEUtility } from "../../common/utils/TEUtility";
 
 import { Category, CategoryManager } from "../../models/datas/book/CategoryManager";
+import { SegmentButton, SegmentItem } from "../../app/views/SegmentButton";
+import { CategoriesView } from "./Sub/CategoriesView";
+import { BooksLocalView } from "./Sub/BooksLocalView";
 
 
 export namespace BookListViewConfig {
@@ -23,8 +26,7 @@ export struct BookListView {
 
 
 
-
-  @Local categories: Category[] = []
+  @Local selectedIndex: number = 0
 
   async aboutToAppear() {
 
@@ -35,23 +37,36 @@ export struct BookListView {
 
   // 更新全局数据
   private async loadData() {
-    await CategoryManager.shared.reload()
-    this.categories = CategoryManager.shared.getCategories() ?? []
+
   }
 
   build() {
     NavDestination(){
-      Stack(){
 
-        //通用 背景
-        // BgImage()
+      Column(){
+        SegmentButton({
+          items:         this.createSegmentItems(),
+          selectedIndex: this.selectedIndex,
+          totalWidth:    '100%',
+          onSelect:      (index: number) => this.handleSegmentChange(index)
+        })
+          .margin(20)
 
-        //构建列表
-        this.buildList()
+
+        Stack(){
+          if (this.selectedIndex){
+            CategoriesView()
+          }else{
+            BooksLocalView()
+          }
+        }
+        .layoutWeight(1)
+
       }
-      .onAppear(() => {
-        this.loadData()
-      })
+      .width('100%')
+      .height('100%')
+      .backgroundColor(Color.White)
+
     }
     .title(buildNavTitle(this.getNavTitle())) // 设置导航栏标题
     .backButtonIcon(dNavBackIcon) //返回按钮
@@ -63,60 +78,17 @@ export struct BookListView {
     return  $r('app.string.nav_title_books')
 
   }
-  @Builder buildList(){
-    Column() {
-      List({ space: 0}) {
-        ForEach(this.categories, (category: Category, rowIndex: number) => {
-          ListItem() {
-            this.buildRowContent(rowIndex, category)
-          }
-          .onClick(()=>{
-            this.handleRowClick(rowIndex, category)
-          })
-          //.margin({ bottom: 1 })
-        })
-      }
-      .width('100%')
-      .height('100%')
-      .scrollBar(BarState.Auto)
-      .sticky(StickyStyle.Header)
 
-    }
-    //.padding({ top: 0 })
-    .backgroundColor($r('app.color.color_background'))
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
-    .width('100%')
-    .height('100%')
+  createSegmentItems(): SegmentItem[] {
+    let items: SegmentItem[] = []
+
+    items.push({ title: $r('app.string.books_tab_title_mybooks'),    isEnabled: true });
+    items.push({ title: $r('app.string.books_tab_title_allbooks'),    isEnabled: true });
+    return items;
   }
 
-
-  getSectionIcon(sectionIndex: number): Resource {
-    return TEUtility.getCategorySectionIcon(sectionIndex)
-  }
-
-  getSectionBgColor(section: string): ResourceColor {
-    return TEUtility.getCategorySectionBgColor(section)
-  }
-
-
-  // 提取课程内容为Builder方法
-  @Builder
-  buildRowContent(rowIndex: number, category: Category) {
-
-    Row(){
-  Text(category.categoryName)
-    .fontSize(16)
-    .fontColor($r('app.color.color_text'))
-    .margin({left: 5})
-    }
-    .padding(16)
-    .border({width: {bottom: 1}, color: $r('app.color.color_obscure')})
-    .backgroundColor($r('app.color.color_background'))
-  }
-
-  handleRowClick(rowIndex: number, category: Category){
-
-
+  handleSegmentChange(index: number): void {
+    this.selectedIndex = index
   }
 }
 
