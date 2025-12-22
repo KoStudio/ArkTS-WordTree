@@ -147,10 +147,10 @@ export struct SubListView {
       }
     }
     .width('100%')
-    .height(36)
-    .backgroundColor($r('app.color.color_white'))
-    .padding(2)
-    .margin({top: 10, left: 10, right: 10, bottom: 2})
+    // .height(50)
+    .backgroundColor($r('app.color.colorPrimary'))
+    // .padding(2)
+    .padding({top: 2, left: 10, right: 10, bottom: 0})
     .align(Alignment.Bottom)
   }
 
@@ -162,9 +162,12 @@ export struct SubListView {
         .fontSize(16)
         .fontColor($r('app.color.color_white'))
     }
+    .justifyContent(FlexAlign.End)
     .width('100%')
-    .height(40)
-    .backgroundColor(this.selectedIndex === index? '#F88178' : '#5E9BEC')
+    .height(58)
+    // .backgroundColor(this.selectedIndex === index? '#F88178' : '#5E9BEC')
+    .backgroundColor($r('app.color.colorPrimary'))
+    .border({width: {bottom: 4}, color: this.selectedIndex === index ? $r('app.color.color_text_marked') : $r('app.color.colorPrimary')})
     .justifyContent(FlexAlign.SpaceAround);
   }
 

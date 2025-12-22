@@ -5,6 +5,9 @@ import { Book } from "../../../models/datas/book/Book"
 import { BookManager } from "../../../models/datas/book/BookManager"
 import { SearchManager } from "../../../models/datas/model/SearchManager"
 import { QuickLearnViewConfig } from "../../quicklearn/QuickLearnView"
+import { QuizChallengeView, QuizChallengeViewConfig } from "../../quiz/running/QuizChallengeView"
+import { ChallengeTopViewConfig } from "../../test/ChallengeTopView"
+import { TestTopViewConfig } from "../../test/TestTopView"
 
 @ComponentV2
 export struct SubLearnView {
@@ -144,8 +147,8 @@ export struct SubLearnView {
       }
 
       Row({ space: 10 }) {
-        this.MainButton($r('app.string.main_study_btn_test'), $r('app.media.ic_ceyan'), '#A15DFD', ()=>{})
-        this.MainButton($r('app.string.main_study_btn_challenge'), $r('app.media.ic_tiaozhan'), '#FD56A1', ()=>{})
+        this.MainButton($r('app.string.main_study_btn_test'), $r('app.media.ic_ceyan'), '#A15DFD', ()=>{ TestTopViewConfig.open() })
+        this.MainButton($r('app.string.main_study_btn_challenge'), $r('app.media.ic_tiaozhan'), '#FD56A1', ()=>{ ChallengeTopViewConfig.open() })
       }
     }
   }

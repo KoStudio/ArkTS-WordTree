@@ -7,14 +7,14 @@ export struct FadeInOutMov {
   // @Param triggerShowWrong: boolean = false
 
   @Param duration: number = 250;      // 动画时长
-  @Param imageWidth: number = 320;    // 宽度
-  @Param imageHeight: number = 126;   // 高度
+  @Param imageWidth: number = 150;    // 宽度
+  @Param imageHeight: number = 125;   // 高度
 
   @Event onAppearing: ((ref: FadeInOutMov) => void) | null = null;  //外部调用时，可通过此方法获得当前对象的引用
 
   @Local isVisible: boolean = false;  // 控制显示隐藏
   @Local opacityValue: number = 0;    // 控制透明度
-  @Local currentImage: Resource = $r('app.media.mov_right_1'); // 当前显示图片
+  @Local currentImage: Resource = $r('app.media.right2'); // 当前显示图片
 
   aboutToAppear(): void {
     this.onAppearing?.(this)
@@ -37,7 +37,9 @@ export struct FadeInOutMov {
       .height(this.imageHeight)
       .opacity(this.opacityValue)
       .animation({ duration: this.duration, curve: Curve.EaseInOut })
-      .visibility(this.isVisible ? Visibility.Visible : Visibility.Hidden);
+      .visibility(this.isVisible ? Visibility.Visible : Visibility.Hidden)
+      .objectFit(ImageFit.Fill)
+
   }
 
   // 内部动画方法
@@ -66,6 +68,6 @@ export struct FadeInOutMov {
   }
 
   // 对外调用接口
-  showRight() { this.startAnimation($r('app.media.mov_right_1')); }
-  showWrong() { this.startAnimation($r('app.media.mov_mistake_1')); }
+  showRight() { this.startAnimation($r('app.media.right2')); }
+  showWrong() { this.startAnimation($r('app.media.wrong')); }
 }

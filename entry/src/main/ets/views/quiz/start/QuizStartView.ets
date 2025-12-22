@@ -7,7 +7,9 @@ import { SegmentButton, SegmentItem } from "../../../app/views/SegmentButton";
 import { getString } from "../../../common/utils/ResourceUtils";
 import { Toast } from "../../../common/utils/Toast";
 import {
-  QuestionMode, QuestionOrder, QuestionSpeed,
+  QuestionMode, QuestionOrder,
+  QuestionScope,
+  QuestionSpeed,
   QuestionType,
   QuizManager, QuizType
 } from "../../../models/datas/model/QuizManager";
@@ -30,7 +32,7 @@ export namespace QuizStartViewConfig {
 }
 
 @ComponentV2
-export struct QuizStartViewController {
+export struct QuizStartView {
 
   @Local private visiblePanels: number[]           = [];
 
@@ -40,6 +42,7 @@ export struct QuizStartViewController {
   @Local private questionOrder: QuestionOrder      = QuizManager.shared.questionOrder      //QuestionOrder.SerialNo;
   @Local private questionPronounce: boolean        = QuizManager.shared.questionPronounce  //false;
   @Local private questionType: QuestionType        = QuizManager.shared.questionType       //QuestionType.Eiwa;
+  @Local private questionScope: QuestionScope      = QuizManager.shared.questionScope      //QuestionScope.all
 
   @Local private scopeCount: number                = 0;
   @Local private startButtonEnabled: boolean       = false;
@@ -50,6 +53,7 @@ export struct QuizStartViewController {
   @Local private segmentItemsOrder     :SegmentItem[]     = []
   @Local private segmentItemsPronounce :SegmentItem[]     = []
   @Local private segmentItemsType      :SegmentItem[]     = []
+  @Local private segmentItemsScope     :SegmentItem[]     = []
 
   @Local refreshKey: number = 1
 
@@ -60,14 +64,22 @@ export struct QuizStartViewController {
     this.segmentItemsOrder     = this.createSegmentItems(SegType.Order);
     this.segmentItemsPronounce = this.createSegmentItems(SegType.Pronounce);
     this.segmentItemsType      = this.createSegmentItems(SegType.Type);
+    this.segmentItemsScope     = this.createSegmentItems(SegType.Scope);
 
-
-    this.scopeCount = QuizManager.shared.loadScopeWords().length;
+    this.loadScopeWords()
     this.layoutSubViews();
-    this.refreshControlState();
 
     if (DebugFlg.isDebugMode()) {
       Toast.showMessage(`scopeCount: ${this.scopeCount}`)
+    }
+  }
+
+  loadScopeWords(){
+    this.scopeCount = QuizManager.shared.loadScopeWords().length;
+    this.refreshControlState();
+
+    if (DebugFlg.isDebugMode()) {
+      Toast.showDebugMessage(`scopeCount: ${this.scopeCount}`)
     }
   }
 
@@ -113,7 +125,7 @@ export struct QuizStartViewController {
   buildFooter() {
     Row() {
       TextStyleButton({
-        style:           TextStyleButtonStyle.ACCENT,
+        style:           TextStyleButtonStyle.SOLID,
         text:            $r('app.string.quiz_start_btn_text'),
         minWidth:        180,
         isEnabled:       this.startButtonEnabled,
@@ -159,6 +171,7 @@ export struct QuizStartViewController {
       case SegType.Order:     return this.segmentItemsOrder;
       case SegType.Pronounce: return this.segmentItemsPronounce;
       case SegType.Type:      return this.segmentItemsType;
+      case SegType.Scope:     return this.segmentItemsScope;
       default:                return [];
     }
   }
@@ -204,6 +217,12 @@ export struct QuizStartViewController {
         items.push({ title: $r('app.string.quiz_start_type_waei'),    isEnabled: true });
         break;
 
+        case SegType.Scope:
+        items.push({ title: $r('app.string.test_question_scope_all'),      isEnabled: true });
+        items.push({ title: $r('app.string.test_question_scope_still'),    isEnabled: true });
+        items.push({ title: $r('app.string.test_question_scope_wrang'),    isEnabled: true });
+        break;
+
       default:
         break;
     }
@@ -219,7 +238,7 @@ export struct QuizStartViewController {
     switch (quizType) {
       case QuizType.Custom:
       case QuizType.Unit:
-        this.visiblePanels.push(SegType.Mode, SegType.Type, SegType.Speed, SegType.Order, SegType.Pronounce);
+        this.visiblePanels.push(SegType.Scope, SegType.Type, SegType.Speed, SegType.Order, SegType.Pronounce);
         break;
 
       case QuizType.All:
@@ -227,24 +246,24 @@ export struct QuizStartViewController {
       case QuizType.Mistake:
       case QuizType.Favorite:
       case QuizType.Review:
-        this.visiblePanels.push(SegType.Mode, SegType.Count, SegType.Type, SegType.Speed, SegType.Order, SegType.Pronounce);
+        this.visiblePanels.push(SegType.Scope,  SegType.Count, SegType.Type, SegType.Speed, SegType.Order, SegType.Pronounce);
         break;
 
       default:
-        this.visiblePanels.push(SegType.Mode, SegType.Type, SegType.Speed, SegType.Order, SegType.Pronounce);
+        this.visiblePanels.push(SegType.Scope,  SegType.Type, SegType.Speed, SegType.Order, SegType.Pronounce);
     }
 
-    ///拼写时
-    if (this.questionMode === QuestionMode.Spell) {
-
-      ///不可选择 测验模式
-      const modeIndex  = this.visiblePanels.indexOf(SegType.Mode);
-      if (modeIndex >= 0) this.visiblePanels.splice(modeIndex, 1);
-
-      ///不可选择 速度
-      const speedIndex = this.visiblePanels.indexOf(SegType.Speed);
-      if (speedIndex >= 0) this.visiblePanels.splice(speedIndex, 1);
-    }
+    // ///拼写时
+    // if (this.questionMode === QuestionMode.Spell) {
+    //
+    //   ///不可选择 测验模式
+    //   const modeIndex  = this.visiblePanels.indexOf(SegType.Mode);
+    //   if (modeIndex >= 0) this.visiblePanels.splice(modeIndex, 1);
+    //
+    //   ///不可选择 速度
+    //   const speedIndex = this.visiblePanels.indexOf(SegType.Speed);
+    //   if (speedIndex >= 0) this.visiblePanels.splice(speedIndex, 1);
+    // }
   }
 
   // MARK: - 处理 SegmentButton 变化
@@ -253,6 +272,13 @@ export struct QuizStartViewController {
       case SegType.Mode:
         this.questionMode = selectedIndex;
         this.layoutSubViews();
+        this.refreshControlState();
+        break;
+
+        case SegType.Scope:
+        this.questionScope = [QuestionScope.All, QuestionScope.Still, QuestionScope.Mistake][selectedIndex]
+        this.updateQuizManagerSettings()
+        this.loadScopeWords()
         this.refreshControlState();
         break;
 
@@ -301,6 +327,7 @@ export struct QuizStartViewController {
       case SegType.Order:      return this.questionOrder;
       case SegType.Pronounce:  return this.questionPronounce ? 0 : 1;
       case SegType.Type:       return this.questionType;
+      case SegType.Scope:      return [QuestionScope.All, QuestionScope.Still, QuestionScope.Mistake].indexOf(this.questionScope);
       default:                 return 0;
     }
   }
@@ -419,6 +446,7 @@ export struct QuizStartViewController {
       case SegType.Order:      return $r('app.string.quiz_start_txt_order');
       case SegType.Pronounce:  return getString($r('app.string.quiz_start_txt_pronounce')) + dMemberFlag;
       case SegType.Type:       return $r('app.string.quiz_start_txt_type');
+      case SegType.Scope:      return $r('app.string.test_question_scope_txt');
       default:                 return '';
     }
   }
@@ -432,6 +460,7 @@ export struct QuizStartViewController {
     QuizManager.shared.questionOrder      = this.questionOrder;
     QuizManager.shared.questionPronounce  = this.questionPronounce;
     QuizManager.shared.questionCount      = this.questionCount;
+    QuizManager.shared.questionScope      = this.questionScope;
   }
 
   // MARK: - Start 按钮事件
@@ -460,7 +489,8 @@ enum SegType {
   Speed      = 3,
   Order      = 4,
   Pronounce  = 5,
-  Type       = 6
+  Type       = 6,
+  Scope      = 7
 }
 
 // MARK: - 可选题量枚举

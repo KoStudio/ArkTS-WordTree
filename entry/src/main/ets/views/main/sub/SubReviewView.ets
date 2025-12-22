@@ -9,6 +9,8 @@ import { SearchManager } from "../../../models/datas/model/SearchManager";
 import { TextStyleButton, TextStyleButtonStyle } from "../../../app/views/buttons/TextStyleButton";
 import { DateUtils } from "../../../common/utils/DateUtils";
 import { QuizStartViewConfig } from "../../quiz/start/QuizStartView";
+import { NoDataPanel } from "../../../app/views/NoDataView";
+import { TextButton } from "../../../app/views/buttons/TextButton";
 
 @ComponentV2
 export struct SubReviewView {
@@ -40,21 +42,26 @@ export struct SubReviewView {
   build() {
     Stack(){
       //通用 背景
-      BgImage()
-
-     Row(){
-       Image($r('app.media.review_timezone'))
-         .width(2)
-         .height('100%')
-         .objectFit(ImageFit.Cover)
-         .margin({left: 15})
-     }
-     .width('100%')
-     .backgroundColor(Color.Transparent)
-     .justifyContent(FlexAlign.Start)
+     //  BgImage()
+     //
+     // Row(){
+     //   Image($r('app.media.review_timezone'))
+     //     .width(2)
+     //     .height('100%')
+     //     .objectFit(ImageFit.Cover)
+     //     .margin({left: 15})
+     // }
+     // .width('100%')
+     // .backgroundColor(Color.Transparent)
+     // .justifyContent(FlexAlign.Start)
 
       Column(){
-        this.buildList()
+        if (this.sectionWords.allDatas().length > 0){
+          this.buildList()
+        }else{
+          NoDataPanel({message: $r('app.string.review_no_data')})
+        }
+
       }
       .justifyContent(FlexAlign.Start)
       .width('100%')
@@ -105,23 +112,24 @@ export struct SubReviewView {
   @Builder
   buildGroupHeader(section: string, sectionIndex: number) {
     Row() {
-      Image(TEUtility.getSectionReviewIcon(sectionIndex))
-        .width(22)
-        .height(22)
+      // Image(TEUtility.getSectionReviewIcon(sectionIndex))
+      //   .width(22)
+      //   .height(22)
         // .margin({left: 5, right: 10})
 
       Text(` ${section}`)
         .margin({ top: 5, bottom: 5, left: 10, right: 10 })
-        .fontColor(TEUtility.getSectionTextColor(sectionIndex))
+        // .fontColor(TEUtility.getSectionTextColor(sectionIndex))
+        .fontColor($r('app.color.colorPrimary'))
         .fontSize(16)
         .fontWeight(FontWeight.Medium)
 
       Blank().layoutWeight(1)
 
-      TextStyleButton({
-        style:           TextStyleButtonStyle.ACCENT,
+      TextButton({
         text:            $r('app.string.review_btn_retest'),
         minWidth:        66,
+        bgColor:        $r('app.color.color_btn_bg2'),
         textPadding:     3,
         radius:          5,
         fontSize:        15,
@@ -146,7 +154,7 @@ export struct SubReviewView {
           .fontColor($r('app.color.color_text'))
 
 
-        Text(word.titleCn1)
+        Text(word.titleCn1ClippedShort)
           .fontSize(15)
           .fontColor($r('app.color.color_detail'))
           .margin({left: 15, top: 5})
@@ -178,7 +186,7 @@ export struct SubReviewView {
     .padding({left: 30, top: 5, bottom: 5})
     .layoutWeight(1)
     .backgroundColor($r('app.color.color_clear'))
-    .border({width: {bottom: 1}, style: BorderStyle.Dashed, color: $r('app.color.color_obscure')})
+    .border({width: {bottom: 1}, style: BorderStyle.Dashed, color: $r('app.color.color_line')})
   }
 
 

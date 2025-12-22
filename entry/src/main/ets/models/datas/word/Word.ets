@@ -1,5 +1,10 @@
+import { awaitDelay } from "../../../app/constants/AppFunctions";
 import { AppUtility } from "../../../common/utils/AppUtility";
 import { StringEncoder } from "../../../common/utils/strings/StringEncrypt";
+import { SearchManager } from "../model/SearchManager";
+import { WordUserDbAccess } from "../myData/WordUserDbAccess";
+import { WordDbAccess } from "./WordDbAccess";
+import { WordDetail } from "./WordDetail";
 
 export class Word {
   idx             : number | null = null;
@@ -18,6 +23,14 @@ export class Word {
   exampleEn1      : string | null = null;
   exampleCn1      : string | null = null;
 
+  private wordDetail: WordDetail | null = null
+
+  async getWordDetail(): Promise<WordDetail | null> {
+    if (!this.wordDetail) {
+      this.wordDetail = await SearchManager.shared.getWordDbAccess()?.getWordDetailByTitleEn(this.titleEn) ?? null
+    }
+    return this.wordDetail
+  }
 
   get titleEnEncodeToBase64(): string | null {
     return StringEncoder.encodedToBase64(this.titleEn)

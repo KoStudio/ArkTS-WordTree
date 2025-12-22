@@ -14,7 +14,7 @@ export class SearchConstants {
   // 测试结果常量
   static readonly TEST_RESULT_NONE   : number = 0;
   static readonly TEST_RESULT_CORRECT: number = 1;
-  static readonly TEST_RESULT_WRONG  : number = -1;
+  static readonly TEST_RESULT_WRONG  : number = 2;
 
   // 收藏等级常量
   static readonly FAVORITE_LEVEL_0: number     = 0;
@@ -59,6 +59,8 @@ export class SearchManager {
   private units: Unit[] = [];
   private allWords: WordUser[] = [];
 
+  private allCnTexts: Record<string, string>[] = []
+
   // MARK: - 私有构造函数
   private constructor() {
     this.initialize();
@@ -70,6 +72,13 @@ export class SearchManager {
     DebugLog.d('SearchManager: 初始化完成');
   }
 
+  getWordDbAccess(): WordDbAccess | null {
+    const textDb = BookManager.shared.currentBook?.textDb
+    if (!textDb) return null
+
+    return new WordDbAccess(textDb)
+  }
+
   /**
    * 刷新数据（在数据修改后调用）
    */
@@ -78,9 +87,8 @@ export class SearchManager {
   }
 
   private async loadDataStructures(): Promise<void> {
-    const textDb      = BookManager.shared.currentBook?.textDb ?? null
 
-    const words     = await (new WordDbAccess(textDb)).getAllWords() || [];
+    const words     = await this.getWordDbAccess()?.getAllWords() || [];
     const wordUsers = await WordUserDbAccess.shared.getAllWordUsers() || [];
 
     const userMap   = new Map<string, WordUser>();
@@ -753,23 +761,61 @@ export class SearchManager {
   /**
    * 获取问题单词的所有可能文本（用于测试选项）
    */
-  getAllTextForQuestionWord(question: WordUser, isEnglishAnswer: boolean): string[] {
-    const texts: string[] = [];
-    const questionTextJp = question.wordJpClippedString;
+  /**
+   * 获取问题单词的所有可能文本（用于测试选项）
+   * @param question         当前题目单词
+   * @param isEnglishAnswer  true：答案是英文；false：答案是中文
+   */
+  async getAllTextForQuestionWord(question: WordUser, isEnglishAnswer : boolean): Promise<string[]> {
 
-    this.allWords.forEach(word => {
-      if (isEnglishAnswer) {
-        // 英→日测试时，排除与问题文本日语相同的单词
-        if (questionTextJp !== word.wordJpClippedString) {
-          texts.push(word.titleEn || '');
-        }
-      } else {
-        // 日→英测试时，使用日语的裁剪文本
-        texts.push(word.wordJpClippedString);
+    const result: string[] = []
+
+    // ====== 英文作为答案 ======
+    if (isEnglishAnswer) {
+
+      // 懒加载所有中英文映射
+      if (this.allCnTexts.length === 0) {
+        const textDb = BookManager.shared.currentBook?.textDb
+        if (!textDb) return []
+
+        const dbAccess  = new WordDbAccess(textDb)
+        this.allCnTexts = await dbAccess.getAllCnTexts() ?? []
       }
-    });
 
-    return texts;
+      const questionCn = question.titleCn1ClippedShort ?? ''
+
+      this.allCnTexts.forEach(map => {
+        const cn1 = map['titleCn1'] ?? ''
+        const cn2 = map['titleCn2'] ?? ''
+        const cn3 = map['titleCn3'] ?? ''
+
+        // 排除中文含义相同的单词（与 Java 行为一致）
+        if (
+          !cn1.includes(questionCn) &&
+            !cn2.includes(questionCn) &&
+            !cn3.includes(questionCn)
+        ) {
+          const en = map['titleEn']
+          if (en) {
+            result.push(en)
+          }
+        }
+      })
+
+    }
+    // ====== 中文作为答案 ======
+    else {
+
+      // 直接使用当前书中的所有词
+      this.getAliveWords().forEach(word => {
+        if (word.titleCn1) {
+          result.push(word.titleCn1ClippedShort)
+        }
+      })
+    }
+
+    DebugLog.d(`getAllTextForQuestionWord count: ${result.length}`)
+    return result
   }
 
 

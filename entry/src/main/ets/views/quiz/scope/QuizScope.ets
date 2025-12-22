@@ -1,3 +1,4 @@
+import { TintImage } from "../../../app/views/TintImage"
 
 @ComponentV2
 export struct QuizScopeFooter {
@@ -13,21 +14,28 @@ export struct QuizScopeFooter {
   @Builder buildFooter(){
     Row({space: 6}) {
       // 勾选图标
-      Image(this.isSelected ? $r('app.media.quiz_btn_selectall_2') : $r('app.media.quiz_btn_selectall_1'))
-        .width(98)
-        .height(25)
-        .onClick(()=>{
-          this.onSelect(!this.isSelected)
-        })
+      Row(){
+        TintImage({src: this.isSelected ? $r('app.media.quiz_check_yes') : $r('app.media.quiz_check_no'), colorStr: '#ff787878'})
+
+        ///全部选择
+        Text($r('app.string.test_scope_btn_selectall'))
+          .fontColor($r('app.color.color_footTint'))
+          .margin({left: 5})
+      }
+      .onClick(()=>{
+        this.onSelect(!this.isSelected)
+      })
 
 
       Blank().layoutWeight(1)
 
-      Button() {
-        Image($r('app.media.quiz_btn_next_1'))
-          .objectFit(ImageFit.Fill)
-          .width(57)
-          .height(18)
+
+      Row() {
+        //下一步
+        Text($r('app.string.test_scope_btn_next'))
+          .fontColor($r('app.color.color_footTint'))
+        TintImage({src:$r('app.media.arrow_right_circle'), colorStr: '#ff787878'})
+          .margin({left: 5})
       }
       .backgroundColor(Color.Transparent)
       .onClick(()=>{

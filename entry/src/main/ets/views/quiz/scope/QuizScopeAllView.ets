@@ -55,7 +55,7 @@ export struct QuizScopeAllView {
       Stack(){
 
         //通用 背景
-        BgImage()
+        // BgImage()
 
         Column(){
 
@@ -131,6 +131,7 @@ export struct QuizScopeAllView {
       .scrollBar(BarState.Auto)
 
     }
+    .backgroundColor($r('app.color.color_background'))
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     .width('100%')
     .layoutWeight(1)
@@ -148,15 +149,17 @@ export struct QuizScopeAllView {
   buildGroupHeader(section: string, index: number) {
     Row({space: 20}){
       //icon
-      TintImage({src: this.getSectionIcon(index), colorStr: '#ffffff', iconSize: 22})
+      // TintImage({src: this.getSectionIcon(index), colorStr: '#ffffff', iconSize: 22})
 
       /// 共0个
       Text(section)
-        .fontColor($r('app.color.color_white'))
-        .fontSize(12)
+        .fontColor($r('app.color.colorPrimary'))
+        .fontSize(16)
+        .fontWeight(FontWeight.Normal)
     }
-    .backgroundColor(this.getSectionBgColor(section))
-    .padding({left: 20,top: 2, bottom: 2 })
+    // .backgroundColor(this.getSectionBgColor(section))
+    .backgroundColor($r('app.color.color_obscure'))
+    .padding({left: 10,top: 2, bottom: 2 })
     .width('100%')
     .height(26)
     .justifyContent(FlexAlign.Start)

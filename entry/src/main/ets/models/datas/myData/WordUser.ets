@@ -60,7 +60,8 @@ export class WordUser extends Word {
   // 获取裁剪后的日语文本（类似Swift的computed property）
   get wordJpClippedString(): string {
     // return this.wordJp ? this.wordJp.split(',')[0] : '';
-    return TEUtility.clipString(this.titleCn1)
+    // return TEUtility.clipString(this.titleCn1)
+    return this.titleCn1ClippedShort
   }
 
   // 获取错误日期字符串

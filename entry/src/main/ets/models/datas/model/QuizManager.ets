@@ -38,6 +38,11 @@ export enum QuestionType {
   Waei  // 日→英
 }
 
+export enum QuestionScope {
+  All,
+  Still,
+  Mistake
+}
 
 class QuizConstants {
   // 问题速度常量（单位：毫秒）
@@ -96,6 +101,7 @@ export class QuizManager {
   public questionType: QuestionType    = QuestionType.Eiwa; // 问题类型
   public questionPronounce: boolean    = false;                // 是否发音
   public interval: number              = QuizConstants.DEFAULT_INTERVAL; // 间隔时间
+  public questionScope: QuestionScope  = QuestionScope.All
 
   // 测验数据源
   public unit: Unit | null              = null;                 // 当前单元（用于单元测验）
@@ -206,52 +212,123 @@ export class QuizManager {
   }
 
 
-  getAnswerTextOfShowingQuestion(): string[] {
+  // getAnswerTextOfShowingQuestion(): string[] {
+  //   if (!this.showingQuestion) {
+  //     return [];
+  //   }
+  //
+  //   const answerCount = this.questionMode === QuestionMode.Challenge ? 8 : 4;
+  //   const answerTexts: string[] = new Array(answerCount).fill('');
+  //
+  //   // 获取正确答案文本
+  //   const isTextEn: boolean = this.questionType === QuestionType.Waei;
+  //   const correctText: string = isTextEn
+  //     ? (this.showingQuestion.titleEn || '')
+  //     : (this.showingQuestion.wordJpClippedString || '');
+  //
+  //   // 随机选择正确答案位置
+  //   this.correctIndexOfAnswers = Math.floor(Math.random() * answerCount);
+  //   answerTexts[this.correctIndexOfAnswers] = correctText;
+  //
+  //   // 获取所有可能的文本（这里需要实现获取备选答案的逻辑）
+  //   const allTextList: string[] = this.getAllTextForQuestionWord(this.showingQuestion, isTextEn);
+  //
+  //   // 填充错误答案
+  //   const wrongAnswers: string[] = [];
+  //   const usedTexts = new Set<string>([correctText]);
+  //
+  //   while (wrongAnswers.length < answerCount - 1 && allTextList.length > 0) {
+  //     const randomIndex = Math.floor(Math.random() * allTextList.length);
+  //     const wrongText   = allTextList[randomIndex];
+  //
+  //     if (!usedTexts.has(wrongText)) {
+  //       wrongAnswers.push(wrongText);
+  //       usedTexts.add(wrongText);
+  //       allTextList.splice(randomIndex, 1);
+  //     }
+  //   }
+  //
+  //   // 填充答案数组
+  //   let wrongAnswerIndex = 0;
+  //   for (let i = 0; i < answerCount; i++) {
+  //     if (i !== this.correctIndexOfAnswers && wrongAnswerIndex < wrongAnswers.length) {
+  //       answerTexts[i] = wrongAnswers[wrongAnswerIndex];
+  //       wrongAnswerIndex++;
+  //     }
+  //   }
+  //
+  //   return answerTexts;
+  // }
+
+  public async getAnswerTextOfShowingQuestion(): Promise<string[]> {
+    // 安全保护
     if (!this.showingQuestion) {
       return [];
     }
 
-    const answerCount = this.questionMode === QuestionMode.Challenge ? 8 : 4;
-    const answerTexts: string[] = new Array(answerCount).fill('');
+    // Challenge = 8，其它 = 4
+    const answerCount: number =
+      this.questionMode === QuestionMode.Challenge ? 8 : 4;
 
-    // 获取正确答案文本
-    const isTextEn: boolean = this.questionType === QuestionType.Waei;
-    const correctText: string = isTextEn
-      ? (this.showingQuestion.titleEn || '')
-      : (this.showingQuestion.wordJpClippedString || '');
-
-    // 随机选择正确答案位置
-    this.correctIndexOfAnswers = Math.floor(Math.random() * answerCount);
-    answerTexts[this.correctIndexOfAnswers] = correctText;
-
-    // 获取所有可能的文本（这里需要实现获取备选答案的逻辑）
-    const allTextList: string[] = this.getAllTextForQuestionWord(this.showingQuestion, isTextEn);
-
-    // 填充错误答案
-    const wrongAnswers: string[] = [];
-    const usedTexts = new Set<string>([correctText]);
-
-    while (wrongAnswers.length < answerCount - 1 && allTextList.length > 0) {
-      const randomIndex = Math.floor(Math.random() * allTextList.length);
-      const wrongText   = allTextList[randomIndex];
-
-      if (!usedTexts.has(wrongText)) {
-        wrongAnswers.push(wrongText);
-        usedTexts.add(wrongText);
-        allTextList.splice(randomIndex, 1);
-      }
-    }
-
-    // 填充答案数组
-    let wrongAnswerIndex = 0;
+    // 初始化答案数组（先放 null）
+    const textArray: string[] = [];
     for (let i = 0; i < answerCount; i++) {
-      if (i !== this.correctIndexOfAnswers && wrongAnswerIndex < wrongAnswers.length) {
-        answerTexts[i] = wrongAnswers[wrongAnswerIndex];
-        wrongAnswerIndex++;
+      textArray.push('');
+    }
+
+    // 是否英文答案
+    const isAnswerTextEn: boolean = this.questionType === QuestionType.Waei;
+
+    // 正确答案文本
+    const correctText: string = isAnswerTextEn
+      ? (this.showingQuestion.titleEn ?? '')
+      : (this.showingQuestion.titleCn1ClippedShort ?? '');
+
+    // 随机正确答案位置
+    this.correctIndexOfAnswers =
+      Math.floor(Math.random() * textArray.length);
+
+    textArray[this.correctIndexOfAnswers] = correctText;
+
+    // 所有候选文本（来自 SearchManager）
+    const allTextList: string[] = await SearchManager.shared.getAllTextForQuestionWord(this.showingQuestion, isAnswerTextEn);
+
+    // 错误答案列表
+    const wrongList: string[] = [];
+
+    // 生成错误答案（完全对齐 Java while 逻辑）
+    while (wrongList.length < textArray.length - 1) {
+      const index: number = Math.floor(Math.random() * allTextList.length);
+
+      const newStr: string = allTextList[index];
+
+      if (isAnswerTextEn) {
+        // 英文答案：不能等于正确答案
+        if (newStr !== correctText) {
+          if (!wrongList.includes(newStr)) {
+            wrongList.push(newStr);
+          }
+        }
+      } else {
+        // 中文答案：不能出现在题目的所有中文释义中
+        const questionDetail = await this.showingQuestion.getWordDetail();
+        if (  questionDetail &&  !questionDetail.getTitleCnsJoined().includes(newStr)) {
+          if (!wrongList.includes(newStr)) {
+            wrongList.push(newStr);
+          }
+        }
       }
     }
 
-    return answerTexts;
+    // 把错误答案填充到剩余位置
+    for (let i = 0; i < textArray.length; i++) {
+      if (i !== this.correctIndexOfAnswers) {
+        textArray[i] = wrongList[0];
+        wrongList.shift(); // 等价 Java 的 remove(0)
+      }
+    }
+
+    return textArray;
   }
 
   passToNext(): void {
@@ -296,12 +373,14 @@ export class QuizManager {
         if (this.unit) {
           this.scopeWords.push(...this.unit.aliveWords);
         }
+        this.scopeWords = this.filterScope(this.scopeWords, this.questionScope)
         break;
 
       case QuizType.All:
         for (const unit of this.units) {
           this.scopeWords.push(...unit.aliveWords);
         }
+        this.scopeWords = this.filterScope(this.scopeWords, this.questionScope)
         break;
 
       case QuizType.Category:
@@ -312,6 +391,7 @@ export class QuizManager {
             this.scopeWords.push(...words);
           }
         }
+        this.scopeWords = this.filterScope(this.scopeWords, this.questionScope)
         break;
 
       case QuizType.Favorite: {
@@ -326,6 +406,7 @@ export class QuizManager {
             }
           }
         }
+        this.scopeWords = this.filterScope(this.scopeWords, this.questionScope)
         break;
       }
 
@@ -369,6 +450,7 @@ export class QuizManager {
             }
           }
         }
+        this.scopeWords = this.filterScope(this.scopeWords, this.questionScope)
         break;
       }
 
@@ -393,6 +475,7 @@ export class QuizManager {
             }
           }
         }
+        this.scopeWords = this.filterScope(this.scopeWords, this.questionScope)
         break;
       }
 
@@ -400,6 +483,8 @@ export class QuizManager {
         if (this.customWords && this.customWords.length > 0) {
           this.scopeWords.push(...this.customWords);
         }
+
+        this.scopeWords = this.filterScope(this.scopeWords, this.questionScope)
         break;
 
       default:
@@ -411,6 +496,22 @@ export class QuizManager {
     return this.scopeWords;
   }
 
+  private filterScope(wds: WordUser[], questionScope: QuestionScope): WordUser[] {
+    let scopeWords: WordUser[] = []
+    if (wds && wds.length > 0) {
+      if (this.questionScope === QuestionScope.Still) { //未测试
+        const dds = wds.filter((v: WordUser) => v.wrangTimes === 0 && v.correctedTimes === 0)
+        scopeWords.push(...dds)
+      } else if (this.questionScope === QuestionScope.Mistake) { //常错
+        const dds = wds.filter((v: WordUser) => v.wrangTimes > 0 && v.correctedTimes === 0)
+        scopeWords.push(...dds)
+      } else {
+        //全部
+        scopeWords.push(...wds);
+      }
+    }
+    return scopeWords
+  }
 
   private getRandomListFromList<T>(listSrc: T[], requestCount: number): T[] {
     if (!listSrc || listSrc.length === 0) {
@@ -436,12 +537,6 @@ export class QuizManager {
     const sortedList = [...listSrc].sort((a, b) => (a.idx || 0) - (b.idx || 0));
     return sortedList.slice(0, Math.min(requestCount, sortedList.length));
   }
-
-
-  private getAllTextForQuestionWord(word: WordUser, isEnglish: boolean): string[] {
-    return SearchManager.shared.getAllTextForQuestionWord(word, isEnglish)
-  }
-
 
   private isListContainsString(list: string[], str: string): boolean {
     return list.some(item => item === str);

@@ -372,10 +372,10 @@
     {"name": "tab_title_report"                             , "value": "报告"},
 
     {"name": "cat_tab_title_abc"                            , "value": "ABC"},
-    {"name": "cat_tab_title_category"                       , "value": "等级别"},
+    {"name": "cat_tab_title_category"                       , "value": "PARTS"},
     {"name": "cat_tab_title_favorite"                       , "value": "收藏夹"},
     {"name": "cat_tab_title_mistake"                        , "value": "常错单词"},
-    {"name": "cat_tab_title_still"                          , "value": "未测试"},
+    {"name": "cat_tab_title_still"                          , "value": "未测验"},
 
     {"name": "search_btn_cancel"                            , "value": "取消"   },
     {"name": "str_unit_no"                                  , "value": "Unit%s"},
@@ -410,7 +410,7 @@
 
     { "name": "quiz_top_txt_unit"                           , "value": "单元别" },
     { "name": "quiz_top_txt_all"                            , "value": "全部单词" },
-    { "name": "quiz_top_txt_category"                       , "value": "分类别" },
+    { "name": "quiz_top_txt_category"                       , "value": "Part别" },
     { "name": "quiz_top_txt_mistake"                        , "value": "常错单词" },
     { "name": "quiz_top_txt_favorite"                       , "value": "收藏单词" },
 
@@ -421,7 +421,7 @@
     { "name": "quiz_start_txt_type"                         , "value": "出题种类" },
     { "name": "quiz_start_txt_speed"                        , "value": "出题速度" },
     { "name": "quiz_start_txt_order"                        , "value": "出题顺序" },
-    { "name": "quiz_start_txt_pronounce"                    , "value": "发音" },
+    { "name": "quiz_start_txt_pronounce"                    , "value": "自动发音" },
     { "name": "quiz_start_mode_normal"                      , "value": "普通" },
     { "name": "quiz_start_mode_challenge"                   , "value": "挑战" },
     { "name": "quiz_start_count_10"                         , "value": "10问" },
@@ -437,7 +437,7 @@
     { "name": "quiz_start_order_random"                     , "value": "随机" },
     { "name": "quiz_start_pronounce_on"                     , "value": "ON" },
     { "name": "quiz_start_pronounce_off"                    , "value": "OFF" },
-    { "name": "quiz_start_btn_text"                         , "value": "START" },
+    { "name": "quiz_start_btn_text"                         , "value": "Start" },
 
     { "name": "quiz_result_score_rate"                      , "value": "正确率" },
     { "name": "quiz_result_score_count_all"                 , "value": "全%s问" },
@@ -452,7 +452,7 @@
     { "name": "report_title_learn"                          , "value": "学习状况" },
     { "name": "report_title_test"                           , "value": "测试状况" },
     { "name": "report_title_mistake"                        , "value": "单词错误次数状况" },
-    { "name": "report_title_category_radar"                 , "value": "正确率(等级别)" },
+    { "name": "report_title_category_radar"                 , "value": "正确率(Part别)" },
     { "name": "report_txt_learn_wordscount"                 , "value": "已学习单词数" },
     { "name": "report_txt_test_correct"                     , "value": "正确率" },
     { "name": "report_txt_test_wrang"                       , "value": "不正确率" },
@@ -500,7 +500,7 @@
     {"name": "nav_title_quiz_scope_unit"                    , "value": "单元选择"},
     {"name": "nav_title_quiz_scope_all"                     , "value": "全部单词"},
     {"name": "nav_title_quiz_scope_favorite"                , "value": "收藏单词"},
-    {"name": "nav_title_quiz_scope_category"                , "value": "分类别"},
+    {"name": "nav_title_quiz_scope_category"                , "value": "Part别"},
     {"name": "nav_title_quiz_scope_mistake"                 , "value": "常错单词"},
 
     {"name": "nav_title_quiz_start"                         , "value": "测试设定"},
@@ -563,6 +563,8 @@
     {"name": "review_btn_delete"                            , "value": "删除"},
     {"name": "review_confirm_msg"                           , "value": "确定要删除吗？"},
 
+    {"name": "review_no_data"                               , "value": "没有需要复习的单词。\n请先进行测验或挑战!"},
+
     {"name": "report_learn_title"                           , "value": "学习状况"},
     {"name": "report_learn_txt"                             , "value": "已学习单词数"},
 
@@ -572,7 +574,7 @@
     {"name": "report_test_txt_still"                        , "value": "未测试"},
 
     {"name": "report_mistake_title"                         , "value": "单词错误次数状况"},
-    {"name": "report_category_title"                        , "value": "正确率(等级别)"},
+    {"name": "report_category_title"                        , "value": "正确率(Part别)"},
 
     {"name": "set_txt_title"                                , "value": "设定"},
     {"name": "set_txt_learn"                                , "value": "学习履历删除"},

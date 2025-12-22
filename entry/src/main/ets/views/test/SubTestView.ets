@@ -1,28 +1,31 @@
-import { BgImage } from "../../../app/views/BgImage"
-import { TEUtility } from "../../../common/utils/TEUtility"
-import { QuestionMode, QuizManager, QuizType } from "../../../models/datas/model/QuizManager"
-import { SearchManager } from "../../../models/datas/model/SearchManager"
-import { QuizScopeAllViewConfig } from "../../quiz/scope/QuizScopeAllView"
-import { QuizScopeCategoryViewConfig } from "../../quiz/scope/QuizScopeCategoryView"
-import { QuizScopeFavoriteViewConfig } from "../../quiz/scope/QuizScopeFavoriteView"
-import { QuizScopeMistakeViewConfig } from "../../quiz/scope/QuizScopeMistakeView"
-import { QuizScopeUnitViewConfig } from "../../quiz/scope/QuizScopeUnitView"
+import { BgImage } from "../../app/views/BgImage"
+import { TEUtility } from "../../common/utils/TEUtility"
+import { QuestionMode, QuizManager, QuizType } from "../../models/datas/model/QuizManager"
+import { SearchManager } from "../../models/datas/model/SearchManager"
+import { QuizScopeAllViewConfig } from "../quiz/scope/QuizScopeAllView"
+import { QuizScopeCategoryViewConfig } from "../quiz/scope/QuizScopeCategoryView"
+import { QuizScopeFavoriteViewConfig } from "../quiz/scope/QuizScopeFavoriteView"
+import { QuizScopeMistakeViewConfig } from "../quiz/scope/QuizScopeMistakeView"
+import { QuizScopeUnitViewConfig } from "../quiz/scope/QuizScopeUnitView"
 
 @ComponentV2
 export struct SubTestView {
 
-  @Param isShowing    : boolean                                       = false;
+  // @Param isShowing    : boolean                                       = false;
 
   @Local items: ItemOption[] = []
   @Local hasMistakes: boolean = false
-  private mistakeRowIndex = 3
+  @Local hasFavorites: boolean = false
 
-  @Monitor('isShowing')
-  onChangeOfShowing(){
-    if (this.isShowing && !this.hasMistakes) {
-      this.loadData()
-    }
-  }
+  private mistakeRowIndex = 3
+  private favoriteRowIndex = 4
+
+  // @Monitor('isShowing')
+  // onChangeOfShowing(){
+  //   // if (this.isShowing && !this.hasMistakes) {
+  //   //   this.loadData()
+  //   // }
+  // }
 
   aboutToAppear(): void {
     this.items   = []
@@ -40,6 +43,7 @@ export struct SubTestView {
 
   loadData(){
     this.hasMistakes = SearchManager.shared.getAllMistakes().length > 0
+    this.hasFavorites = SearchManager.shared.getAllFavorites().length > 0
   }
 
   build() {
@@ -68,7 +72,7 @@ export struct SubTestView {
           this.buildRow(index, this.items[index])
         }
         .onClick(()=> {
-          if ((index !== this.mistakeRowIndex || this.hasMistakes)) {
+          if (this.isEnableForRow(index) ) {
             this.handleRowClick(index)
           }
 
@@ -76,6 +80,8 @@ export struct SubTestView {
       })
 
     }
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+    .backgroundColor($r('app.color.color_background'))
     .width('100%')
     .height('100%')
     .padding(0)
@@ -97,7 +103,7 @@ export struct SubTestView {
         //文字
         Text(item.title)
           .fontWeight(FontWeight.Regular)
-          .fontColor((index !== this.mistakeRowIndex || this.hasMistakes) ? Color.Black: Color.Gray)
+          .fontColor(this.isEnableForRow(index) ? Color.Black: Color.Gray)
       }
       .alignItems(VerticalAlign.Center)
 
@@ -105,9 +111,12 @@ export struct SubTestView {
 
       Blank().layoutWeight(1)
 
-      Image($r('app.media.quiz_top_icon_9'))
-        .width(11)
-        .height(16)
+      if (this.isEnableForRow(index)){
+        Image($r('app.media.chevron_right'))
+          .width(11)
+          .height(16)
+      }
+
     }
     .alignItems(VerticalAlign.Center)
     .width('100%')
@@ -118,7 +127,7 @@ export struct SubTestView {
 
   handleRowClick(index: number){
 
-    QuizManager.shared.questionMode = QuestionMode.Normal
+    //QuizManager.shared.questionMode = QuestionMode.Normal
     switch (index){
       case 0: QuizManager.shared.quizType = QuizType.Unit;       QuizScopeUnitViewConfig.open();     break;
       case 1: QuizManager.shared.quizType = QuizType.All;        QuizScopeAllViewConfig.open();      break;
@@ -128,6 +137,15 @@ export struct SubTestView {
     }
   }
 
+  isEnableForRow(index: number): boolean {
+    if(index === this.mistakeRowIndex && !this.hasMistakes){
+      return false
+    }
+    if(index === this.favoriteRowIndex && !this.hasFavorites){
+      return false
+    }
+    return true
+  }
 }
 
 interface ItemOption {

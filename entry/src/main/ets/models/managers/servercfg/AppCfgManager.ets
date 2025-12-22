@@ -80,7 +80,7 @@ export class AppCfgManager {
     this.loadPreference();
 
     // 从服务器加载配置（如果需要）
-    this.loadConfigsIfNeeds();
+    // this.loadConfigsIfNeeds();
   }
 
   // 获取单例实例

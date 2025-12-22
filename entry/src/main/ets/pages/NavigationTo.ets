@@ -15,13 +15,15 @@ import { QuizScopeAllView, QuizScopeAllViewConfig } from '../views/quiz/scope/Qu
 import { QuizScopeCategoryView, QuizScopeCategoryViewConfig } from '../views/quiz/scope/QuizScopeCategoryView';
 import { QuizScopeFavoriteView, QuizScopeFavoriteViewConfig } from '../views/quiz/scope/QuizScopeFavoriteView';
 import { QuizScopeMistakeView, QuizScopeMistakeViewConfig } from '../views/quiz/scope/QuizScopeMistakeView';
-import { QuizStartViewConfig, QuizStartViewController } from '../views/quiz/start/QuizStartView';
+import { QuizStartViewConfig, QuizStartView } from '../views/quiz/start/QuizStartView';
 import { QuizRunningView, QuizRunningViewConfig } from '../views/quiz/running/QuizRunningView';
 import { QuizResultView, QuizResultViewConfig } from '../views/quiz/result/QuizResultView';
 import { QuizChallengeView, QuizChallengeViewConfig } from '../views/quiz/running/QuizChallengeView';
 import { SpellRunningView, SpellRunningViewConfig } from '../views/quiz/spell/SpellRunningView';
 import { BookListView, BookListViewConfig } from '../views/books/BookListView';
 import { BooksOnlineView, BooksOnlineViewConfig } from '../views/books/BooksOnlineView';
+import { TestTopView, TestTopViewConfig } from '../views/test/TestTopView';
+import { ChallengeTopView, ChallengeTopViewConfig } from '../views/test/ChallengeTopView';
 
 
 @Builder
@@ -35,12 +37,14 @@ export function navigationTo<T>(name: string, param: T){
   }else if (name === BookListViewConfig.NavKey)           { BookListView()
   }else if (name === BooksOnlineViewConfig.NavKey)        { BooksOnlineView({category: (param as BooksOnlineViewConfig.Param).category})
   }else if (name === DeletedWordsViewConfig.NavKey)       { DeletedWordsView()
+  }else if (name === TestTopViewConfig.NavKey)            { TestTopView()
+  }else if (name === ChallengeTopViewConfig.NavKey)       { ChallengeTopView()
   }else if (name === QuizScopeUnitViewConfig.NavKey)      { QuizScopeUnitView()
   }else if (name === QuizScopeAllViewConfig.NavKey)       { QuizScopeAllView()
   }else if (name === QuizScopeCategoryViewConfig.NavKey)  { QuizScopeCategoryView()
   }else if (name === QuizScopeFavoriteViewConfig.NavKey)  { QuizScopeFavoriteView()
   }else if (name === QuizScopeMistakeViewConfig.NavKey)   { QuizScopeMistakeView()
-  }else if (name === QuizStartViewConfig.NavKey)          { QuizStartViewController()
+  }else if (name === QuizStartViewConfig.NavKey)          { QuizStartView()
   }else if (name === QuizRunningViewConfig.NavKey)        { QuizRunningView()
   }else if (name === QuizChallengeViewConfig.NavKey)      { QuizChallengeView()
   }else if (name === SpellRunningViewConfig.NavKey)       { SpellRunningView()

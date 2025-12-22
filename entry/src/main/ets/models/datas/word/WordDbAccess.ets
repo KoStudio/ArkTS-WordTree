@@ -7,6 +7,7 @@ import { LanguageManager } from '../../../common/components/Language/LanguageMan
 import { CBookManager } from '../../../common/components/Sounds/Cloud/Download/CBook/CBookManager';
 import { StringEncoder } from '../../../common/utils/strings/StringEncrypt';
 import { DBAccessor } from '../../dbUtils/DBAccessor';
+import { DB } from '../../dbUtils/DBConstants';
 import { DBPrepareProtocol, DbPrepareUtils } from '../../dbUtils/DBPrepare';
 import { ResultSetTool } from '../../dbUtils/ResultSetTool';
 import { AppCfgManager } from '../../managers/servercfg/AppCfgManager';
@@ -147,8 +148,43 @@ export class WordDbAccess implements DBPrepareProtocol {
     if (!titleEnBase64) return null;
 
 
-    const sql = `SELECT * FROM ${WordTable.Table_Name} WHERE ${WordTable.Col.TITLEEN} = ? LIMIT 1`;
+    const sql = `SELECT * FROM ${WordTable.Table_Name}
+                  WHERE
+                    SUBSTR(${WordTable.Col.TITLEEN}, ${DB.salt} + 1, LENGTH(${WordTable.Col.TITLEEN}) - ${DB.salt})
+                  = ? LIMIT 1`;
     return await this.db.getData(sql, [titleEnBase64], (rs: relationalStore.ResultSet) => this.createWordDetailFromResultSet(rs));
+  }
+
+  async getAllCnTexts(): Promise<Record<string, string>[] | null> {
+    if (!this.db) return [];
+
+    const sql = `
+    SELECT
+      ${WordTable.Col.TITLEEN},
+      ${WordTable.Col.TITLECN1},
+      ${WordTable.Col.TITLECN2},
+      ${WordTable.Col.TITLECN3}
+    FROM ${WordTable.Table_Name}
+  `;
+
+    return await this.db.getDatas(
+      sql,
+      [],
+      (rs: relationalStore.ResultSet): Record<string, string> => {
+        const map: Record<string, string> = {};
+
+        try {
+          map['titleEn']  = ResultSetTool.decodeString(rs, WordTable.Col.TITLEEN)  ?? '';
+          map['titleCn1'] = ResultSetTool.decodeString(rs, WordTable.Col.TITLECN1) ?? '';
+          map['titleCn2'] = ResultSetTool.decodeString(rs, WordTable.Col.TITLECN2) ?? '';
+          map['titleCn3'] = ResultSetTool.decodeString(rs, WordTable.Col.TITLECN3) ?? '';
+        } catch (error) {
+          DebugLog.e(`WordDbAccess.getAllCnTexts 解析失败: ${error}`);
+        }
+
+        return map;
+      }
+    );
   }
 
   private createWordFromResultSet(rs: relationalStore.ResultSet): Word {

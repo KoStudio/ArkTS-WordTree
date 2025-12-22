@@ -119,10 +119,18 @@ export struct QuizScopeCategoryView {
   buildRowContent(index: number, category: Part) {
     Stack(){
 
-      Image(TEUtility.getCategoryScopeButtonIcon(index))
-        .width(146)
-        .height(117)
-        .objectFit(ImageFit.Fill)
+      Row(){
+
+        Text(category.partName)
+          .fontSize(22)
+          .fontColor($r('app.color.colorPrimary'))
+          .fontWeight(FontWeight.Medium)
+
+      }
+      .height('100%')
+      .width('100%')
+      .justifyContent(FlexAlign.Center)
+      .alignItems(VerticalAlign.Center)
 
       Column() {
         // 勾选图标
@@ -134,18 +142,6 @@ export struct QuizScopeCategoryView {
         .justifyContent(FlexAlign.End)
         .width('100%')
 
-
-        Row(){
-
-          Text(category.partName)
-            .fontSize(16)
-            .fontColor($r('app.color.colorPrimary'))
-
-        }
-        .width('100%')
-        .justifyContent(FlexAlign.Start)
-
-
       }
       .width('100%')
       .height('100%')
@@ -154,10 +150,9 @@ export struct QuizScopeCategoryView {
     }
     .width(146)
     .height(117)
-    // .backgroundImage(TEUtility.getCategoryScopeButtonIcon(index))
-    //.padding({ left: 5, right: 5, top: 5, bottom: 5 })
-    // .border({ width: 1, color: $r('app.color.colorPrimary') })
-    // .borderRadius(2)
+    .padding({ left: 5, right: 5, top: 5, bottom: 5 })
+    .border({ width: 1, color: $r('app.color.color_obscure'), radius: 3 })
+
   }
 
   @Builder buildFooter(){

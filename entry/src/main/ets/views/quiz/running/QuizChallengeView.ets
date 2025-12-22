@@ -242,8 +242,8 @@ export struct QuizChallengeView {
       //   .id('imgMove')
       Row() {
         FadeInOutMov({
-          imageWidth: 320,
-          imageHeight: 126,
+          imageWidth: 150,
+          imageHeight: 125,
           onAppearing: (ref)=>{
             this.fadeMovRef = ref
           }
@@ -379,7 +379,7 @@ export struct QuizChallengeView {
     this.lblQuestionText = isEiwa ? question.titleEn : question.titleCn1;
 
     //Answer
-    const answers    = QuizManager.shared.getAnswerTextOfShowingQuestion()
+    const answers    = await QuizManager.shared.getAnswerTextOfShowingQuestion()
     this.answerTexts = [...answers]; // 一次性赋值 → UI 自动刷新
 
     this.isAnswerEnabled = true

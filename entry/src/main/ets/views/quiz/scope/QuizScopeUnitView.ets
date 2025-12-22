@@ -48,11 +48,12 @@ export struct QuizScopeUnitView {
       Stack(){
 
         //通用 背景
-        BgImage()
+        // BgImage()
 
         //构建列表
         this.buildList()
       }
+
       .onAppear(() => {
         this.loadData()
       })
@@ -94,7 +95,7 @@ export struct QuizScopeUnitView {
 
     }
     // .padding({ top: 0 })
-    //.backgroundColor($r('app.color.color_obscure'))
+    .backgroundColor($r('app.color.color_background'))
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     .width('100%')
     .height('100%')
@@ -114,15 +115,17 @@ export struct QuizScopeUnitView {
   buildGroupHeader(section: string, index: number) {
     Row({space: 20}){
       //icon
-      TintImage({src: this.getSectionIcon(index), colorStr: '#ffffff', iconSize: 22})
+      // TintImage({src: this.getSectionIcon(index), colorStr: '#ffffff', iconSize: 22})
 
       /// 共0个
       Text(section)
-        .fontColor($r('app.color.color_white'))
-        .fontSize(12)
+        .fontColor($r('app.color.colorPrimary'))
+        .fontSize(16)
+        .fontWeight(FontWeight.Regular)
     }
-    .backgroundColor(this.getSectionBgColor(section))
-    .padding({left: 20,top: 2, bottom: 2 })
+    // .backgroundColor(this.getSectionBgColor(section))
+    .backgroundColor($r('app.color.color_obscure'))
+    .padding({left: 10,top: 2, bottom: 2 })
     .width('100%')
     .height(26)
     .justifyContent(FlexAlign.Start)
@@ -139,7 +142,7 @@ export struct QuizScopeUnitView {
         Row(){
           Text(getStringF($r('app.string.str_unit_no'), unit.unitId)) //`Lesson${unit.unitNo}`
             .fontSize(16)
-            .fontColor($r('app.color.colorAccent2'))
+            .fontColor($r('app.color.color_list_item_subtitle'))
 
           if (unit.unitName){
             Text(unit.unitName)
@@ -154,9 +157,9 @@ export struct QuizScopeUnitView {
 
         //进度条
         Progress({ value: unit.correctedWords.length, total: unit.aliveWords.length, type: ProgressType.Linear })
-          .foregroundColor($r('app.color.colorAccent2'))
           .backgroundColor($r('app.color.color_obscure'))
-          .height(2)
+          .color($r('app.color.colorAccent2'))
+          .height(5)
           .width('100%')
 
 

@@ -209,7 +209,7 @@ export struct QuizResultView {
           .margin({left: 15})
 
 
-        Text(word.wordJpClippedString)
+        Text(word.titleCn1ClippedShort)
           .fontSize(15)
           .fontColor($r('app.color.color_detail'))
           .margin({left: 15, top: 5})
@@ -223,7 +223,7 @@ export struct QuizResultView {
 
       //right
       Row({space: 10}){
-        Image(word.lastResultType === SearchConstants.TEST_RESULT_CORRECT ? $r('app.media.quiz_result_list_right') : $r('app.media.quiz_result_list_wrong'))
+        Image(word.lastResultType === SearchConstants.TEST_RESULT_CORRECT ? $r('app.media.list_right2') : $r('app.media.list_wrong'))
           .width(37)
           .height(37)
       }
@@ -248,13 +248,13 @@ export struct QuizResultView {
   buildFooter() {
     Row() {
       TextStyleButton({
-        style:           TextStyleButtonStyle.ACCENT,
+        style:           TextStyleButtonStyle.SOLID,
         text:            $r('app.string.quiz_result_btn_txt_retry'),
         onClickCallBack: () => {this.actionRetry()}
       })
 
       TextStyleButton({
-        style:           TextStyleButtonStyle.ACCENT,
+        style:           TextStyleButtonStyle.SOLID,
         text:            dMemberFlag + getStringF($r('app.string.quiz_result_btn_txt_mistake')),
         onClickCallBack: () => {this.actionMistake()}
       })
@@ -266,7 +266,7 @@ export struct QuizResultView {
         })
 
       TextStyleButton({
-        style:           TextStyleButtonStyle.ACCENT,
+        style:           TextStyleButtonStyle.SOLID,
         text:            $r('app.string.quiz_result_btn_txt_next'),
         onClickCallBack: () => {this.actionNext()}
       })

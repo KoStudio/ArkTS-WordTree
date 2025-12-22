@@ -10,7 +10,7 @@ import { NavPathManager } from './NavPathManager';
 import { SubLearnView } from '../views/main/sub/SubLearnView';
 import { SubReportView } from '../views/main/sub/report/SubReportView';
 import { SubReviewView } from '../views/main/sub/SubReviewView';
-import { SubTestView } from '../views/main/sub/SubTestView';
+import { SubTestView } from '../views/test/SubTestView';
 import { SubListView } from '../views/main/sub/list/SubListView';
 import { TintImage } from '../app/views/TintImage';
 import { NavBarView } from '../app/views/NavBarView';
@@ -188,25 +188,25 @@ struct Index {
       TabContent() {
         SubLearnView()
       }
-      .tabBar(this.tabBuilder(0, $r('app.string.tab_title_learn'), $r("app.media.tab_f_0_1")))
+      .tabBar(this.tabBuilder(0, $r('app.string.tab_title_learn'), $r("app.media.ic_menu_xuexi_normal"), $r("app.media.ic_menu_xuexi_selected")))
 
       // list
       TabContent() {
         SubListView({isShowing: this.selectedIndex === 1, refreshSearch: this.refreshSearch})
       }
-      .tabBar(this.tabBuilder(1, $r('app.string.tab_title_list'), $r("app.media.tab_f_1_1")))
+      .tabBar(this.tabBuilder(1, $r('app.string.tab_title_list'), $r("app.media.ic_menu_yilan_normal"), $r("app.media.ic_menu_yilan_selected")))
 
       //review
       TabContent() {
         SubReviewView({isShowing: this.selectedIndex === 2})
       }
-      .tabBar(this.tabBuilder(2, $r('app.string.tab_title_review'), $r("app.media.tab_f_3_1")))
+      .tabBar(this.tabBuilder(2, $r('app.string.tab_title_review'), $r("app.media.ic_menu_fuxi_normal"), $r("app.media.ic_menu_fuxi_selected")))
 
       //report
       TabContent() {
         SubReportView({isShowing: this.selectedIndex === 3})
       }
-      .tabBar(this.tabBuilder(3, $r('app.string.tab_title_report'), $r("app.media.tab_f_4_1")))
+      .tabBar(this.tabBuilder(3, $r('app.string.tab_title_report'), $r("app.media.ic_menu_baogao_normal"), $r("app.media.ic_menu_baogao_selected")))
 
 
     }
@@ -225,10 +225,10 @@ struct Index {
   }
 
   @Builder
-  tabBuilder(index: number, title: string | Resource, icon: Resource) {
+  tabBuilder(index: number, title: string | Resource, icon: Resource, iconSelected: Resource) {
     Column({space: 8}) {
       TintImage({
-        src: icon,
+        src: this.selectedIndex === index ? iconSelected : icon,//icon,
         colorStr: this.selectedIndex === index ? '#80CA56' : '#9E9E9E',
         iconSize: 20
       })

@@ -64,7 +64,7 @@ export struct QuickLearnView {
       Stack(){
 
         //通用 背景
-        BgImage()
+        // BgImage()
 
         //构建列表
         this.buildList()
@@ -111,7 +111,7 @@ export struct QuickLearnView {
 
     }
     //.padding({ top: 0 })
-    // .backgroundColor($r('app.color.color_obscure'))
+    .backgroundColor($r('app.color.color_background'))
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     .width('100%')
     .height('100%')
@@ -136,7 +136,7 @@ export struct QuickLearnView {
       /// 共0个
       Text(section)
         .fontColor($r('app.color.colorPrimary'))
-        .fontSize(13)
+        .fontSize(16)
         .fontWeight(FontWeight.Regular)
     }
     // .backgroundColor(this.getSectionBgColor(section))
@@ -158,7 +158,7 @@ export struct QuickLearnView {
         Row(){
           Text(getStringF($r('app.string.str_unit_no'), unit.unitId)) //`Lesson${unit.unitNo}`
             .fontSize(16)
-            .fontColor($r('app.color.colorPrimaryDark'))
+            .fontColor($r('app.color.color_list_item_subtitle'))
 
           if (unit.unitName){
             Text(unit.unitName)
