@@ -1,4 +1,5 @@
 import { Category, CategoryManager } from "../../../models/datas/book/CategoryManager"
+import { BooksOnlineViewConfig } from "../BooksOnlineView"
 
 
 @ComponentV2
@@ -72,7 +73,7 @@ export struct CategoriesView {
 
   handleRowClick(rowIndex: number, category: Category){
 
-
+    BooksOnlineViewConfig.open({category: category})
   }
 }
 

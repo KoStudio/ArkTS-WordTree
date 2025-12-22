@@ -21,6 +21,7 @@ import { QuizResultView, QuizResultViewConfig } from '../views/quiz/result/QuizR
 import { QuizChallengeView, QuizChallengeViewConfig } from '../views/quiz/running/QuizChallengeView';
 import { SpellRunningView, SpellRunningViewConfig } from '../views/quiz/spell/SpellRunningView';
 import { BookListView, BookListViewConfig } from '../views/books/BookListView';
+import { BooksOnlineView, BooksOnlineViewConfig } from '../views/books/BooksOnlineView';
 
 
 @Builder
@@ -31,7 +32,8 @@ export function navigationTo<T>(name: string, param: T){
   }else if (name === UnitWordsViewConfig.NavKey)          { UnitWordsView({unitId: (param as UnitWordsViewConfig.Param).unitId})
   }else if (name === WordCardsViewConfig.NavKey)          { WordCardsView({words: (param as WordCardsViewConfig.Param).words, initIndex: (param as WordCardsViewConfig.Param).initIndex})
   }else if (name === ComposeMemoViewConfig.NavKey)        { ComposeMemoView({word: (param as ComposeMemoViewConfig.Param).word})
-  }else if (name === BookListViewConfig.NavKey)       { BookListView()
+  }else if (name === BookListViewConfig.NavKey)           { BookListView()
+  }else if (name === BooksOnlineViewConfig.NavKey)        { BooksOnlineView({category: (param as BooksOnlineViewConfig.Param).category})
   }else if (name === DeletedWordsViewConfig.NavKey)       { DeletedWordsView()
   }else if (name === QuizScopeUnitViewConfig.NavKey)      { QuizScopeUnitView()
   }else if (name === QuizScopeAllViewConfig.NavKey)       { QuizScopeAllView()

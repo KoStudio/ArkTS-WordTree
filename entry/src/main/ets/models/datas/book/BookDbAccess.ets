@@ -5,7 +5,9 @@ import { LanguageManager } from '../../../common/components/Language/LanguageMan
 import { CBookManager } from '../../../common/components/Sounds/Cloud/Download/CBook/CBookManager';
 import { CBookListName } from '../../../common/components/Sounds/Cloud/Download/CBook/CBookPath';
 import { FileUtility } from '../../../common/utils/FileUtility';
+import { StringEncoder } from '../../../common/utils/strings/StringEncrypt';
 import { DBAccessor } from "../../dbUtils/DBAccessor";
+import { DB } from '../../dbUtils/DBConstants';
 import { DBPrepareProtocol, DbPrepareUtils } from '../../dbUtils/DBPrepare';
 import { ResultSetTool } from '../../dbUtils/ResultSetTool';
 import { AppCfgManager } from '../../managers/servercfg/AppCfgManager';
@@ -110,8 +112,12 @@ export class BookDbAccess implements DBPrepareProtocol {
   }
 
   async getBooks(categoryName: string): Promise<Book[] | null> {
-    const sql = `SELECT * FROM ${this.TableBookName} WHERE ${Table.Book.Col.categoryName} = ?`;
-    return await this.db.getDatas(sql, [categoryName], rs => this.createOneBookFromRs(rs));
+    const encodedCategory =  StringEncoder.encodedToBase64(categoryName)
+    const sql = `SELECT * FROM ${this.TableBookName}
+                   WHERE
+                    SUBSTR(${Table.Book.Col.categoryName}, ${DB.salt} + 1, LENGTH(${Table.Book.Col.categoryName}) - ${DB.salt})
+                    = ?`;
+    return await this.db.getDatas(sql, [encodedCategory], rs => this.createOneBookFromRs(rs));
   }
 
   private createOneBookFromRs(rs: relationalStore.ResultSet): Book {

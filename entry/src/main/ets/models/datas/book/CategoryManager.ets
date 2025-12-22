@@ -2,9 +2,9 @@ import { BookDbAccess } from "./BookDbAccess";
 
 // MARK: -
 export class Category {
-  categoryName: ResourceStr | null = null;
+  categoryName: string | null = null;
 
-  constructor(categoryName: ResourceStr | null) {
+  constructor(categoryName: string | null) {
     this.categoryName = categoryName;
   }
 
