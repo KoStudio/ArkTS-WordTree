@@ -27,6 +27,7 @@ import { MemberManager } from "../../../models/managers/member/MemberManager"
 import { MemberView } from "../../setting/member/MemberView"
 import { NavBarView } from "../../../app/views/NavBarView"
 import { NavBarCommonView } from "../../../app/views/NavBarCommonView"
+import { DetailCardsViewConfig } from "../detail/DetailCardsView"
 
 export namespace WordCardsViewConfig {
 
@@ -271,6 +272,9 @@ export struct WordCardsView {
               this.showingDictText = text
               this.isShowDictView = true
             },
+            needOpenDetail: (word: WordUser)=>{
+               DetailCardsViewConfig.open({words: this.words, initIndex: index})
+            }
           })
         })
       }
@@ -370,7 +374,7 @@ export struct WordCardsView {
             showClose: false,
             backgroundColor: Color.Transparent,
             modalTransition:ModalTransition.ALPHA,
-            mode: SheetMode.EMBEDDED,
+            mode: SheetMode.OVERLAY,//.EMBEDDED,
             onDisappear:()=>{
               SettingManager.shared.save()
             }
@@ -467,7 +471,7 @@ export struct WordCardsView {
       SettingManager.shared.save()
       this.isShowInfoView = false
     }})
-      .height(300)
+      //.height(300)
   }
 
 

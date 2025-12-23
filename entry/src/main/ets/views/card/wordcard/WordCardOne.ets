@@ -23,6 +23,7 @@ export struct WordCardOne {
   @Event onClickedBtnWordPron: (word: WordUser) => void
   @Event onClickedBtnExamplePron: (word: WordUser) => void
   @Event onClickedText: (text: string) => void
+  @Event needOpenDetail: (word: WordUser) => void
 
   @Local settingManager: SettingManager    = SettingManager.shared
   @Local isHideWordTranslation: boolean    = SettingManager.shared.hideTranslation
@@ -170,7 +171,8 @@ export struct WordCardOne {
         .textAlign(TextAlign.Start)
         .layoutWeight(1) // 占据剩余空间
         .onClick(()=>{
-          DetailCardsViewConfig.open({words: [this.word], initIndex: 0})
+          this.needOpenDetail(this.word)
+          //DetailCardsViewConfig.open({words: [this.word], initIndex: 0})
         })
 
       Blank().layoutWeight(1)

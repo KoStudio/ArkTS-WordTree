@@ -27,6 +27,9 @@ import { NavBarCommonView } from "../../../app/views/NavBarCommonView"
 import { DetailCardOne } from "./DetailCardOne"
 import { DictView } from "../wordcard/dict/DictView"
 import { InfoView } from "../wordcard/info/InfoView"
+import { DetailItemSortView } from "./detailitemsort/DetailItemSortView"
+import { SimpleEventBus } from "../../../common/components/eventbus/SimpleEventBus"
+import { DetailItemNotification } from "../../../models/managers/detailitem/DetailItemManager"
 
 export namespace DetailCardsViewConfig {
 
@@ -66,6 +69,7 @@ export struct DetailCardsView {
   @Local private isShowDictView        : boolean       = false     // 是否显示字典 info 弹窗
   @Local private showingDictText       : string        = ''        // 字典正在显示的文本
   @Local private isShowMemberView      : boolean       = false
+  @Local private isShowDetailSort      : boolean       = false     // 是否显示详细项目排序面板
 
   @Local private isEnableContrast      : boolean       = false
 
@@ -263,9 +267,9 @@ export struct DetailCardsView {
               this.actionPlayWordSound(wd.wordEnSoundText)
             },
 
-            onClickedBtnExamplePron:(wd: WordUser)=>{
+            onClickedBtnExamplePron:(text: string)=>{
               // this.playSound(wd.exampleEn)
-              this.actionPlayExampleSound(wd.exampleEn1)
+              this.actionPlayExampleSound(text)
             },
             onClickedText:(text: string)=>{
               this.showingDictText = text
@@ -281,7 +285,7 @@ export struct DetailCardsView {
       .indicator(false) // 隐藏指示器
       .loop(this.isRepeat) //循环
       .interval(this.rollInterval)//自动播放 间隔
-      .cachedCount(2) // 提升滑动性能
+      .cachedCount(1) // 提升滑动性能
       .curve(Curve.EaseOut) // 设置动画曲线
       .onChange((index: number) => {
         this.pageIndex = index // 滑动时更新索引
@@ -370,7 +374,7 @@ export struct DetailCardsView {
             showClose: false,
             backgroundColor: Color.Transparent,
             modalTransition:ModalTransition.ALPHA,
-            mode: SheetMode.EMBEDDED,
+            mode: SheetMode.OVERLAY,
             onDisappear:()=>{
               SettingManager.shared.save()
             }
@@ -432,6 +436,13 @@ export struct DetailCardsView {
         IconTintButton({icon: $r('app.media.card_btn_contrast_1'), iconColor: $r('app.color.color_footTint'), iconSize: 28, isEnabled: this.isEnableContrast, onClickCallBack: ()=>{ this.actionContrast() }})
 
       }
+      .bindSheet($$this.isShowDetailSort, this.buildDetailSortView(), {
+        detents: [SheetSize.FIT_CONTENT],
+        preferType: SheetType.CENTER,//使用center在Folder上展开时能正常居中显示
+        //title: {title:$r('app.string.detail_item_sort_nav_title')} ,
+        showClose: false
+      })
+
     }
     .width('100%')
     .backgroundColor($r('app.color.color_foot'))
@@ -466,8 +477,12 @@ export struct DetailCardsView {
     InfoView({isShowing: this.isShowInfoView, $isShowing:(val) => {
       SettingManager.shared.save()
       this.isShowInfoView = false
+    }, onClickedBtnSort: ()=>{
+
+      //调整显示顺序
+      this.isShowDetailSort = true
     }})
-      .height(300)
+      //.height(300)
   }
 
 
@@ -480,6 +495,21 @@ export struct DetailCardsView {
       this.preLoadSound()
 
     }})
+  }
+
+  @Builder buildDetailSortView() {
+    DetailItemSortView({
+      isShowing: this.isShowDetailSort!!,
+      onClose: (changed: boolean) => {
+
+        if (changed) {
+          //重新显示数据
+          //发送通知 order改变
+          SimpleEventBus.emit(DetailItemNotification.Name.ItemVisibleOrderChanged)
+        }
+
+      }})
+      .width('100%')
   }
 
   ///actions
@@ -546,6 +576,11 @@ export struct DetailCardsView {
 
       ///预 加载 例句发音
       await this.preLoadOneSound(this.words[page].exampleEn1)
+      const wordDetail = await this.words[page].getWordDetail()
+      if (wordDetail) {
+        await this.preLoadOneSound(wordDetail.exampleEn1)
+        await this.preLoadOneSound(wordDetail.exampleEn2)
+      }
     }
 
   }

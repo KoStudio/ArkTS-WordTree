@@ -1,4 +1,6 @@
 import { dMemberFlag } from '../../../../app/constants/AppDefines';
+import { TextButton } from '../../../../app/views/buttons/TextButton';
+import { SegmentButton, SegmentItem } from '../../../../app/views/SegmentButton';
 import { getString } from '../../../../common/utils/ResourceUtils';
 import { MemberManager } from '../../../../models/managers/member/MemberManager';
 import { SettingManager } from '../../../../models/managers/setting/SettingManager';
@@ -10,6 +12,7 @@ export struct InfoView {
 
   @Param isShowing: boolean         = false
   @Event $isShowing: (val: boolean) => void
+  @Event onClickedBtnSort?: () => void
 
   @Local intervalText: string = `${SettingManager.shared.autoPlayInterval / 1000}秒`;
 
@@ -18,19 +21,14 @@ export struct InfoView {
   @Local autoPlaySoundEx: boolean = SettingManager.shared.autoPlaySoundEx
   @Local rollRepeat     : boolean = SettingManager.shared.rollRepeat
 
+  // private infoWidth: number = 300
+  // private infoHeight: number = 600
+
+
   build() {
 
     Stack() {
 
-      // Column()
-      //   .width('100%')
-      //   .height('100%')
-      //   .backgroundColor($r('app.color.color_black'))
-
-      Image($r('app.media.card_info_bg'))
-        .objectFit(ImageFit.Fill)
-        .width(220)
-        .height(260)
 
       // 设置面板
       Column() {
@@ -58,6 +56,15 @@ export struct InfoView {
           }
         )
 
+        //发音次数
+        this.buildItemSeg(
+          getString($r('app.string.learn_detail_info_txt_pron_times')),
+          [{title: '1次', isEnabled: true}, {title: '2次', isEnabled: true}, {title: '3次', isEnabled: true}],
+          ()=> (SettingManager.shared.pronTimes - 1), (v: number) => { SettingManager.shared.pronTimes = v + 1},
+          (v: number) => {
+            SettingManager.shared.pronTimes = v + 1
+        })
+
         // ===== 例句自动发音 =====
         this.buildItemToggle(
           getString($r('app.string.wordcard_info_autopronunce_ex')) + dMemberFlag, () => this.autoPlaySoundEx, (v: boolean) => { this.autoPlaySoundEx = v }, (isOn: boolean) => {
@@ -71,6 +78,24 @@ export struct InfoView {
           }
         )
 
+        //自动发音间隔
+        this.buildItemSeg(
+          getString($r('app.string.learn_detail_info_txt_pron_gap')),
+          [{title: '短', isEnabled: true}, {title: '中', isEnabled: true}, {title: '长', isEnabled: true}],
+          ()=> (SettingManager.shared.pronGap), (v: number) => { SettingManager.shared.pronGap = v},
+          (v: number) => {
+            SettingManager.shared.pronGap = v
+          })
+
+        //发音播放速度
+        this.buildItemSeg(
+          getString($r('app.string.learn_detail_info_txt_pron_speed')),
+          [{title: '0.8x', isEnabled: true}, {title: '1.0x', isEnabled: true}, {title: '1.2x', isEnabled: true}],
+          ()=> (SettingManager.shared.pronSpeed), (v: number) => { SettingManager.shared.pronSpeed = v},
+          (v: number) => {
+            SettingManager.shared.pronSpeed = v
+          })
+
         // ===== 循环播放 =====
         this.buildItemToggle($r('app.string.wordcard_info_repeat'), () => this.rollRepeat, (v: boolean) => { this.rollRepeat = v }, (isOn: boolean) => {
             SettingManager.shared.rollRepeat = isOn
@@ -82,8 +107,10 @@ export struct InfoView {
         Row() {
           Text($r('app.string.wordcard_info_inteval'))
             .fontSize(14)
-            .fontColor($r('app.color.color_white'))
+            .fontColor($r('app.color.color_text'))
             .textAlign(TextAlign.Start)
+
+          Blank().layoutWeight(1)
 
           // 右侧滑块和文本容器
           Column() {
@@ -96,27 +123,51 @@ export struct InfoView {
 
             Text(this.intervalText)
               .fontSize(13)
-              .fontColor($r('app.color.color_white'))
+              .fontColor($r('app.color.color_text'))
               .textAlign(TextAlign.Start)
           }
           .alignItems(HorizontalAlign.Start)
         }
-
         .justifyContent(FlexAlign.SpaceBetween)
         .alignItems(VerticalAlign.Center)
+
+        //字体大小
+        this.buildItemSeg(
+          getString($r('app.string.learn_detail_info_txt_font_style')),
+          [{title: '小', isEnabled: true}, {title: '中', isEnabled: true}, {title: '大', isEnabled: true}],
+          ()=> (SettingManager.shared.detailStyle), (v: number) => { SettingManager.shared.detailStyle = v},
+          (v: number) => {
+            SettingManager.shared.detailStyle = v
+          })
+
+       Row(){
+         ///调整显示顺序
+         TextButton({
+           text: $r('app.string.learn_detail_info_txt_set_order'),
+           bgColor: $r('app.color.color_btn_bg2'),
+           minWidth: 220,
+           onClickCallBack:()=>{
+             this.onClickedBtnSort?.()
+             this.$isShowing(false)
+           }
+         })
+       }
+       .width('100%')
+       .justifyContent(FlexAlign.Center)
+
       }
-      .width(200)
-      //.height(260)
-      .padding({top: 10, bottom: 10, left: 5, right: 10})
-      .margin({top: 5, bottom: 35,  left: 10, right: 10})
+      .width('100%')
+      .padding({top: 10, bottom: 10, left: 5, right: 20})
+      .margin({top: 5, bottom: 35,  left: 10, right: 20})
 
     }
-    .backgroundColor(Color.Transparent)
+    .backgroundColor(Color.White)
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     .alignContent(Alignment.TopStart)
     .width('100%')
     .padding({bottom: 30})
     .onClick(()=>{
-      this.$isShowing(true)
+      //this.$isShowing(true)
     })
   }
 
@@ -125,7 +176,7 @@ export struct InfoView {
     Row({ space: 10 }) {
       Text(text)
         .fontSize(14)
-        .fontColor($r('app.color.color_white'))
+        .fontColor($r('app.color.color_text'))
         .textAlign(TextAlign.Start)
       Blank()
 
@@ -135,10 +186,41 @@ export struct InfoView {
           onChange(v);
         })
     }
-    .width(200)
+    .width('100%')
+    .padding({right: 66})
     .margin({top: 2, bottom: 5, left: 10, right: 10})
     .justifyContent(FlexAlign.SpaceBetween)
     .alignItems(VerticalAlign.Center)
   }
 
+  @Builder buildItemSeg(text: ResourceStr, items: SegmentItem[], getter: () => number, setter: (v: number) => void, onChange: (v: number) => void) {
+    Row({ space: 10 }) {
+      Text(text)
+        .fontSize(14)
+        .fontColor($r('app.color.color_text'))
+        .textAlign(TextAlign.Start)
+      Blank()
+
+
+      SegmentButton({
+        items: items,
+        selectedIndex: getter(),
+        unselectedTextColor: $r('app.color.color_btn_bg2'),
+        selectedBgColor: $r('app.color.color_btn_bg2'),
+        btnBorderColor: $r('app.color.color_btn_bg2'),
+        totalWidth: 200,
+        onSelect: (index: number)=>{
+          setter(index)
+          onChange(index)
+        }
+      })
+        .width(200)
+
+    }
+    .width('100%')
+    .margin({top: 2, bottom: 5, left: 10, right: 10})
+    .justifyContent(FlexAlign.SpaceBetween)
+    .alignItems(VerticalAlign.Center)
+
+  }
 }

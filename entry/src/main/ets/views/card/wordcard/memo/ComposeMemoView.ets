@@ -8,6 +8,7 @@ import { SearchModifier } from "@kit.ArkUI"
 import { SearchManager } from "../../../../models/datas/model/SearchManager"
 import { buildStandardMenu } from "../../../../app/constants/AppFunctions"
 import { FocusController } from "@ohos.arkui.UIContext"
+import { TextButton } from "../../../../app/views/buttons/TextButton"
 
 export namespace ComposeMemoViewConfig {
 
@@ -51,15 +52,15 @@ export struct ComposeMemoView {
     NavDestination() {
       Stack() {
         //背景
-        BgCardImage()
+        // BgCardImage()
 
         Column({ space: 16 }) {
           // 文本编辑区域
           this.buildTextEditor();
 
           ///保存按钮
-          TextStyleButton({
-            style: TextStyleButtonStyle.ACCENT,
+          TextButton({
+            bgColor: $r('app.color.color_btn_bg2'),
             text: $r('app.string.memo_compose_btn_save'), onClickCallBack: () => {
               this.actionSave()
             },
@@ -78,6 +79,7 @@ export struct ComposeMemoView {
       }
       .width('100%')
       .height('100%')
+      .backgroundColor($r('app.color.color_background'))
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     }
     .title(buildNavTitle(this.getNavTitle()))
@@ -94,14 +96,14 @@ export struct ComposeMemoView {
   // === 导航菜单 ===
   buildMenuItems(): NavigationMenuItem[] {
     return [
-      {
-        value : "edit",
-        icon  : $r('app.media.edit'),
-        action: () => {
-          // 编辑，显示 键盘
-          this.actionEdit();
-        }
-      },
+      // {
+      //   value : "edit",
+      //   icon  : $r('app.media.edit'),
+      //   action: () => {
+      //     // 编辑，显示 键盘
+      //     this.actionEdit();
+      //   }
+      // },
     ];
   }
 
@@ -113,9 +115,9 @@ export struct ComposeMemoView {
         .height(180)
         .width('100%')
         .id('txtContent')
-        .backgroundColor('#ffe9ba')
+        .backgroundColor($r('app.color.color_edit_bg'))
         .borderRadius(5)
-        .border({ width: 1, color: '#ffe9ba' })
+        // .border({ width: 1, color: '#ffe9ba' })
         .onChange((value: string) => {
           this.content = value;
           this.refreshUIState();

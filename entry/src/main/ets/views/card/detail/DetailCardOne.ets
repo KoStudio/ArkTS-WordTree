@@ -2,16 +2,22 @@ import { IconButton } from '../../../app/views/buttons/IconButton';
 import { IconTintButton } from '../../../app/views/buttons/IconTintButton';
 import { TintImage } from '../../../app/views/TintImage';
 import { WordClickableText } from '../../../app/views/WordClickableText';
+import { SectionDatas } from '../../../common/utils/array/SectionDatas';
+import { getString } from '../../../common/utils/ResourceUtils';
 import { TEUtility } from '../../../common/utils/TEUtility';
 import { CigenWord } from '../../../models/datas/cigen/CigenWord';
 import { CigenWordHelper } from '../../../models/datas/cigen/CigenWordHelper';
 import { SearchConstants, SearchManager } from '../../../models/datas/model/SearchManager';
 import { WordUser } from '../../../models/datas/myData/WordUser';
 import { WordDetail } from '../../../models/datas/word/WordDetail';
-import { DetailItem, DetailItemManager, ItemOrder } from '../../../models/managers/detailitem/DetailItemManager';
+import { DetailItem, DetailItemManager,
+  DetailItemNotification,
+  ItemOrder } from '../../../models/managers/detailitem/DetailItemManager';
 import { MemberManager } from '../../../models/managers/member/MemberManager';
 import { SettingManager } from '../../../models/managers/setting/SettingManager';
 import { ComposeMemoViewConfig } from '../wordcard/memo/ComposeMemoView';
+import { ItemInfo } from '@kit.MediaLibraryKit';
+import { SimpleEventBus } from '../../../common/components/eventbus/SimpleEventBus';
 
 
 @ComponentV2
@@ -22,7 +28,7 @@ export struct DetailCardOne {
   @Param @Require pageInfo: string = ''
 
   @Event onClickedBtnWordPron: (word: WordUser) => void
-  @Event onClickedBtnExamplePron: (word: WordUser) => void
+  @Event onClickedBtnExamplePron: (text: string) => void
   @Event onClickedText: (text: string) => void
 
   @Local settingManager: SettingManager    = SettingManager.shared
@@ -34,10 +40,21 @@ export struct DetailCardOne {
   @Local wordDetail      : WordDetail | null = null
   @Local cigenWords      : CigenWord[] | null  = []
   @Local sameRootDesc    : string | null = null
-  @Local subCells        : SubCell[]       = []
+  // @Local subCells        : SubCell[]       = []
+
+  @Local sectionedCells : SectionDatas<string, SubCell> = new SectionDatas()
 
   aboutToAppear(): void {
     this.loadData()
+
+    //监听order是否改变
+    SimpleEventBus.on(DetailItemNotification.Name.ItemVisibleOrderChanged, ()=>{
+      this.loadData()
+    })
+  }
+
+  aboutToDisappear(): void {
+    SimpleEventBus.off(DetailItemNotification.Name.ItemVisibleOrderChanged)
   }
 
   async loadData(){
@@ -46,7 +63,12 @@ export struct DetailCardOne {
     this.sameRootDesc = await CigenWordHelper.getSameRootDescByWord(this.word)
 
     if (this.wordDetail) {
-      this.subCells = [...this.prepareSubCellDatas(this.wordDetail)]
+      const subCells: SubCell[] = [...this.prepareSubCellDatas(this.wordDetail)]
+      const sectionedCells : SectionDatas<string, SubCell> = new SectionDatas()
+      for (const cell of subCells) {
+        sectionedCells.addSectionWithData(cell.section ?? '', cell)
+      }
+      this.sectionedCells = sectionedCells
     }
 
   }
@@ -56,6 +78,7 @@ export struct DetailCardOne {
     this.isHideWordTranslation    = SettingManager.shared.hideTranslation
     this.isHideExampleTranslation = SettingManager.shared.hideTranslation
   }
+
 
   build() {
     Column() {
@@ -94,13 +117,11 @@ export struct DetailCardOne {
       // 主线性布局容器
       Column() {
         Column(){
-          // 学习状态和计数区域
-          this.buildLearnPageInfoPanel();
 
           // 单词信息卡片区域
           this.buildWordTitlePanel()
 
-
+          /// subcells
           this.buildCells()
 
         }
@@ -156,6 +177,9 @@ export struct DetailCardOne {
   @Builder
   buildWordTitlePanel() {
     Column({space: 10}) {
+      // 学习状态和计数区域
+      this.buildLearnPageInfoPanel()
+
       // 单词标题行
       this.buildWordTitleRow();
 
@@ -165,8 +189,6 @@ export struct DetailCardOne {
       // 单词翻译行
       this.buildWordTranslationRow();
 
-      // 词性和分类图标行
-      //this.buildWordAttributesRow();
     }
     //.width('100%')
     .padding({left: 10, right: 10 , top: 10, bottom: 10})
@@ -212,7 +234,9 @@ export struct DetailCardOne {
     }
     .justifyContent(FlexAlign.SpaceBetween)
     .width('100%')
-    .margin({ top: 16, bottom: 20 })
+    .border({width: {top: 1}, color: $r('app.color.color_line')})
+    .padding({ top: 10, bottom: 16 })
+
 
   }
 
@@ -245,8 +269,8 @@ export struct DetailCardOne {
     .justifyContent(FlexAlign.Start)
     .alignItems(HorizontalAlign.Start)
     .width('100%')
-    .margin({ top: 16, bottom: 20 })
-
+    .margin({ top: 5, bottom: 10 })
+    // .border({width: {bottom: 1}, color: $r('app.color.color_line')})
   }
 
   // @Builder buildExpamplePanel(){
@@ -362,15 +386,18 @@ export struct DetailCardOne {
 
   @Builder buildCells(){
     Column(){
-      ForEach(this.subCells, (cell: SubCell, index: number) => {
-        if (cell.type === SubCellType.example) {
-          this.buildSubCellSection(cell.section)
-          this.buildExampleOne(cell)
-        }else if (cell.type === SubCellType.text){
-          this.buildSubCellSection(cell.section)
-          this.buildSubCellText(cell)
-        }
-      }, (cell: SubCell, index: number) => index.toString())
+      ForEach(this.sectionedCells.allSections(), (section: ResourceStr, sectionIndex: number) => {
+        this.buildSubCellSection(section)
+
+        ForEach(this.sectionedCells.allDatasOfSectionIndex(sectionIndex), (cell: SubCell, itemIndex: number) => {
+          if (cell.type === SubCellType.example) {
+            this.buildExampleOne(itemIndex, this.sectionedCells.allDatasOfSectionIndex(sectionIndex).length, cell)
+          }else if (cell.type === SubCellType.text){
+            this.buildSubCellText(cell)
+          }
+        }, (cell: SubCell, itemIndex: number) => itemIndex.toString())
+
+      })
     }
 
   }
@@ -379,7 +406,7 @@ export struct DetailCardOne {
 
   // 构建例句内容区域
   @Builder
-  buildExampleOne(cell: SubCell) {
+  buildExampleOne(itemIndex: number, itemsCnt: number, cell: SubCell) {
     Column({ space: 5 }) {
       Row(){
         // 英文例句
@@ -387,7 +414,7 @@ export struct DetailCardOne {
           .layoutWeight(1)
 
         // 例句语音按钮
-        IconButton({ icon: $r('app.media.ic_langdu_nroaml'), iconSize: 26, onClickCallBack:()=>{ this.onClickedBtnExamplePron(this.word) } })
+        IconButton({ icon: $r('app.media.ic_langdu_nroaml'), iconSize: 26, onClickCallBack:()=>{ this.onClickedBtnExamplePron(cell.title || '') } })
       }
 
       Stack(){
@@ -426,6 +453,8 @@ export struct DetailCardOne {
 
     }
     .width('100%')
+    //.border({width: {bottom: 1}, color: $r('app.color.color_line')})
+    .border({width: {bottom: itemIndex < (itemsCnt - 1) ? 1 : 0}, style: BorderStyle.Dashed, color: $r('app.color.color_obscure')})
     .margin({ top: 5, left: 5, right: 5 })
   }
 
@@ -443,7 +472,8 @@ export struct DetailCardOne {
       }
       .backgroundColor(Color.Transparent)
     }
-    .padding(20)
+    .padding(10)
+    .border({width: {top: 1}, color: $r('app.color.color_line')})
     .margin({bottom: 20})
     .width('100%')
   }
@@ -505,7 +535,7 @@ export struct DetailCardOne {
       .width('100%')
       .padding(10)
       .backgroundColor(this.word.deleted ? Color.Transparent : Color.White)
-      .border({width: {top: 1, bottom: 1, left: 0, right: 0}, color: $r('app.color.color_line')})
+      .border({width: {bottom: 1}, style: BorderStyle.Dashed, color: $r('app.color.color_line')})
       .onClick(()=>{
         //编辑笔记
         ComposeMemoViewConfig.open({word: this.word})
@@ -558,14 +588,14 @@ export struct DetailCardOne {
     ]
   }
 
-  getCategoryIcon():Resource{
-    return TEUtility.getCategoryIcon(this.word.partId)
-  }
-
-  getWordKindIcon():Resource {
-    // return TEUtility.getWordKindIcon(this.word.wordKind)
-    return $r('app.media.icon')
-  }
+  // getCategoryIcon():Resource{
+  //   return TEUtility.getCategoryIcon(this.word.partId)
+  // }
+  //
+  // getWordKindIcon():Resource {
+  //   // return TEUtility.getWordKindIcon(this.word.wordKind)
+  //   return $r('app.media.icon')
+  // }
 
 
   private prepareSubCellDatas(word: WordDetail): SubCell[] {
@@ -577,7 +607,7 @@ export struct DetailCardOne {
         // case DetailItem.Word          : cells.push({section:})  break; // 单词
         case DetailItem.WordChange    :  // 单词变形
           if ((word.wordChange?.length ?? 0) > 0) {
-            cells.push({type: SubCellType.text, section: $r('app.string.learn_detail_txt_wordchang'), subTitle: word.wordChange})
+            cells.push({type: SubCellType.text, section: getString($r('app.string.learn_detail_txt_wordchang')), subTitle: word.wordChange})
           }
 
           break;
@@ -585,7 +615,7 @@ export struct DetailCardOne {
         case DetailItem.Cigens        :// 词根助记
           if (this.cigenWords) {
             for (const cigenWord of this.cigenWords) {
-              cells.push({type: SubCellType.text, section: $r('app.string.learn_detail_txt_mnemonic'), subTitle: cigenWord.mnemonic, detail: cigenWord.getDetail()})
+              cells.push({type: SubCellType.text, section: getString($r('app.string.learn_detail_txt_mnemonic')), subTitle: cigenWord.mnemonic, detail: cigenWord.getDetail()})
             }
           }
 
@@ -593,53 +623,53 @@ export struct DetailCardOne {
 
         case DetailItem.SameRootDesc  :// 同根词
           if ((this.sameRootDesc?.length  ?? 0) > 0) {
-            cells.push({type: SubCellType.text, section: $r('app.string.learn_detail_txt_samerootdesc'), subTitle: this.sameRootDesc})
+            cells.push({type: SubCellType.text, section: getString($r('app.string.learn_detail_txt_samerootdesc')), subTitle: this.sameRootDesc})
           }
           break;
 
         case DetailItem.Examples      : // 例句
 
           if ((word.exampleEn1?.length  ?? 0) > 0) {
-            cells.push({type: SubCellType.example, section: $r('app.string.learn_detail_txt_example'), title: word.exampleEn1, detail: word.exampleCn1})
+            cells.push({type: SubCellType.example, section: getString($r('app.string.learn_detail_txt_example')), title: word.exampleEn1, detail: word.exampleCn1})
           }
 
           if ((word.exampleEn2?.length  ?? 0) > 0) {
-            cells.push({type: SubCellType.example, section: $r('app.string.learn_detail_txt_example'), title: word.exampleEn2, detail: word.exampleCn2})
+            cells.push({type: SubCellType.example, section: getString($r('app.string.learn_detail_txt_example')), title: word.exampleEn2, detail: word.exampleCn2})
           }
 
           if ((word.exampleEn3?.length  ?? 0) > 0) {
-            cells.push({type: SubCellType.example, section: $r('app.string.learn_detail_txt_example'), title: word.exampleEn3, detail: word.exampleCn3})
+            cells.push({type: SubCellType.example, section: getString($r('app.string.learn_detail_txt_example')), title: word.exampleEn3, detail: word.exampleCn3})
           }
 
           break;
 
         case DetailItem.SynWords      :
           if ((word.synWords?.length   ?? 0) > 0)     {
-            cells.push({type: SubCellType.text, section: $r('app.string.learn_detail_txt_synwords')    , subTitle: word.synWords})
+            cells.push({type: SubCellType.text, section: getString($r('app.string.learn_detail_txt_synwords'))    , subTitle: word.synWords})
           }
           break; // 同义词
 
         case DetailItem.AsynWords     :
           if ((word.asynWords?.length   ?? 0) > 0)    {
-            cells.push({type: SubCellType.text, section: $r('app.string.learn_detail_txt_asynwords')   , subTitle: word.asynWords})
+            cells.push({type: SubCellType.text, section: getString($r('app.string.learn_detail_txt_asynwords'))   , subTitle: word.asynWords})
           }
           break; // 反义词
 
         case DetailItem.UsedPhrase    :
           if ((word.usedPhrase?.length   ?? 0) > 0)   {
-            cells.push({type: SubCellType.text, section: $r('app.string.learn_detail_txt_usedphrase')  , subTitle: word.usedPhrase})
+            cells.push({type: SubCellType.text, section: getString($r('app.string.learn_detail_txt_usedphrase'))  , subTitle: word.usedPhrase})
           }
           break; // 常用短语
 
         case DetailItem.En2En         :
           if ((word.en2En?.length   ?? 0) > 0)        {
-            cells.push({type: SubCellType.text, section: $r('app.string.learn_detail_txt_en2en')       , subTitle: word.en2En})
+            cells.push({type: SubCellType.text, section: getString($r('app.string.learn_detail_txt_en2en'))       , subTitle: word.en2En})
           }
           break; // 英英释义
 
         case DetailItem.Discriminate  :
           if ((word.discriminate?.length   ?? 0) > 0) {
-            cells.push({type: SubCellType.text, section: $r('app.string.learn_detail_txt_discriminate'), subTitle: word.getDiscriminateRemovedDuplications()})
+            cells.push({type: SubCellType.text, section: getString($r('app.string.learn_detail_txt_discriminate')), subTitle: word.getDiscriminateRemovedDuplications()})
           }
           break; // 详细说明
 
@@ -660,7 +690,7 @@ enum SubCellType {
 interface SubCell {
 
   type: SubCellType
-  section?: ResourceStr | null
+  section?: string | null
   title?: string | null
   subTitle?: string | null
   detail?: string | null

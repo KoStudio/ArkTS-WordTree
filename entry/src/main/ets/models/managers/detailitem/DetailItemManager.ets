@@ -176,6 +176,24 @@ export class DetailItemManager {
     this.savePreference()
   }
 
+  /**
+   * 根据新数组顺序和可见性批量更新
+   * @param newOrders 新的 ItemOrder 数组，已经按拖拽或用户修改顺序排序好
+   */
+  updateOrders(newOrders: ItemOrder[]): void {
+    // 遍历 newOrders，按顺序更新内部 itemOrders
+    newOrders.forEach((itemOrder, index) => {
+      const existing = this.itemOrders.find(o => o.item === itemOrder.item)
+      if (existing) {
+        existing.order     = index             // 更新顺序
+        existing.isVisible = itemOrder.isVisible // 更新可见性
+      }
+    })
+
+    // 保存到偏好设置
+    this.savePreference()
+  }
+
   // MARK: - 创建 ItemOrder
   private createItemOrder(item: DetailItem,
     order: number,

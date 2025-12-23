@@ -20,6 +20,8 @@
     {"name": "color_ripple"                      , "value": "#585858"     },
     {"name": "color_text_marked"                 , "value": "#E14374"     },
     {"name": "color_text_touched"                , "value": "#E9967A"     },
+    {"name": "color_edit_bg"                     , "value": "#dcddde"     },
+    {"name": "color_edit_bg2"                    , "value": "#b3b8be"     },
 
     {"name": "color_black"                       , "value": "#353535"     },
     {"name": "color_white"                       , "value": "#FFFFFF"     },
