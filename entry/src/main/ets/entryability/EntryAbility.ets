@@ -137,6 +137,7 @@ export default class EntryAbility extends UIAbility {
     import('../models/datas/model/SearchManager')                 .then((it) => { it.SearchManager.shared })
     import('../models/datas/book/BookManager')                    .then((it) => { it.BookManager.shared })
     import('../models/datas/basedict/BaseWordDbAccess')           .then((it) => { it.BaseWordDbAccess.shared })
+    import('../models/datas/cigen/CigenWordDbAccess')             .then((it) => { it.CigenWordDbAccess.shared })
 
 
   }

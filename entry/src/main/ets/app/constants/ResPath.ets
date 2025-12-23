@@ -40,21 +40,27 @@ export class ResName {
   static readonly Book = new ResPath("Book", "Datas/0_Books/0_BookCate/BookList.sqlite.zip");
 
 
-  // //CigenCns
-  // static readonly Cigen_Cns = new ResPath("Cigen_Cns", "Datas/0_Books/0_BookCate/BookList.sqlite.zip");
-
-
-  // Word_Cns
-  static readonly Word_Cns = new ResPath("Word_Cns", "Datas/Word_Cns.sqlite");
-
-  // Word_Cnt
-  static readonly Word_Cnt = new ResPath("Word_Cnt", "Datas/Word_Cnt.sqlite");
+  // // Word_Cns
+  // static readonly Word_Cns = new ResPath("Word_Cns", "Datas/Word_Cns.sqlite");
+  //
+  // // Word_Cnt
+  // static readonly Word_Cnt = new ResPath("Word_Cnt", "Datas/Word_Cnt.sqlite");
 
   // BaseDict_Cns
-  static readonly BaseDict_Cns = new ResPath("BaseDict_Cns", "Datas/BaseDictData/ToeicVocabulary_cns_BaseDict.sqlite");
+  static readonly BaseDict_Cns = new ResPath("BaseDict_Cns", "Datas/91_BaseDict/BaseDict.sqlite");
 
   // BaseDict_Cnt
-  static readonly BaseDict_Cnt = new ResPath("BaseDict_Cnt", "Datas/BaseDictData/ToeicVocabulary_cnt_BaseDict.sqlite");
+  static readonly BaseDict_Cnt = new ResPath("BaseDict_Cnt", "Datas/91_BaseDict/BaseDict_Cnt.sqlite");
+
+
+  //Cigen_Cns
+  static readonly Cigen_Cns = new ResPath("Cigen_Cns", "Datas/92_Cigen/CigenData_Cns.sqlite.zip");
+
+  //Cigen_Cnt
+  static readonly Cigen_Cnt = new ResPath("Cigen_Cnt", "Datas/92_Cigen/CigenData_Cnt.sqlite.zip");
+
+
+
 
   /**
    * 获取所有数据库资源

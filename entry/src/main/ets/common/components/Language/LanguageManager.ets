@@ -9,6 +9,8 @@ import { getAppContext } from '../../../app/constants/AppContext';
 import { SearchManager } from '../../../models/datas/model/SearchManager';
 import { WordDbAccess } from '../../../models/datas/word/WordDbAccess';
 import { BaseWordDbAccess } from '../../../models/datas/basedict/BaseWordDbAccess';
+import { CigenData } from '../../../models/datas/book/Book';
+import { CigenWordDbAccess } from '../../../models/datas/cigen/CigenWordDbAccess';
 
 const PREF_NAME: string = "app_lang_pref";
 const KEY_LANG: string = "lang";
@@ -103,6 +105,8 @@ export class LanguageManager {
 
     // await WordDbAccess.shared.init()
     await BaseWordDbAccess.shared.init()
+    await CigenWordDbAccess.shared.init()
+
     SearchManager.shared.refreshData()
   }
   // // 重新启动当前 Ability（EntryAbility），以便语言资源生效
