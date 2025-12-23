@@ -82,8 +82,8 @@ export class SearchManager {
   /**
    * 刷新数据（在数据修改后调用）
    */
-  refreshData(): void {
-    this.loadDataStructures();
+  async refreshData(): Promise<void> {
+    await this.loadDataStructures();
   }
 
   private async loadDataStructures(): Promise<void> {

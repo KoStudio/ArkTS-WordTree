@@ -31,7 +31,7 @@ struct Index {
   @Local isPrivacyAgreed         : boolean       = false; // 隐私弹窗 是否已同意
   @Local private isShowMemberView: boolean       = false;
 
-  @Local refreshSearch           : boolean       = false;
+  @Local refreshByNavBack           : boolean       = false;
 
   async aboutToAppear(): Promise<void> {
 
@@ -120,7 +120,7 @@ struct Index {
       //https://developer.huawei.com/consumer/cn/doc/architecture-guides/shaking_to_dialog_1-ts_11-0000002340361193
       if (isVisible) {
         ///相当于popBack到首页时，执行刷新（nav上的FavIcon有可能改变了）
-        this.refreshSearch = !this.refreshSearch // 执行刷新
+        this.refreshByNavBack = !this.refreshByNavBack // 执行刷新
       }
     })
   }
@@ -186,13 +186,13 @@ struct Index {
 
       // learn
       TabContent() {
-        SubLearnView()
+        SubLearnView({isShowing: this.selectedIndex === 0, refreshData: this.refreshByNavBack })
       }
       .tabBar(this.tabBuilder(0, $r('app.string.tab_title_learn'), $r("app.media.ic_menu_xuexi_normal"), $r("app.media.ic_menu_xuexi_selected")))
 
       // list
       TabContent() {
-        SubListView({isShowing: this.selectedIndex === 1, refreshSearch: this.refreshSearch})
+        SubListView({isShowing: this.selectedIndex === 1, refreshSearch: this.refreshByNavBack})
       }
       .tabBar(this.tabBuilder(1, $r('app.string.tab_title_list'), $r("app.media.ic_menu_yilan_normal"), $r("app.media.ic_menu_yilan_selected")))
 

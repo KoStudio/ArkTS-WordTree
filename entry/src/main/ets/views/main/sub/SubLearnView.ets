@@ -13,6 +13,9 @@ import { TestTopViewConfig } from "../../test/TestTopView"
 @ComponentV2
 export struct SubLearnView {
 
+  @Param isShowing        : boolean                    = false;
+  @Param refreshData      : boolean                    = false;
+
   @Local bookManager: BookManager = BookManager.shared
   @Local book: Book | null = this.bookManager.currentBook
 
@@ -24,17 +27,47 @@ export struct SubLearnView {
   @Local cntWrang: number       = 0
 
 
+  aboutToAppear(): void {
+    this.loadData()
+  }
+
+  @Monitor('isShowing')
+  onChangeOfShowing(){
+    if (this.isShowing){
+      this.loadData()
+    }
+  }
+
+  @Monitor('refreshData')
+  onChangeOfRefresh(){
+    ///返回时也要刷新
+    if (this.isShowing) {
+      //收藏，常错，未测，有可能变化，需要刷新
+      this.loadData()
+    }
+  }
+
+
   @Monitor('bookManager.currentBook')
   onChangeOfBook(){
     this.book         = this.bookManager.currentBook
 
+
+    this.loadData()
+  }
+
+  async loadData(){
+
     this.unitsCount   = this.book?.unitsCount ?? 0
     this.wordsCount   = this.book?.wordsCount ?? 0
+
+    if (SearchManager.shared.getAllWords().length === 0) {
+      await SearchManager.shared.refreshData()
+    }
 
     this.cntLearned   = SearchManager.shared.getLearnedWords().length
     this.cntCorrected = SearchManager.shared.getCorrectedWords().length
     this.cntWrang     = SearchManager.shared.getWrongWords().length
-
   }
 
   build() {
@@ -113,16 +146,16 @@ export struct SubLearnView {
 
   @Builder InfoLearnTestRow() {
     Row({ space: 8 }) {
-      this.LearnTestItem($r('app.media.ic_yixuexi'), $r('app.string.main_study_txt_info_learned'), `${this.cntLearned}`, '#66CD40')// '已学习'
+      this.LearnTestItem($r('app.media.ic_yixuexi'), $r('app.string.main_study_txt_info_learned'), ()=> `${this.cntLearned}`, '#66CD40')// '已学习'
       Blank().width(20)
-      this.LearnTestItem($r('app.media.ic_yiceyan'), $r('app.string.main_study_txt_info_tested'), `${this.cntCorrected + this.cntWrang}`, '#26C9FF') //'已测验'
+      this.LearnTestItem($r('app.media.ic_yiceyan'), $r('app.string.main_study_txt_info_tested'), ()=> `${this.cntCorrected + this.cntWrang}`, '#26C9FF') //'已测验'
     }
     .margin({top: 10})
 
   }
 
   @Builder
-  LearnTestItem(icon: Resource, title: ResourceStr, value: ResourceStr, valueColor: string) {
+  LearnTestItem(icon: Resource, title: ResourceStr, value: () => ResourceStr, valueColor: string) {
     Row({ space: 4 }) {
       Image(icon)
         .width(15)
@@ -133,7 +166,7 @@ export struct SubLearnView {
         .fontSize(14)
         .fontColor($r('app.color.color_text2'))
 
-      Text(value).fontSize(26).fontColor(valueColor)
+      Text(value()).fontSize(26).fontColor(valueColor)
     }
     .alignItems(VerticalAlign.Bottom)
   }
