@@ -12,17 +12,31 @@ export class CigenWord {
 
   getVName(): string | null {
     switch (this.vid) {
-      case 1: return this.getResourceString('cigen_vname_1'); // "前缀"
-      case 2: return this.getResourceString('cigen_vname_2'); // "前缀"
-      case 3: return this.getResourceString('cigen_vname_3'); // "词根"
-      case 4: return this.getResourceString('cigen_vname_4'); // "后缀"
-      case 5: return this.getResourceString('cigen_vname_5'); // "后缀"
-      case 6: return this.getResourceString('cigen_vname_6'); // "词缀"
+      case 1: return getString($r('app.string.cigen_vname_1')); // "前缀"
+      case 2: return getString($r('app.string.cigen_vname_2')); // "前缀"
+      case 3: return getString($r('app.string.cigen_vname_3')); // "词根"
+      case 4: return getString($r('app.string.cigen_vname_4')); // "后缀"
+      case 5: return getString($r('app.string.cigen_vname_5')); // "后缀"
+      case 6: return getString($r('app.string.cigen_vname_6')); // "词缀"
       default: return null;
     }
   }
 
-  private getResourceString(resName: string): string {
-    return getString($r(resName))
+
+  public getDetail(): string | null {
+    let detail: string | null = null
+    const desc = this.desc
+    if (desc) {
+      const vname = this.getVName()
+      if (vname) {
+        // 〈后辍〉ban = prohibit, 表示「禁止」
+        detail = "    〈" + vname + "〉" + desc
+      } else {
+        // ban = prohibit, 表示「禁止」
+        detail = "    " + desc
+      }
+    }
+
+    return detail
   }
 }

@@ -36,6 +36,10 @@ export class WordDetail extends Word {
   private discriminate2 : string | null = null; // 去除重复后的缓存结果
 
 
+  override async getWordDetail(): Promise<WordDetail | null> {
+    return this
+  }
+
   /**
    * 将多个中文释义合并为一个字符串（去重）
    */

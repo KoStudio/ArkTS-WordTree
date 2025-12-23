@@ -15,7 +15,7 @@ export class DetailItemPref {
 // ============================================================
 // MARK: - 详情项枚举
 export enum DetailItem {
-  // Word               // 单词
+  // Word            = "Word",            // 单词
   WordChange      = "WordChange",      // 单词变形
   Cigens          = "Cigens",          // 词根助记
   SameRootDesc    = "SameRootDesc",    // 同根词
@@ -213,38 +213,40 @@ export class DetailItemManager {
   }
 
   // MARK: - 本地化名称
-  getLocalizedName(item: DetailItem): string {
+  getLocalizedName(item: DetailItem): ResourceStr {
     switch (item) {
 
       // case Word
       case DetailItem.WordChange :
-        return getString("learn_detail_txt_wordchang")                      // 单词变形
+        return getString($r("app.string.learn_detail_txt_wordchang"))                      // 单词变形
 
       case DetailItem.Cigens :
-        return getString("learn_detail_txt_mnemonic")
+        return getString($r("app.string.learn_detail_txt_mnemonic"))
           + (MemberManager.shared.nonMember.isLockedCigen ? dMemberFlag : "") // 词根助记
 
       case DetailItem.SameRootDesc :
-        return getString("learn_detail_txt_samerootdesc")
+        return getString($r("app.string.learn_detail_txt_samerootdesc"))
           + (MemberManager.shared.nonMember.isLockedSameRoot ? dMemberFlag : "") // 同根词
 
       case DetailItem.Examples :
-        return getString("learn_detail_txt_example")                        // 例句
+        return getString($r("app.string.learn_detail_txt_example"))                        // 例句
 
       case DetailItem.SynWords :
-        return getString("learn_detail_txt_synwords")                       // 同义词
+        return getString($r("app.string.learn_detail_txt_synwords"))                       // 同义词
 
       case DetailItem.AsynWords :
-        return getString("learn_detail_txt_asynwords")                      // 反义词
+        return getString($r("app.string.learn_detail_txt_asynwords"))                      // 反义词
 
       case DetailItem.UsedPhrase :
-        return getString("learn_detail_txt_usedphrase")                     // 常用短语
+        return getString($r("app.string.learn_detail_txt_usedphrase"))                     // 常用短语
 
       case DetailItem.En2En :
-        return getString("learn_detail_txt_en2en")                          // 英英释义
+        return getString($r("app.string.learn_detail_txt_en2en"))                          // 英英释义
 
       case DetailItem.Discriminate :
-        return getString("learn_detail_txt_discriminate")                   // 详细说明
+        return getString($r("app.string.learn_detail_txt_discriminate"))                   // 详细说明
+
+      default : return ''
     }
   }
 }

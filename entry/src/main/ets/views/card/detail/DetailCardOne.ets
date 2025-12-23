@@ -3,8 +3,12 @@ import { IconTintButton } from '../../../app/views/buttons/IconTintButton';
 import { TintImage } from '../../../app/views/TintImage';
 import { WordClickableText } from '../../../app/views/WordClickableText';
 import { TEUtility } from '../../../common/utils/TEUtility';
+import { CigenWord } from '../../../models/datas/cigen/CigenWord';
+import { CigenWordHelper } from '../../../models/datas/cigen/CigenWordHelper';
 import { SearchConstants, SearchManager } from '../../../models/datas/model/SearchManager';
 import { WordUser } from '../../../models/datas/myData/WordUser';
+import { WordDetail } from '../../../models/datas/word/WordDetail';
+import { DetailItem, DetailItemManager, ItemOrder } from '../../../models/managers/detailitem/DetailItemManager';
 import { MemberManager } from '../../../models/managers/member/MemberManager';
 import { SettingManager } from '../../../models/managers/setting/SettingManager';
 import { ComposeMemoViewConfig } from '../wordcard/memo/ComposeMemoView';
@@ -27,6 +31,25 @@ export struct DetailCardOne {
 
   @Local isRefreshing: boolean = false
 
+  @Local wordDetail      : WordDetail | null = null
+  @Local cigenWords      : CigenWord[] | null  = []
+  @Local sameRootDesc    : string | null = null
+  @Local subCells        : SubCell[]       = []
+
+  aboutToAppear(): void {
+    this.loadData()
+  }
+
+  async loadData(){
+    this.wordDetail   = await this.word?.getWordDetail() ?? null
+    this.cigenWords   = await CigenWordHelper.getCigensByWord(this.word)
+    this.sameRootDesc = await CigenWordHelper.getSameRootDescByWord(this.word)
+
+    if (this.wordDetail) {
+      this.subCells = [...this.prepareSubCellDatas(this.wordDetail)]
+    }
+
+  }
 
   @Monitor('settingManager.hideTranslation')
   onChangeOfSetting(){
@@ -77,21 +100,20 @@ export struct DetailCardOne {
           // 单词信息卡片区域
           this.buildWordTitlePanel()
 
-          //例句
-          this.buildExpamplePanel()
 
+          this.buildCells()
 
         }
         .justifyContent(FlexAlign.Start)
         .padding(10)
 
-       Column(){
+        Column(){
           //纠错
-         this.buildReclaimPanel()
+          this.buildReclaimPanel()
 
-         // 笔记
-         this.buildMemoPanel();
-       }
+          // 笔记
+          this.buildMemoPanel();
+        }
       }
       .width('100%')
       .justifyContent(FlexAlign.Start)
@@ -140,7 +162,7 @@ export struct DetailCardOne {
       // 发音显示行
       this.buildPronunciationRow();
 
-      // 日文翻译行
+      // 单词翻译行
       this.buildWordTranslationRow();
 
       // 词性和分类图标行
@@ -149,8 +171,8 @@ export struct DetailCardOne {
     //.width('100%')
     .padding({left: 10, right: 10 , top: 10, bottom: 10})
     //.margin({left: 10, right: 10})
-    .backgroundColor(this.word.deleted ? $r('app.color.color_card_bg_disable') : $r('app.color.color_card_bg')) // 单词卡背景色
-    .borderRadius(8)
+    // .backgroundColor(this.word.deleted ? $r('app.color.color_card_bg_disable') : $r('app.color.color_card_bg')) // 单词卡背景色
+    // .borderRadius(8)
   }
 
   // 构建单词标题行（英文单词 + 语音按钮）
@@ -177,22 +199,72 @@ export struct DetailCardOne {
     .margin({ top: 5 })
   }
 
-  @Builder buildExpamplePanel(){
-    Column(){
-      // 例句标题和语音按钮区域
-      this.buildExampleTitlePronPanel();
+  @Builder buildSubCellSection(section: ResourceStr | null | undefined){
 
-      // 例句内容区域
-      this.buildExampleContentPanel();
+    Row(){
+      // section 标题
+      Text(section)
+        .fontSize(18)
+        .fontColor($r('app.color.color_text'))
+        .textAlign(TextAlign.Start)
+
+      Blank().layoutWeight(1)
     }
-    //.width('100%')
-    .padding({left: 10, right: 10 , top: 10, bottom: 10})
-    .margin({top:20})
-    .backgroundColor(this.word.deleted ? $r('app.color.color_card_bg_disable') : $r('app.color.color_card_bg')) // 单词卡背景色
-    .borderRadius(8)
-
+    .justifyContent(FlexAlign.SpaceBetween)
+    .width('100%')
+    .margin({ top: 16, bottom: 20 })
 
   }
+
+  @Builder buildSubCellText(cell: SubCell){
+
+    Column(){
+      if (cell.title){
+        Text(cell.title)
+          .fontSize(18)
+          .fontColor($r('app.color.color_list_item_title'))
+          .textAlign(TextAlign.Start)
+      }
+
+      if (cell.subTitle){
+        // Text(cell.subTitle)
+        //   .fontSize(18)
+        //   .fontColor($r('app.color.color_list_item_subtitle'))
+        //   .textAlign(TextAlign.Start)
+
+        WordClickableText({ text:cell.subTitle || '', normalColor: $r('app.color.color_list_item_subtitle'), fontSize: 18, highlightWords: this.getHilightTexts(), onWordClick:(word: string)=>{ this.onClickedText(word) } })
+      }
+
+      if (cell.detail){
+        Text(cell.detail)
+          .fontSize(18)
+          .fontColor($r('app.color.color_list_item_detail'))
+          .textAlign(TextAlign.Start)
+      }
+    }
+    .justifyContent(FlexAlign.Start)
+    .alignItems(HorizontalAlign.Start)
+    .width('100%')
+    .margin({ top: 16, bottom: 20 })
+
+  }
+
+  // @Builder buildExpamplePanel(){
+  //   Column(){
+  //     // 例句标题和语音按钮区域
+  //     this.buildExampleTitlePronPanel();
+  //
+  //     // 例句内容区域
+  //     //this.buildExampleContentPanel();
+  //   }
+  //   //.width('100%')
+  //   .padding({left: 10, right: 10 , top: 10, bottom: 10})
+  //   .margin({top:20})
+  //   .backgroundColor(this.word.deleted ? $r('app.color.color_card_bg_disable') : $r('app.color.color_card_bg')) // 单词卡背景色
+  //   .borderRadius(8)
+  //
+  //
+  // }
 
 
   // 构建发音显示行
@@ -223,7 +295,7 @@ export struct DetailCardOne {
 
       }else{
         Row(){
-          Text(this.word.titleCn1Clipped)
+          Text(this.wordDetail?.getTitleCnsJoined())
             .layoutWeight(1)
             .fontSize(18)
             .minFontScale(0.1)
@@ -232,13 +304,7 @@ export struct DetailCardOne {
             .textAlign(TextAlign.Start)
             .margin({ top: 5, bottom: 5})
 
-          Text(this.word.titleCn1Kind)
-            .fontSize(18)
-            .minFontScale(0.1)
-            .padding(5)
-            .fontColor($r('app.color.color_text_marked'))
-            .textAlign(TextAlign.Start)
-            .margin({ top: 5, bottom: 5})
+
         }
         .width('100%')
       }
@@ -275,39 +341,54 @@ export struct DetailCardOne {
   // }
 
   // 构建例句标题和语音按钮区域
-  @Builder
-  buildExampleTitlePronPanel() {
-    Row(){
-      // 例句 标题
-      Text($r('app.string.wordcard_txt_example'))
-        .fontSize(22)
-        .fontColor($r('app.color.color_text'))
-        .textAlign(TextAlign.Start)
+  // @Builder
+  // buildExampleTitlePronPanel() {
+  //   Row(){
+  //     // 例句 标题
+  //     Text($r('app.string.wordcard_txt_example'))
+  //       .fontSize(22)
+  //       .fontColor($r('app.color.color_text'))
+  //       .textAlign(TextAlign.Start)
+  //
+  //     Blank().layoutWeight(1)
+  //
+  //       // 例句语音按钮
+  //       IconButton({ icon: $r('app.media.ic_langdu_nroaml'), iconSize: 26, onClickCallBack:()=>{ this.onClickedBtnExamplePron(this.word) } })
+  //   }
+  //   .justifyContent(FlexAlign.SpaceBetween)
+  //   .width('100%')
+  //   .margin({ top: 16, bottom: 20 })
+  // }
 
-      Blank().layoutWeight(1)
-
-        // 例句语音按钮
-        IconButton({ icon: $r('app.media.ic_langdu_nroaml'), iconSize: 26, onClickCallBack:()=>{ this.onClickedBtnExamplePron(this.word) } })
+  @Builder buildCells(){
+    Column(){
+      ForEach(this.subCells, (cell: SubCell, index: number) => {
+        if (cell.type === SubCellType.example) {
+          this.buildSubCellSection(cell.section)
+          this.buildExampleOne(cell)
+        }else if (cell.type === SubCellType.text){
+          this.buildSubCellSection(cell.section)
+          this.buildSubCellText(cell)
+        }
+      }, (cell: SubCell, index: number) => index.toString())
     }
-    .justifyContent(FlexAlign.SpaceBetween)
-    .width('100%')
-    .margin({ top: 16, bottom: 20 })
+
   }
 
 
 
   // 构建例句内容区域
   @Builder
-  buildExampleContentPanel() {
+  buildExampleOne(cell: SubCell) {
     Column({ space: 5 }) {
-      // 英文例句
-      WordClickableText({
-        text:this.word.exampleEn1 || '',
-        highlightWords: this.getHilightTexts(),
-        onWordClick:(word: string)=>{
-          this.onClickedText(word)
-        }
-      })
+      Row(){
+        // 英文例句
+        WordClickableText({ text:cell.title || '', highlightWords: this.getHilightTexts(), onWordClick:(word: string)=>{ this.onClickedText(word) } })
+          .layoutWeight(1)
+
+        // 例句语音按钮
+        IconButton({ icon: $r('app.media.ic_langdu_nroaml'), iconSize: 26, onClickCallBack:()=>{ this.onClickedBtnExamplePron(this.word) } })
+      }
 
       Stack(){
         if (this.isHideExampleTranslation){
@@ -324,7 +405,7 @@ export struct DetailCardOne {
         }else{
 
           // 日文例句
-          Text(this.word.exampleCn1)
+          Text(cell.detail)
             .width('100%')
             .fontSize(20)
             .fontColor($r('app.color.color_card_subtitle'))
@@ -360,7 +441,7 @@ export struct DetailCardOne {
           .fontColor($r('app.color.color_text2'))
 
       }
-        .backgroundColor(Color.Transparent)
+      .backgroundColor(Color.Transparent)
     }
     .padding(20)
     .margin({bottom: 20})
@@ -482,7 +563,107 @@ export struct DetailCardOne {
   }
 
   getWordKindIcon():Resource {
-   // return TEUtility.getWordKindIcon(this.word.wordKind)
+    // return TEUtility.getWordKindIcon(this.word.wordKind)
     return $r('app.media.icon')
   }
+
+
+  private prepareSubCellDatas(word: WordDetail): SubCell[] {
+    let cells: SubCell[] = []
+
+    let itemOrders = DetailItemManager.shared.getItemOrders().filter((itemOrder: ItemOrder) => itemOrder.isVisible)
+    for (const itemOrder of itemOrders) {
+      switch (itemOrder.item) {
+        // case DetailItem.Word          : cells.push({section:})  break; // 单词
+        case DetailItem.WordChange    :  // 单词变形
+          if ((word.wordChange?.length ?? 0) > 0) {
+            cells.push({type: SubCellType.text, section: $r('app.string.learn_detail_txt_wordchang'), subTitle: word.wordChange})
+          }
+
+          break;
+
+        case DetailItem.Cigens        :// 词根助记
+          if (this.cigenWords) {
+            for (const cigenWord of this.cigenWords) {
+              cells.push({type: SubCellType.text, section: $r('app.string.learn_detail_txt_mnemonic'), subTitle: cigenWord.mnemonic, detail: cigenWord.getDetail()})
+            }
+          }
+
+          break;
+
+        case DetailItem.SameRootDesc  :// 同根词
+          if ((this.sameRootDesc?.length  ?? 0) > 0) {
+            cells.push({type: SubCellType.text, section: $r('app.string.learn_detail_txt_samerootdesc'), subTitle: this.sameRootDesc})
+          }
+          break;
+
+        case DetailItem.Examples      : // 例句
+
+          if ((word.exampleEn1?.length  ?? 0) > 0) {
+            cells.push({type: SubCellType.example, section: $r('app.string.learn_detail_txt_example'), title: word.exampleEn1, detail: word.exampleCn1})
+          }
+
+          if ((word.exampleEn2?.length  ?? 0) > 0) {
+            cells.push({type: SubCellType.example, section: $r('app.string.learn_detail_txt_example'), title: word.exampleEn2, detail: word.exampleCn2})
+          }
+
+          if ((word.exampleEn3?.length  ?? 0) > 0) {
+            cells.push({type: SubCellType.example, section: $r('app.string.learn_detail_txt_example'), title: word.exampleEn3, detail: word.exampleCn3})
+          }
+
+          break;
+
+        case DetailItem.SynWords      :
+          if ((word.synWords?.length   ?? 0) > 0)     {
+            cells.push({type: SubCellType.text, section: $r('app.string.learn_detail_txt_synwords')    , subTitle: word.synWords})
+          }
+          break; // 同义词
+
+        case DetailItem.AsynWords     :
+          if ((word.asynWords?.length   ?? 0) > 0)    {
+            cells.push({type: SubCellType.text, section: $r('app.string.learn_detail_txt_asynwords')   , subTitle: word.asynWords})
+          }
+          break; // 反义词
+
+        case DetailItem.UsedPhrase    :
+          if ((word.usedPhrase?.length   ?? 0) > 0)   {
+            cells.push({type: SubCellType.text, section: $r('app.string.learn_detail_txt_usedphrase')  , subTitle: word.usedPhrase})
+          }
+          break; // 常用短语
+
+        case DetailItem.En2En         :
+          if ((word.en2En?.length   ?? 0) > 0)        {
+            cells.push({type: SubCellType.text, section: $r('app.string.learn_detail_txt_en2en')       , subTitle: word.en2En})
+          }
+          break; // 英英释义
+
+        case DetailItem.Discriminate  :
+          if ((word.discriminate?.length   ?? 0) > 0) {
+            cells.push({type: SubCellType.text, section: $r('app.string.learn_detail_txt_discriminate'), subTitle: word.getDiscriminateRemovedDuplications()})
+          }
+          break; // 详细说明
+
+        default : break;
+      }
+    }
+
+    //this.subCells = [...cells]
+     return cells
+  }
+}
+
+enum SubCellType {
+  example  = 1,
+  text     = 2
+}
+
+interface SubCell {
+
+  type: SubCellType
+  section?: ResourceStr | null
+  title?: string | null
+  subTitle?: string | null
+  detail?: string | null
+  onBtnMoreClicked?: (()=>void) | null
+
 }

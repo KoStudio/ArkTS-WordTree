@@ -9,6 +9,7 @@ import { SearchConstants, SearchManager } from '../../../models/datas/model/Sear
 import { WordUser } from '../../../models/datas/myData/WordUser';
 import { MemberManager } from '../../../models/managers/member/MemberManager';
 import { SettingManager } from '../../../models/managers/setting/SettingManager';
+import { DetailCardsViewConfig } from '../detail/DetailCardsView';
 import { ComposeMemoViewConfig } from './memo/ComposeMemoView';
 
 
@@ -168,6 +169,9 @@ export struct WordCardOne {
         .fontWeight(FontWeight.Bold)
         .textAlign(TextAlign.Start)
         .layoutWeight(1) // 占据剩余空间
+        .onClick(()=>{
+          DetailCardsViewConfig.open({words: [this.word], initIndex: 0})
+        })
 
       Blank().layoutWeight(1)
 
