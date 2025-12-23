@@ -27,6 +27,7 @@ import { ChallengeTopView, ChallengeTopViewConfig } from '../views/test/Challeng
 import { UnitWordsView, UnitWordsViewConfig } from '../views/learn/UnitWordsView';
 import { UnitsView, UnitsViewConfig } from '../views/learn/UnitsView';
 import { DetailCardsView, DetailCardsViewConfig } from '../views/card/detail/DetailCardsView';
+import { CigenWordsView, CigenWordsViewConfig } from '../views/card/cigen/CigenWordsView';
 
 
 @Builder
@@ -42,6 +43,7 @@ export function navigationTo<T>(name: string, param: T){
   }else if (name === ComposeMemoViewConfig.NavKey)        { ComposeMemoView({word: (param as ComposeMemoViewConfig.Param).word})
   }else if (name === BookListViewConfig.NavKey)           { BookListView()
   }else if (name === BooksOnlineViewConfig.NavKey)        { BooksOnlineView({category: (param as BooksOnlineViewConfig.Param).category})
+  }else if (name === CigenWordsViewConfig.NavKey)         { CigenWordsView({words: (param as CigenWordsViewConfig.Param).words, navTitle:  (param as CigenWordsViewConfig.Param).navTitle})
   }else if (name === DeletedWordsViewConfig.NavKey)       { DeletedWordsView()
   }else if (name === TestTopViewConfig.NavKey)            { TestTopView()
   }else if (name === ChallengeTopViewConfig.NavKey)       { ChallengeTopView()

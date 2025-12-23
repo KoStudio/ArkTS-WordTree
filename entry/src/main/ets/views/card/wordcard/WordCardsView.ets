@@ -333,24 +333,31 @@ export struct WordCardsView {
   private actionPopmenu(){
     let options: ItemOption[] = []
 
-
-    ///立即测验
+    ///我要测验
     options.push(
-      {text: getString($r('app.string.wordcard_detail_to_test_btn_test')),action: ()=>{
+      {text: getString($r('app.string.learn_detail_to_test_btn_test')),action: ()=>{
         //我要测验
         QuizManager.shared.questionMode = QuestionMode.Normal
         this.openTestStart()
       }})
 
+    ///我要挑战
+    options.push(
+      {text: getString($r('app.string.learn_detail_to_test_btn_chlg')),action: ()=>{
+        //我要测验
+        QuizManager.shared.questionMode = QuestionMode.Challenge
+        this.openTestStart()
+      }})
+
     ///拼写练习
     options.push(
-      {text: getString($r('app.string.wordcard_detail_to_test_btn_spell')),action: ()=>{
+      {text: getString($r('app.string.learn_detail_to_test_btn_spell')),action: ()=>{
         //拼写练习
         QuizManager.shared.questionMode = QuestionMode.Spell
         this.openTestStart()
       }})
 
-    Toast.showSelectOptions($r('app.string.wordcard_detail_to_test_msg'),undefined, options, $r('app.string.wordcard_detail_to_test_btn_cancel'))
+    Toast.showSelectOptions($r('app.string.learn_detail_to_test_msg'),undefined, options, $r('app.string.learn_detail_to_test_btn_cancel'))
 
   }
 

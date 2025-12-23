@@ -3,13 +3,14 @@ import { CigenWord } from './CigenWord';
 import { CigenWordDbAccess } from './CigenWordDbAccess';
 import { Word } from '../word/Word';
 import { SearchManager } from '../model/SearchManager';
+import { WordUser } from '../myData/WordUser';
 
 export class CigenWordHelper {
 
   // ============================================================
   // 同 CID 的所有单词（wordsOfSameCigen / wordsOfSameCid）
   // ============================================================
-  static async getRefWords(cigen: CigenWord): Promise<Array<Word> | null> {
+  static async getRefWords(cigen: CigenWord): Promise<Array<WordUser> | null> {
     const cid = cigen.cid;
     if (!cid) return null;
 

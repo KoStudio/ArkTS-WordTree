@@ -19,6 +19,7 @@ import { ComposeMemoViewConfig } from '../wordcard/memo/ComposeMemoView';
 import { ItemInfo } from '@kit.MediaLibraryKit';
 import { SimpleEventBus } from '../../../common/components/eventbus/SimpleEventBus';
 import { DetailStyle, StyleItem } from '../detailstyle/DetailStyle';
+import { CigenWordsViewConfig } from '../cigen/CigenWordsView';
 
 
 @ComponentV2
@@ -299,7 +300,7 @@ export struct DetailCardOne {
 
   }
 
-  @Builder buildSubCellText(cell: SubCell){
+  @Builder buildSubCellText(cell: SubCell, rowIndex: number){
 
     Column(){
       if (cell.title){
@@ -319,10 +320,23 @@ export struct DetailCardOne {
       }
 
       if (cell.detail){
-        Text(cell.detail)
-          .fontSize(this.styleItem.detail.fontSize)//(18)
-          .fontColor($r('app.color.color_list_item_detail'))
-          .textAlign(TextAlign.Start)
+        Row(){
+          Text(cell.detail)
+            .fontSize(this.styleItem.detail.fontSize)//(18)
+            .fontColor($r('app.color.color_list_item_detail'))
+            .textAlign(TextAlign.Start)
+            .layoutWeight(1)
+
+          if (cell.hasMoreBtn) {
+            //more
+            IconButton({ icon: $r('app.media.morev'), iconSize: 26, iconColor: $r('app.color.color_gray'), onClickCallBack: ()=>{ this.handleCellBtnMoreClicked(rowIndex)}})
+              //.margin({right: 10})
+          }
+        }
+        .width('100%')
+        .padding({right: 10})
+        .justifyContent(FlexAlign.SpaceBetween)
+
       }
     }
     .justifyContent(FlexAlign.Start)
@@ -332,29 +346,40 @@ export struct DetailCardOne {
 
   }
 
+  async handleCellBtnMoreClicked(rowIndex: number){
+    const cigenWords = await CigenWordHelper.getCigensByWord(this.word)
+    if (cigenWords && cigenWords.length > rowIndex) {
+      const cigenWord = cigenWords[rowIndex]
+      const words     = await CigenWordHelper.getRefWords(cigenWord)
+      if (words && words.length > 0) {
+        //显示相关词根
+        CigenWordsViewConfig.open({words: words, navTitle: cigenWord.desc || ''})
+      }
+    }
+  }
   @Builder buildCells(){
     Column(){
       ForEach(this.sectionedCells.allSections(), (section: ResourceStr, sectionIndex: number) => {
         this.buildSubCellSection(section)
 
-        ForEach(this.sectionedCells.allDatasOfSectionIndex(sectionIndex), (cell: SubCell, itemIndex: number) => {
+        ForEach(this.sectionedCells.allDatasOfSectionIndex(sectionIndex), (cell: SubCell, rowIndex: number) => {
           if (cell.type === SubCellType.example) {
-            this.buildExampleOne(itemIndex, this.sectionedCells.allDatasOfSectionIndex(sectionIndex).length, cell, ()=>{
+            this.buildExampleOne(rowIndex, this.sectionedCells.allDatasOfSectionIndex(sectionIndex).length, cell, ()=>{
 
-              if (itemIndex === 0) {        return this.isHideExampleTranslation1
-              }else if (itemIndex === 1) {  return this.isHideExampleTranslation2
-              }else if (itemIndex === 2) {  return this.isHideExampleTranslation3
+              if (rowIndex === 0) {        return this.isHideExampleTranslation1
+              }else if (rowIndex === 1) {  return this.isHideExampleTranslation2
+              }else if (rowIndex === 2) {  return this.isHideExampleTranslation3
               }else{ return false
               }
 
             }, ()=>{
-              if (itemIndex === 0)       {  this.isHideExampleTranslation1 = ! this.isHideExampleTranslation1
-              }else if (itemIndex === 1) {  this.isHideExampleTranslation2 = ! this.isHideExampleTranslation2
-              }else if (itemIndex === 2) {  this.isHideExampleTranslation3 = ! this.isHideExampleTranslation3
+              if (rowIndex === 0)       {  this.isHideExampleTranslation1 = ! this.isHideExampleTranslation1
+              }else if (rowIndex === 1) {  this.isHideExampleTranslation2 = ! this.isHideExampleTranslation2
+              }else if (rowIndex === 2) {  this.isHideExampleTranslation3 = ! this.isHideExampleTranslation3
               }
             })
           }else if (cell.type === SubCellType.text){
-            this.buildSubCellText(cell)
+            this.buildSubCellText(cell, rowIndex)
           }
         }, (cell: SubCell, itemIndex: number) => itemIndex.toString())
 
@@ -577,7 +602,7 @@ export struct DetailCardOne {
         case DetailItem.Cigens        :// 词根助记
           if (this.cigenWords) {
             for (const cigenWord of this.cigenWords) {
-              cells.push({type: SubCellType.text, section: getString($r('app.string.learn_detail_txt_mnemonic')), subTitle: cigenWord.mnemonic, detail: cigenWord.getDetail()})
+              cells.push({type: SubCellType.text, section: getString($r('app.string.learn_detail_txt_mnemonic')), subTitle: cigenWord.mnemonic, detail: cigenWord.getDetail(), hasMoreBtn: cigenWord.getDetail() !== null})
             }
           }
 
@@ -656,6 +681,7 @@ interface SubCell {
   title?: string | null
   subTitle?: string | null
   detail?: string | null
-  onBtnMoreClicked?: (()=>void) | null
+  // onBtnMoreClicked?: (()=>void) | null
+  hasMoreBtn?: boolean | null
 
 }
