@@ -6,6 +6,8 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { DebugLog } from '../../../../app/debug/DebugLog';
 import { Toast } from '../../../utils/Toast';
 import { getAppContext } from '../../../../app/constants/AppContext';
+import { SettingManager } from '../../../../models/managers/setting/SettingManager';
+import json from '@ohos.util.json';
 
 
 // 定义配置项接口（解决对象字面量类型问题）
@@ -137,5 +139,65 @@ export class AudioTool {
     } catch (err) {
       console.error(`删除临时文件失败: ${err}`);
     }
+  }
+
+  /**
+   * 根据用户设置调整播放速度
+   * SDK 17：使用 setSpeed（PlaybackSpeed）
+   */
+  static changePlaySpeed(avPlayer: media.AVPlayer): void {
+    if (!avPlayer) {
+      return;
+    }
+
+    const index: number = SettingManager.shared.pronSpeed;
+
+    // 默认 1.0x
+    let speed: media.PlaybackSpeed = media.PlaybackSpeed.SPEED_FORWARD_1_00_X;
+
+    switch (index) {
+      case 0:
+        // 约等于 0.8x（SDK 不支持精确值，只能取最近档位）
+        speed = media.PlaybackSpeed.SPEED_FORWARD_0_75_X;
+        break;
+
+      case 1:
+        speed = media.PlaybackSpeed.SPEED_FORWARD_1_00_X;
+        break;
+
+      case 2:
+        // 约等于 1.2x
+        speed = media.PlaybackSpeed.SPEED_FORWARD_1_25_X;
+        break;
+
+      default:
+        speed = media.PlaybackSpeed.SPEED_FORWARD_1_00_X;
+        break;
+    }
+
+    try {
+      avPlayer.setSpeed(speed);
+    } catch (e) {
+      DebugLog.e('changePlaySpeed failed: ' + JSON.stringify(e));
+    }
+  }
+
+  static getPlayGap(): number {
+    const index: number = SettingManager.shared.pronGap
+
+    let gap: number = 0.0;
+    switch (index) {
+      case 1:
+        gap = 1.0;
+        break;
+      case 2:
+        gap = 2.0;
+        break;
+      default:
+        gap = 0.0;
+        break;
+    }
+
+    return gap;
   }
 }

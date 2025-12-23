@@ -638,8 +638,19 @@ export struct DetailCardsView {
 
     // 单词 自动发音
     if (SettingManager.shared.autoPlaySound) {
+      ///播放一次
       await AudioPlayer.shared.play(this.word.wordEnSoundText)
+
+      //播放2，3次
+      const pronTimes = SettingManager.shared.pronTimes
+      if (pronTimes > 1) {
+        for (let j = 0; j < pronTimes - 1; j++) {
+          AudioPlayer.shared.prepareToPlay(this.word.wordEnSoundText)
+        }
+      }
     }
+
+
 
     //例句
     if (SettingManager.shared.autoPlaySoundEx) {

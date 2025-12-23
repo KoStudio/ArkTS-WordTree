@@ -7,22 +7,22 @@ import { Toast } from '../../../utils/Toast';
 
 // 定义音频数据结构
 interface AudioData {
-  idxx: number;         // 音频唯一标识
-  text: string;          // 音频资源名称
-  avPlayer: media.AVPlayer; // AVPlayer实例
+  idxx     : number;                 // 音频唯一标识
+  text     : string;                 // 音频资源名称
+  avPlayer : media.AVPlayer;         // AVPlayer实例
 }
 
 export class AudioPlayer {
   // 单例实例（静态属性）
-  private static _instance: AudioPlayer;
+  private static _instance              : AudioPlayer;
 
   // 组件内部状态
-  isPlaying: boolean = false;
-  private playingAudioData?: AudioData;
-  private queue: AudioData[] = [];
+  isPlaying                              : boolean = false;
+  private playingAudioData?              : AudioData;
+  private queue                          : AudioData[] = [];
 
   // 回调函数
-  allFinishedCallback?: () => void;
+  allFinishedCallback?                   : () => void;
 
   // 私有构造函数（单例模式）
   private constructor() {}
@@ -63,6 +63,7 @@ export class AudioPlayer {
     if (!text) { return }
     await CSoundHelper.startDownloadOrGenerateSound(text)
   }
+
   // 停止并清空队列
   public stopAndClear(): void {
     this.stop();
@@ -71,7 +72,6 @@ export class AudioPlayer {
 
   // MARK: - 私有方法
 
-
   /**
    * 加载音频资源
    * @param text 音频资源URI
@@ -79,7 +79,7 @@ export class AudioPlayer {
   private async loadSound(text: string): Promise<void> {
     try {
 
-      // 1. 使用AudioTool创建播放器实例[5](@ref)
+      // 1. 使用AudioTool创建播放器实例
       const audioData = await this.generateAudioData(text);
 
       if (audioData !== null) {
@@ -91,7 +91,6 @@ export class AudioPlayer {
         this.tryPlayIfNeeds();
       }
 
-
     } catch (err) {
       console.error(`加载音频失败: ${JSON.stringify(err)}`);
     }
@@ -100,10 +99,9 @@ export class AudioPlayer {
   /**
    * 生成音频数据（核心方法）
    * @param text 音频资源URI
-   * @param idxx 音频唯一标识
    */
   private async generateAudioData(text: string): Promise<AudioData | null> {
-    // 2. 模拟获取音频数据（实际项目替换为真实下载）
+
     const csound = await CSoundHelper.startDownloadOrGenerateSound(text)
     if (!csound || csound.data === null || csound.idxx === null) {
       return null
@@ -112,30 +110,35 @@ export class AudioPlayer {
     const idxx = csound.idxx;
 
     // 使用AudioTool创建播放器
-    const avPlayer = await AudioTool.createAudioPlayer(csound.data, csound.idxx, async (state: string) => {
-      switch (state) {
-        case 'playing':
-          this.isPlaying = true;
-          break;
-        case 'completed':
-          await this.onAudioFinished(idxx);
-          break;
-        case 'error':
-          console.error('播放器错误');
-          this.stopAndClear();
-          break;
+    const avPlayer = await AudioTool.createAudioPlayer(
+      csound.data,
+      csound.idxx,
+      async (state: string) => {
+        switch (state) {
+          case 'playing':
+            this.isPlaying = true;
+            break;
+
+          case 'completed':
+            await this.onAudioFinished(idxx);
+            break;
+
+          case 'error':
+            console.error('播放器错误');
+            this.stopAndClear();
+            break;
+        }
       }
-    });
+    );
 
     if (!avPlayer) {
-      //2.如果有问题，打不开，则删除缓存数据，以待下载次重新下载
+      // 如果创建失败，删除损坏缓存
       Toast.showDebugMessage("创建avPlayer失败: null")
       await CSoundManager.shared.removeSound(csound)
       return null
     }
 
     return { idxx, text, avPlayer };
-
   }
 
   // 停止当前播放
@@ -143,7 +146,6 @@ export class AudioPlayer {
     if (this.playingAudioData) {
       const currentPlayer = this.playingAudioData.avPlayer;
       try {
-        // 先停止播放再释放资源
         if (currentPlayer.state === 'playing' || currentPlayer.state === 'paused') {
           currentPlayer.stop();
         }
@@ -163,7 +165,6 @@ export class AudioPlayer {
     while (this.queue.length > 0) {
       const playerData = this.queue.shift();
       if (playerData) {
-        // 6. 清理播放器资源
         if (playerData.avPlayer.state !== 'released') {
           try {
             playerData.avPlayer.release();
@@ -172,7 +173,7 @@ export class AudioPlayer {
           }
         }
 
-        // 7. 清理临时文件[5](@ref)
+        // 清理临时文件
         AudioTool.removeTmpMp3File(playerData.idxx)
       }
     }
@@ -180,38 +181,52 @@ export class AudioPlayer {
 
   /**
    * 尝试播放队列中的下一首
+   * @param delaySecond 播放前延迟（秒）
    * @returns 是否成功播放
    */
-  private tryPlay(): boolean {
+  private tryPlay(delaySecond: number = 0): boolean {
     if (this.queue.length === 0) return false;
+
     const playerData = this.queue.shift();
     if (!playerData) return false;
 
     this.playingAudioData = playerData;
+    this.isPlaying        = true;
 
-    try {
-      // Toast.showDebugMessage(`tryPlay.state= ${playerData.avPlayer.state}}`)
-      if (playerData.avPlayer.state === 'prepared') {
-        playerData.avPlayer.play();
-        return true;
+    const startPlay = () => {
+      try {
+        if (playerData.avPlayer.state === 'prepared') {
+
+          // 设置播放速度
+          AudioTool.changePlaySpeed(playerData.avPlayer);
+
+          playerData.avPlayer.play();
+        }
+      } catch (err) {
+        console.error(`播放失败: ${JSON.stringify(err)}`);
       }
-      return false;
-    } catch (err) {
-      console.error(`播放失败: ${JSON.stringify(err)}`);
-      return false;
-    }
-  }
+    };
 
+    // 对应 Kotlin 的 dispatch_delay
+    if (delaySecond > 0) {
+      setTimeout(() => {
+        startPlay();
+      }, delaySecond * 1000);
+    } else {
+      startPlay();
+    }
+
+    return true;
+  }
 
   /**
    * 如果需要则尝试播放（当前没有播放时）
-   * @returns 是否成功播放
    */
   private tryPlayIfNeeds(): boolean {
     if (!this.isPlaying) {
       return this.tryPlay();
     }
-    return false;
+    return true;
   }
 
   /**
@@ -219,20 +234,21 @@ export class AudioPlayer {
    * @param idxx 音频唯一标识
    */
   private async onAudioFinished(idxx: number) {
-    // 9. 清理当前播放资源[5](@ref)
+
     if (this.playingAudioData) {
-      // 只释放播放器，不关fd（由released状态回调处理）
-      await this.playingAudioData.avPlayer.release(); // 触发released状态
+      await this.playingAudioData.avPlayer.release();
       this.playingAudioData = undefined;
     }
+
     this.isPlaying = false;
 
-    // 10. 删除临时文件
+    // 删除临时文件
     AudioTool.removeTmpMp3File(idxx)
 
-    // 尝试播放下一首
-    if (!this.tryPlay()) {
-      // 全部播放完成
+    // 尝试播放下一首（带间隔）
+    const gapSecond = AudioTool.getPlayGap()
+
+    if (!this.tryPlay(gapSecond)) {
       if (this.allFinishedCallback) {
         this.allFinishedCallback();
       }

@@ -33,7 +33,9 @@ export struct DetailCardOne {
 
   @Local settingManager: SettingManager    = SettingManager.shared
   @Local isHideWordTranslation: boolean    = SettingManager.shared.hideTranslation
-  @Local isHideExampleTranslation: boolean = SettingManager.shared.hideTranslation
+  @Local isHideExampleTranslation1: boolean = SettingManager.shared.hideTranslation
+  @Local isHideExampleTranslation2: boolean = SettingManager.shared.hideTranslation
+  @Local isHideExampleTranslation3: boolean = SettingManager.shared.hideTranslation
 
   @Local isRefreshing: boolean = false
 
@@ -75,8 +77,10 @@ export struct DetailCardOne {
 
   @Monitor('settingManager.hideTranslation')
   onChangeOfSetting(){
-    this.isHideWordTranslation    = SettingManager.shared.hideTranslation
-    this.isHideExampleTranslation = SettingManager.shared.hideTranslation
+    this.isHideWordTranslation     = SettingManager.shared.hideTranslation
+    this.isHideExampleTranslation1 = SettingManager.shared.hideTranslation
+    this.isHideExampleTranslation2 = SettingManager.shared.hideTranslation
+    this.isHideExampleTranslation3 = SettingManager.shared.hideTranslation
   }
 
 
@@ -391,7 +395,20 @@ export struct DetailCardOne {
 
         ForEach(this.sectionedCells.allDatasOfSectionIndex(sectionIndex), (cell: SubCell, itemIndex: number) => {
           if (cell.type === SubCellType.example) {
-            this.buildExampleOne(itemIndex, this.sectionedCells.allDatasOfSectionIndex(sectionIndex).length, cell)
+            this.buildExampleOne(itemIndex, this.sectionedCells.allDatasOfSectionIndex(sectionIndex).length, cell, ()=>{
+
+              if (itemIndex === 0) {        return this.isHideExampleTranslation1
+              }else if (itemIndex === 1) {  return this.isHideExampleTranslation2
+              }else if (itemIndex === 2) {  return this.isHideExampleTranslation3
+              }else{ return false
+              }
+
+            }, ()=>{
+              if (itemIndex === 0)       {  this.isHideExampleTranslation1 = ! this.isHideExampleTranslation1
+              }else if (itemIndex === 1) {  this.isHideExampleTranslation2 = ! this.isHideExampleTranslation2
+              }else if (itemIndex === 2) {  this.isHideExampleTranslation3 = ! this.isHideExampleTranslation3
+              }
+            })
           }else if (cell.type === SubCellType.text){
             this.buildSubCellText(cell)
           }
@@ -406,7 +423,7 @@ export struct DetailCardOne {
 
   // 构建例句内容区域
   @Builder
-  buildExampleOne(itemIndex: number, itemsCnt: number, cell: SubCell) {
+  buildExampleOne(itemIndex: number, itemsCnt: number, cell: SubCell, getter:()=>boolean, onClicked:()=>void) {
     Column({ space: 5 }) {
       Row(){
         // 英文例句
@@ -418,7 +435,7 @@ export struct DetailCardOne {
       }
 
       Stack(){
-        if (this.isHideExampleTranslation){
+        if (getter()){ //this.isHideExampleTranslation
           Text($r('app.string.wordcard_txt_show_translation'))
             .width('100%')
             .fontSize(18)
@@ -447,7 +464,8 @@ export struct DetailCardOne {
           return
         }
 
-        this.isHideExampleTranslation = !this.isHideExampleTranslation
+        // this.isHideExampleTranslation = !this.isHideExampleTranslation
+        onClicked()
       })
 
 

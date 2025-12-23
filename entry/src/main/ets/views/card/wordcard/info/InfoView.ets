@@ -60,7 +60,7 @@ export struct InfoView {
         //发音次数
         this.buildItemSeg(
           getString($r('app.string.learn_detail_info_txt_pron_times')),
-          [{title: '1次', isEnabled: true}, {title: '2次', isEnabled: true}, {title: '3次', isEnabled: true}],
+          ()=>[{title: '1次', isEnabled: this.autoPlaySound}, {title: '2次', isEnabled: this.autoPlaySound}, {title: '3次', isEnabled: this.autoPlaySound}],
           ()=> (SettingManager.shared.pronTimes - 1), (v: number) => { SettingManager.shared.pronTimes = v + 1},
           (v: number) => {
             SettingManager.shared.pronTimes = v + 1
@@ -82,7 +82,7 @@ export struct InfoView {
         //自动发音间隔
         this.buildItemSeg(
           getString($r('app.string.learn_detail_info_txt_pron_gap')),
-          [{title: '短', isEnabled: true}, {title: '中', isEnabled: true}, {title: '长', isEnabled: true}],
+          ()=>[{title: '短', isEnabled: this.autoPlaySound || this.autoPlaySoundEx}, {title: '中', isEnabled: this.autoPlaySound || this.autoPlaySoundEx}, {title: '长', isEnabled: true}],
           ()=> (SettingManager.shared.pronGap), (v: number) => { SettingManager.shared.pronGap = v},
           (v: number) => {
             SettingManager.shared.pronGap = v
@@ -91,7 +91,7 @@ export struct InfoView {
         //发音播放速度
         this.buildItemSeg(
           getString($r('app.string.learn_detail_info_txt_pron_speed')),
-          [{title: '0.8x', isEnabled: true}, {title: '1.0x', isEnabled: true}, {title: '1.2x', isEnabled: true}],
+          ()=>[{title: '0.8x', isEnabled: true}, {title: '1.0x', isEnabled: true}, {title: '1.2x', isEnabled: true}],
           ()=> (SettingManager.shared.pronSpeed), (v: number) => { SettingManager.shared.pronSpeed = v},
           (v: number) => {
             SettingManager.shared.pronSpeed = v
@@ -137,7 +137,7 @@ export struct InfoView {
           //字体大小
           this.buildItemSeg(
             getString($r('app.string.learn_detail_info_txt_font_style')),
-            [{title: '小', isEnabled: true}, {title: '中', isEnabled: true}, {title: '大', isEnabled: true}],
+            ()=>[{title: '小', isEnabled: true}, {title: '中', isEnabled: true}, {title: '大', isEnabled: true}],
             ()=> (SettingManager.shared.detailStyle), (v: number) => { SettingManager.shared.detailStyle = v},
             (v: number) => {
               SettingManager.shared.detailStyle = v
@@ -185,7 +185,8 @@ export struct InfoView {
         .textAlign(TextAlign.Start)
       Blank()
 
-      Toggle({ type: ToggleType.Switch, isOn: getter() })
+      Toggle({ type: ToggleType.Switch, isOn: getter()})
+        .selectedColor($r('app.color.color_btn_bg2'))
         .onChange((v: boolean) => {
           setter(v);     // 回写状态
           onChange(v);
@@ -198,7 +199,7 @@ export struct InfoView {
     .alignItems(VerticalAlign.Center)
   }
 
-  @Builder buildItemSeg(text: ResourceStr, items: SegmentItem[], getter: () => number, setter: (v: number) => void, onChange: (v: number) => void) {
+  @Builder buildItemSeg(text: ResourceStr, items: ()=>SegmentItem[], getter: () => number, setter: (v: number) => void, onChange: (v: number) => void) {
     Row({ space: 10 }) {
       Text(text)
         .fontSize(14)
@@ -208,7 +209,7 @@ export struct InfoView {
 
 
       SegmentButton({
-        items: items,
+        items: items(),
         selectedIndex: getter(),
         unselectedTextColor: $r('app.color.color_btn_bg2'),
         selectedBgColor: $r('app.color.color_btn_bg2'),
