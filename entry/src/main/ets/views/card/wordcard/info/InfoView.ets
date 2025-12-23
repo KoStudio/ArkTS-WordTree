@@ -10,6 +10,7 @@ import { SettingManager } from '../../../../models/managers/setting/SettingManag
 export struct InfoView {
 
 
+  @Param isForCard: boolean = false
   @Param isShowing: boolean         = false
   @Event $isShowing: (val: boolean) => void
   @Event onClickedBtnSort?: () => void
@@ -131,29 +132,33 @@ export struct InfoView {
         .justifyContent(FlexAlign.SpaceBetween)
         .alignItems(VerticalAlign.Center)
 
-        //字体大小
-        this.buildItemSeg(
-          getString($r('app.string.learn_detail_info_txt_font_style')),
-          [{title: '小', isEnabled: true}, {title: '中', isEnabled: true}, {title: '大', isEnabled: true}],
-          ()=> (SettingManager.shared.detailStyle), (v: number) => { SettingManager.shared.detailStyle = v},
-          (v: number) => {
-            SettingManager.shared.detailStyle = v
-          })
+        if (!this.isForCard){
 
-       Row(){
-         ///调整显示顺序
-         TextButton({
-           text: $r('app.string.learn_detail_info_txt_set_order'),
-           bgColor: $r('app.color.color_btn_bg2'),
-           minWidth: 220,
-           onClickCallBack:()=>{
-             this.onClickedBtnSort?.()
-             this.$isShowing(false)
-           }
-         })
-       }
-       .width('100%')
-       .justifyContent(FlexAlign.Center)
+          //字体大小
+          this.buildItemSeg(
+            getString($r('app.string.learn_detail_info_txt_font_style')),
+            [{title: '小', isEnabled: true}, {title: '中', isEnabled: true}, {title: '大', isEnabled: true}],
+            ()=> (SettingManager.shared.detailStyle), (v: number) => { SettingManager.shared.detailStyle = v},
+            (v: number) => {
+              SettingManager.shared.detailStyle = v
+            })
+
+          Row(){
+            ///调整显示顺序
+            TextButton({
+              text: $r('app.string.learn_detail_info_txt_set_order'),
+              bgColor: $r('app.color.color_btn_bg2'),
+              minWidth: 220,
+              onClickCallBack:()=>{
+                this.onClickedBtnSort?.()
+                this.$isShowing(false)
+              }
+            })
+          }
+          .width('100%')
+          .justifyContent(FlexAlign.Center)
+        }
+
 
       }
       .width('100%')

@@ -467,7 +467,7 @@ export struct WordCardsView {
   }
 
   @Builder buildInfoView(){
-    InfoView({isShowing: this.isShowInfoView, $isShowing:(val) => {
+    InfoView({isForCard: true, isShowing: this.isShowInfoView, $isShowing:(val) => {
       SettingManager.shared.save()
       this.isShowInfoView = false
     }})

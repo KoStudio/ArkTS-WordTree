@@ -645,6 +645,11 @@ export struct DetailCardsView {
     if (SettingManager.shared.autoPlaySoundEx) {
       //排队播放
       await AudioPlayer.shared.prepareToPlay(this.word.exampleEn1)
+      const wordDetail = await this.word.getWordDetail()
+      if (wordDetail) {
+        await AudioPlayer.shared.prepareToPlay(wordDetail.exampleEn2)
+        await AudioPlayer.shared.prepareToPlay(wordDetail.exampleEn3)
+      }
     }
 
   }
