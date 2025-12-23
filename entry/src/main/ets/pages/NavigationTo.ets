@@ -24,12 +24,16 @@ import { BookListView, BookListViewConfig } from '../views/books/BookListView';
 import { BooksOnlineView, BooksOnlineViewConfig } from '../views/books/BooksOnlineView';
 import { TestTopView, TestTopViewConfig } from '../views/test/TestTopView';
 import { ChallengeTopView, ChallengeTopViewConfig } from '../views/test/ChallengeTopView';
+import { UnitWordsView, UnitWordsViewConfig } from '../views/learn/UnitWordsView';
+import { UnitsView, UnitsViewConfig } from '../views/learn/UnitsView';
 
 
 @Builder
 export function navigationTo<T>(name: string, param: T){
 
   if (name === LinkViewConfig.NavKey)                     { LinkView({title: (param as LinkViewConfig.Param).title, url: (param as LinkViewConfig.Param).url})
+  }else if (name === UnitsViewConfig.NavKey)              { UnitsView()
+  }else if (name === UnitWordsViewConfig.NavKey)          { UnitWordsView({unitId: (param as UnitWordsViewConfig.Param).unitId})
   }else if (name === QuickLearnViewConfig.NavKey)         { QuickLearnView()
   }else if (name === QuickLearnWordsViewConfig.NavKey)    { QuickLearnWordsView({unitId: (param as QuickLearnWordsViewConfig.Param).unitId})
   }else if (name === WordCardsViewConfig.NavKey)          { WordCardsView({words: (param as WordCardsViewConfig.Param).words, initIndex: (param as WordCardsViewConfig.Param).initIndex})

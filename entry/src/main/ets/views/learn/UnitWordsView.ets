@@ -4,17 +4,17 @@ import { NavTo } from "../../pages/NavPathManager";
 import { WordCardsViewConfig } from "../card/wordcard/WordCardsView";
 import { WordUser } from "../../models/datas/myData/WordUser";
 import { getStringF } from "../../common/utils/ResourceUtils";
-import { UnitWordListView } from "../learn/sub/UnitWordListView";
+import { UnitWordListView } from "./sub/UnitWordListView";
 
 
-export namespace QuickLearnWordsViewConfig {
+export namespace UnitWordsViewConfig {
 
   ///导航key
-  export const NavKey = "QuickLearnWordsView_show"
+  export const NavKey = "UnitWordsView_show"
 
   ///打开方式
   export function open(param: Param){
-    NavTo(QuickLearnWordsViewConfig.NavKey, param, true)
+    NavTo(UnitWordsViewConfig.NavKey, param, true)
   }
 
   export interface Param {
@@ -24,13 +24,14 @@ export namespace QuickLearnWordsViewConfig {
 }
 
 @ComponentV2
-export struct QuickLearnWordsView {
+export struct UnitWordsView {
 
-  @Param @Require unitId: number
+   @Param @Require unitId: number
 
   build() {
     NavDestination(){
       Stack(){
+
 
         UnitWordListView({
           unitId: this.unitId,
@@ -50,5 +51,6 @@ export struct QuickLearnWordsView {
   getNavTitle(): ResourceStr {
     return getStringF($r('app.string.str_unit_no'), this.unitId)//`Lesson${this.unitId}`
   }
+
 }
 
