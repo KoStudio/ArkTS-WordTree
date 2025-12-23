@@ -18,6 +18,7 @@ import { SettingManager } from '../../../models/managers/setting/SettingManager'
 import { ComposeMemoViewConfig } from '../wordcard/memo/ComposeMemoView';
 import { ItemInfo } from '@kit.MediaLibraryKit';
 import { SimpleEventBus } from '../../../common/components/eventbus/SimpleEventBus';
+import { DetailStyle, StyleItem } from '../detailstyle/DetailStyle';
 
 
 @ComponentV2
@@ -36,6 +37,9 @@ export struct DetailCardOne {
   @Local isHideExampleTranslation1: boolean = SettingManager.shared.hideTranslation
   @Local isHideExampleTranslation2: boolean = SettingManager.shared.hideTranslation
   @Local isHideExampleTranslation3: boolean = SettingManager.shared.hideTranslation
+
+
+  @Local styleItem: StyleItem = DetailStyle.getItem(DetailStyle.init(SettingManager.shared.detailStyle))
 
   @Local isRefreshing: boolean = false
 
@@ -83,6 +87,11 @@ export struct DetailCardOne {
     this.isHideExampleTranslation3 = SettingManager.shared.hideTranslation
   }
 
+  @Monitor('settingManager.detailStyle')
+  onChangeOfDetailStyle(){
+    this.styleItem = DetailStyle.getItem(DetailStyle.init(SettingManager.shared.detailStyle))
+
+  }
 
   build() {
     Column() {
@@ -153,18 +162,34 @@ export struct DetailCardOne {
     .width('100%')
   }
 
-  // 构建学习状态和计数布局
+
+  // 构建单词卡片布局
+  @Builder
+  buildWordTitlePanel() {
+    Column({space: 10}) {
+      //页码
+      this.buildLearnPageInfoPanel()
+
+      // 单词标题En
+      this.buildWordTitleRow();
+
+      // 发音
+      this.buildPronunciationRow();
+
+      // 单词翻译
+      this.buildWordTranslationRow();
+
+    }
+    //.width('100%')
+    .padding({left: 10, right: 10 , top: 10, bottom: 10})
+
+  }
+
+  //页码
   @Builder
   buildLearnPageInfoPanel() {
     Row(){
-      // Image(this.word.deleted ?  $r('app.media.btn_learn_disable_1') :  $r('app.media.btn_learn_1'))
-      //   .width(69)
-      //   .height(26)
-      //   .margin({left: 20})
-
-      // Blank().layoutWeight(1)
-
-      Text(this.pageInfo) //页码
+      Text(this.pageInfo)
         .fontColor(Color.Black)
         .fontSize(14)
         .margin({right: 2})
@@ -173,33 +198,10 @@ export struct DetailCardOne {
     .width('100%')
     .padding(0)
     .margin(0)
-    .justifyContent(FlexAlign.SpaceBetween)
+    .justifyContent(FlexAlign.Start)
     .height(26)
   }
 
-  // 构建单词卡片布局
-  @Builder
-  buildWordTitlePanel() {
-    Column({space: 10}) {
-      // 学习状态和计数区域
-      this.buildLearnPageInfoPanel()
-
-      // 单词标题行
-      this.buildWordTitleRow();
-
-      // 发音显示行
-      this.buildPronunciationRow();
-
-      // 单词翻译行
-      this.buildWordTranslationRow();
-
-    }
-    //.width('100%')
-    .padding({left: 10, right: 10 , top: 10, bottom: 10})
-    //.margin({left: 10, right: 10})
-    // .backgroundColor(this.word.deleted ? $r('app.color.color_card_bg_disable') : $r('app.color.color_card_bg')) // 单词卡背景色
-    // .borderRadius(8)
-  }
 
   // 构建单词标题行（英文单词 + 语音按钮）
   @Builder
@@ -208,7 +210,7 @@ export struct DetailCardOne {
       // 英文单词
       Text(this.word.titleEn)
         .fontColor($r('app.color.color_card_title'))
-        .maxFontSize(30)
+        .maxFontSize(this.styleItem.wordEn.fontSize)//(30)
         .minFontSize(0.1)
         .maxLines(1)
         .fontWeight(FontWeight.Bold)
@@ -223,6 +225,59 @@ export struct DetailCardOne {
     }
     .width('100%')
     .margin({ top: 5 })
+  }
+
+  // 构建发音显示行
+  @Builder
+  buildPronunciationRow() {
+    Text(`${this.word.pronEn}`)
+      .width('100%')
+      .fontSize(this.styleItem.wordPron.fontSize)//(18)
+      .fontColor($r('app.color.color_card_detail'))
+      .textAlign(TextAlign.Start)
+      .margin({ left: 30 })
+  }
+
+  // 构建日文翻译行
+  @Builder
+  buildWordTranslationRow() {
+    Stack(){
+      if (this.isHideWordTranslation){
+        Text($r('app.string.wordcard_txt_show_translation'))
+          .width('100%')
+          .fontSize(this.styleItem.wordCn.fontSize)//(18)
+          .minFontScale(0.1)
+          .fontColor('#ac8b56')
+          .textAlign(TextAlign.Center)
+          .padding(5)
+          .margin({ top: 5, bottom: 5})
+          .backgroundColor(Color.White)
+
+      }else{
+        Row(){
+          Text(this.wordDetail?.getTitleCnsJoined())
+            .layoutWeight(1)
+            .fontSize(this.styleItem.wordCn.fontSize)//(18)
+            .minFontScale(0.1)
+            .padding(5)
+            .fontColor($r('app.color.color_card_subtitle'))
+            .textAlign(TextAlign.Start)
+            .margin({ top: 5, bottom: 5})
+
+
+        }
+        .width('100%')
+      }
+    }
+    .onClick(()=>{
+      ///会员检查
+      if(!MemberManager.shared.checkHideTransUsable(false)) {
+        return
+      }
+      this.isHideWordTranslation = !this.isHideWordTranslation
+    })
+
+
   }
 
   @Builder buildSubCellSection(section: ResourceStr | null | undefined){
@@ -249,7 +304,7 @@ export struct DetailCardOne {
     Column(){
       if (cell.title){
         Text(cell.title)
-          .fontSize(18)
+          .fontSize(this.styleItem.title.fontSize)//(18)
           .fontColor($r('app.color.color_list_item_title'))
           .textAlign(TextAlign.Start)
       }
@@ -260,12 +315,12 @@ export struct DetailCardOne {
         //   .fontColor($r('app.color.color_list_item_subtitle'))
         //   .textAlign(TextAlign.Start)
 
-        WordClickableText({ text:cell.subTitle || '', normalColor: $r('app.color.color_list_item_subtitle'), fontSize: 18, highlightWords: this.getHilightTexts(), onWordClick:(word: string)=>{ this.onClickedText(word) } })
+        WordClickableText({ text:cell.subTitle || '', normalColor: $r('app.color.color_list_item_subtitle'), fontSize: this.styleItem.subtitle.fontSize, highlightWords: this.getHilightTexts(), onWordClick:(word: string)=>{ this.onClickedText(word) } })
       }
 
       if (cell.detail){
         Text(cell.detail)
-          .fontSize(18)
+          .fontSize(this.styleItem.detail.fontSize)//(18)
           .fontColor($r('app.color.color_list_item_detail'))
           .textAlign(TextAlign.Start)
       }
@@ -274,119 +329,8 @@ export struct DetailCardOne {
     .alignItems(HorizontalAlign.Start)
     .width('100%')
     .margin({ top: 5, bottom: 10 })
-    // .border({width: {bottom: 1}, color: $r('app.color.color_line')})
-  }
-
-  // @Builder buildExpamplePanel(){
-  //   Column(){
-  //     // 例句标题和语音按钮区域
-  //     this.buildExampleTitlePronPanel();
-  //
-  //     // 例句内容区域
-  //     //this.buildExampleContentPanel();
-  //   }
-  //   //.width('100%')
-  //   .padding({left: 10, right: 10 , top: 10, bottom: 10})
-  //   .margin({top:20})
-  //   .backgroundColor(this.word.deleted ? $r('app.color.color_card_bg_disable') : $r('app.color.color_card_bg')) // 单词卡背景色
-  //   .borderRadius(8)
-  //
-  //
-  // }
-
-
-  // 构建发音显示行
-  @Builder
-  buildPronunciationRow() {
-    Text(`${this.word.pronEn}`)
-      .width('100%')
-      .fontSize(18)
-      .fontColor($r('app.color.color_card_detail'))
-      .textAlign(TextAlign.Start)
-      .margin({ left: 30 })
-  }
-
-  // 构建日文翻译行
-  @Builder
-  buildWordTranslationRow() {
-    Stack(){
-      if (this.isHideWordTranslation){
-        Text($r('app.string.wordcard_txt_show_translation'))
-          .width('100%')
-          .fontSize(18)
-          .minFontScale(0.1)
-          .fontColor('#ac8b56')
-          .textAlign(TextAlign.Center)
-          .padding(5)
-          .margin({ top: 5, bottom: 5})
-          .backgroundColor(Color.White)
-
-      }else{
-        Row(){
-          Text(this.wordDetail?.getTitleCnsJoined())
-            .layoutWeight(1)
-            .fontSize(18)
-            .minFontScale(0.1)
-            .padding(5)
-            .fontColor($r('app.color.color_card_subtitle'))
-            .textAlign(TextAlign.Start)
-            .margin({ top: 5, bottom: 5})
-
-
-        }
-        .width('100%')
-      }
-    }
-    .onClick(()=>{
-      ///会员检查
-      if(!MemberManager.shared.checkHideTransUsable(false)) {
-        return
-      }
-      this.isHideWordTranslation = !this.isHideWordTranslation
-    })
-
 
   }
-  //
-  // // 构建词性和分类图标行
-  // @Builder
-  // buildWordAttributesRow() {
-  //   Row(){
-  //     // 词性图标
-  //     Image(this.getWordKindIcon())
-  //       .width(19)
-  //       .height(16)
-  //
-  //     // 分类图标
-  //     Image(this.getCategoryIcon())
-  //       .width(40)
-  //       .height(12)
-  //       .margin({ left: 10, right: 20 })
-  //   }
-  //   .width('100%')
-  //   .justifyContent(FlexAlign.End)
-  //   .margin({ top: 5 })
-  // }
-
-  // 构建例句标题和语音按钮区域
-  // @Builder
-  // buildExampleTitlePronPanel() {
-  //   Row(){
-  //     // 例句 标题
-  //     Text($r('app.string.wordcard_txt_example'))
-  //       .fontSize(22)
-  //       .fontColor($r('app.color.color_text'))
-  //       .textAlign(TextAlign.Start)
-  //
-  //     Blank().layoutWeight(1)
-  //
-  //       // 例句语音按钮
-  //       IconButton({ icon: $r('app.media.ic_langdu_nroaml'), iconSize: 26, onClickCallBack:()=>{ this.onClickedBtnExamplePron(this.word) } })
-  //   }
-  //   .justifyContent(FlexAlign.SpaceBetween)
-  //   .width('100%')
-  //   .margin({ top: 16, bottom: 20 })
-  // }
 
   @Builder buildCells(){
     Column(){
@@ -427,7 +371,7 @@ export struct DetailCardOne {
     Column({ space: 5 }) {
       Row(){
         // 英文例句
-        WordClickableText({ text:cell.title || '', highlightWords: this.getHilightTexts(), onWordClick:(word: string)=>{ this.onClickedText(word) } })
+        WordClickableText({ text:cell.title || '', highlightWords: this.getHilightTexts(), fontSize: this.styleItem.title.fontSize, onWordClick:(word: string)=>{ this.onClickedText(word) } })
           .layoutWeight(1)
 
         // 例句语音按钮
@@ -438,7 +382,7 @@ export struct DetailCardOne {
         if (getter()){ //this.isHideExampleTranslation
           Text($r('app.string.wordcard_txt_show_translation'))
             .width('100%')
-            .fontSize(18)
+            .fontSize(this.styleItem.detail.fontSize)//(18)
             .minFontScale(0.1)
             .fontColor('#555555')
             .textAlign(TextAlign.Center)
@@ -451,7 +395,7 @@ export struct DetailCardOne {
           // 日文例句
           Text(cell.detail)
             .width('100%')
-            .fontSize(20)
+            .fontSize(this.styleItem.detail.fontSize)//(20)
             .fontColor($r('app.color.color_card_subtitle'))
             .textAlign(TextAlign.Start)
             .padding(5)
@@ -515,7 +459,7 @@ export struct DetailCardOne {
 
           Column(){
             Text(this.word.memo)
-              .fontSize(16)
+              .fontSize(this.styleItem.subtitle.fontSize)//(16)
               .fontColor($r('app.color.color_list_item_subtitle'))
               .textAlign(TextAlign.Start)
 
