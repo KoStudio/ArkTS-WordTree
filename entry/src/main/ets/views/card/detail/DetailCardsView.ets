@@ -578,8 +578,8 @@ export struct DetailCardsView {
       await this.preLoadOneSound(this.words[page].exampleEn1)
       const wordDetail = await this.words[page].getWordDetail()
       if (wordDetail) {
-        await this.preLoadOneSound(wordDetail.exampleEn1)
         await this.preLoadOneSound(wordDetail.exampleEn2)
+        await this.preLoadOneSound(wordDetail.exampleEn3)
       }
     }
 
