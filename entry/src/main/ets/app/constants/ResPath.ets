@@ -47,10 +47,10 @@ export class ResName {
   // static readonly Word_Cnt = new ResPath("Word_Cnt", "Datas/Word_Cnt.sqlite");
 
   // BaseDict_Cns
-  static readonly BaseDict_Cns = new ResPath("BaseDict_Cns", "Datas/91_BaseDict/BaseDict.sqlite");
+  static readonly BaseDict_Cns = new ResPath("BaseDict_Cns", "Datas/91_BaseDict/BaseDict.sqlite.zip");
 
   // BaseDict_Cnt
-  static readonly BaseDict_Cnt = new ResPath("BaseDict_Cnt", "Datas/91_BaseDict/BaseDict_Cnt.sqlite");
+  static readonly BaseDict_Cnt = new ResPath("BaseDict_Cnt", "Datas/91_BaseDict/BaseDict_Cnt.sqlite.zip");
 
 
   //Cigen_Cns

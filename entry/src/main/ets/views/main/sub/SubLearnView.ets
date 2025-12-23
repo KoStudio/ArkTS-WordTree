@@ -4,6 +4,7 @@ import { getStringF } from "../../../common/utils/ResourceUtils"
 import { Book } from "../../../models/datas/book/Book"
 import { BookManager } from "../../../models/datas/book/BookManager"
 import { SearchManager } from "../../../models/datas/model/SearchManager"
+import { UnitsViewConfig } from "../../learn/UnitsView"
 import { QuickLearnViewConfig } from "../../quicklearn/QuickLearnView"
 import { QuizChallengeView, QuizChallengeViewConfig } from "../../quiz/running/QuizChallengeView"
 import { ChallengeTopViewConfig } from "../../test/ChallengeTopView"
@@ -143,7 +144,7 @@ export struct SubLearnView {
 
       Row({ space: 10 }) {
         this.MainButton($r('app.string.main_study_btn_quickremember'), $r('app.media.ic_kuaisujiyi'), '#8ACD2C', ()=>{ QuickLearnViewConfig.open() })
-        this.MainButton($r('app.string.main_study_btn_study'), $r('app.media.ic_xuexi'), '#26C9FF', ()=>{})
+        this.MainButton($r('app.string.main_study_btn_study'), $r('app.media.ic_xuexi'), '#26C9FF', ()=>{ UnitsViewConfig.open() })
       }
 
       Row({ space: 10 }) {

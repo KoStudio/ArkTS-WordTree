@@ -5,6 +5,7 @@ import { WordCardsViewConfig } from "../card/wordcard/WordCardsView";
 import { WordUser } from "../../models/datas/myData/WordUser";
 import { getStringF } from "../../common/utils/ResourceUtils";
 import { UnitWordListView } from "./sub/UnitWordListView";
+import { DetailCardsViewConfig } from "../card/detail/DetailCardsView";
 
 
 export namespace UnitWordsViewConfig {
@@ -35,7 +36,7 @@ export struct UnitWordsView {
 
         UnitWordListView({
           unitId: this.unitId,
-          onClickedRow: (rowIndex: number, words: WordUser[]) => { WordCardsViewConfig.open({words: words, initIndex: rowIndex}) }
+          onClickedRow: (rowIndex: number, words: WordUser[]) => { DetailCardsViewConfig.open({words: words, initIndex: rowIndex}) }
         })
       }
       .backgroundColor($r('app.color.color_background'))

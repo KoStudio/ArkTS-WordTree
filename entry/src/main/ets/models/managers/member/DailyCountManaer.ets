@@ -16,10 +16,11 @@ class Pref {
 // DailyCountType：每日计数类型
 // ============================================================
 export enum DailyCountType {
-  wordPron       = "wordPron",
-  wordStorke     = "wordStorke",
-  phrasePron     = "phrasePron",
-  dictationTimes = "dictationTimes",
+  wordPron       = 'wordPron',
+  examplePron    = 'examplePron',
+  dictShow       = 'dictShow',
+  onlineDict     = 'onlineDict',
+  challenge      = 'challenge'
 }
 
 

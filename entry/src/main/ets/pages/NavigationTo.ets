@@ -26,6 +26,7 @@ import { TestTopView, TestTopViewConfig } from '../views/test/TestTopView';
 import { ChallengeTopView, ChallengeTopViewConfig } from '../views/test/ChallengeTopView';
 import { UnitWordsView, UnitWordsViewConfig } from '../views/learn/UnitWordsView';
 import { UnitsView, UnitsViewConfig } from '../views/learn/UnitsView';
+import { DetailCardsView, DetailCardsViewConfig } from '../views/card/detail/DetailCardsView';
 
 
 @Builder
@@ -36,6 +37,7 @@ export function navigationTo<T>(name: string, param: T){
   }else if (name === UnitWordsViewConfig.NavKey)          { UnitWordsView({unitId: (param as UnitWordsViewConfig.Param).unitId})
   }else if (name === QuickLearnViewConfig.NavKey)         { QuickLearnView()
   }else if (name === QuickLearnWordsViewConfig.NavKey)    { QuickLearnWordsView({unitId: (param as QuickLearnWordsViewConfig.Param).unitId})
+  }else if (name === DetailCardsViewConfig.NavKey)        { DetailCardsView({words: (param as DetailCardsViewConfig.Param).words, initIndex: (param as DetailCardsViewConfig.Param).initIndex})
   }else if (name === WordCardsViewConfig.NavKey)          { WordCardsView({words: (param as WordCardsViewConfig.Param).words, initIndex: (param as WordCardsViewConfig.Param).initIndex})
   }else if (name === ComposeMemoViewConfig.NavKey)        { ComposeMemoView({word: (param as ComposeMemoViewConfig.Param).word})
   }else if (name === BookListViewConfig.NavKey)           { BookListView()

@@ -60,7 +60,7 @@ export struct DictView {
        .fontColor($r('app.color.color_dict_title'))
 
      if (this.isVoiceButtonVisible) {
-       IconButton({icon: $r('app.media.btn_voice_1'), iconSize: 28,onClickCallBack: () =>{
+       IconButton({icon: $r('app.media.ic_langdu_nroaml'), iconSize: 28,onClickCallBack: () =>{
          this.actionPlaySound()
        }})
          .margin({ left: 10, right: 5 })

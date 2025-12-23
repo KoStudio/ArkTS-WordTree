@@ -2,7 +2,6 @@ import { IconTintButton } from "../../../app/views/buttons/IconTintButton"
 import { logEvent } from "../../../common/components/Logger/Logger"
 import { WordUser } from "../../../models/datas/myData/WordUser"
 import { SettingManager } from "../../../models/managers/setting/SettingManager"
-import { WordCardOne } from "./WordCardOne"
 import { SearchManager } from "../../../models/datas/model/SearchManager"
 import { NavPop, NavPopTop, NavTo } from "../../../pages/NavPathManager"
 import { buildNavTitle } from "../../../app/constants/AppBuilders"
@@ -11,8 +10,6 @@ import { getString, getStringF } from "../../../common/utils/ResourceUtils"
 import { BgCardImage } from "../../../app/views/BgCardImage"
 import { awaitDelay, buildStandardMenu, CustomNavigationMenuItem } from "../../../app/constants/AppFunctions"
 import { FavoriteStarButton } from "../../../app/views/buttons/FavoriteStarButton"
-import { DictView } from "./dict/DictView"
-import { InfoView } from "./info/InfoView"
 import { SpeechRecordManager } from "../../../common/components/Speech/Recorder/SpeechRecordManager"
 import { RecordingView } from "../../../common/components/Speech/Recorder/RecordingView"
 import PermissionManager from "../../../common/components/Alarm/PermissionManager"
@@ -27,16 +24,19 @@ import { MemberManager } from "../../../models/managers/member/MemberManager"
 import { MemberView } from "../../setting/member/MemberView"
 import { NavBarView } from "../../../app/views/NavBarView"
 import { NavBarCommonView } from "../../../app/views/NavBarCommonView"
+import { DetailCardOne } from "./DetailCardOne"
+import { DictView } from "../wordcard/dict/DictView"
+import { InfoView } from "../wordcard/info/InfoView"
 
-export namespace WordCardsViewConfig {
+export namespace DetailCardsViewConfig {
 
   ///导航key
-  export const NavKey = "WordCardsView_show"
+  export const NavKey = "DetailCardsView_show"
 
   ///打开方式
   export function open(param: Param){
     if (param.words.length > 0) {
-      NavTo(WordCardsViewConfig.NavKey, param, true)
+      NavTo(DetailCardsViewConfig.NavKey, param, true)
     }
   }
 
@@ -48,7 +48,7 @@ export namespace WordCardsViewConfig {
 }
 
 @ComponentV2
-export struct WordCardsView {
+export struct DetailCardsView {
 
   /// 参数
   @Param @Require words                : WordUser[]               // 初始卡片文本内容数组（用于区分 initText）
@@ -256,7 +256,7 @@ export struct WordCardsView {
       Swiper(this.swiperController) {
         ForEach(this.words, (word: WordUser, index: number) => {
 
-          WordCardOne({word: word,
+          DetailCardOne({word: word,
             pageInfo: `${index + 1}/${this.words.length}`,
             onClickedBtnWordPron:(wd: WordUser)=>{
               // this.playSound(wd.wordEnSoundText)

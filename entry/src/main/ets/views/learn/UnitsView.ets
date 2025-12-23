@@ -1,6 +1,7 @@
 import { buildNavTitle } from "../../app/constants/AppBuilders";
 import { dNavBackIcon } from "../../app/constants/AppDefines";
 import {  NavTo } from "../../pages/NavPathManager";
+import { DetailCardsViewConfig } from "../card/detail/DetailCardsView";
 import { WordCardsViewConfig } from "../card/wordcard/WordCardsView";
 import { UnitListView } from "./sub/UnitListView";
 import { UnitWordsViewConfig } from "./UnitWordsView";
@@ -27,7 +28,7 @@ export struct UnitsView {
     NavDestination(){
       Stack(){
         UnitListView({
-          onClickedRow:(sectionIndex, rowIndex, unit)     => { WordCardsViewConfig.open({words: unit.aliveWords, initIndex: unit.indexOfNextLearnWord})},
+          onClickedRow:(sectionIndex, rowIndex, unit)     => { DetailCardsViewConfig.open({words: unit.aliveWords, initIndex: unit.indexOfNextLearnWord})},
           onClickedBtnList:(sectionIndex, rowIndex, unit) => { UnitWordsViewConfig.open({unitId: unit.unitId}) },
         })
       }
