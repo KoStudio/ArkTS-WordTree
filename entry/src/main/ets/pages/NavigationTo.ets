@@ -28,6 +28,7 @@ import { UnitWordsView, UnitWordsViewConfig } from '../views/learn/UnitWordsView
 import { UnitsView, UnitsViewConfig } from '../views/learn/UnitsView';
 import { DetailCardsView, DetailCardsViewConfig } from '../views/card/detail/DetailCardsView';
 import { CigenWordsView, CigenWordsViewConfig } from '../views/card/cigen/CigenWordsView';
+import { CreatePlanView, CreatePlanViewConfig } from '../views/plan/CreatePlanView';
 
 
 @Builder
@@ -45,6 +46,7 @@ export function navigationTo<T>(name: string, param: T){
   }else if (name === BooksOnlineViewConfig.NavKey)        { BooksOnlineView({category: (param as BooksOnlineViewConfig.Param).category})
   }else if (name === CigenWordsViewConfig.NavKey)         { CigenWordsView({words: (param as CigenWordsViewConfig.Param).words, navTitle:  (param as CigenWordsViewConfig.Param).navTitle})
   }else if (name === DeletedWordsViewConfig.NavKey)       { DeletedWordsView()
+  }else if (name === CreatePlanViewConfig.NavKey)         { CreatePlanView({initWordIds: (param as CreatePlanViewConfig.Param).initWordIds, initName:  (param as CreatePlanViewConfig.Param).initName, bookId:  (param as CreatePlanViewConfig.Param).bookId, plan:  (param as CreatePlanViewConfig.Param).plan})
   }else if (name === TestTopViewConfig.NavKey)            { TestTopView()
   }else if (name === ChallengeTopViewConfig.NavKey)       { ChallengeTopView()
   }else if (name === QuizScopeUnitViewConfig.NavKey)      { QuizScopeUnitView()
