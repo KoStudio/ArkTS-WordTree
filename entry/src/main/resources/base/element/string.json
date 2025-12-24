@@ -308,8 +308,8 @@
     { "name": "dayofs_alert_btn_clear"             , "value": "清空学习记录" },
     { "name": "dayofs_alert_btn_cancel"            , "value": "取消" },
 
-    { "name": "dayofs_cell_txt_study"              , "value": "%d\n学习" },
-    { "name": "dayofs_cell_txt_review"             , "value": "%d\n复习" },
+    { "name": "dayofs_cell_txt_study"              , "value": "学习" },
+    { "name": "dayofs_cell_txt_review"             , "value": "复习" },
     { "name": "dayofs_cell_btn_study"              , "value": "学习" },
     { "name": "dayofs_cell_btn_edit"               , "value": "修改" },
 

@@ -1,11 +1,17 @@
 import { IconTintButton } from "../../../app/views/buttons/IconTintButton"
 import { TextButton } from "../../../app/views/buttons/TextButton"
+import { DateUtils } from "../../../common/utils/DateUtils"
 import { getStringF } from "../../../common/utils/ResourceUtils"
 import { Book } from "../../../models/datas/book/Book"
 import { BookManager } from "../../../models/datas/book/BookManager"
 import { SearchManager } from "../../../models/datas/model/SearchManager"
+import { DayOf } from "../../../models/managers/plan/plancurve/DayOf"
+import { Plan } from "../../../models/managers/plan/plancurve/Plan"
+import { PlanManager } from "../../../models/managers/plan/plancurve/PlanManager"
 import { SettingManager } from "../../../models/managers/setting/SettingManager"
 import { UnitsViewConfig } from "../../learn/UnitsView"
+import { CreatePlanViewConfig } from "../../plan/CreatePlanView"
+import { DayOfsViewConfig } from "../../plan/DayOfsView"
 import { QuickLearnViewConfig } from "../../quicklearn/QuickLearnView"
 import { QuizChallengeView, QuizChallengeViewConfig } from "../../quiz/running/QuizChallengeView"
 import { ChallengeTopViewConfig } from "../../test/ChallengeTopView"
@@ -27,6 +33,11 @@ export struct SubLearnView {
   @Local cntCorrected: number   = 0
   @Local cntWrang: number       = 0
 
+  @Local plan  : Plan | null = null
+  @Local dayOf : DayOf | null = null
+
+  @Local planBtnText : ResourceStr  = $r('app.string.main_curve_btn_create_plam')
+  @Local planInfoText : ResourceStr = $r('app.string.main_curve_txt_info_create')
 
   aboutToAppear(): void {
     this.loadData()
@@ -69,6 +80,27 @@ export struct SubLearnView {
     this.cntLearned   = SearchManager.shared.getLearnedWords().length
     this.cntCorrected = SearchManager.shared.getCorrectedWords().length
     this.cntWrang     = SearchManager.shared.getWrongWords().length
+
+   await this.loadPlanData()
+
+  }
+
+  async  loadPlanData(){
+    this.plan   = await this.getPlan()
+    this.dayOf  = await this.getDayOf()
+
+    if (this.plan) {
+      this.planBtnText = $r('app.string.main_curve_btn_study_start')
+      if (this.dayOf) {
+        this.planInfoText = getStringF($r('app.string.main_curve_txt_info_days'), this.dayOf.num + 1, this.plan.wordIdsAll?.length ?? 0)
+      }else{
+        this.planInfoText = getStringF($r('app.string.main_curve_txt_info_days2'), this.plan.dayOfs.length, this.plan.wordIdsAll?.length ?? 0)
+
+      }
+    }else{
+      this.planBtnText  = $r('app.string.main_curve_btn_create_plam')
+      this.planInfoText = $r('app.string.main_curve_txt_info_create')
+    }
   }
 
   build() {
@@ -250,18 +282,25 @@ export struct SubLearnView {
 
 
           Blank()
-          IconTintButton({icon: $r('app.media.list'), iconSize: 22, iconColor: $r('app.color.color_gray'), onClickCallBack: () => {}})
+          IconTintButton({icon: $r('app.media.list'), iconSize: 22, iconColor: $r('app.color.color_gray'), onClickCallBack: () => {
+            ///DayOfs
+            this.actionCurveList()
+          }})
         }
         .width('100%')
 
         Column({ space: 6 }) {
           //Button('').width(180).height(32)
           //创建计划
-          TextButton({text: $r('app.string.main_curve_btn_create_plam'), minWidth: 200})
+          TextButton({text: this.planBtnText, minWidth: 200, onClickCallBack: ()=>{
+
+            /// +创建计划/开始学习
+            this.actionCurveStudy()
+          }})
 
 
           ///创建学习计划，开始记忆曲线
-          Text($r('app.string.main_curve_txt_info_create'))
+          Text(this.planInfoText)
             .fontSize(14)
             .fontColor($r('app.color.color_text2'))
         }
@@ -278,6 +317,59 @@ export struct SubLearnView {
   }
 
 
+  actionCurveStudy(){
+
+    if (!this.book) {
+      return
+    }
+
+
+    if (this.plan) {
+      CreatePlanViewConfig.openWithPlan(this.plan)
+    }else{
+      const wordIds = SearchManager.shared.getAliveWordIds()
+      CreatePlanViewConfig.openWithNew(wordIds, this.book.bookName ?? '', this.book.bookId ?? 0)
+    }
+
+
+  }
+  actionCurveList(){
+
+    if (this.plan) {
+      DayOfsViewConfig.open({plan: this.plan})
+    }else{
+      this.actionCurveStudy()
+    }
+
+
+  }
+
+  async getPlan(): Promise<Plan | null> {
+
+    const bookId = BookManager.shared.currentBook?.bookId
+    if (!bookId) {
+      return null
+    }
+
+    return await PlanManager.getPlanByBookId(bookId)
+  }
+
+  /// 当前正在学习的 dayOf
+  async getDayOf(): Promise<DayOf | null> {
+    let plan = await this.getPlan()
+    const startDate = plan?.startDate;
+    if (startDate) {
+
+      // 当前第几天，start from 0
+      const dayNumIndex = DateUtils.daysTo(startDate, new Date());
+
+      // 获取当前(今天)的 DayOf
+      return plan?.dayOfs?.find(d => d.num === dayNumIndex) ?? null;
+
+    } else {
+      return null;
+    }
+  }
 }
 
 

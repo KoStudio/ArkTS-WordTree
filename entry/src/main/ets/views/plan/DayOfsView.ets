@@ -14,6 +14,7 @@ import { buildStandardMenu, CustomNavigationMenuItem } from "../../app/constants
 import { CreatePlanViewConfig } from "./CreatePlanView"
 import { buildNavTitle } from "../../app/constants/AppBuilders"
 import { dNavBackIcon } from "../../app/constants/AppDefines"
+import { NavTo } from "../../pages/NavPathManager"
 
 
 export namespace DayOfsViewConfig {
@@ -22,13 +23,8 @@ export namespace DayOfsViewConfig {
   export const NavKey = "DayOfsView_show"
 
   ///打开方式
-  export function NavTo(navPath: NavPathStack | undefined, param: DayOfsViewConfig.Param){
-    if (!navPath) { return }
-
-    if (param.plan) {
-      navPath.pushPathByName(DayOfsViewConfig.NavKey, param, true)
-    }
-
+  export function open(param: DayOfsViewConfig.Param){
+    NavTo(NavKey, param, true)
   }
 
   /// 参数类型
@@ -264,13 +260,13 @@ export struct DayOfsView {
     ///查看plan详细
     options.push(
       {text: $r('app.string.dayofs_alert_btn_detail'),action: ()=>{
-        PlanDetailViewConfig.NavTo(this.navPath, {plan: this.plan!})
+        PlanDetailViewConfig.open({plan: this.plan!})
       }})
 
     /////编辑plan
     options.push(
       {text: $r('app.string.dayofs_alert_btn_edit'),action: ()=>{
-        CreatePlanViewConfig.NavToWithPlan(this.navPath, this.plan!)
+        CreatePlanViewConfig.openWithPlan(this.plan!)
       }})
 
     /////删除plan

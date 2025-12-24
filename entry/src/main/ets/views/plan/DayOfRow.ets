@@ -64,7 +64,7 @@ export struct DayOfRow {
     //.shadow({ radius: 5 })
     .onClick(() => {
       // 点击整行跳转
-      DayOfWordsViewConfig.NavTo(this.navPath, {dayOf: this.dayOf, plan: this.plan})
+      DayOfWordsViewConfig.open({dayOf: this.dayOf, plan: this.plan})
     })
   }
 

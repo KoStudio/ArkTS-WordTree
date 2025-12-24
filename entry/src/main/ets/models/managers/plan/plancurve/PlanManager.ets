@@ -191,6 +191,33 @@ export class PlanManager {
     );
   }
 
+  ///从DB加载plan
+  /// 根据 bookId 从 DB 获取单个 Plan
+  public static async getPlanByBookId(bookId: number): Promise<Plan | null> {
+    const dbPlan: DBPlan | null = await PlanDbAccess.shared.getPlanByBookId(bookId);
+    if (!dbPlan) return null;
+
+    const dbPlanHelper: DBPlanHelper = new DBPlanHelper(dbPlan);
+
+    // 预先获取所有异步数据
+    const pieces: Piece[] = await dbPlanHelper.getPieces();
+    const boxes : Box[]   = await dbPlanHelper.getBoxes();
+    const learns: Learn[] = await dbPlanHelper.getLearns();
+
+    return new Plan(
+      dbPlan.planId,
+      dbPlan.planName,
+      dbPlan.startDate,
+      dbPlan.distances!.split(",").map((s: string) => Number(s)),
+      dbPlan.process ?? 0,
+      dbPlan.bookId,
+      dbPlan.countPerDay!,
+      pieces,
+      boxes,
+      learns
+    );
+  }
+
   ///保存plan到DB
   public static async save(plan: Plan): Promise<void> {
     //如果planId为nil时，为新增

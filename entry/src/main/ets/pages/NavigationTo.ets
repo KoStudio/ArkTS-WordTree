@@ -29,6 +29,9 @@ import { UnitsView, UnitsViewConfig } from '../views/learn/UnitsView';
 import { DetailCardsView, DetailCardsViewConfig } from '../views/card/detail/DetailCardsView';
 import { CigenWordsView, CigenWordsViewConfig } from '../views/card/cigen/CigenWordsView';
 import { CreatePlanView, CreatePlanViewConfig } from '../views/plan/CreatePlanView';
+import { DayOfsView, DayOfsViewConfig } from '../views/plan/DayOfsView';
+import { DayOfWordsView, DayOfWordsViewConfig } from '../views/plan/DayOfWordsView';
+import { PlanDetailView, PlanDetailViewConfig } from '../views/plan/PlanDetailView';
 
 
 @Builder
@@ -47,6 +50,9 @@ export function navigationTo<T>(name: string, param: T){
   }else if (name === CigenWordsViewConfig.NavKey)         { CigenWordsView({words: (param as CigenWordsViewConfig.Param).words, navTitle:  (param as CigenWordsViewConfig.Param).navTitle})
   }else if (name === DeletedWordsViewConfig.NavKey)       { DeletedWordsView()
   }else if (name === CreatePlanViewConfig.NavKey)         { CreatePlanView({initWordIds: (param as CreatePlanViewConfig.Param).initWordIds, initName:  (param as CreatePlanViewConfig.Param).initName, bookId:  (param as CreatePlanViewConfig.Param).bookId, plan:  (param as CreatePlanViewConfig.Param).plan})
+  }else if (name === DayOfsViewConfig.NavKey)             { DayOfsView({initPlan: (param as DayOfsViewConfig.Param).plan})
+  }else if (name === DayOfWordsViewConfig.NavKey)         { DayOfWordsView({initDayOf: (param as DayOfWordsViewConfig.Param).dayOf, initPlan: (param as DayOfWordsViewConfig.Param).plan})
+  }else if (name === PlanDetailViewConfig.NavKey)         { PlanDetailView({plan: (param as PlanDetailViewConfig.Param).plan})
   }else if (name === TestTopViewConfig.NavKey)            { TestTopView()
   }else if (name === ChallengeTopViewConfig.NavKey)       { ChallengeTopView()
   }else if (name === QuizScopeUnitViewConfig.NavKey)      { QuizScopeUnitView()

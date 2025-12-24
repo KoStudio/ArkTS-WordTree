@@ -18,6 +18,7 @@ import { logEvent } from "../../common/components/Logger/Logger"
 import { buildNavTitle } from "../../app/constants/AppBuilders"
 import { dMemberFlag, dNavBackIcon } from "../../app/constants/AppDefines"
 import { MemberManager } from "../../models/managers/member/MemberManager"
+import { NavTo } from "../../pages/NavPathManager"
 
 
 export namespace DayOfWordsViewConfig {
@@ -26,11 +27,11 @@ export namespace DayOfWordsViewConfig {
   export const NavKey = "DayOfWordsView_show"
 
   ///打开方式
-  export function NavTo(navPath: NavPathStack | undefined, param: DayOfWordsViewConfig.Param){
-    if (!navPath) { return }
+  export function open(param: DayOfWordsViewConfig.Param){
+
 
     if (param.dayOf && param.plan) {
-      navPath.pushPathByName(DayOfWordsViewConfig.NavKey, param, true)
+      NavTo(NavKey, param, true)
     }
   }
 

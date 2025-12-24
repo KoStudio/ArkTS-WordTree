@@ -5,6 +5,7 @@ import { getString, getStringF } from '../../common/utils/ResourceUtils'
 import { buildNavTitle } from '../../app/constants/AppBuilders'
 import { dNavBackIcon } from '../../app/constants/AppDefines'
 import { SectionDatas } from '../../common/utils/array/SectionDatas'
+import { NavTo } from '../../pages/NavPathManager'
 
 
 export namespace PlanDetailViewConfig {
@@ -13,11 +14,9 @@ export namespace PlanDetailViewConfig {
   export const NavKey = "PlanDetailView_show"
 
   ///打开方式
-  export function NavTo(navPath: NavPathStack | undefined, param: PlanDetailViewConfig.Param){
-    if (!navPath) { return }
-
+  export function open(param: PlanDetailViewConfig.Param){
     if (param.plan ) {
-      navPath.pushPathByName(PlanDetailViewConfig.NavKey, param, true)
+      NavTo(NavKey, param, true)
     }
   }
 

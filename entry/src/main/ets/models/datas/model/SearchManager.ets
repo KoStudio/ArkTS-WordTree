@@ -264,6 +264,15 @@ export class SearchManager {
   }
 
   /**
+   * 获取活跃单词的ID数组（未删除的单词）
+   */
+  getAliveWordIds(): number[] {
+    return this.allWords
+      .filter(word => !word.deleted)
+      .map(word => word.idx ?? 0);
+  }
+
+  /**
    * 获取活跃单元（包含未删除单词的单元）
    */
   getAliveUnits(): Unit[] {

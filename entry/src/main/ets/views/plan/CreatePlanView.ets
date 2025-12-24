@@ -404,7 +404,7 @@ export struct CreatePlanView {
   // MARK: - 点击选择天数
   private actionViewPlan() {
     if (this.tempPlan) {
-      DayOfsViewConfig.NavTo(this.navPath, {plan: this.tempPlan})
+      DayOfsViewConfig.open({plan: this.tempPlan})
     }
 
   }
