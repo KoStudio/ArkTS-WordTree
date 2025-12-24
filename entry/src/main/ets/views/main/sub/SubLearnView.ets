@@ -4,6 +4,7 @@ import { getStringF } from "../../../common/utils/ResourceUtils"
 import { Book } from "../../../models/datas/book/Book"
 import { BookManager } from "../../../models/datas/book/BookManager"
 import { SearchManager } from "../../../models/datas/model/SearchManager"
+import { SettingManager } from "../../../models/managers/setting/SettingManager"
 import { UnitsViewConfig } from "../../learn/UnitsView"
 import { QuickLearnViewConfig } from "../../quicklearn/QuickLearnView"
 import { QuizChallengeView, QuizChallengeViewConfig } from "../../quiz/running/QuizChallengeView"
@@ -76,8 +77,13 @@ export struct SubLearnView {
         Column({ space: 12 }) {
           this.InfoPanel()
           this.ButtonPanel()
-          this.TodayPanel()
-          this.CurvePanel()
+          if (SettingManager.shared.enableCurve){
+            this.CurvePanel()
+          }else{
+            this.TodayPanel()
+          }
+
+
         }
         .padding(10)
       }
