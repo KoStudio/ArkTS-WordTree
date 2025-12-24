@@ -13,6 +13,7 @@ import { BookListViewConfig } from "../../books/BookListView"
 import { UnitsViewConfig } from "../../learn/UnitsView"
 import { CreatePlanViewConfig } from "../../plan/CreatePlanView"
 import { DayOfsViewConfig } from "../../plan/DayOfsView"
+import { DayOfWordsViewConfig } from "../../plan/DayOfWordsView"
 import { QuickLearnViewConfig } from "../../quicklearn/QuickLearnView"
 import { QuizChallengeView, QuizChallengeViewConfig } from "../../quiz/running/QuizChallengeView"
 import { ChallengeTopViewConfig } from "../../test/ChallengeTopView"
@@ -98,11 +99,12 @@ export struct SubLearnView {
     if (this.plan) {
       this.planBtnText = $r('app.string.main_curve_btn_study_start')
       if (this.dayOf) {
-        this.planInfoText = getStringF($r('app.string.main_curve_txt_info_days'), this.dayOf.num + 1, this.plan.wordIdsAll?.length ?? 0)
+        this.planInfoText = getStringF($r('app.string.main_curve_txt_info_days'), this.dayOf.num + 1, this.plan.wordIdsWhenNew(this.dayOf)?.length ?? 0)
       }else{
         this.planInfoText = getStringF($r('app.string.main_curve_txt_info_days2'), this.plan.dayOfs.length, this.plan.wordIdsAll?.length ?? 0)
 
       }
+      PlanManager.shared.plan = this.plan
     }else{
       this.planBtnText  = $r('app.string.main_curve_btn_create_plam')
       this.planInfoText = $r('app.string.main_curve_txt_info_create')
@@ -331,7 +333,12 @@ export struct SubLearnView {
 
 
     if (this.plan) {
-      CreatePlanViewConfig.openWithPlan(this.plan)
+      //CreatePlanViewConfig.openWithPlan(this.plan)
+      if (this.dayOf) {
+        DayOfWordsViewConfig.open({plan: this.plan, dayOf: this.dayOf})
+      }else{
+        DayOfsViewConfig.open({plan: this.plan})
+      }
     }else{
       const wordIds = SearchManager.shared.getAliveWordIds()
       CreatePlanViewConfig.openWithNew(wordIds, this.book.bookName ?? '', this.book.bookId ?? 0)

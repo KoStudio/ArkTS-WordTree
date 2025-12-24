@@ -315,16 +315,16 @@ export struct DayOfWordsView {
 
   /// 重新刷新数据
   private async loadDatas() {
-    // 如果有planId时，说明是已经保存到Db中的plan
-    // 这里需要重新读取 plan的learn数据
-    if (this.plan?.planId != null) {
-      // 重新从db加载 plan
-      if (this.plan.bookId != null) {
-        this.plan = await PlanManager.getPlanByBookId(this.plan.bookId)
-      }
-    }
+    // // 如果有planId时，说明是已经保存到Db中的plan
+    // // 这里需要重新读取 plan的learn数据
+    // if (this.plan?.planId != null) {
+    //   // 重新从db加载 plan
+    //   if (this.plan.bookId != null) {
+    //     this.plan = await PlanManager.getPlanByBookId(this.plan.bookId)
+    //   }
+    // }
 
-    // 使用异步任务模拟后台线程执行
+
     let sectionData: SectionDatas<string, WordUser> = new SectionDatas()
     let learnedWordIds: Set<number> = new Set()
 
@@ -395,10 +395,7 @@ export struct DayOfWordsView {
 
     // 按 distance 排序，新字在前，复习在后
     for (const box of dayOf.boxes) {
-      const words = plan.wordsFor(dayOf, [box.distance])
-      if (words && words.length > 0) {
-        words.push(...words)
-      }
+      words.push(...plan.wordsFor(dayOf, [box.distance]))
     }
 
     //打开详细

@@ -88,10 +88,10 @@ export class SearchManager {
 
   private async loadDataStructures(): Promise<void> {
 
-    const words     = await this.getWordDbAccess()?.getAllWords() || [];
-    const wordUsers = await WordUserDbAccess.shared.getAllWordUsers() || [];
+    const words        = await this.getWordDbAccess()?.getAllWords() || [];
+    const wordUsers    = await WordUserDbAccess.shared.getAllWordUsers() || [];
 
-    const userMap   = new Map<string, WordUser>();
+    const userMap      = new Map<string, WordUser>();
     for (const u of wordUsers) {
       if (u.titleEn !== null) {
         userMap.set(u.titleEn, u);
@@ -103,44 +103,46 @@ export class SearchManager {
 
       if (existed) {
         // 覆盖基本字段
+        existed.idx            = w.idx;
+        existed.partId         = w.partId;
+        existed.partName       = w.partName;
+        existed.unitId         = w.unitId;
+        existed.unitNo         = w.unitNo;
+        existed.unitName       = w.unitName;
         existed.titleEn        = w.titleEn;
-        existed.titleCn1        = w.titleCn1;
-        // existed.wordKind      = w.wordKind;
-        existed.pronEn = w.pronEn;
+        existed.titleCn1       = w.titleCn1;
+
+        existed.pronEn         = w.pronEn;
+        existed.pronUs         = w.pronUs;
         existed.exampleEn1     = w.exampleEn1;
         existed.exampleCn1     = w.exampleCn1;
-        // existed.redWord       = w.redWord;
-        existed.unitId        = w.unitId;
-        existed.unitNo        = w.unitNo;
-        existed.unitName      = w.unitName;
-        existed.partId    = w.partId;
-        existed.partName  = w.partName;
+
         return existed;
       }
 
       // 没有用户记录 → 创建新的 WordUser（手动赋值）
-      const newWord = new WordUser();
-      newWord.idx            = w.idx;
-      newWord.unitId        = w.unitId;
-      newWord.unitNo        = w.unitNo;
-      newWord.partId    = w.partId;
-      newWord.partName  = w.partName;
-      newWord.titleEn        = w.titleEn;
-      newWord.titleCn1        = w.titleCn1;
-      // newWord.wordKind      = w.wordKind;
-      newWord.pronEn = w.pronEn;
-      newWord.exampleEn1     = w.exampleEn1;
-      newWord.exampleCn1     = w.exampleCn1;
-      // newWord.redWord       = w.redWord;
-      newWord.unitName      = w.unitName;
+      const newWord            = new WordUser();
+      newWord.idx              = w.idx;
+      newWord.partId           = w.partId;
+      newWord.partName         = w.partName;
+      newWord.unitId           = w.unitId;
+      newWord.unitNo           = w.unitNo;
+      newWord.unitName         = w.unitName;
+      newWord.titleEn          = w.titleEn;
+      newWord.titleCn1         = w.titleCn1;
+
+      newWord.pronEn           = w.pronEn;
+      newWord.pronUs           = w.pronUs;
+      newWord.exampleEn1       = w.exampleEn1;
+      newWord.exampleCn1       = w.exampleCn1;
 
       // 初始化用户字段
-      newWord.favoriteLevel  = 0;
-      newWord.learnTimes     = 0;
-      newWord.correctedTimes = 0;
-      newWord.wrangTimes     = 0;//(Math.random() * 100 % 12);
+      newWord.favoriteLevel    = 0;
+      newWord.learnTimes       = 0;
+      newWord.correctedTimes   = 0;
+      newWord.wrangTimes       = 0; // (Math.random() * 100 % 12);
 
-      ///调试用
+      /// 调试用
       if (DebugFlg.isDebugMode()) {
         // newWord.favoriteLevel  = ((Math.round(Math.random() * 100)) % 5 === 1 ? 0 : 1)
         // newWord.learnTimes     = ((Math.round(Math.random() * 100)) % 5 === 1 ? 0 : 1)
@@ -148,14 +150,11 @@ export class SearchManager {
         // newWord.correctedTimes = ((Math.round(Math.random() * 100)) % 5 === 1 ? 0 : 1)
       }
 
-      newWord.lastResultType = 0;
-      // newWord.wrangYear      = 0;
-      // newWord.wrangMonth     = 0;
-      // newWord.wrangDay       = 0;
-      newWord.wrangDate      = null
-      newWord.memo           = null;
-      newWord.shareMemos     = []
-      newWord.deleted        = false;
+      newWord.lastResultType   = 0;
+      newWord.wrangDate        = null;
+      newWord.memo             = null;
+      newWord.shareMemos       = [];
+      newWord.deleted          = false;
 
       return newWord;
     });
@@ -165,7 +164,6 @@ export class SearchManager {
     // 构建分类和单元的数据结构
     this.buildPartsAndUnits();
   }
-
   /**
    * 构建分类和单元的数据结构
    */
