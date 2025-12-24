@@ -572,6 +572,7 @@ export struct SetView {
   private loadUserData(){
     if (!UserManager.shared.isLogin()) {
       this.userData.userId       = null
+      this.userData.bookId       = null
       this.userData.createDate   = null
       this.userData.updateDate   = null
       this.userData.userDataAddr = null
@@ -584,8 +585,9 @@ export struct SetView {
     UserDataManager.loadUserData((succeed: boolean, msg: string | null, UserDataJsons: UserDataJson[] | null) => {
 
       if (UserDataJsons != null && UserDataJsons?.length > 0) {
-        const oneData             =  UserData.fromJson(UserDataJsons[0])
+        const oneData              =  UserData.fromJson(UserDataJsons[0])
         this.userData.userId       = oneData.userId
+        this.userData.bookId       = oneData.bookId
         this.userData.createDate   = oneData.createDate
         this.userData.updateDate   = oneData.updateDate
         this.userData.userDataAddr = oneData.userDataAddr
@@ -841,6 +843,7 @@ export struct SetView {
 
     //检查 DB结构
     WordUserDbAccess.shared.refreshDb()
+    SearchManager.shared.refreshData()
     // PlanDbAccess.shared.refreshDb()
 
 

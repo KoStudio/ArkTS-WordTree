@@ -49,9 +49,9 @@ export struct SubLearnView {
 
 
   @Monitor('bookManager.currentBook')
-  onChangeOfBook(){
+  async onChangeOfBook(){
     this.book         = this.bookManager.currentBook
-
+    await SearchManager.shared.refreshData()
 
     this.loadData()
   }

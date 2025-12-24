@@ -5,6 +5,7 @@ import { Toast } from "../../../common/utils/Toast"
 import { Book } from "../../../models/datas/book/Book"
 import { BookManager } from "../../../models/datas/book/BookManager"
 import { Category, CategoryManager } from "../../../models/datas/book/CategoryManager"
+import { SearchManager } from "../../../models/datas/model/SearchManager"
 
 
 @ComponentV2
@@ -122,6 +123,7 @@ export struct BooksLocalView {
     if (!book.isCurrentBook){
       BookManager.shared.setCurrentBook(book)
       this.loadData()
+      //SearchManager.shared.refreshData()
     }
 
   }

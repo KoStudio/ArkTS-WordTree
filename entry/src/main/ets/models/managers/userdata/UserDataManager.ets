@@ -10,6 +10,8 @@ import { DebugLog } from '../../../app/debug/DebugLog';
 import { FileUtility } from '../../../common/utils/FileUtility';
 import { createFolderIfNeeds } from '../../../app/constants/AppFunctions';
 import { PathUtility } from '../../../common/utils/PathUtility';
+import { SearchModifier } from '@kit.ArkUI';
+import { BookManager } from '../../datas/book/BookManager';
 
 
 // MARK: - 用户数据管理器
@@ -27,9 +29,17 @@ export class UserDataManager {
       completion(false, "User not logged in", null);
       return;
     }
+
+    const bookId = BookManager.shared.currentBook?.bookId ?? 0
+    if (bookId < 1) {
+      completion(false, "Book is not selected", null);
+      return;
+    }
+
     const url                               = `${Servers.getRouteUrl(Route.user_data)}`
     const params: HttpUtils.HttpParams      = {};
     params[UserDataCodingKeys.userId]       = userId ?? ""
+    params[UserDataCodingKeys.bookId]       = bookId ?? ""
 
     Http.request(url, HttpUtils.Method.GET, params, completion)
   }
@@ -43,6 +53,12 @@ export class UserDataManager {
     const userId = UserManager.shared.userId;
     if (!UserManager.shared.isLogin()) {
       completion(false, "User not logged in");
+      return;
+    }
+
+    const bookId = BookManager.shared.currentBook?.bookId ?? 0
+    if (bookId < 1) {
+      completion(false, "Book is not selected")
       return;
     }
 
@@ -60,7 +76,7 @@ export class UserDataManager {
       // 3. 上传到腾讯云COS
       CosDownloaderUserData.shared.uploadUserData(
         zipPath,
-        `${userId}.zip`,
+        `${userId}_${bookId}.zip`,
         (progress) => {
           DebugLog.i(`Uploading... ${progress}%`);
         },
@@ -74,6 +90,7 @@ export class UserDataManager {
             const url                                     = `${Servers.getRouteUrl(Route.user_data)}/update`
             const params: HttpUtils.HttpParams            = {};
             params[UserDataCodingKeys.userId]             = userId!.toString()
+            params[UserDataCodingKeys.bookId]             = bookId!.toString()
             params[UserDataCodingKeys.userDataAddr]       = objectName
 
             Http.send(url, HttpUtils.Method.POST, params, completion)
@@ -107,6 +124,12 @@ export class UserDataManager {
 
     if (!userId || !userDataAddr) {
       completion(false, "Invalid user data");
+      return;
+    }
+
+    const bookId = BookManager.shared.currentBook?.bookId ?? 0
+    if (bookId < 1) {
+      completion(false, "Book is not selected")
       return;
     }
 
