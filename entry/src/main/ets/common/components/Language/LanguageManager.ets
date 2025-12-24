@@ -11,10 +11,15 @@ import { WordDbAccess } from '../../../models/datas/word/WordDbAccess';
 import { BaseWordDbAccess } from '../../../models/datas/basedict/BaseWordDbAccess';
 import { CigenData } from '../../../models/datas/book/Book';
 import { CigenWordDbAccess } from '../../../models/datas/cigen/CigenWordDbAccess';
+import { BookDbAccess } from '../../../models/datas/book/BookDbAccess';
+import { SimpleEventBus } from '../eventbus/SimpleEventBus';
 
 const PREF_NAME: string = "app_lang_pref";
 const KEY_LANG: string = "lang";
 
+export class LanguageManagerNotification {
+    static readonly languageChanged = 'LanguageManager.Notification.language.changed'
+}
 export class LanguageManager {
 
   // 返回默认语言（简体）
@@ -84,6 +89,8 @@ export class LanguageManager {
 
       // 重启 EntryAbility 使新语言生效
       // await LanguageManager.restartEntryAbility(context);
+
+      SimpleEventBus.emit(LanguageManagerNotification.languageChanged)
     } catch (err) {
       console.error("LanguageManager.switchLanguage failed: " + err.message);
     }

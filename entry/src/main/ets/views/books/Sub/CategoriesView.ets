@@ -1,5 +1,7 @@
+import { SimpleEventBus } from "../../../common/components/eventbus/SimpleEventBus"
+import { LanguageManagerNotification } from "../../../common/components/Language/LanguageManager"
 import { Category, CategoryManager } from "../../../models/datas/book/CategoryManager"
-import { BooksOnlineViewConfig } from "../BooksOnlineView"
+import { BooksOnlineViewConfig } from "../online/BooksOnlineView"
 
 
 @ComponentV2
@@ -10,8 +12,15 @@ export struct CategoriesView {
 
   async aboutToAppear() {
     this.loadData()
+
+    SimpleEventBus.on(LanguageManagerNotification.languageChanged, ()=>{
+      this.loadData()
+    })
   }
 
+  aboutToDisappear(): void {
+    SimpleEventBus.off(LanguageManagerNotification.languageChanged)
+  }
 
   private async loadData() {
     await CategoryManager.shared.reload()

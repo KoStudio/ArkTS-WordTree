@@ -16,7 +16,7 @@ import { BaseDict, Book, CigenData } from './Book';
 namespace Table {
   export namespace Book {
     export const nameCns         = "BookCns";
-    export const nameCnt         = "BookCns";
+    export const nameCnt         = "BookCnt";
 
     export namespace Col {
       export const bookId        = "item0";

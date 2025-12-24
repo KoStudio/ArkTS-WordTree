@@ -9,6 +9,7 @@ import { DayOf } from "../../../models/managers/plan/plancurve/DayOf"
 import { Plan } from "../../../models/managers/plan/plancurve/Plan"
 import { PlanManager } from "../../../models/managers/plan/plancurve/PlanManager"
 import { SettingManager } from "../../../models/managers/setting/SettingManager"
+import { BookListViewConfig } from "../../books/BookListView"
 import { UnitsViewConfig } from "../../learn/UnitsView"
 import { CreatePlanViewConfig } from "../../plan/CreatePlanView"
 import { DayOfsViewConfig } from "../../plan/DayOfsView"
@@ -40,7 +41,12 @@ export struct SubLearnView {
   @Local planInfoText : ResourceStr = $r('app.string.main_curve_txt_info_create')
 
   aboutToAppear(): void {
-    this.loadData()
+    if (!this.book) {
+      BookListViewConfig.open({ isShowAllOnly: true }) //首次进入，需要下载单词本
+    }else{
+      this.loadData()
+    }
+
   }
 
   @Monitor('isShowing')

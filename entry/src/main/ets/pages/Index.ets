@@ -160,7 +160,7 @@ struct Index {
         },
         {
           icon: $r('app.media.ic_more'),
-          onClick: () => { BookListViewConfig.open() }
+          onClick: () => { BookListViewConfig.open({isShowAllOnly: false}) }
         },
       ]
     })
