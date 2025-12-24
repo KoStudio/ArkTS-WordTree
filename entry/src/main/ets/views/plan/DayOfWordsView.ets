@@ -1,7 +1,7 @@
 import { GlobalKey } from "../../app/constants/GlobalKey"
 import { TextButton } from "../../app/views/buttons/TextButton"
 import { ArrayWords, StringWords } from "../../common/utils/array/ArrayStringUtils"
-import { getString } from "../../common/utils/ResourceUtils"
+import { getString, getStringF } from "../../common/utils/ResourceUtils"
 import { StringUtils } from "../../common/utils/strings/StringUtils"
 import { ItemOption, Toast } from "../../common/utils/Toast"
 import { DayOf } from "../../models/managers/plan/plancurve/DayOf"
@@ -19,6 +19,13 @@ import { buildNavTitle } from "../../app/constants/AppBuilders"
 import { dMemberFlag, dNavBackIcon } from "../../app/constants/AppDefines"
 import { MemberManager } from "../../models/managers/member/MemberManager"
 import { NavTo } from "../../pages/NavPathManager"
+import { SectionDatas } from "../../common/utils/array/SectionDatas"
+import { WordUser } from "../../models/datas/myData/WordUser"
+import { WordCardsViewConfig } from "../card/wordcard/WordCardsView"
+import { TEUtility } from "../../common/utils/TEUtility"
+import { Box } from "../../models/managers/plan/plancurve/Box"
+import { DetailCardsViewConfig } from "../card/detail/DetailCardsView"
+import { TextCheckBox } from "../../app/views/buttons/TextCheckBox"
 
 
 export namespace DayOfWordsViewConfig {
@@ -54,13 +61,15 @@ export struct DayOfWordsView {
   @Local private dayOf: DayOf | null = null
   @Local private plan: Plan | null = null
 
-  // @Local lessons: Lesson[] = []
 
-  @Local learnedTexts: Set<string> = new Set<string>()
+  @Local  sectionWords  : SectionDatas<string, WordUser> = new SectionDatas()
+
+  @Local scroller                   : Scroller = new Scroller();
 
   @Local isShowPieceCount: boolean = false
 
-  @Consumer(GlobalKey.kNavPath) private navPath?: NavPathStack
+
+  @Local isQucklearn: boolean = SettingManager.shared.planQuickLearn
 
   aboutToAppear(): void {
     this.dayOf = this.initDayOf
@@ -80,7 +89,7 @@ export struct DayOfWordsView {
       }
       .width('100%')
       .height('100%')
-      .backgroundColor($r('app.color.color_obscure'))
+      .backgroundColor($r('app.color.color_background'))
       //.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
 
     }
@@ -115,36 +124,6 @@ export struct DayOfWordsView {
 
   }
 
-  //
-  //
-  // @Builder
-  // buildStandardMenu(items: NavigationMenuItem[]) {
-  //   Row({space: 2}){
-  //     ForEach(items, (item: NavigationMenuItem) => {
-  //       if (item.icon && typeof item.icon === 'object') {//优先 使用icon
-  //         Image(item.icon)
-  //           .width(26)
-  //           .height(26)
-  //           .backgroundColor(Color.Transparent)
-  //           .fillColor(Color.White) //按钮 着色
-  //           .onClick(() => item.action?.())
-  //           .margin(10)
-  //       }else { //使用文本
-  //         Button() {
-  //           Text(item.value)
-  //             .fontSize(18)
-  //             .fontColor(Color.White) //文本按钮 颜色
-  //         }
-  //         .backgroundColor(Color.Transparent)
-  //         .onClick(() => item.action?.())
-  //         .margin(10)
-  //       }
-  //     })
-  //   }
-  //   .padding(5)
-  //
-  // }
-
 
   //Nav Menu for Create
   buildMenuItems(): CustomNavigationMenuItem[] {
@@ -158,78 +137,114 @@ export struct DayOfWordsView {
 
 
   @Builder buildList(){
-    Column({ space: 0 }) {
-      Row(){
-        ///共10个
-        // Text($r('app.string.dayof_txt_total', this.getTotalCnt()))
-        //   .fontColor($r('app.color.color_text2'))
-        //   .fontSize(12)
-      }
-      .padding(5)
-      .width('100%')
-      .justifyContent(FlexAlign.Start)
+    Column() {
+      List({ space: 0,scroller: this.scroller}) {
+        // 内层unit列表
+        ForEach(this.sectionWords.allSections(), (section: string, sectionIndex: number) => {
+          ListItemGroup({ header: this.buildGroupHeader(section, sectionIndex), style: ListItemGroupStyle.NONE }) {
 
-      // 表格视图
-      List({ space: 0 }) {
-        // 卡片模式
-        // ForEach(this.lessons, (lesson: Lesson, index: number) => {
-        //   ListItem() {
-        //     this.buildLessonRow(lesson, index)
-        //   }
-        // })
+            ForEach(this.sectionWords.allDatasOfSectionIndex(sectionIndex), (word: WordUser, rowIndex: number) => {
+              ListItem() {
+                this.buildRowContent(word, rowIndex)
+              }
+              .onClick(()=>{
+                this.handleRowClick(sectionIndex, rowIndex)
+              })
+              .margin({ bottom: 1 })
+            },(word: WordUser, rowIndex: number)=>`${word.titleEn}_${rowIndex}`)
+
+          }
+        }, (section: string, sectionIndex: number) => `${section}_${sectionIndex}`)
       }
       .width('100%')
       .layoutWeight(1)
-      //.height('100%')
+      .scrollBar(BarState.Auto)
+      .sticky(StickyStyle.Header)
 
-      .backgroundColor($r('app.color.color_obscure'))
+
     }
+    .padding({ top: 0 })
+    .backgroundColor($r('app.color.color_transparent'))
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     .width('100%')
-    //.height('100%')
     .layoutWeight(1)
-    .backgroundColor($r('app.color.color_obscure'))
-    // .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+    .justifyContent(FlexAlign.Start)
   }
 
-  // @Builder buildList(){
-  //   Scroll() {
-  //     Column() {
-  //       ///列表
-  //       Row(){
-  //         ///左边 共0个
-  //         Text($r('app.string.dayof_txt_total', this.getTotalCnt()))
-  //           .fontColor($r('app.color.color_text2'))
-  //           .fontSize(12)
-  //       }
-  //       .padding(5)
-  //       .width('100%')
-  //       .justifyContent(FlexAlign.Start)
-  //
-  //       ForEach(this.lessons, (lesson: Lesson, lessonIndex: number) => {
-  //         this.buildLessonRow(lesson, lessonIndex)
-  //       })
-  //
-  //       Blank().layoutWeight(1)
-  //     }
-  //     //.width('100%')
-  //
-  //   }
-  //   .width('100%')
-  //   .height('100%') // 设置Scroll高度
-  //   .scrollBar(BarState.Auto)
-  // }
-  // @Builder buildLessonRow(lesson: Lesson, index: number){
-  //
-  //   ListRowCells({
-  //     title: lesson.lessonName,
-  //     textStr: lesson.texts,
-  //     isShowMore: false,
-  //     plan: this.plan,
-  //     dayOf: this.dayOf
-  //   })
-  //     .margin({ bottom: 10 })
-  // }
 
+  @Builder
+  buildGroupHeader(section: string, index: number) {
+    Row() {
+      Text(`${section}`)
+        .margin({ top: 5, bottom: 5, left: 10, right: 10 })
+        // .fontColor(TEUtility.getSectionTextColor(index))
+        .fontColor($r('app.color.color_list_section'))
+        .fontSize(16)
+        .fontWeight(FontWeight.Medium)
+      Blank().layoutWeight(1)
+    }
+    .justifyContent(FlexAlign.Start)
+    .width('100%')
+    .backgroundColor($r('app.color.color_list_section_bg'))
+  }
+
+  @Builder
+  buildRowContent(word: WordUser, rowIndex: number) {
+    Row(){
+
+      ///left
+      Column(){
+
+        Text(`${word.titleEn}`)
+          .fontSize(18)
+          .fontColor($r('app.color.color_text'))
+
+
+        Text(word.wordJpClippedString)
+          .fontSize(15)
+          .fontColor($r('app.color.color_detail'))
+          .margin({left: 15, top: 5})
+
+
+      }
+      .justifyContent(FlexAlign.Center)
+      .alignItems(HorizontalAlign.Start)
+
+      //right
+      Row({space: 10}){
+        if (word.memo){
+          //memo icon
+          //TintImage({src: $r('app.media.learn_icon_memo'), iconSize: 20, colorStr:"#888888"})
+          Image($r('app.media.learn_icon_memo'))
+            .width(14)
+            .height(17)
+        }
+
+        //录音icon
+        //TintImage({src: $r('app.media.learn_icon_voice')})
+
+      }
+
+    }
+    .justifyContent(FlexAlign.SpaceBetween)
+    .alignItems(VerticalAlign.Center)
+    .width('100%')
+    .padding({left: 10, top: 5, bottom: 5})
+    .layoutWeight(1)
+    .backgroundColor($r('app.color.color_clear'))
+    .border({width: {bottom: 1}, style: BorderStyle.Dashed, color: $r('app.color.color_obscure')})
+  }
+
+
+  handleRowClick(sectionIndex: number, rowIndex: number){
+
+    let words = this.sectionWords.allDatas()
+    // WordCardsViewConfig.open({words: words, initIndex: this.sectionWords.indexOfAllFromIndex(rowIndex, sectionIndex)})
+    let initIndex = this.sectionWords.indexOfAllFromIndex(rowIndex, sectionIndex)
+
+    //打开详细
+    this.gotoDetail(words, initIndex)
+  }
 
   @Builder buildFooterView(){
     Stack(){
@@ -238,8 +253,11 @@ export struct DayOfWordsView {
         ///学习按钮
         TextButton({text: $r('app.string.dayof_btn_study'), minWidth: 160, onClickCallBack: ()=>{this.actionStudy()}})
 
-        //随机按钮
-        IconTintButton({icon: $r('app.media.random_1'), onClickCallBack: () => { this.actionRandom()}})
+        ///快速学习
+        TextCheckBox({text: $r('app.string.dayof_btn_chk_quicklearn'), checked: this.isQucklearn, $checked:(isChecked)=>{
+          this.isQucklearn = isChecked
+          SettingManager.shared.planQuickLearn = this.isQucklearn
+        }})
 
       }
       .width('100%')
@@ -297,92 +315,72 @@ export struct DayOfWordsView {
 
   /// 重新刷新数据
   private async loadDatas() {
-    // 使用异步任务模拟后台线程执行
-    // let lessons: Lesson[] = []
-    //
-    // const dayOf = this.dayOf
-    // if (!dayOf || !this.plan) {
-    //   return
-    // }
-    //
-    // const unit    = new Unit()
-    // unit.unitId   = dayOf.num
-    // unit.unitName = getString(dayOf.numString)
-    //
-    // // 遍历 boxes
-    // for (const box of dayOf.boxes) {
-    //   const wordIds = this.plan.wordIdsFor(dayOf, [box.distance])
-    //
-    //   if (wordIds && wordIds.length > 0) {
-    //     const lesson    = new Lesson()
-    //     lesson.unitId   = dayOf.num
-    //     lesson.unitName = getString(dayOf.numString)
-    //     lesson.lessonId = box.distance
-    //     lesson.texts    = ArrayWords.joinedWordsString(wordIds)// 词语:空格连接, 单字: 直接连接
-    //
-    //     if (box.distance === 0) {
-    //       // 学习(新字)
-    //       const formatNew    = getString($r('app.string.dayof_section_words_new'))
-    //       lesson.lessonName  = util.format(formatNew, '')
-    //     } else {
-    //       // 复习(+N天)
-    //       const formatReview = getString($r('app.string.dayof_section_words_review'))
-    //       lesson.lessonName  = util.format(formatReview, DistanceHelper.distanceString(box.distance), '')
-    //
-    //     }
-    //
-    //     // 检查是否已存在相同 lessonId
-    //     const existed = lessons.find(les => les.lessonId === lesson.lessonId)
-    //     if (existed) {
-    //       existed.texts = (existed.texts ?? '') + ' ' + ArrayWords.joinedWordsString(wordIds)
-    //       existed.texts = StringUtils.trimedString(existed.texts)
-    //     } else {
-    //       lessons.push(lesson)
-    //     }
-    //   }
-    // }
-    //
-    // // 缓存当前日期已学习过的单词
-    // let learnedWordIds = this.plan.learnedWordIdsFor(dayOf)
-    // // if (learnedWordIds && learnedWordIds.length > 0) {
-    // //   learnedWordIds.forEach(id => this.learnedTexts.add(id))
-    // // }
-    //
-    // this.lessons      = lessons
-    // this.learnedTexts = new Set(learnedWordIds)
+    // 如果有planId时，说明是已经保存到Db中的plan
+    // 这里需要重新读取 plan的learn数据
+    if (this.plan?.planId != null) {
+      // 重新从db加载 plan
+      if (this.plan.bookId != null) {
+        this.plan = await PlanManager.getPlanByBookId(this.plan.bookId)
+      }
+    }
 
-    // 回到主线程（UI更新）
-    // postTask(() => {
-    //   if (this.tableView && typeof this.tableView.reloadData === 'function') {
-    //     this.tableView.reloadData()
-    //   }
-    //
-    //   if (this.footerView) {
-    //     const enabled = this.lessons.length > 0
-    //     this.footerView.btn.isEnabled = enabled
-    //     this.footerView.btnRandom.isEnabled = enabled
-    //   }
-    // })
+    // 使用异步任务模拟后台线程执行
+    let sectionData: SectionDatas<string, WordUser> = new SectionDatas()
+    let learnedWordIds: Set<number> = new Set()
+
+    const dayOf = this.dayOf
+    if (!dayOf || !this.plan) {
+      return
+    }
+
+    // 遍历dayOf的boxes
+    dayOf.boxes.forEach((box: Box) => {
+      const words = this.plan?.wordsFor(dayOf, [box.distance])
+      if (words && words.length > 0) {
+        if (box.distance === 0) {
+          // 学习(新字)
+          const str = getStringF($r('app.string.dayof_section_words_new'), this.getStringForCommonCount(words.length))
+          sectionData.addSectionWithDatas(str, words)
+        } else {
+          // 复习(+n天)
+          const str = getStringF($r('app.string.dayof_section_words_review'), DistanceHelper.distanceString(box.distance), this.getStringForCommonCount(words.length))
+          sectionData.addSectionWithDatas(str, words)
+        }
+      }
+    })
+
+    // 缓存当前日份中已经学习过的wordIds
+    const learnedWords = this.plan?.learnedWordsFor(dayOf)
+    if (learnedWords) {
+      learnedWords.forEach((word: WordUser) => {
+        if (word.idx != null) {
+          learnedWordIds.add(word.idx)
+        }
+      })
+    }
+
+    // 更新UI数据
+    this.sectionWords = sectionData
+    // 这里需要将learnedWordIds传递给适配器，但当前DayOfWordsView没有适配器属性
+    // 可能需要根据实际需求调整
   }
-  // private getTotalCnt(): number {
-  //   const totalCount = this.lessons.reduce((sum, lesson) => sum + lesson.textCount, 0);
-  //   return totalCount
-  // }
+
+  /// 获取通用计数字符串
+  private getStringForCommonCount(count: number): string {
+    return `${count}个`
+  }
 
   actionStudy(){
     this.startStudy()
 
   }
 
-  actionRandom(){
-    this.startStudy(true)
-  }
 
   /**
    * 开始学习全部单词
    * @param random 是否乱序
    */
-  startStudy(random: boolean = false) {
+  startStudy() {
     const dayOf = this.dayOf
     const plan = this.plan
     if (!plan || !dayOf) {
@@ -393,33 +391,30 @@ export struct DayOfWordsView {
     if(!MemberManager.shared.checkDayOfUsable(dayOf.num ?? 0, true)) { return }
 
 
-    let wordIdsOfDayOf: number[] = []
+    let words: WordUser[] = []
 
     // 按 distance 排序，新字在前，复习在后
     for (const box of dayOf.boxes) {
-      const wordIds = plan.wordIdsFor(dayOf, [box.distance])
-      if (wordIds && wordIds.length > 0) {
-        wordIdsOfDayOf.push(...wordIds)
+      const words = plan.wordsFor(dayOf, [box.distance])
+      if (words && words.length > 0) {
+        words.push(...words)
       }
     }
 
-    // 有词语时，强制使用词语卡
-    // if (ArrayWords.containsWords(wordIdsOfDayOf)) {
-    //   SettingManager.shared.currentCardStyleType = CardStyleType.STYLE4
-    // }
+    //打开详细
+    this.gotoDetail(words, 0)
 
-    // 随机乱序
-    // if (random) {
-    //   wordIdsOfDayOf =  ArrayUtils.shuffled(wordIdsOfDayOf)
-    // }
-    //
-    // // 拼接文字（词语:空格连接，单字:直接连接）
-    // const text = ArrayWords.joinedWordsString(wordIdsOfDayOf)
-    //
-    // // 跳转到学习卡片页
-    // MakeViewConfig.NavTo(this.navPath, {initTexts: text, initIndex: 0, plan: plan, dayOf: dayOf})
 
     logEvent("DayOfWordsView_study") //日志
+  }
+
+  gotoDetail(words: WordUser[], index: number = 0){
+    if (this.isQucklearn) {
+      WordCardsViewConfig.open({words: words, initIndex: index, plan: this.plan, dayOf: this.dayOf})
+    }else{
+      DetailCardsViewConfig.open({words: words, initIndex: index, plan: this.plan, dayOf: this.dayOf})
+    }
+
   }
 
   ///显示转到测验或挑战页面的弹出选项

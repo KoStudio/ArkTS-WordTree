@@ -143,7 +143,7 @@ export struct PlanDetailView {
     sectionData.addSection(revSection)
     sectionData.addSectionWithData(revSection, {
       name: getString($r('app.string.plan_detail_txt_everydaystudy')),
-      value: getStringF($r('app.string.plan_detail_words_cnt'), plan.getCountPerDay() ?? 0)
+      value: getStringF($r('app.string.plan_detail_words_cnt'), plan.countPerDay ?? 0)
     })
     sectionData.addSectionWithData(revSection, {
       name: getStringF($r('app.string.plan_detail_txt_review')),

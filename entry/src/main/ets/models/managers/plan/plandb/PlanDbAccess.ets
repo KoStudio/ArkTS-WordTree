@@ -10,7 +10,7 @@ import { DBBox, DBLearn, DBPiece, DBPlan } from "./DBPlan_Piece_Box_learn";
 namespace Tables {
   // MARK: - Plan
   export namespace Plan {
-    export const name = "Plan";
+    export const name = "P_Plan";
     export namespace Col {
       export const planId      = "planId";
       export const planName    = "planName";
@@ -24,7 +24,7 @@ namespace Tables {
 
   // MARK: - Piece
   export namespace Piece {
-    export const name = "Piece";
+    export const name          = "P_Piece";
     export namespace Col {
       export const planId      = "planId";
       export const pieceNo     = "pieceNo";
@@ -34,7 +34,7 @@ namespace Tables {
 
   // MARK: - Box
   export namespace Box {
-    export const name = "Box";
+    export const name          = "P_Box";
     export namespace Col {
       export const planId      = "planId";
       export const num         = "num";
@@ -45,7 +45,7 @@ namespace Tables {
 
   // MARK: - Learn
   export namespace Learn {
-    export const name = "Learn";
+    export const name          = "P_Learn";
     export namespace Col {
       export const planId      = "planId";
       export const bookId      = "bookId";

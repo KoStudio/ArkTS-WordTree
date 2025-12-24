@@ -28,6 +28,8 @@ import { MemberView } from "../../setting/member/MemberView"
 import { NavBarView } from "../../../app/views/NavBarView"
 import { NavBarCommonView } from "../../../app/views/NavBarCommonView"
 import { DetailCardsViewConfig } from "../detail/DetailCardsView"
+import { Plan } from "../../../models/managers/plan/plancurve/Plan"
+import { DayOf } from "../../../models/managers/plan/plancurve/DayOf"
 
 export namespace WordCardsViewConfig {
 
@@ -44,6 +46,8 @@ export namespace WordCardsViewConfig {
   export interface Param {
     words      : WordUser[]
     initIndex  : number
+    plan?      : Plan   | null
+    dayOf?     : DayOf  | null
   }
 
 }
@@ -54,6 +58,9 @@ export struct WordCardsView {
   /// 参数
   @Param @Require words                : WordUser[]               // 初始卡片文本内容数组（用于区分 initText）
   @Param initIndex                     : number        = 0        // 初始显示的卡片索引
+
+  @Param plan?: Plan | null = null             // 用于学习记录
+  @Param dayOf?: DayOf| null = null           // 用于学习记录
 
   /// 本地状态变量声明
   @Local private pageIndex             : number        = 0        // 当前显示的卡片索引
@@ -628,6 +635,12 @@ export struct WordCardsView {
   //保存学习进度
   async saveLearn(){
     await SearchManager.shared.incrementLearnTimesForWord(this.word)
+
+    //记忆曲线保存记录
+    if (this.plan && this.dayOf && this.word.idx) {
+      this.plan?.saveLearned(this.word.idx, this.dayOf)
+    }
+
   }
 
 }

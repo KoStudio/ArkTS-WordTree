@@ -309,7 +309,7 @@ export struct CreatePlanView {
 
       this.wordIds       = this.plan.wordIds
       this.planName      = this.plan.planName ||''
-      this.countPerDay   = this.plan.getCountPerDay()
+      this.countPerDay   = this.plan.countPerDay
 
       //this.btnDays.setTitle(this.getLocalizedDaysString(this.plan.dayOfs.length))
       this.days = this.plan.dayOfs.length

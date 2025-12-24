@@ -30,6 +30,8 @@ import { InfoView } from "../wordcard/info/InfoView"
 import { DetailItemSortView } from "./detailitemsort/DetailItemSortView"
 import { SimpleEventBus } from "../../../common/components/eventbus/SimpleEventBus"
 import { DetailItemNotification } from "../../../models/managers/detailitem/DetailItemManager"
+import { Plan } from "../../../models/managers/plan/plancurve/Plan"
+import { DayOf } from "../../../models/managers/plan/plancurve/DayOf"
 
 export namespace DetailCardsViewConfig {
 
@@ -46,6 +48,9 @@ export namespace DetailCardsViewConfig {
   export interface Param {
     words      : WordUser[]
     initIndex  : number
+
+    plan?      : Plan  | null
+    dayOf?     : DayOf | null
   }
 
 }
@@ -56,6 +61,9 @@ export struct DetailCardsView {
   /// 参数
   @Param @Require words                : WordUser[]               // 初始卡片文本内容数组（用于区分 initText）
   @Param initIndex                     : number        = 0        // 初始显示的卡片索引
+
+  @Param plan?: Plan | null = null             // 用于学习记录
+  @Param dayOf?: DayOf| null = null           // 用于学习记录
 
   /// 本地状态变量声明
   @Local private pageIndex             : number        = 0        // 当前显示的卡片索引
@@ -676,6 +684,12 @@ export struct DetailCardsView {
   //保存学习进度
   async saveLearn(){
     await SearchManager.shared.incrementLearnTimesForWord(this.word)
+
+
+    //记忆曲线保存记录
+    if (this.plan && this.dayOf && this.word.idx) {
+      this.plan?.saveLearned(this.word.idx, this.dayOf)
+    }
   }
 
 }

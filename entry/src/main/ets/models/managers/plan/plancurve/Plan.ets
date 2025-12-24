@@ -7,6 +7,8 @@ import { DayOf } from "./DayOf";
 import { Learn } from "./Learn";
 import { Piece } from "./Piece";
 import { PlanManager } from "./PlanManager";
+import { SearchManager } from "../../../datas/model/SearchManager";
+import { WordUser } from "../../../datas/myData/WordUser";
 
 // MARK: - Plan
 export class Plan {
@@ -22,19 +24,19 @@ export class Plan {
   process     : number;        // 暂时未用
 
   // 关联的bookId
-  private bookId      : number | null;
+  bookId      : number | null;
 
   // 第天多少个新字
-  private countPerDay : number;
+  countPerDay : number;
 
   // 将words划分为piece列表
-  private pieces      : Piece[];
+  pieces      : Piece[];
 
   // 划分好的每一个box列表
-  private boxes       : Box[];
+  boxes       : Box[];
 
   // 学习记录
-  private learns      : Learn[];
+  learns      : Learn[];
 
   // fileprivate var _book: Book? //缓存用
 
@@ -336,6 +338,56 @@ export class Plan {
     } else {
       return this.learns.filter((l) => l.num === dayOf.num).map((l) => l.wordId!).filter((id) => id !== null);
     }
+  }
+
+  // MARK: - words of plan
+  ///获取某天的新字words
+  wordsWhenNew(dayOf: DayOf): WordUser[] {
+    return this.wordsFor(dayOf, [BoxType.New]);
+  }
+
+  ///获取某天的复习words
+  wordsWhenReview(dayOf: DayOf): WordUser[] {
+    let distances = dayOf.distances(true);
+    return this.wordsFor(dayOf, distances);
+  }
+
+  ///获取Words
+  wordsFor(dayOf: DayOf, distances: number[] | null = null): WordUser[] {
+    let ids = this.wordIdsFor(dayOf, distances);
+    return this.getWordsByIds(ids);
+  }
+
+  // MARK: - learned words of plan
+  ///获取某天的已经学习新字
+  learnedWordsWhenNew(dayOf: DayOf): WordUser[] {
+    return this.learnedWordsFor(dayOf, [BoxType.New]);
+  }
+
+  ///获取某天的已经复习words
+  learnedWordsWhenReview(dayOf: DayOf): WordUser[] {
+    let distances = dayOf.distances(true);
+    return this.learnedWordsFor(dayOf, distances);
+  }
+
+  ///获取已经学习或复习的Words
+  learnedWordsFor(dayOf: DayOf, distances: number[] | null = null): WordUser[] {
+    let ids = this.learnedWordIdsFor(dayOf, distances);
+    return this.getWordsByIds(ids);
+  }
+
+  // MARK: - Words from wordIds
+  ///获取指定[wordIds]的Words
+  getWordsByIds(wordIds: number[]): WordUser[] {
+    //过滤掉deleted状态的words
+    //使用SearchManager.shared.getAliveWords()获取所有活跃单词
+    const aliveWords = SearchManager.shared.getAliveWords();
+    
+    //使用Set来提高查找效率
+    const wordIdSet = new Set(wordIds);
+    
+    //过滤出包含在wordIds中的单词
+    return aliveWords.filter(word => wordIdSet.has(word.idx ?? 0));
   }
 
   // MARK: - Utils for box
