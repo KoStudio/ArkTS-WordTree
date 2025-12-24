@@ -336,7 +336,7 @@ export class PlanDbAccess {
     data.num         = rs.getLong(rs.getColumnIndex(Tables.Learn.Col.num));
     data.distance    = rs.getLong(rs.getColumnIndex(Tables.Learn.Col.distance));
     data.pieceNo     = rs.getLong(rs.getColumnIndex(Tables.Learn.Col.pieceNo));
-    data.wordId        = rs.getString(rs.getColumnIndex(Tables.Learn.Col.text))//ResultSetTool.decodeString(rs, Tables.Learn.Col.text);
+    data.text        = rs.getString(rs.getColumnIndex(Tables.Learn.Col.text))//ResultSetTool.decodeString(rs, Tables.Learn.Col.text);
     data.learnDate   = ResultSetTool.getDate(rs, Tables.Learn.Col.learnDate) //new Date(rs.getString(rs.getColumnIndex(Tables.Learn.Col.learnDate)));
     return data;
   }
@@ -398,7 +398,7 @@ export class PlanDbAccess {
   }
 
   private createSqlObjForLearn(learn: DBLearn): SqlObj | null {
-    if (!learn.planId || !learn.wordId) return null;
+    if (!learn.planId || !learn.text) return null;
     const sql = `REPLACE INTO ${Tables.Learn.name} (
             ${Tables.Learn.Col.planId},
             ${Tables.Learn.Col.bookId},
@@ -414,7 +414,7 @@ export class PlanDbAccess {
       learn.num ?? null,
       learn.distance ?? null,
       learn.pieceNo ?? null,
-      learn.wordId,//StringEncoder.encodedToBase64(learn.text),
+      learn.text,//StringEncoder.encodedToBase64(learn.text),
       this.formatDateToString(learn.learnDate)
     ];
     return { sql, params };

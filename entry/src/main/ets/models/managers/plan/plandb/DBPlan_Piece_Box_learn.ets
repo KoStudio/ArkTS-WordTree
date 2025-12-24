@@ -35,6 +35,6 @@ export class DBLearn {
   num       : number | null  = null;  // 学习次数
   distance  : number | null  = null;  // 学习的距离
   pieceNo   : number | null  = null;  // 学习的Piece编号
-  wordId    : wordId | null  = null;  // 学习的文本内容，未加密
+  text      : string | null  = null;  // 学习的文本内容，未加密
   learnDate : Date   | null  = null;  // 学习日期
 }

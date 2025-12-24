@@ -112,7 +112,7 @@ export class DBPlanHelper {
         dbLearn.num != null &&
         dbLearn.distance != null &&
         dbLearn.pieceNo != null &&
-        dbLearn.wordId != null &&
+        dbLearn.text != null &&
         dbLearn.learnDate != null) {
 
         const learn = new Learn();
@@ -121,7 +121,7 @@ export class DBPlanHelper {
         learn.num       = dbLearn.num;
         learn.distance  = dbLearn.distance;
         learn.pieceNo   = dbLearn.pieceNo;
-        learn.wordId      = dbLearn.wordId;
+        learn.text      = dbLearn.text;
         learn.learnDate = dbLearn.learnDate;
 
         //// 使用Set，无需判断Contains

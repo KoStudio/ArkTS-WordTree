@@ -236,7 +236,7 @@ export class Plan {
    */
   get learnedTexts(): string[] | null {
     // 获取所有learn对象的text，并过滤掉null
-    const texts: string[] = this.learns.map(l => l.wordId).filter(l => l !== null) as string[];
+    const texts: string[] = this.learns.map(l => l.text).filter(l => l !== null) as string[];
 
     // 去除重复元素
     return ArrayUtils.removedDuplicates(texts);
@@ -294,7 +294,7 @@ export class Plan {
     learn.num       = num;
     learn.distance  = distance;
     learn.pieceNo   = pieceNo;
-    learn.wordId      = text;
+    learn.text      = text;
     learn.learnDate = new Date();
     learn.save();
 
@@ -306,7 +306,7 @@ export class Plan {
           l.num       === num &&
           l.distance  === distance &&
           l.pieceNo   === pieceNo &&
-          l.wordId      === text
+          l.text      === text
       )
     ) {
       this.learns.push(learn);
@@ -331,10 +331,10 @@ export class Plan {
       let set = new Set(distances);
       return this.learns
         .filter((l) => l.num === dayOf.num && l.distance !== null && set.has(l.distance))
-        .map((l) => l.wordId!)
+        .map((l) => l.text!)
         .filter((t) => t !== null);
     } else {
-      return this.learns.filter((l) => l.num === dayOf.num).map((l) => l.wordId!).filter((t) => t !== null);
+      return this.learns.filter((l) => l.num === dayOf.num).map((l) => l.text!).filter((t) => t !== null);
     }
   }
 
