@@ -5,9 +5,7 @@
     "description": "$string:module_desc",
     "mainElement": "EntryAbility",
     "deviceTypes": [
-      "phone",
-      "tablet",
-      "2in1"
+      "phone"
     ],
     "deliveryWithInstall": true,
     "installationFree": false,
@@ -102,41 +100,53 @@
             "entities": [
               "entity.system.home",
               "entity.system.share",
-              "entity.system.browsable" //声明为可浏览实体，允许被调起，其它应用可以打开此应用
+              "entity.system.browsable"       // QQ登录配置
             ],
             "actions": [
               "action.system.home",
-              "wxentity.action.open",      //微信登录
-              "ohos.want.action.sendData", //打开分享的文件
+              "wxentity.action.open",         // 微信登录
+              "ohos.want.action.sendData",    // 打开分享的文件
               "ohos.want.action.view",        // 查看动作
-              "ohos.want.action.viewData",  // 关键：声明能查看数据
-              "action.system.open",         //打开本地文件
+              "ohos.want.action.viewData",    // QQ登录配置
+              "action.system.open",           // 打开本地文件
             ],
             "uris": [
-//              {
-//                "scheme": "file",                // 必填，声明协议类型为文件,允许打开uri中以file://协议开头标识的本地文件
-//                "type": "general.plain-text",    // 必填，表示支持打开的文件类型
-//                "linkFeature": "FileOpen"        // 必填且大小写敏感，表示此URI的功能为文件打开
-//              },
-//              {
-//                "scheme": "file",
-//                "type": "general.comma-separated-values-text",
-//                "linkFeature": "FileOpen"
-//              },
-//
-//
-//              {
-//                "scheme": "file",
-//                "type": "com.zhika.hzkb",
-//                "linkFeature": "FileOpen"
-//              },
+              {
+                "scheme": "qqopenapi",              // QQ登录配置;接收 QQ 回调数据
+                "host": "1105391403",               // QQ登录配置;业务申请的互联 appId，如果填错会导致 QQ 无法回调
+                "pathRegex": "\\b(auth|share)\\b",  // QQ登录配置;
+                "linkFeature": "Login"
+              },
+              {
+                "scheme": "file",                // 必填，声明协议类型为文件,允许打开uri中以file://协议开头标识的本地文件
+                "type": "general.plain-text",    // 必填，表示支持打开的文件类型
+                "linkFeature": "FileOpen"        // 必填且大小写敏感，表示此URI的功能为文件打开
+              },
+              {
+                "scheme": "file",
+                "type": "general.comma-separated-values-text",
+                "linkFeature": "FileOpen"
+              },
+
+
+              {
+                "scheme": "file",
+                "type": "com.zhika.hzkb",
+                "linkFeature": "FileOpen"
+              },
 //              {
 //                "scheme": "file",
 //                "type": "application/hzkb",
 //                "linkFeature": "FileOpen" // 关键标识
 //              },
 
-             ]
+              {
+                "scheme": "https",           // QQ登录配置 // scheme须配置为https
+                "host": "www.dancishu.com",  // QQ登录配置 // host须配置为关联的域名
+                "path": "path1"              // QQ登录配置 // path可选，表示域名服务器上的目录或文件路径，例如www.example.com/path1中的path1// 如果应用只能处理部分特定的path，则此处应该配置应用所支持的path，避免出现应用不能处理的path链接也被引流到应用中的问题
+              }
+            ],
+            "domainVerify": true,            // QQ登录配置 domainVerify须设置为true
           }
         ]
       }
@@ -162,8 +172,10 @@
       }
     ],
     "querySchemes": [
-      "weixin",    //微信登录
-      "wxopensdk"  //微信登录
+      "weixin",     //微信登录
+      "wxopensdk",  //微信登录
+      "https",      //QQ登录
+      "qqopenapi"   //QQ登录
     ]
   }
 }

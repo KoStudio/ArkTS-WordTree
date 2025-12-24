@@ -467,6 +467,9 @@
     { "name": "setting_txt_record"                          , "value": "录音清空" },
     { "name": "setting_txt_memo"                            , "value": "笔记删除" },
     { "name": "setting_txt_favorite"                        , "value": "收藏夹清空" },
+    { "name": "set_txt_deleteword"                          , "value": "恢复已删除单词" },
+    { "name": "set_txt_curve"                               , "value": "启用记忆曲线" },
+    { "name": "set_txt_cache"                               , "value": "清空缓存" },
     { "name": "setting_txt_soundeffect"                     , "value": "效果音" },
     { "name": "setting_txt_write_review"                    , "value": "撰写评论" },
     { "name": "change_language_title"                       , "value": "切换语言" },
@@ -587,6 +590,10 @@
     {"name": "set_txt_wtreview"                             , "value": "撰写评论"},
     {"name": "set_txt_encourage_info"                       , "value": "免费获取发音的方法"},
 
+    {"name": "set_cell_txt_clear_cache"                     , "value": "清空缓存"                   },
+    {"name": "set_cell_txt_crm_btn_clear_cache"             , "value": "清空本机缓存"               },
+    {"name": "set_msg_clear_done"                           , "value": "清空完成[%s]"               },
+
     {"name": "set_msg_learn"                                , "value": "确定要删除所有学习履历吗？"},
     {"name": "set_msg_test"                                 , "value": "确定要删除所有测试结果吗？"},
     {"name": "set_msg_review"                               , "value": "确定要清空复习列表吗？"},
@@ -662,7 +669,7 @@
     {"name": "set_cell_txt_member"                         , "value": "会员功能"},
 
     {"name": "member_title"                                , "value": "会员功能"},
-    {"name": "member_desc"                                 , "value": "  ・完全无广告;        \n・任意下载词汇数据;        \n・任意查看单词发音;        \n・任意查看例句发音;        \n・任意使用自动发音;        \n・任意使用内置词典;        \n・任意使用夜晚模式;        \n・任意使用记忆曲线;"},
+    {"name": "member_desc"                                 , "value": "・完全无广告;        \n・任意下载词汇数据;        \n・任意查看单词发音;        \n・任意查看例句发音;        \n・任意使用自动发音;        \n・任意使用内置词典;        \n・任意使用记忆曲线;"},
 
     {"name": "member_txt_recommend"                        , "value": "推荐"},
     {"name": "member_txt_info"                             , "value": "・用户确认购买并付款后，计入华为账户;        \n・通过华为购买的内容或服务，仅限华为Harmony系统使用，不能在其它系统使用;        \n・如需取消续订，请在当前订阅周期到期前24小时以前，手动在华为设置管理中关闭自动续费功能，到期前24小时内取消，将会收取订阅费用；        \n・华为账户会在到期前24小时内扣费，扣费成功后订阅周期顺延一个订阅周期；        \n・用户若在免费试用期有任何未使用完的部分，剩余试用期将在购买订阅产品时被没收。目前本产品不提供免费试用期。"},
@@ -853,7 +860,6 @@
     {"name": "set_txt_about_version"                   , "value": "版本：%s"},
     {"name": "set_alert_clear_msg"                     , "value": "清空本机缓存数据？"},
     {"name": "set_alert_clear_btn_yes"                 , "value": "清空"},
-    {"name": "set_msg_clear_done"                      , "value": "清空完成[%s]"},
 
     {"name": "set_nav_title"                           , "value": "设置"},
 
@@ -866,7 +872,7 @@
 
     {"name": "set_cell_txt_advice"                     , "value": "意见反馈"},
     {"name": "set_cell_txt_review"                     , "value": "给个好评"},
-    {"name": "set_cell_txt_share"                      , "value": "分享给好友"},
+    {"name": "set_cell_txt_share"                      , "value": "分享应用"},
     {"name": "set_cell_txt_about"                      , "value": "关于"},
     {"name": "set_cell_txt_version"                    , "value": "版本:%s"},
 

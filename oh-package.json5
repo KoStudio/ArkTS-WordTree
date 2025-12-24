@@ -5,7 +5,8 @@
     "@tencentcloud/cos": "^1.1.8",
     "@tencent/wechat_open_sdk": "1.0.14",
     "@umeng/common": "^1.1.8",
-    "@umeng/analytics": "^1.2.6"
+    "@umeng/analytics": "^1.2.6",
+    "@tencent/qq-open-sdk": "1.0.3"
   },
   "devDependencies": {
     "@ohos/hypium": "1.0.21",

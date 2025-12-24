@@ -30,18 +30,26 @@ export namespace AppSettings {
   }
 
   export class CfgWeixin {
-    static readonly AppId:string         = StringEncoder.decodeAfterRemoveSalt('22d3g1MDE5Y2ZiMmQ5YjM1NjAx')||''                    // 已加密 TOEIC精选词汇
-    static readonly AppSecret:string     = StringEncoder.decodeAfterRemoveSalt('31ZDUxNjg3NTk4YWY1ZjA1NGJjMWU0ZTNkODU2MmViOGU=')||''  // 已加密
+    static readonly AppId:string         = StringEncoder.decodeAfterRemoveSalt('23d3gzYzgzMTQ0YWFkNmUyODUy')||''                    // 已加密 WordTree
+    static readonly AppSecret:string     = StringEncoder.decodeAfterRemoveSalt('35Nzc4NWEzODhmMzIzMTgxODYwM2VhNjA1MzQzNmZkYjc=')||''  // 已加密
     static readonly Url                  = "https://www.dancishu.com"
+
+  }
+
+  //MARK: - QQ config
+  export class CfgQQ {
+    static readonly AppId              = "1105391403"        //QQ: WordTree
+    static readonly AppKey             = "loNT3AlvXvEbSmb0"
+    static readonly Url                = "https://www.dancishu.com"
 
   }
 
   export class TEConfigs {
 
     // 商品 SKU
-    static readonly SKU_Member1: string = "com.or.toeic.vocabulary.member1";
-    static readonly SKU_Member2: string = "com.or.toeic.vocabulary.member2";
-    static readonly SKU_Member3: string = "com.or.toeic.vocabulary.member3";
+    static readonly SKU_Member1: string = "com.ou.wordtree.member1";
+    static readonly SKU_Member2: string = "com.ou.wordtree.member2";
+    static readonly SKU_Member3: string = "com.ou.wordtree.member3";
   }
 }
 

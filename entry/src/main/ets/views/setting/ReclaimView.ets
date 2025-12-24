@@ -36,7 +36,7 @@ export struct ReclaimView {
 
   // === 常量 ===
   private readonly MAX_COUNT: number = 500; // 最大字符数
-  private readonly MIN_COUNT: number = 5;   // 最小字符数
+  private readonly MIN_COUNT: number = 0;   // 最小字符数
 
 
   @Local isShowLoginView: boolean = false

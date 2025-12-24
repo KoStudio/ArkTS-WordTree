@@ -69,7 +69,7 @@ export struct DeletedWordsView {
     return [
       {value: $r('app.string.word_delete_btn_recover') , icon: undefined, action: () => {
         //恢复已经删除的单词
-        this.confirmDeleteTestResult()
+        this.confirmDeletedWords()
 
       }
       }
@@ -160,7 +160,7 @@ export struct DeletedWordsView {
   }
 
   ///测试结果删除
-  confirmDeleteTestResult(){
+  confirmDeletedWords(){
     Toast.showConfirm({ msg:$r('app.string.word_delete_msg_recover_confirm'), yesAction: async ()=>{
       await SearchManager.shared.deleteDeletedWords()
       Toast.showMessage($r('app.string.word_delete_msg_recover_success'))

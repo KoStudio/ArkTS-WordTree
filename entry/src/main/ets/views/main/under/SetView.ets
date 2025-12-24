@@ -29,6 +29,14 @@ import { SubscriptionInfoManager } from "../../../models/managers/subscription/S
 import { MemberManager } from "../../../models/managers/member/MemberManager";
 import { getStringF } from "../../../common/utils/ResourceUtils";
 import { MemberView } from "../../setting/member/MemberView";
+import { DiskStatus } from "../../../app/constants/DiskStatus";
+import { CBookManager } from "../../../common/components/Sounds/Cloud/Download/CBook/CBookManager";
+import { CSoundManager } from "../../../common/components/Sounds/Cloud/Manager/CSoundManager";
+import { AudioTool } from "../../../common/components/Sounds/Player/AudioTool";
+import { FileSizeUtils } from "../../../common/utils/FileSizeUtils";
+import { UserData, UserDataJson } from "../../../models/managers/userdata/UserData";
+import { UserDataManager } from "../../../models/managers/userdata/UserDataManager";
+import { WordUserDbAccess } from "../../../models/datas/myData/WordUserDbAccess";
 
 export namespace SetViewConfig {
 
@@ -51,10 +59,9 @@ export struct SetView {
   @Local isShowLoginView:  boolean     = false
   @Local isShowMemberView: boolean     = false
 
-  @Local userManager:      UserManager = UserManager.shared
-  @Local isLogin:          boolean     = UserManager.shared.isLogin()
-
-  // @Local userData:         UserData    = new UserData()
+  @Local   userManager                  : UserManager                     = UserManager.shared
+  @Local   isLogin                      : boolean                         = UserManager.shared.isLogin()
+  @Local   userData                     : UserData                        = new UserData()
 
 
   @Local subTitleForBackup?: ResourceStr
@@ -218,6 +225,16 @@ export struct SetView {
           this.confirmDeleteFavorites()
         }})
 
+        // 恢复已经删除单词
+        this.buildListItem({icon: $r('app.media.set_icon_del_deletedwords'), title: $r('app.string.set_txt_deleteword'), onClicked: ()=>{
+          this.confirmDeletedWords()
+        }})
+
+        // 查看已删除单词
+        this.buildListItem({icon: $r('app.media.set_icon_del_review'), title: $r('app.string.set_txt_word_deleted'), onClicked: ()=>{
+          DeletedWordsViewConfig.open()
+        }})
+
       }
       .divider({strokeWidth: 1})
 
@@ -252,13 +269,19 @@ export struct SetView {
           this.actionShowLanguages()
         }})
 
-        // 查看已删除单词
-        this.buildListItem({icon: $r('app.media.set_icon_del_review'), title: $r('app.string.set_txt_word_deleted'), onClicked: ()=>{
-          DeletedWordsViewConfig.open()
-        }})
 
         // 效果音
         this.buildListItem({icon: $r('app.media.set_icon_del_set'), title: $r('app.string.setting_txt_soundeffect'), builderType: CustomBuilderType.seSwitch})
+
+        // 启用记忆曲线
+        this.buildListItem({icon: $r('app.media.flashem'), title: $r('app.string.set_txt_curve'), builderType: CustomBuilderType.curveSwitch})
+
+        // 清空缓存
+        this.buildListItem({icon: $r('app.media.document_remove'), title: $r('app.string.set_txt_cache'), onClicked: ()=>{
+
+          /// 切换 语言
+          this.confirmClearCache()
+        }})
 
       }
       .divider({strokeWidth: 1})
@@ -371,7 +394,7 @@ export struct SetView {
 
   @Builder
   buildIcon(param: SetItemOption){
-    TintImage({src: param.icon, colorStr: param.iconColor ?? "#2AA940", isSvg: param.isSvg})
+    TintImage({src: param.icon, colorStr: param.iconColor ?? "#474B7E", isSvg: param.isSvg})
       .width(22)
       .height(22)
   }
@@ -460,12 +483,20 @@ export struct SetView {
           }
         })
     }else if (type === CustomBuilderType.seSwitch){
-      ///长按字卡设置颜色 开关
+      ///se 开关
       Toggle({type: ToggleType.Switch, isOn: SettingManager.shared.soundEffect })
         .selectedColor($r('app.color.color_switch_tint'))
         .onChange(async (isOn: boolean)=>{
           SettingManager.shared.soundEffect    = isOn
         })
+    }else if (type === CustomBuilderType.curveSwitch){
+      ///启用curve 开关
+      Toggle({type: ToggleType.Switch, isOn: SettingManager.shared.enableCurve })
+        .selectedColor($r('app.color.color_switch_tint'))
+        .onChange(async (isOn: boolean)=>{
+          SettingManager.shared.enableCurve    = isOn
+        })
+
     }
   }
 
@@ -527,42 +558,42 @@ export struct SetView {
   }
 
   updateBackupRestoreSubtitle() {
-    // if (this.userData.updateDate) {
-    //   const dateStr = DateUtils.toDateTimeString(this.userData.updateDate)
-    //   this.subTitleForBackup  =  $r('app.string.set_txt_data_last_backup', dateStr)
-    //   this.subTitleForRestore =  $r('app.string.set_txt_data_to_restore')
-    // }else {
-    //   this.subTitleForBackup  = undefined
-    //   this.subTitleForRestore = undefined
-    // }
+    if (this.userData.updateDate) {
+      const dateStr = DateUtils.toDateTimeString(this.userData.updateDate)
+      this.subTitleForBackup  =  $r('app.string.set_txt_data_last_backup', dateStr)
+      this.subTitleForRestore =  $r('app.string.set_txt_data_to_restore')
+    }else {
+      this.subTitleForBackup  = undefined
+      this.subTitleForRestore = undefined
+    }
 
   }
 
   private loadUserData(){
     if (!UserManager.shared.isLogin()) {
-      // this.userData.userId       = null
-      // this.userData.createDate   = null
-      // this.userData.updateDate   = null
-      // this.userData.userDataAddr = null
+      this.userData.userId       = null
+      this.userData.createDate   = null
+      this.userData.updateDate   = null
+      this.userData.userDataAddr = null
 
       //更新UI
       this.updateBackupRestoreSubtitle()
       return
     }
 
-    // UserDataManager.shared.loadUserData((succeed: boolean, msg: string | null, UserDataJsons: UserDataJson[] | null) => {
-    //
-    //   if (UserDataJsons != null && UserDataJsons?.length > 0) {
-    //     const oneData             =  UserData.fromJson(UserDataJsons[0])
-    //     this.userData.userId       = oneData.userId
-    //     this.userData.createDate   = oneData.createDate
-    //     this.userData.updateDate   = oneData.updateDate
-    //     this.userData.userDataAddr = oneData.userDataAddr
-    //   }
-    //
-    //   //更新UI
-    //   this.updateBackupRestoreSubtitle()
-    // })
+    UserDataManager.loadUserData((succeed: boolean, msg: string | null, UserDataJsons: UserDataJson[] | null) => {
+
+      if (UserDataJsons != null && UserDataJsons?.length > 0) {
+        const oneData             =  UserData.fromJson(UserDataJsons[0])
+        this.userData.userId       = oneData.userId
+        this.userData.createDate   = oneData.createDate
+        this.userData.updateDate   = oneData.updateDate
+        this.userData.userDataAddr = oneData.userDataAddr
+      }
+
+      //更新UI
+      this.updateBackupRestoreSubtitle()
+    })
   }
 
   ///显示会员信息
@@ -661,6 +692,47 @@ export struct SetView {
     })
   }
 
+
+  ///恢复已经删除单词
+  confirmDeletedWords(){
+    Toast.showConfirm({ msg:$r('app.string.word_delete_msg_recover_confirm'), yesAction: async ()=>{
+      await SearchManager.shared.deleteDeletedWords()
+      Toast.showMessage($r('app.string.word_delete_msg_recover_success'))
+    }
+    })
+  }
+
+
+  //确认清空缓存
+  confirmClearCache(){
+    Toast.showAlert({
+      title: $r('app.string.alert_title_confirm'),
+      message: $r('app.string.set_cell_txt_crm_btn_clear_cache'),
+      secondaryButton: {value: $r('app.string.cfm_btn_cancel'), fontColor: Color.Gray, action: () => {}},
+      primaryButton: {value: $r('app.string.set_cell_txt_crm_btn_clear_cache'), action: () => {
+
+        // 获取清理前的可用空间 (单位为字节)
+        const before: number = DiskStatus.getAvailableBytesForDataDirectorySync(getContext());
+
+        ///清空缓存的CSounds
+        CSoundManager.shared.removeAllCachedSounds()
+
+
+        //清理缓存的mp3
+        AudioTool.removeTempAudioFiles()
+
+        // 获取清理后的可用空间
+        const after: number = DiskStatus.getAvailableBytesForDataDirectorySync(getContext());
+
+        // 计算释放的空间大小 (确保非负)
+        const freedBytes: number = Math.max(before - after, 0);
+
+        Toast.showMessage($r('app.string.set_msg_clear_done', `${FileSizeUtils.formatBytes(freedBytes)}`))
+      }}
+    })
+  }
+
+
   ///确认 备份
   confirmBackupUserData(){
     if (!UserManager.shared.isLogin()) {
@@ -675,24 +747,7 @@ export struct SetView {
       primaryButton: {value: $r('app.string.set_alert_backup_btn_yes'), action: () => {
 
         //备份用户数据
-        //////////////////////////////////////////////////////////
-        //TODO: 声音暂时不备份，因为这里的声音是sqlite文件，便是Android和iOS是mp3文件，需要修改Android版和iOS为sqlite文件再统一备份，
-        /// 另外，目前iOS版和Android版也无法成功备份，因为备份server是自己的服务器，现在有权限问题，
-        /// 以后需要统一修改成备份在Cos上（再开一个VocabularyBackup或直接 傅Wordtree下的子目录）
-        //////////////////////////////////////////////////////////
-
-        Toast.showCustomDialog(()=> { this.buildLoadingDialog($r('app.string.set_msg_backuping'))}, false)
-        // UserDataManager.shared.uploadUserData((success: boolean, msg: string | null) => {
-        //   // LoadingUtility.hideLoading()
-        //   Toast.closeCustomDialog()
-        //
-        //   if (success) {
-        //     Toast.showMessage($r('app.string.set_msg_backup_done'))
-        //     this.loadUserData()
-        //   }else{
-        //     Toast.showMessage(`${$r('app.string.set_msg_backup_failed') }: ${msg}`)
-        //   }
-        // })
+        this.actionBackupUserData()
 
       }}
     })
@@ -712,42 +767,101 @@ export struct SetView {
       secondaryButton: {value: $r('app.string.cfm_btn_cancel'), fontColor: Color.Gray, action: () => {}},
       primaryButton: {value: $r('app.string.set_alert_restore_btn_yes'), action: () => {
 
-        //恢复 用户数据
-        // if (!this.userData) {
-        //   Toast.showMessage($r("app.string.set_msg_restore_no_found"))
-        //   return
-        // }
-
-
-        Toast.showCustomDialog(()=> { this.buildLoadingDialog($r('app.string.set_msg_restoreing'))}, false)
-        // UserDataManager.shared.restoreDataJson((percent: number) => {}, (success: boolean, msg: string | null) => {
-        //   Toast.closeCustomDialog()
-        //
-        //   if (success) {
-        //     Toast.showMessage($r('app.string.set_msg_restore_done'))
-        //
-        //     ///重新加载当前页面数据
-        //     this.loadUserData()
-        //
-        //     //检查 DB结构，刷新缓存
-        //     //this.refreshDbAndCache()
-        //
-        //   }else{
-        //     Toast.showMessage(`${$r('app.string.set_msg_restore_failed') }: ${msg}`)
-        //   }
-        // })
-
+        //备份用户数据
+        this.actionRestoreUserData()
 
       }}
     })
   }
 
 
+  ///执行备份
+  actionBackupUserData(){
+    // LoadingUtility.showLoading($r('app.string.set_msg_backuping'))
+    Toast.showCustomDialog(()=> { this.buildLoadingDialog($r('app.string.set_msg_backuping'))}, false)
+    UserDataManager.upload((success: boolean, msg: string | null) => {
+      // LoadingUtility.hideLoading()
+      Toast.closeCustomDialog()
+
+      if (success) {
+        Toast.showMessage($r('app.string.set_msg_backup_done'))
+        this.loadUserData()
+      }else{
+        Toast.showMessage(`${$r('app.string.set_msg_backup_failed') }: ${msg}`)
+      }
+    })
+  }
+
+  ///执行恢复
+  actionRestoreUserData(){
+
+    if (!this.userData.userDataAddr) {
+      Toast.showMessage("app.string.set_msg_restore_no_found")
+      return
+    }
+
+    // LoadingUtility.showLoading($r('app.string.set_msg_restoreing'))
+    Toast.showCustomDialog(()=> { this.buildLoadingDialog($r('app.string.set_msg_restoreing'))}, false)
+    // this.loadingView.showLoading(`${getString($r('app.string.set_msg_restoreing'))}....`)
+    UserDataManager.download(this.userData,
+      (progress: number) => {
+        //LoadingUtility.showProgress($r('app.string.set_msg_restoreing'), progress)
+      },
+
+      (success: boolean, msg: string | null) => {
+        //LoadingUtility.hideLoading()
+        Toast.closeCustomDialog()
+        //   this.loadingView.hide()
+
+        if (success) {
+          Toast.showMessage($r('app.string.set_msg_restore_done'))
+
+          ///重新加载当前页面数据
+          this.loadUserData()
+
+          //检查 DB结构，刷新缓存
+          this.refreshDbAndCache()
+
+        }else{
+          Toast.showMessage(`${$r('app.string.set_msg_restore_failed') }: ${msg}`)
+        }
+      })
+
+  }
+
   @Builder
   buildLoadingDialog(msg?: ResourceStr | null): void {
     LoadingDialog({
       content: msg ?? 'loading..'
     })
+  }
+
+
+  refreshDbAndCache(){
+
+    //检查 DB结构
+    WordUserDbAccess.shared.refreshDb()
+    // PlanDbAccess.shared.refreshDb()
+
+
+    // EBookDbAccess.shared.refreshDb()
+    // CColorDbAccess.shared.refreshDb()
+    // UPinyinDbAccess.shared.refreshDb()
+
+
+
+    ///刷新当前Plan，不然会有缓存
+    // const currentPlanId = PlanManager.shared.plan?.planId;
+    // if (currentPlanId) {
+    //   PlanManager.getPlanByPlanId(currentPlanId).then((plan)=>{
+    //     PlanManager.shared.plan = plan
+    //   })
+    // }
+    //
+    // //清空缓存
+    // EBookManager.shared.clearCaches()
+    // CColorManager.shared.clearCaches()
+    // UPinyinManager.shared.clearCaches()
   }
 
   //确认退出登录
@@ -810,4 +924,5 @@ interface SetItemOption {
 enum CustomBuilderType {
   remindSwitch,
   seSwitch,
+  curveSwitch,
 }

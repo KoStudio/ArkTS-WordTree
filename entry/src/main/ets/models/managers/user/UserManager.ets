@@ -10,18 +10,16 @@ import { Http } from '../../networks/Http';
 import { Route, Servers } from '../../networks/Server_Routes';
 import { StringEncoder } from '../../../common/utils/strings/StringEncrypt';
 import { HttpUtils } from '../../networks/HttpUtils';
-import call from '@ohos.telephony.call';
 import { HwLoginManager } from '../sns/hw/HWLoginManager';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { AppSettings } from '../../../app/constants/AppSettings';
 import { DeviceUtil } from '../../../common/utils/DeviceUtils';
-import { dAppFilefolder } from '../../../app/constants/AppDefines';
+import { dAppFilefolder, dMyDataFolderPath } from '../../../app/constants/AppDefines';
 import { createFolderIfNeeds } from '../../../app/constants/AppFunctions';
 import { SimpleDownloader } from '../../../common/components/SimpleDownloader/SimpleDownloader';
 import { FileUtility } from '../../../common/utils/FileUtility';
-import { SnsOneLoginCallback, WXLoginManager } from '../sns/wx/WxLoginManager';
+import { WXLoginManager } from '../sns/wx/WxLoginManager';
 import { DebugLog } from '../../../app/debug/DebugLog';
-import { getString } from '../../../common/utils/ResourceUtils';
+import { QQLoginManager } from '../sns/qq/QQLoginManager';
 
 class Prefs {
   static readonly Name              = "UserInfos";         // 存储用户信息的Key
@@ -101,11 +99,9 @@ export class UserManager {
   signUp(email: string, userName: string, password: string, completion: (succeed: boolean, msg: string | null) => void){
     const url                          = `${Servers.getRouteUrl(Route.login)}/signup`
     const params: HttpUtils.HttpParams = {};
-    params[UserCodingKeys.email]       = email
-    params[UserCodingKeys.userName]    = userName
-    params[UserCodingKeys.password]    = StringEncoder.encodedToBase64(password) ?? ''
-    params[UserCodingKeys.deviceType]  = DeviceUtil.getDeviceType()
-    params[UserCodingKeys.appName]     = AppSettings.App.appName
+    params[UserCodingKeys.email]    = email
+    params[UserCodingKeys.userName] = userName
+    params[UserCodingKeys.password] = StringEncoder.encodedToBase64(password) ?? ''
 
     Http.send(url, HttpUtils.Method.GET, params, completion)
   }
@@ -114,11 +110,9 @@ export class UserManager {
   login(email: string, password: string, completion: (succeed: boolean, msg: string | null) => void) {
 
     const params: HttpUtils.HttpParams  = {};
-    params[UserCodingKeys.email]      = email
-    params[UserCodingKeys.loginType]  = LoginType.email.valueOf()
-    params[UserCodingKeys.password]   = StringEncoder.encodedToBase64(password) ?? ''
-    params[UserCodingKeys.deviceType] = DeviceUtil.getDeviceType()
-    params[UserCodingKeys.appName]    = AppSettings.App.appName
+    params[UserCodingKeys.email]     = email
+    params[UserCodingKeys.loginType] = LoginType.email.valueOf()
+    params[UserCodingKeys.password]  = StringEncoder.encodedToBase64(password) ?? ''
 
     ///执行登录
     this.doLogin(params, completion);
@@ -126,12 +120,11 @@ export class UserManager {
 
   ///sns登录
   loginByIdentifier(identifier: string, userName: string, loginType: LoginType, completion: (succeed: boolean, msg: string | null) => void) {
-    const params: HttpUtils.HttpParams        = {};
+    const params: HttpUtils.HttpParams           = {};
     params[UserCodingKeys.loginIdentifier]    = identifier
     params[UserCodingKeys.loginType]          = loginType.valueOf()
     params[UserCodingKeys.userName]           = userName
     params[UserCodingKeys.deviceType]         = DeviceUtil.getDeviceType()
-    params[UserCodingKeys.appName]            = AppSettings.App.appName
 
     ///执行登录
     this.doLogin(params, completion);
@@ -143,10 +136,7 @@ export class UserManager {
   sendSafeCode(email: string, completion: (succeed: boolean, msg: string | null) => void) {
     const url                          = `${Servers.getRouteUrl(Route.login)}/safe_code`
     const params: HttpUtils.HttpParams = {};
-    params[UserCodingKeys.email]       = email
-    params[UserCodingKeys.appName]     = AppSettings.App.appName
-    params['app_name_display']         = AppSettings.App.appDisplayName
-
+    params[UserCodingKeys.email]    = email
     Http.send(url, HttpUtils.Method.GET, params, completion)
 
   }
@@ -159,13 +149,32 @@ export class UserManager {
    resetPassword(email: string, safeCode: string, password: string, completion:  (succeed: boolean, msg: string | null) => void) {
      const url                          = `${Servers.getRouteUrl(Route.login)}/reset`
      const params: HttpUtils.HttpParams = {};
-     params[UserCodingKeys.email]       = email
-     params[UserCodingKeys.safeCode]    = safeCode
-     params[UserCodingKeys.password]    = StringEncoder.encodedToBase64(password) ?? ''
-     params[UserCodingKeys.appName]     = AppSettings.App.appName
-
+     params[UserCodingKeys.email]    = email
+     params[UserCodingKeys.safeCode] = safeCode
+     params[UserCodingKeys.password] = StringEncoder.encodedToBase64(password) ?? ''
      Http.send(url, HttpUtils.Method.GET, params, completion)
    }
+
+  /// 获取用户编码
+  getUserCode(completion:  (succeed: boolean, msg: string | null, code: string | null) => void) {
+    if (!(this.userId !== null)) {
+      return
+    }
+    const url                                  = `${Servers.getRouteUrl(Route.login)}/user_code`
+    const params: HttpUtils.HttpParams         = {};
+    params[UserCodingKeys.userId]              = this.userId
+
+    Http.request(url, HttpUtils.Method.GET, params, (succeed: boolean, msg: string | null, oneUserJsons: UserJson[] | null) => {
+
+      let userCode  = ''
+      if (oneUserJsons !== null && oneUserJsons.length > 0) {
+        const user  = User.from(oneUserJsons[0])
+        userCode    = user.userCode || ''
+      }
+      ///回调
+      completion(succeed, msg, userCode)
+    })
+  }
 
   /// 注销用户账号
   /// - Parameter completion: 回调，返回是否成功及错误信息
@@ -175,11 +184,9 @@ export class UserManager {
      }
      const url                                  = `${Servers.getRouteUrl(Route.login)}/remove`
      const params: HttpUtils.HttpParams         = {};
-     params[UserCodingKeys.userId]              = this.userId
-     params[UserCodingKeys.loginIdentifier]     = this.loginIdentifier
-     params[UserCodingKeys.loginType]           = this.loginType
-     params[UserCodingKeys.appName]             = AppSettings.App.appName
-
+     params[UserCodingKeys.userId]           = this.userId
+     params[UserCodingKeys.loginIdentifier]  = this.loginIdentifier
+     params[UserCodingKeys.loginType]        = this.loginType
      Http.send(url, HttpUtils.Method.GET, params, completion)
    }
 
@@ -278,6 +285,23 @@ export class UserManager {
         }
 
       })
+    }else if (type === LoginType.qq){
+
+      QQLoginManager.shared.loginWithCallback((success: boolean, isCancelled: boolean, error?: string, user?: SnsOneUser) => {
+
+        if (user) {
+          ///登录成功，向服务器写入信息
+          this.createServerUserForSnsLogin(type, true, null, user, completion)
+
+          // 登录成功，处理用户信息
+          DebugLog.i(`登录成功，用户ID: ${user.userId}`);
+        }else{
+          // 登录失败，处理错误
+          completion(false, `${error}`)
+        }
+
+      })
+
     }
   }
   // 处理Server登录的异步函数

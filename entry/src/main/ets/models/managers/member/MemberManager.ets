@@ -86,7 +86,7 @@ export class MemberManager {
   }
 
   /// 调试用 调试会员
-  private readonly debugMember: boolean = true
+  private readonly debugMember: boolean = false
 
   /// 非会员 变量
   public nonMember: NonMember = new NonMember()

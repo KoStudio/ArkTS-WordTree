@@ -1,7 +1,7 @@
 import { AbilityConstant, bundleManager, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
-import { getAppContext, initAppContext, initUIContext } from '../app/constants/AppContext';
+import {  initAppContext, initUIContext } from '../app/constants/AppContext';
 import { SystemSizeManager as SystemSizeManager } from '../common/managers/SystemSizeManager';
 import { SEService } from '../common/components/SoundEffect/SEManager';
 import { BundleUtils } from '../common/utils/BundleUtils';
@@ -58,7 +58,9 @@ export default class EntryAbility extends UIAbility {
     ///配置微信登录回调
     import('../models/managers/sns/wx/WxLoginManager').then((it)=>{it.WXLoginManager.shared.handleWeChatCallIfNeed(want)})
 
+    //QQ登录配置
 
+    import('../models/managers/sns/qq/QQLoginManager').then((it)=> {it.QQLoginManager.shared.handleResult(want)})
   }
 
   onDestroy(): void {

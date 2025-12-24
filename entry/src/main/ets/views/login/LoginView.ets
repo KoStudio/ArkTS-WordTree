@@ -19,6 +19,7 @@ import { WXQRLoginView, WXQRLoginViewConfig } from '../../models/managers/sns/wx
 import { WXLoginManager } from '../../models/managers/sns/wx/WxLoginManager';
 import { logEvent } from '../../common/components/Logger/Logger';
 import { SubscriptionInfoManager } from '../../models/managers/subscription/SubscriptionInfoManager';
+import { QQLoginManager } from '../../models/managers/sns/qq/QQLoginManager';
 
 
 @ComponentV2
@@ -208,6 +209,11 @@ export struct LoginView {
           IconButton({icon: $r('app.media.wechat'), iconSize: 44, onClickCallBack:()=>{
             this.actionLoginWeChat()
           }})
+
+          //QQ
+          IconButton({icon: $r('app.media.qq'), iconSize: 44, onClickCallBack:()=>{
+            this.actionLoginQQ()
+          }})
         }
 
       }
@@ -282,6 +288,14 @@ export struct LoginView {
     this.loginBySns(LoginType.huawei)
   }
 
+  actionLoginQQ(){
+    ///qq 已安装
+    if (QQLoginManager.shared.isQQAppInstalled()) {
+      this.loginBySns(LoginType.qq)
+    }else{
+      Toast.showMessage('未安装QQ')
+    }
+  }
   actionLoginWeChat(){
     ///微信 已安装
     if (WXLoginManager.shared.isWxAppInstalled()) {
