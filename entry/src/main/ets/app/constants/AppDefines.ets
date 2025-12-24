@@ -8,7 +8,7 @@ import { getAppContext } from './AppContext';
 
 export class MyDatas  {
   static readonly FolderName = 'MyDatas'
-  static readonly DBName     = 'UserData.sqlite'
+  static readonly DBName     = 'learnDb.sqlite'
 };
 
 

@@ -220,7 +220,7 @@ export class HwSubscriber {
       let context = getAppContext()
 
       // 跳转到用户已购订阅管理列表页
-      await iap.showManagedSubscriptions(context, {windowScreenMode:  iap.WindowScreenMode.FULLSCREEN});//是否全屏
+      await iap.showManagedSubscriptions(context, {windowScreenMode:  iap.WindowScreenMode.DIALOG_BOX});//是否全屏
 
       // 或者，跳转到某个特定订阅的详情页（需要传入订阅的PurchaseToken）
       //iap.showManagedSubscriptions(context, {windowScreenMode:  iap.WindowScreenMode.FULLSCREEN}, 'groupId');

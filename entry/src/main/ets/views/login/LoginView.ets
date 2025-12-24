@@ -206,9 +206,7 @@ export struct LoginView {
           }})
 
           //微信
-          IconButton({icon: $r('app.media.wechat'), iconSize: 44, onClickCallBack:()=>{
-            this.actionLoginWeChat()
-          }})
+
 
           //QQ
           IconButton({icon: $r('app.media.qq'), iconSize: 44, onClickCallBack:()=>{

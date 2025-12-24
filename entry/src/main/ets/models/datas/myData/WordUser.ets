@@ -101,7 +101,7 @@ export class WordUser extends Word {
 
   public async changeDeletedWord(toDelete: boolean): Promise<void> {
     this.deleted = toDelete
-    if (this.idx) {
+    if (this.titleEn) {
       await WordUserDbAccess.shared.setWordDeletedStatus(this.titleEn, toDelete)//.setWordDeletedStatus(this.id, toDelete)
     }
 

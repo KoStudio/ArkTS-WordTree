@@ -181,37 +181,37 @@ export class WordUserDbAccess {
   }
 
   // MARK: - 插入或更新删除单词数据（对应Java的insertOrRemoveDeleteWordDataForWord）
-  async insertOrRemoveDeleteWordDataForWord(wordUser: WordUser): Promise<void> {
-    if (!this.db) return;
-
-    let sql: string;
-    let params: ParamType[];
-
-    if (wordUser.deleted) {
-      // 插入或更新
-      sql = `REPLACE INTO ${Tables.DeleteWord.NAME} (
-        ${Tables.DeleteWord.Col.TITLE_EN},
-        ${Tables.DeleteWord.Col.DELETED}
-      ) VALUES(?, ?)`;
-
-      params = [
-        wordUser.titleEnEncodeToBase64, //未加盐的base64编码字符做为UserData主键
-        WordUser.Deleted_Yes
-      ];
-    } else {
-      // 移除
-      sql = `DELETE FROM ${Tables.DeleteWord.NAME}
-             WHERE ${Tables.DeleteWord.Col.TITLE_EN} = ?`;
-
-      params = [wordUser.titleEnEncodeToBase64];//未加盐的base64编码字符做为UserData主键
-    }
-
-    try {
-      await this.db.updateDb(sql, params);
-    } catch (e) {
-      DebugLog.e(`WordUserDbAccess >>> insertOrRemoveDeleteWordDataForWord: ${e}`);
-    }
-  }
+  // async insertOrRemoveDeleteWordDataForWord(wordUser: WordUser): Promise<void> {
+  //   if (!this.db) return;
+  //
+  //   let sql: string;
+  //   let params: ParamType[];
+  //
+  //   if (wordUser.deleted) {
+  //     // 插入或更新
+  //     sql = `REPLACE INTO ${Tables.DeleteWord.NAME} (
+  //       ${Tables.DeleteWord.Col.TITLE_EN},
+  //       ${Tables.DeleteWord.Col.DELETED}
+  //     ) VALUES(?, ?)`;
+  //
+  //     params = [
+  //       wordUser.titleEnEncodeToBase64, //未加盐的base64编码字符做为UserData主键
+  //       WordUser.Deleted_Yes
+  //     ];
+  //   } else {
+  //     // 移除
+  //     sql = `DELETE FROM ${Tables.DeleteWord.NAME}
+  //            WHERE ${Tables.DeleteWord.Col.TITLE_EN} = ?`;
+  //
+  //     params = [wordUser.titleEnEncodeToBase64];//未加盐的base64编码字符做为UserData主键
+  //   }
+  //
+  //   try {
+  //     await this.db.updateDb(sql, params);
+  //   } catch (e) {
+  //     DebugLog.e(`WordUserDbAccess >>> insertOrRemoveDeleteWordDataForWord: ${e}`);
+  //   }
+  // }
 
   /**
    * 插入或更新 WordTable 数据
@@ -411,7 +411,7 @@ export class WordUserDbAccess {
 
     if (deleted) {
       const sql = `REPLACE INTO ${Tables.DeleteWord.NAME} (${Tables.DeleteWord.Col.TITLE_EN}, ${Tables.DeleteWord.Col.DELETED}) VALUES (?, ?)`;
-      await this.db.updateDb(sql, [titleEn, WordUser.Deleted_Yes]);
+      await this.db.updateDb(sql, [titleEnBase64, WordUser.Deleted_Yes]);
     } else {
       const sql = `DELETE FROM ${Tables.DeleteWord.NAME} WHERE ${Tables.DeleteWord.Col.TITLE_EN} = ?`;
       await this.db.updateDb(sql, [titleEnBase64]);
