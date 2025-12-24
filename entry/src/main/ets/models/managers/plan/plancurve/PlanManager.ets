@@ -79,7 +79,7 @@ export class PlanManager {
     this.currentPlanId = value?.planId ?? null; // Swift 中 didSet 的逻辑
 
     if (!value) {
-      SettingManager.shared.currentBookId = -1
+      //SettingManager.shared.currentBookId = -1
     }
   }
 
@@ -227,7 +227,7 @@ export class PlanManager {
   public static async createPlan(
     planId: number | null,
     planName: string,
-    texts: string[],
+    wordIds: number[],
     bookId: number | null = null,
     countPerDay: number,
     distances: DistanceFromBase[]
@@ -239,7 +239,7 @@ export class PlanManager {
     }
 
     // 获取 pieces 列表
-    const pieces: Piece[] = PlanManager.dividedPieces(texts, countPerDay);
+    const pieces: Piece[] = PlanManager.dividedPieces(wordIds, countPerDay);
 
     // 计算 boxes
     const boxes: Box[] = pieces.flatMap(piece => PlanManager.boxesComputed(piece, distances));
@@ -271,9 +271,9 @@ export class PlanManager {
     isRepeatPieceCount: boolean = false
   ): Plan {
 
-    // 获取 texts (所有此 plan 中的未删除的 texts)
-    const texts: string[] = plan.texts;
-    const textsSet: Set<string> = new Set(texts);
+    // 获取 wordIds (所有此 plan 中的未删除的 wordIds)
+    const wordIds: number[] = plan.wordIds;
+    const wordIdsSet: Set<number> = new Set(wordIds);
 
     /////////////////////////////////////////////////////////////////////////////////
     /// plan.pieces 中存在缺少某个 piece 的可能:
@@ -302,27 +302,27 @@ export class PlanManager {
       if (piece) {
         /// plan 中有此 piece
         // 使用原来 piece 中的 count
-        // 不能直接使用 piece.texts.length，因为有可能已经被删除过了
-        const textsCount = piece.texts.filter(t => textsSet.has(t)).length;
-        curPieceCount.count = textsCount;
-      }
-
-      /// 需要更改学习数量时
-      if (pieceCount) {
-        if (pieceNo === pieceCount.pieceNo) {
-          // 当前 piece 需要替换成新的 count
-          curPieceCount = pieceCount;
-        } else if (isRepeatPieceCount && pieceNo > pieceCount.pieceNo) {
-          // 重复执行为 true 时，此后的所有 piece 也需要替换成新的 count
-          curPieceCount.count = pieceCount.count;
-        }
-      }
-
-      pieceCounts.push(curPieceCount);
+      // 不能直接使用 piece.wordIds.length，因为有可能已经被删除过了
+      const wordIdsCount = piece.wordIds.filter(id => wordIdsSet.has(id)).length;
+      curPieceCount.count = wordIdsCount;
     }
 
-    // 获取 日份 列表
-    const pieces: Piece[] = PlanManager.dividedPieces(texts, plan.getCountPerDay(), pieceCounts, isRepeatPieceCount);
+    /// 需要更改学习数量时
+    if (pieceCount) {
+      if (pieceNo === pieceCount.pieceNo) {
+        // 当前 piece 需要替换成新的 count
+        curPieceCount = pieceCount;
+      } else if (isRepeatPieceCount && pieceNo > pieceCount.pieceNo) {
+        // 重复执行为 true 时，此后的所有 piece 也需要替换成新的 count
+        curPieceCount.count = pieceCount.count;
+      }
+    }
+
+    pieceCounts.push(curPieceCount);
+  }
+
+  // 获取 日份 列表
+  const pieces: Piece[] = PlanManager.dividedPieces(wordIds, plan.getCountPerDay(), pieceCounts, isRepeatPieceCount);
     const boxes: Box[] = pieces.flatMap(p => PlanManager.boxesComputed(p, plan.distances));
 
     const newPlan = new Plan(
@@ -342,13 +342,13 @@ export class PlanManager {
   }
 
   ///为已经存在的plan添加新的words
-  public static async add(texts: string[], plan: Plan): Promise<void> {
-    if (texts.length === 0) return;
+  public static async add(wordIds: number[], plan: Plan): Promise<void> {
+    if (wordIds.length === 0) return;
 
     /////新加一个piece
-    const addNewPiece = (pieceNo: number, text: string) => {
+    const addNewPiece = (pieceNo: number, wordId: number) => {
       //新加一个piece
-      let newPiece = new Piece(pieceNo, [text] );
+      let newPiece = new Piece(pieceNo, [wordId] );
 
       //计算newPiece在DayOfs中的位置
       let boxes = PlanManager.boxesComputed(newPiece, plan.distances);
@@ -357,44 +357,44 @@ export class PlanManager {
       plan.appendMemBoxes(boxes);
     };
 
-    let hasNewTextToBeAddIntoPlan = false;
+    let hasNewWordIdToBeAddIntoPlan = false;
 
-    texts.forEach(newText => {
-      let existedTexts = plan.textsAll;
-      if (!existedTexts?.includes(newText)) {
+    wordIds.forEach(newWordId => {
+      let existedWordIds = plan.wordIdsAll;
+      if (!existedWordIds?.includes(newWordId)) {
 
         const pieces     = plan.getPieces();
         const maxPieceNo = Math.max(...pieces.map(p => p.pieceNo));
         const lastPiece  = pieces.find(p => p.pieceNo === maxPieceNo) ?? null;
 
-        if (lastPiece && lastPiece.texts.length < plan.getCountPerDay()) {
+        if (lastPiece && lastPiece.wordIds.length < plan.getCountPerDay()) {
           //piece 中还有位置
-          lastPiece.appendMem(newText);
+          lastPiece.appendMem(newWordId);
         } else {
           //新加一个piece
-          addNewPiece((lastPiece?.pieceNo ?? -1) + 1, newText);
+          addNewPiece((lastPiece?.pieceNo ?? -1) + 1, newWordId);
         }
-        hasNewTextToBeAddIntoPlan = true;
+        hasNewWordIdToBeAddIntoPlan = true;
       }
     });
 
     // 需要保存plan时
-    if (hasNewTextToBeAddIntoPlan) {
+    if (hasNewWordIdToBeAddIntoPlan) {
       //保存
       await plan.save();
     }
   }
 
   ///从plan中删除words
-  public static async deleteTexts(texts: string[], plan: Plan): Promise<void> {
+  public static async deleteWordIds(wordIds: number[], plan: Plan): Promise<void> {
     ////删除内存 中的缓存
     plan.getPieces().forEach(piece => {
-      texts.forEach(text => {
-        //删除text
-        piece.removeMem(text);
+      wordIds.forEach(wordId => {
+        //删除wordId
+        piece.removeMem(wordId);
 
         //删除此piece
-        if (piece.texts.length === 0) {
+        if (piece.wordIds.length === 0) {
           plan.removeMemPiece(piece);
 
           //删除 相应的boxes
@@ -409,10 +409,10 @@ export class PlanManager {
     //保存db(更新内存中plan+pieces+box)
     await plan.save();
 
-    //还要删除DB中相应texts的learn
+    //还要删除DB中相应wordIds的learn
     //这里为了与plan主逻辑区分，不放在一个transaction中执行
     if (plan.planId != null) {
-      await PlanDbAccess.shared.deleteLearn(plan.planId, texts);
+      await PlanDbAccess.shared.deleteLearn(plan.planId, wordIds);
     }
 
     //重新加载当前plan
@@ -452,7 +452,7 @@ export class PlanManager {
   /// 获取划分好的pieces
   /// 获取划分好的 pieces（完全等效于 Swift 原版逻辑）
   private static dividedPieces(
-    texts: string[],
+    wordIds: number[],
     countPerDay: number,
     pieceCounts: PieceCount[] | null = null,
     isRepeatPieceCount: boolean = false
@@ -460,11 +460,11 @@ export class PlanManager {
 
     // 将 words 分隔为 piece
     const pieces: Piece[] = [];
-    let tempTexts: string[] = [...texts]; // 剩余文本，等效 Swift 中的 tempIds
+    let tempWordIds: number[] = [...wordIds]; // 剩余wordId，等效 Swift 中的 tempIds
     let i = 0;
 
-    // 循环处理剩余文本
-    while (tempTexts.length > 0) {
+    // 循环处理剩余wordIds
+    while (tempWordIds.length > 0) {
       const pieceNo = i;
 
       /// 重复执行为 true 时，此后的所有 piece 也是和目标 day 的 pieceCount 一样的。
@@ -472,11 +472,11 @@ export class PlanManager {
       const arrayCount = pieceCounts?.find(p => p.pieceNo === pieceNo)?.count
         ?? (isRepeatPieceCount ? pieceCounts?.[pieceCounts.length - 1]?.count ?? countPerDay : countPerDay);
 
-      // 取前 arrayCount 个文本作为当前 piece
-      const pieceWordIds = tempTexts.slice(0, arrayCount);
+      // 取前 arrayCount 个wordId作为当前 piece
+      const pieceWordIds = tempWordIds.slice(0, arrayCount);
 
-      // 更新剩余文本
-      tempTexts = tempTexts.slice(arrayCount);
+      // 更新剩余wordIds
+      tempWordIds = tempWordIds.slice(arrayCount);
 
       const piece = new Piece(pieceNo, pieceWordIds);
       pieces.push(piece);

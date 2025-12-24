@@ -40,13 +40,13 @@ export class DBPlanHelper {
     return boxes;
   }
 
-  /** 获取此 DBPlan 的所有 texts（可指定 pieceNo） */
-  async texts(pieceNo?: number): Promise<string[]> {
+  /** 获取此 DBPlan 的所有 wordIds（可指定 pieceNo） */
+  async wordIds(pieceNo?: number): Promise<number[]> {
     const pieces = await this.dbPieces();
     if (pieceNo != null) {
-      return pieces.filter(p => p.pieceNo === pieceNo).map(p => p.text ?? "").filter(t => t);
+      return pieces.filter(p => p.pieceNo === pieceNo).map(p => p.wordId ?? 0).filter(id => id > 0);
     }
-    return pieces.map(p => p.text ?? "").filter(t => t);
+    return pieces.map(p => p.wordId ?? 0).filter(id => id > 0);
   }
 
   /** 获取此 DBPlan 的 DBLearns */
@@ -66,13 +66,13 @@ export class DBPlanHelper {
 
     dbPieces.forEach(dbPiece => {
       const pieceNo = dbPiece.pieceNo;
-      const text = dbPiece.text;
-      if (pieceNo != null && text) {
+      const wordId = dbPiece.wordId;
+      if (pieceNo != null && wordId) {
         const existed = Array.from(piecesSet).find(p => p.pieceNo === pieceNo);
         if (existed) {
-          existed.appendMem(text);
+          existed.appendMem(wordId);
         } else {
-          piecesSet.add(new Piece(pieceNo, [text]));
+          piecesSet.add(new Piece(pieceNo, [wordId]));
         }
       }
     });
@@ -112,7 +112,7 @@ export class DBPlanHelper {
         dbLearn.num != null &&
         dbLearn.distance != null &&
         dbLearn.pieceNo != null &&
-        dbLearn.text != null &&
+        dbLearn.wordId != null &&
         dbLearn.learnDate != null) {
 
         const learn = new Learn();
@@ -121,7 +121,7 @@ export class DBPlanHelper {
         learn.num       = dbLearn.num;
         learn.distance  = dbLearn.distance;
         learn.pieceNo   = dbLearn.pieceNo;
-        learn.text      = dbLearn.text;
+        learn.wordId    = dbLearn.wordId;
         learn.learnDate = dbLearn.learnDate;
 
         //// 使用Set，无需判断Contains

@@ -8,7 +8,7 @@ export class Learn {
   num       : number | null;
   distance  : number | null;
   pieceNo   : number | null;
-  text      : string | null;
+  wordId    : number | null;
   learnDate : Date | null;
 
   constructor(
@@ -17,7 +17,7 @@ export class Learn {
     num       : number | null = null,
     distance  : number | null = null,
     pieceNo   : number | null = null,
-    text      : string | null = null,
+    wordId    : number | null = null,
     learnDate : Date | null = null
   ) {
     this.planId    = planId;
@@ -25,7 +25,7 @@ export class Learn {
     this.num       = num;
     this.distance  = distance;
     this.pieceNo   = pieceNo;
-    this.text      = text;
+    this.wordId    = wordId;
     this.learnDate = learnDate;
   }
 
@@ -37,7 +37,7 @@ export class Learn {
         this.num      === other.num &&
         this.distance === other.distance &&
         this.pieceNo  === other.pieceNo &&
-        this.text     === other.text
+        this.wordId   === other.wordId
     );
   }
 
@@ -52,11 +52,9 @@ export class Learn {
     } else if (this.distance === other.distance) {
       return (this.pieceNo ?? 0) - (other.pieceNo ?? 0);
     } else if (this.pieceNo === other.pieceNo) {
-      let left  = this.text  ?? "";
-      let right = other.text ?? "";
-      return left.localeCompare(right);
+      return (this.wordId ?? 0) - (other.wordId ?? 0);
     } else {
-      return (this.text ?? "") === (other.text ?? "") ? 0 : 1;
+      return (this.wordId ?? 0) === (other.wordId ?? 0) ? 0 : 1;
     }
   }
 
@@ -68,7 +66,7 @@ export class Learn {
         `num_${this.num ?? 0}`           +
         `distance_${this.distance ?? 0}` +
         `pieceNo_${this.pieceNo ?? 0}`   +
-        `text_${this.text ?? ""}`;
+        `wordId_${this.wordId ?? 0}`;
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       hash = (hash << 5) - hash + str.charCodeAt(i);
@@ -87,7 +85,7 @@ export class Learn {
     dbLearn.num        = this.num;
     dbLearn.distance   = this.distance;
     dbLearn.pieceNo    = this.pieceNo;
-    dbLearn.text       = this.text;
+    dbLearn.wordId     = this.wordId;
     dbLearn.learnDate  = this.learnDate;
     return dbLearn;
   }

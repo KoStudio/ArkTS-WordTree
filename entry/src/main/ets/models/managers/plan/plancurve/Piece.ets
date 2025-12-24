@@ -13,9 +13,9 @@ export class Piece {
   private _pieceNo: number;
 
   /**
-   * 每个piece中的Text
+   * 每个piece中的wordId
    */
-  private _texts: string[];
+  private _wordIds: number[];
 
   // MARK: - Getter 方法
 
@@ -27,10 +27,10 @@ export class Piece {
   }
 
   /**
-   * 获取texts数组
+   * 获取wordIds数组
    */
-  get texts(): string[] {
-    return this._texts;
+  get wordIds(): number[] {
+    return this._wordIds;
   }
 
   // MARK: - 构造函数
@@ -38,31 +38,31 @@ export class Piece {
   /**
    * 构造函数
    * @param pieceNo - piece编号
-   * @param texts - texts数组
+   * @param wordIds - wordIds数组
    */
-  constructor(pieceNo: number, texts: string[]) {
+  constructor(pieceNo: number, wordIds: number[]) {
     this._pieceNo = pieceNo;
-    this._texts = texts;
+    this._wordIds = wordIds;
   }
 
   // MARK: - 内存操作（Operation in memo）
 
   /**
-   * 从内存中添加text
-   * @param text - 要添加的文本
+   * 从内存中添加wordId
+   * @param wordId - 要添加的wordId
    */
-  appendMem(text: string): void {
-    this._texts.push(text);
+  appendMem(wordId: number): void {
+    this._wordIds.push(wordId);
   }
 
   /**
-   * 从内存中删除text
-   * @param text - 要删除的文本
+   * 从内存中删除wordId
+   * @param wordId - 要删除的wordId
    */
-  removeMem(text: string): void {
-    const index = this._texts.indexOf(text);
+  removeMem(wordId: number): void {
+    const index = this._wordIds.indexOf(wordId);
     if (index !== -1) {
-      this._texts.splice(index, 1);
+      this._wordIds.splice(index, 1);
     }
   }
 
@@ -124,6 +124,6 @@ export class Piece {
    * 转换为字符串表示
    */
   toString(): string {
-    return `Piece(pieceNo: ${this.pieceNo}, texts: [${this.texts.join(', ')}])`;
+    return `Piece(pieceNo: ${this.pieceNo}, wordIds: [${this.wordIds.join(', ')}])`;
   }
 }

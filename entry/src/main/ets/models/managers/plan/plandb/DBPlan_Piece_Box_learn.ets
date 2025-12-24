@@ -15,7 +15,7 @@ export class DBPlan {
 export class DBPiece {
   planId  : number | null  = null;  // 计划ID
   pieceNo : number | null  = null;  // Piece的编号
-  text    : string | null  = null;  // 该Piece的学习文本内容，未加密
+  wordId  : number | null  = null;  // 该Piece的学习文本的wordId
 }
 
 // MARK: - Plan的Day的Box
@@ -35,6 +35,6 @@ export class DBLearn {
   num       : number | null  = null;  // 学习次数
   distance  : number | null  = null;  // 学习的距离
   pieceNo   : number | null  = null;  // 学习的Piece编号
-  text      : string | null  = null;  // 学习的文本内容，未加密
+  wordId    : number | null  = null;  // 学习的文本的wordId
   learnDate : Date   | null  = null;  // 学习日期
 }

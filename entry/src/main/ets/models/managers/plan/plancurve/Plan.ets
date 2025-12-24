@@ -215,77 +215,77 @@ export class Plan {
 
   // MARK: - Ref Get Functions
 
-  /// 获取(未删除)状态的texts
-  get texts(): string[] {
-    return this.pieces.flatMap((p) => p.texts ?? []);
+  /// 获取(未删除)状态的wordIds
+  get wordIds(): number[] {
+    return this.pieces.flatMap((p) => p.wordIds ?? []);
   }
 
-  /// 获取 所有此plan中的所有存在于pieces中的所有[text],
-  /// 包括可能是 已删除状态 的 text
-  get textsAll(): string[] | null {
-    return this.pieces.reduce<string[]>((acc, p) => acc.concat(p.texts ?? []), []);
+  /// 获取 所有此plan中的所有存在于pieces中的所有[wordId],
+  /// 包括可能是 已删除状态 的 wordId
+  get wordIdsAll(): number[] | null {
+    return this.pieces.reduce<number[]>((acc, p) => acc.concat(p.wordIds ?? []), []);
   }
 
-  /// 获取已经学习的单字(未删除)状态的texts
+  /// 获取已经学习的单字(未删除)状态的wordIds
   /**
-   * 获取已经学习的单字(未删除)状态的texts
+   * 获取已经学习的单字(未删除)状态的wordIds
    * 每个字只记录一次（即：只要是学习或复习过的字，不管复习过多少次，都只算一次已学习记录）
    * by ko 2021.03.20
    * @param learns 当前plan的学习记录数组
    * @returns 已学习的字列表
    */
-  get learnedTexts(): string[] | null {
-    // 获取所有learn对象的text，并过滤掉null
-    const texts: string[] = this.learns.map(l => l.text).filter(l => l !== null) as string[];
+  get learnedWordIds(): number[] | null {
+    // 获取所有learn对象的wordId，并过滤掉null
+    const wordIds: number[] = this.learns.map(l => l.wordId).filter(l => l !== null) as number[];
 
     // 去除重复元素
-    return ArrayUtils.removedDuplicates(texts);
+    return ArrayUtils.removedDuplicates(wordIds);
   }
 
-  // MARK: - Functions for texts in this plan
+  // MARK: - Functions for wordIds in this plan
 
-  /// 获取某天的新字texts
-  textsWhenNew(dayOf: DayOf): string[] {
-    return this.textsFor(dayOf, [BoxType.New]);
+  /// 获取某天的新字wordIds
+  wordIdsWhenNew(dayOf: DayOf): number[] {
+    return this.wordIdsFor(dayOf, [BoxType.New]);
   }
 
-  /// 获取某天的复习texts
-  textsWhenReview(dayOf: DayOf): string[] {
+  /// 获取某天的复习wordIds
+  wordIdsWhenReview(dayOf: DayOf): number[] {
     let distances = dayOf.distances(true);
-    return this.textsFor(dayOf, distances);
+    return this.wordIdsFor(dayOf, distances);
   }
 
-  ///获取texts
-  /// 注意：这里获取的texts仅仅是此plan中的texts，有可能在words中处于deleted状态
-  textsFor(dayOf: DayOf, distances: number[] | null = null): string[] {
+  ///获取wordIds
+  /// 注意：这里获取的wordIds仅仅是此plan中的wordIds，有可能在words中处于deleted状态
+  wordIdsFor(dayOf: DayOf, distances: number[] | null = null): number[] {
     let pieceNos = dayOf.pieceNos(distances);
     let set = new Set(pieceNos);
     return this.pieces
       .filter((p) => set.has(p.pieceNo!))
-      .reduce<string[]>((acc, p) => acc.concat(p.texts ?? []), []);
+      .reduce<number[]>((acc, p) => acc.concat(p.wordIds ?? []), []);
   }
 
-  // MARK: - Functions for Learned texts in this plan
+  // MARK: - Functions for Learned wordIds in this plan
 
-  /// 保存此plan中，指定text的某天的学习记录
-  saveLearned(text: string, dayOf: DayOf): void {
+  /// 保存此plan中，指定wordId的某天的学习记录
+  saveLearned(wordId: number, dayOf: DayOf): void {
     //相同的字多次出现在多个不同的Piece中，
     //会导致，同一天中，相同的字出现在不同的Box中，如：新字，复习+1天
     //所以这里需要找出所有的pieceNo，同时遍历当天所有的box执行一次保存，才能将进度条改变，否则始进度条始终有剩余
     //by ko 2021.07.31
     this.pieces
-      .filter((p) => (p.texts ?? []).includes(text))
+      .filter((p) => (p.wordIds ?? []).includes(wordId))
       .forEach((piece) => {
         dayOf.boxes
           .filter((b) => b.pieceNo === piece.pieceNo)
           .forEach((box) => {
-            this.saveLearn(dayOf.num, box.distance, piece.pieceNo!, text);
+            this.saveLearn(dayOf.num, box.distance, piece.pieceNo!, wordId);
           });
       });
   }
 
-  /// 保存此plan中，指定num + distance + pieceNo + text的学习记录
-  private saveLearn(num: number, distance: number, pieceNo: number, text: string): void {
+  /// 保存此plan中，指定num + distance + pieceNo + wordId的学习记录
+  private saveLearn(num: number, distance: number, pieceNo: number, wordId: number): void {
     if (this.planId === null) return;
 
     let learn       = new Learn();
@@ -294,7 +294,7 @@ export class Plan {
     learn.num       = num;
     learn.distance  = distance;
     learn.pieceNo   = pieceNo;
-    learn.text      = text;
+    learn.wordId    = wordId;
     learn.learnDate = new Date();
     learn.save();
 
@@ -306,44 +306,44 @@ export class Plan {
           l.num       === num &&
           l.distance  === distance &&
           l.pieceNo   === pieceNo &&
-          l.text      === text
+          l.wordId    === wordId
       )
     ) {
       this.learns.push(learn);
     }
   }
 
-  /// 获取某天的新字texts
-  learnedTextsWhenNew(dayOf: DayOf): string[] {
-    return this.learnedTextsFor(dayOf, [BoxType.New]);
+  /// 获取某天的新字wordIds
+  learnedWordIdsWhenNew(dayOf: DayOf): number[] {
+    return this.learnedWordIdsFor(dayOf, [BoxType.New]);
   }
 
-  /// 获取某天的复习texts
-  learnedTextsWhenReview(dayOf: DayOf): string[] {
+  /// 获取某天的复习wordIds
+  learnedWordIdsWhenReview(dayOf: DayOf): number[] {
     let distances = dayOf.distances(true);
-    return this.learnedTextsFor(dayOf, distances);
+    return this.learnedWordIdsFor(dayOf, distances);
   }
 
-  ///获取某天的已经学习过的texts
-  /// 注意：这里获取的texts仅仅是此plan中的texts，有可能在words中处于deleted状态
-  learnedTextsFor(dayOf: DayOf, distances: number[] | null = null): string[] {
+  ///获取某天的已经学习过的wordIds
+  /// 注意：这里获取的wordIds仅仅是此plan中的wordIds，有可能在words中处于deleted状态
+  learnedWordIdsFor(dayOf: DayOf, distances: number[] | null = null): number[] {
     if (distances !== null) {
       let set = new Set(distances);
       return this.learns
         .filter((l) => l.num === dayOf.num && l.distance !== null && set.has(l.distance))
-        .map((l) => l.text!)
-        .filter((t) => t !== null);
+        .map((l) => l.wordId!)
+        .filter((id) => id !== null);
     } else {
-      return this.learns.filter((l) => l.num === dayOf.num).map((l) => l.text!).filter((t) => t !== null);
+      return this.learns.filter((l) => l.num === dayOf.num).map((l) => l.wordId!).filter((id) => id !== null);
     }
   }
 
   // MARK: - Utils for box
 
-  /// 获取指定text在某天dayOf上的 box
-  boxForWord(text: string, dayOf: DayOf): Box | null {
+  /// 获取指定wordId在某天dayOf上的 box
+  boxForWord(wordId: number, dayOf: DayOf): Box | null {
     let pieceNos = new Set(dayOf.pieceNos());
-    let piece    = this.pieces.find((p) => pieceNos.has(p.pieceNo!) && (p.texts ?? []).includes(text));
+    let piece    = this.pieces.find((p) => pieceNos.has(p.pieceNo!) && (p.wordIds ?? []).includes(wordId));
     if (piece !== null && piece !== undefined) {
       return dayOf.boxes.find((b) => b.pieceNo === piece?.pieceNo) ?? null;
     }
@@ -369,11 +369,11 @@ export class Plan {
   getDBPieces(): DBPiece[] {
     let dbPieces: DBPiece[] = [];
     this.pieces.forEach((piece) => {
-      (piece.texts ?? []).forEach((text) => {
+      (piece.wordIds ?? []).forEach((wordId) => {
         let dbPiece      = new DBPiece();
         dbPiece.planId   = this.planId;
         dbPiece.pieceNo  = piece.pieceNo;
-        dbPiece.text     = text;
+        dbPiece.wordId   = wordId;
         dbPieces.push(dbPiece);
       });
     });
@@ -428,27 +428,27 @@ export class Plan {
     await PlanManager.delete(this);
   }
 
-  /// 向db中添加新的texts
-  async add(texts: string[]): Promise<void> {
-    await PlanManager.add(texts, this);
+  /// 向db中添加新的wordIds
+  async add(wordIds: number[]): Promise<void> {
+    await PlanManager.add(wordIds, this);
   }
 
-  /// (异步)向db中添加新的texts
-  asyncAdd(texts: string[]): void {
+  /// (异步)向db中添加新的wordIds
+  asyncAdd(wordIds: number[]): void {
     setTimeout(async () => {
-      await this.add(texts);
+      await this.add(wordIds);
     }, 0);
   }
 
-  /// 删除texts
-  async deleteTexts(texts: string[]): Promise<void> {
-    await PlanManager.deleteTexts(texts, this);
+  /// 删除wordIds
+  async deleteWordIds(wordIds: number[]): Promise<void> {
+    await PlanManager.deleteWordIds(wordIds, this);
   }
 
-  /// (异步)从db中删除texts
-  asyncDelete(texts: string[]): void {
+  /// (异步)从db中删除wordIds
+  asyncDelete(wordIds: number[]): void {
     setTimeout(async () => {
-      await this.deleteTexts(texts);
+      await this.deleteWordIds(wordIds);
     }, 0);
   }
 

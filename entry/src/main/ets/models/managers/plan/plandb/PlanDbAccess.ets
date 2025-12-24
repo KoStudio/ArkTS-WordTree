@@ -28,7 +28,7 @@ namespace Tables {
     export namespace Col {
       export const planId      = "planId";
       export const pieceNo     = "pieceNo";
-      export const text        = "text";
+      export const wordId      = "wordId";
     }
   }
 
@@ -52,7 +52,7 @@ namespace Tables {
       export const num         = "num";
       export const distance    = "distance";
       export const pieceNo     = "pieceNo";
-      export const text        = "text";
+      export const wordId      = "wordId";
       export const learnDate   = "learnDate";
     }
   }
@@ -93,7 +93,7 @@ export class PlanDbAccess {
     const sqlPiece = `CREATE TABLE IF NOT EXISTS "${Tables.Piece.name}" (
             "${Tables.Piece.Col.planId}"     INTEGER,
             "${Tables.Piece.Col.pieceNo}"    INTEGER,
-            "${Tables.Piece.Col.text}"       TEXT
+            "${Tables.Piece.Col.wordId}"     INTEGER
         )`;
 
     const sqlBox = `CREATE TABLE IF NOT EXISTS "${Tables.Box.name}" (
@@ -109,7 +109,7 @@ export class PlanDbAccess {
             "${Tables.Learn.Col.num}"        INTEGER,
             "${Tables.Learn.Col.distance}"   INTEGER,
             "${Tables.Learn.Col.pieceNo}"    INTEGER,
-            "${Tables.Learn.Col.text}"       TEXT,
+            "${Tables.Learn.Col.wordId}"     INTEGER,
             "${Tables.Learn.Col.learnDate}"  TEXT
         )`;
 
@@ -159,9 +159,9 @@ export class PlanDbAccess {
     await this.db?.updateDb(sql, [planId]);
   }
 
-  async deletePiece(text: string, planId: number): Promise<void> {
-    const sql = `DELETE FROM ${Tables.Piece.name} WHERE ${Tables.Piece.Col.text} = ? AND ${Tables.Piece.Col.planId} = ?`;
-    await this.db?.updateDb(sql, [StringEncoder.encodedToBase64(text), planId]);
+  async deletePiece(wordId: number, planId: number): Promise<void> {
+    const sql = `DELETE FROM ${Tables.Piece.name} WHERE ${Tables.Piece.Col.wordId} = ? AND ${Tables.Piece.Col.planId} = ?`;
+    await this.db?.updateDb(sql, [wordId, planId]);
   }
 
   async deleteBox(pieceNo: number, planId: number): Promise<void> {
@@ -169,15 +169,15 @@ export class PlanDbAccess {
     await this.db?.updateDb(sql, [pieceNo, planId]);
   }
 
-  async deleteLearn(planId: number, texts?: string[]): Promise<void> {
+  async deleteLearn(planId: number, wordIds?: number[]): Promise<void> {
     if (!this.db) return;
 
     let sql = `DELETE FROM ${Tables.Learn.name} WHERE ${Tables.Learn.Col.planId} = ?`;
     const params: ParamType[] = [planId];
 
-    if (texts && texts.length > 0) {
-      const encodedTexts = texts.map(t => `'${StringEncoder.encodedToBase64(t)}'`).join(",");
-      sql += ` AND ${Tables.Learn.Col.text} IN (${encodedTexts})`;
+    if (wordIds && wordIds.length > 0) {
+      const wordIdList = wordIds.map(id => `'${id}'`).join(",");
+      sql += ` AND ${Tables.Learn.Col.wordId} IN (${wordIdList})`;
     }
 
     await this.db.updateDb(sql, params);
@@ -316,7 +316,7 @@ export class PlanDbAccess {
     const data       = new DBPiece();
     data.planId      = rs.getLong(rs.getColumnIndex(Tables.Piece.Col.planId));
     data.pieceNo     = rs.getLong(rs.getColumnIndex(Tables.Piece.Col.pieceNo));
-    data.text        = rs.getString(rs.getColumnIndex(Tables.Piece.Col.text))//ResultSetTool.decodeString(rs, Tables.Piece.Col.text);
+    data.wordId      = rs.getLong(rs.getColumnIndex(Tables.Piece.Col.wordId));
     return data;
   }
 
@@ -336,7 +336,7 @@ export class PlanDbAccess {
     data.num         = rs.getLong(rs.getColumnIndex(Tables.Learn.Col.num));
     data.distance    = rs.getLong(rs.getColumnIndex(Tables.Learn.Col.distance));
     data.pieceNo     = rs.getLong(rs.getColumnIndex(Tables.Learn.Col.pieceNo));
-    data.text        = rs.getString(rs.getColumnIndex(Tables.Learn.Col.text))//ResultSetTool.decodeString(rs, Tables.Learn.Col.text);
+    data.wordId      = rs.getLong(rs.getColumnIndex(Tables.Learn.Col.wordId));
     data.learnDate   = ResultSetTool.getDate(rs, Tables.Learn.Col.learnDate) //new Date(rs.getString(rs.getColumnIndex(Tables.Learn.Col.learnDate)));
     return data;
   }
@@ -366,16 +366,16 @@ export class PlanDbAccess {
   }
 
   private createSqlObjForPiece(piece: DBPiece): SqlObj | null {
-    if (!piece.planId || piece.pieceNo == null || !piece.text) return null;
+    if (!piece.planId || piece.pieceNo == null || !piece.wordId) return null;
     const sql = `REPLACE INTO ${Tables.Piece.name} (
             ${Tables.Piece.Col.planId},
             ${Tables.Piece.Col.pieceNo},
-            ${Tables.Piece.Col.text}
+            ${Tables.Piece.Col.wordId}
         ) VALUES(?, ?, ?)`;
     const params: ParamType[] = [
       piece.planId,
       piece.pieceNo,
-      piece.text,
+      piece.wordId,
     ];
     return { sql, params };
   }
@@ -398,14 +398,14 @@ export class PlanDbAccess {
   }
 
   private createSqlObjForLearn(learn: DBLearn): SqlObj | null {
-    if (!learn.planId || !learn.text) return null;
+    if (!learn.planId || !learn.wordId) return null;
     const sql = `REPLACE INTO ${Tables.Learn.name} (
             ${Tables.Learn.Col.planId},
             ${Tables.Learn.Col.bookId},
             ${Tables.Learn.Col.num},
             ${Tables.Learn.Col.distance},
             ${Tables.Learn.Col.pieceNo},
-            ${Tables.Learn.Col.text},
+            ${Tables.Learn.Col.wordId},
             ${Tables.Learn.Col.learnDate}
         ) VALUES(?, ?, ?, ?, ?, ?, ?)`;
     const params: ParamType[] = [
@@ -414,7 +414,7 @@ export class PlanDbAccess {
       learn.num ?? null,
       learn.distance ?? null,
       learn.pieceNo ?? null,
-      learn.text,//StringEncoder.encodedToBase64(learn.text),
+      learn.wordId,
       this.formatDateToString(learn.learnDate)
     ];
     return { sql, params };
