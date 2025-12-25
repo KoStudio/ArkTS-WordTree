@@ -8,6 +8,11 @@ import { WordUserDbAccess } from "../myData/WordUserDbAccess";
 import { WordDbAccess } from "../word/WordDbAccess";
 import { Part, Unit } from "./Part_Unit";
 import { Mistake, MistakeHelper } from "./Mistake";
+import { OnlineWordManager } from "../../managers/onlinesearch/OnlineWordManager";
+import { OnlineWord } from "../../managers/onlinesearch/OnlineWord";
+import { Word } from "../word/Word";
+import call from "@ohos.telephony.call";
+import { Toast } from "../../../common/utils/Toast";
 
 // MARK: - 常量定义（类似Swift的static let或Kotlin的const val）
 export class SearchConstants {
@@ -68,7 +73,7 @@ export class SearchManager {
 
   // MARK: - 初始化方法
   private initialize(): void {
-    this.loadDataStructures();
+    this.loadWords();
     DebugLog.d('SearchManager: 初始化完成');
   }
 
@@ -83,12 +88,15 @@ export class SearchManager {
    * 刷新数据（在数据修改后调用）
    */
   async refreshData(): Promise<void> {
-    await this.loadDataStructures();
+    await this.loadWords();
   }
 
-  private async loadDataStructures(): Promise<void> {
+  private async loadWords(): Promise<void> {
 
     const words        = await this.getWordDbAccess()?.getAllWords() || [];
+    const wordsOnline  = await WordUserDbAccess.shared.getAllOnlineWords() || [];
+    words.push(...wordsOnline)
+
     const wordUsers    = await WordUserDbAccess.shared.getAllWordUsers() || [];
 
     const userMap      = new Map<string, WordUser>();
@@ -162,19 +170,19 @@ export class SearchManager {
     this.allWords = merged;
 
     // 构建分类和单元的数据结构
-    this.buildPartsAndUnits();
+    this.preparePartsAndUnits();
   }
   /**
    * 构建分类和单元的数据结构
    */
-  private buildPartsAndUnits(): void {
+  private preparePartsAndUnits(): void {
     this.parts = [];
-    this.units      = [];
+    this.units = [];
 
-    let currentUnitId     : number   | null = -1;
-    let currentCategoryId : number   | null = -1;
-    let currentUnit       : Unit     | null = null;
-    let currentCategory   : Part | null = null;
+    let currentUnitId     : number | null = -1;
+    let currentPartId     : number | null = -1;
+    let currentUnit       : Unit   | null = null;
+    let currentPart       : Part   | null = null;
 
     // 使用函数式编程处理数据构建
     this.allWords.forEach(word => {
@@ -186,10 +194,10 @@ export class SearchManager {
       }
 
       // 分类变化时创建新分类
-      if (currentCategoryId !== word.partId) {
-        currentCategoryId = word.partId;
-        currentCategory   = this.createPartFromWord(word);
-        this.parts.push(currentCategory);
+      if (currentPartId !== word.partId) {
+        currentPartId = word.partId;
+        currentPart   = this.createPartFromWord(word);
+        this.parts.push(currentPart);
       }
 
       // 将单词添加到当前单元
@@ -198,10 +206,10 @@ export class SearchManager {
       }
 
       // 将单元添加到当前分类（如果尚未添加）
-      if (currentCategory && currentUnit) {
-        const unitExists = currentCategory.units.some(u => u.unitId === currentUnit!.unitId);
+      if (currentPart && currentUnit) {
+        const unitExists = currentPart.units.some(u => u.unitId === currentUnit!.unitId);
         if (!unitExists) {
-          currentCategory.units.push(currentUnit);
+          currentPart.units.push(currentUnit);
         }
       }
     });
@@ -825,5 +833,55 @@ export class SearchManager {
     return result
   }
 
+  searchWord(titleEn: string | null, callback: (word: WordUser | null) => void): void {
+    if (!titleEn) {
+      callback(null)
+      return
+    }
+
+    /// 已经存在（内存中查找）
+    for (const word of this.getAllWords()) {
+      if (titleEn === word.titleEn) {
+        callback(word)
+        return
+      }
+    }
+
+    /// online 查询
+    OnlineWordManager.shared.loadWord(titleEn, async (succeed: boolean, msg: string | null, onlineWord: OnlineWord | null): Promise<void> => {
+
+        if (onlineWord) {
+
+          // 插入 online 临时 DB
+          WordUserDbAccess.shared.insertOrUpdateOnlineDataForWord(onlineWord.asWordDetail())
+
+          const word: WordUser = onlineWord.asWordUser()
+
+          // 加入内存
+          this.allWords.push(word)
+
+          // ⚠️ 注意：不能重新生成 words 数据
+          // 否则会替换先前的 word，引起数据混乱
+          // by ko 2022.12.01
+          callback(word)
+
+          this.parts.length = 0
+          this.units.length = 0
+
+          // 构建分类和单元的数据结构
+          this.preparePartsAndUnits();
+          this.parts.push()
+
+
+        } else {
+
+          // 回调失败
+          callback(null)
+
+          Toast.showMessage(msg)
+        }
+      }
+    )
+  }
 
 }

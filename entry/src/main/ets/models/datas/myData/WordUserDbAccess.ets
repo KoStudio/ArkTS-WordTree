@@ -12,6 +12,7 @@ import { StringEncoder } from "../../../common/utils/strings/StringEncrypt";
 import { DB } from "../../dbUtils/DBConstants";
 import { WordDetail } from "../word/WordDetail";
 import { WordTable } from "../word/WordDbAccess";
+import { Word } from "../word/Word";
 
 export namespace Tables {
 
@@ -386,6 +387,29 @@ export class WordUserDbAccess {
     return result;
   }
 
+  async getAllOnlineWords(): Promise<Word[] | null> {
+    if (!this.db) return null;
+
+    const sql = `SELECT * FROM ${WordTable.TableOnline_Name}`;
+    return await this.db.getDatas(sql, [], (rs: relationalStore.ResultSet) => this.createWordFromResultSet(rs));
+  }
+
+
+  async getOnlineWordDetailByTitleEn(titleEn: string | null): Promise<WordDetail | null> {
+    if (!this.db || !titleEn) return null;
+
+    const titleEnBase64 = StringEncoder.encodedToBase64(titleEn)
+    if (!titleEnBase64) return null;
+
+
+    const sql = `SELECT * FROM ${WordTable.TableOnline_Name}
+                  WHERE
+                    SUBSTR(${WordTable.Col.TITLEEN}, ${DB.salt} + 1, LENGTH(${WordTable.Col.TITLEEN}) - ${DB.salt})
+                  = ? LIMIT 1`;
+    return await this.db.getData(sql, [titleEnBase64], (rs: relationalStore.ResultSet) => this.createWordDetailFromResultSet(rs));
+  }
+
+
   // ====== 删除 ======
   async deleteWordUser(titleEn: string): Promise<void> {
     if (!this.db) return;
@@ -517,5 +541,65 @@ export class WordUserDbAccess {
     return data;
   }
 
+
+
+  private createWordFromResultSet(rs: relationalStore.ResultSet): Word {
+    const word = new Word();
+
+    try {
+      word.idx      = rs.getLong(rs.getColumnIndex(WordTable.Col.IDX));
+      word.partId   = rs.getLong(rs.getColumnIndex(WordTable.Col.PARTID));
+      word.partName = ResultSetTool.decodeString(rs, WordTable.Col.PARTNAME);
+      word.unitId   = rs.getLong(rs.getColumnIndex(WordTable.Col.UNITID));
+      word.unitName = ResultSetTool.decodeString(rs, WordTable.Col.UNITNAME);
+      word.unitNo   = rs.getLong(rs.getColumnIndex(WordTable.Col.UNITNO));
+      word.titleEn  = ResultSetTool.decodeString(rs, WordTable.Col.TITLEEN);
+      word.pronEn   = ResultSetTool.decodeString(rs, WordTable.Col.PRONEN);
+      word.pronUs   = ResultSetTool.decodeString(rs, WordTable.Col.PRONUS);
+      word.titleCn1 = ResultSetTool.decodeString(rs, WordTable.Col.TITLECN1);
+      word.exampleEn1 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLEEN1);
+      word.exampleCn1 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLECN1);
+    } catch (error) {
+      DebugLog.e(`WordDbAccess: 创建Word对象失败 - ${error}`);
+    }
+
+    return word;
+  }
+
+  private createWordDetailFromResultSet(rs: relationalStore.ResultSet): WordDetail {
+    const wordDetail = new WordDetail();
+
+    try {
+      wordDetail.idx        = rs.getLong(rs.getColumnIndex(WordTable.Col.IDX));
+      wordDetail.partId     = rs.getLong(rs.getColumnIndex(WordTable.Col.PARTID));
+      wordDetail.partName   = ResultSetTool.decodeString(rs, WordTable.Col.PARTNAME);
+      wordDetail.unitId     = rs.getLong(rs.getColumnIndex(WordTable.Col.UNITID));
+      wordDetail.unitName   = ResultSetTool.decodeString(rs, WordTable.Col.UNITNAME);
+      wordDetail.unitNo     = rs.getLong(rs.getColumnIndex(WordTable.Col.UNITNO));
+      wordDetail.titleEn    = ResultSetTool.decodeString(rs, WordTable.Col.TITLEEN);
+      wordDetail.pronEn     = ResultSetTool.decodeString(rs, WordTable.Col.PRONEN);
+      wordDetail.pronUs     = ResultSetTool.decodeString(rs, WordTable.Col.PRONUS);
+      wordDetail.titleCn1   = ResultSetTool.decodeString(rs, WordTable.Col.TITLECN1);
+      wordDetail.titleCn2   = ResultSetTool.decodeString(rs, WordTable.Col.TITLECN2);
+      wordDetail.titleCn3   = ResultSetTool.decodeString(rs, WordTable.Col.TITLECN3);
+      wordDetail.wordImage  = ResultSetTool.decodeString(rs, WordTable.Col.WORDIMAGE);
+      wordDetail.wordChange = ResultSetTool.decodeString(rs, WordTable.Col.WORDCHANGE);
+      wordDetail.synWords   = ResultSetTool.decodeString(rs, WordTable.Col.SYNWORDS);
+      wordDetail.asynWords  = ResultSetTool.decodeString(rs, WordTable.Col.ASYNWORDS);
+      wordDetail.exampleEn1 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLEEN1);
+      wordDetail.exampleCn1 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLECN1);
+      wordDetail.exampleEn2 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLEEN2);
+      wordDetail.exampleCn2 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLECN2);
+      wordDetail.exampleEn3 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLEEN3);
+      wordDetail.exampleCn3 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLECN3);
+      wordDetail.usedPhrase = ResultSetTool.decodeString(rs, WordTable.Col.USEDPHRASE);
+      wordDetail.en2En      = ResultSetTool.decodeString(rs, WordTable.Col.EN2EN);
+      wordDetail.discriminate = ResultSetTool.decodeString(rs, WordTable.Col.DISCRIMINATE);
+    } catch (error) {
+      DebugLog.e(`WordDbAccess: 创建WordDetail对象失败 - ${error}`);
+    }
+
+    return wordDetail;
+  }
 
 }

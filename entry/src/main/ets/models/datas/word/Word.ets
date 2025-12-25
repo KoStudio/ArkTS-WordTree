@@ -1,9 +1,6 @@
-import { awaitDelay } from "../../../app/constants/AppFunctions";
 import { AppUtility } from "../../../common/utils/AppUtility";
 import { StringEncoder } from "../../../common/utils/strings/StringEncrypt";
 import { SearchManager } from "../model/SearchManager";
-import { WordUserDbAccess } from "../myData/WordUserDbAccess";
-import { WordDbAccess } from "./WordDbAccess";
 import { WordDetail } from "./WordDetail";
 
 export class Word {
@@ -17,7 +14,6 @@ export class Word {
 
   titleEn         : string | null = null;
   titleCn1        : string | null = null;
-  // wordKind     : string | null = null;
   pronEn          : string | null = null;
   pronUs          : string | null = null;
   exampleEn1      : string | null = null;
@@ -25,10 +21,27 @@ export class Word {
 
   private wordDetail: WordDetail | null = null
 
+  // async getWordDetail(): Promise<WordDetail | null> {
+  //   if (!this.wordDetail) {
+  //     this.wordDetail = await SearchManager.shared.getWordDbAccess()?.getWordDetailByTitleEn(this.titleEn) ?? null
+  //   }
+  //   return this.wordDetail
+  // }
+
   async getWordDetail(): Promise<WordDetail | null> {
-    if (!this.wordDetail) {
-      this.wordDetail = await SearchManager.shared.getWordDbAccess()?.getWordDetailByTitleEn(this.titleEn) ?? null
+    if (this.wordDetail) {
+      return this.wordDetail
     }
+
+    //查询  本地DB
+    this.wordDetail = await SearchManager.shared.getWordDbAccess()?.getWordDetailByTitleEn(this.titleEn) ?? null
+
+    ///再次查询OnlineWord
+    if (this.wordDetail === null){
+      let it = await import('../myData/WordUserDbAccess')
+      this.wordDetail = await it.WordUserDbAccess.shared.getOnlineWordDetailByTitleEn(this.titleEn) ?? null
+    }
+
     return this.wordDetail
   }
 

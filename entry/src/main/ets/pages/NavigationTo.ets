@@ -32,6 +32,7 @@ import { CreatePlanView, CreatePlanViewConfig } from '../views/plan/CreatePlanVi
 import { DayOfsView, DayOfsViewConfig } from '../views/plan/DayOfsView';
 import { DayOfWordsView, DayOfWordsViewConfig } from '../views/plan/DayOfWordsView';
 import { PlanDetailView, PlanDetailViewConfig } from '../views/plan/PlanDetailView';
+import { OnlineSearchWordsView, OnlineSearchWordsViewConfig } from '../views/onlinesearch/OnlineSearchWordsView';
 
 
 @Builder
@@ -70,6 +71,7 @@ export function navigationTo<T>(name: string, param: T){
   }else if (name === LogOffViewConfig.NavKey)             { LogOffView()
   }else if (name === SetViewConfig.NavKey)                { SetView()
   }else if (name === AboutViewConfig.NavKey)              { AboutView()
+  }else if (name === OnlineSearchWordsViewConfig.NavKey)  { OnlineSearchWordsView()
   }else{ NavDestination(){Text(`<Index.ets>未配置navigationTo: ${name}`)}
   }
 }

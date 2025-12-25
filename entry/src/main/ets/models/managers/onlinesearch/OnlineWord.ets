@@ -1,13 +1,14 @@
 import { WordDetail }       from '../../datas/word/WordDetail'
 import { Word }             from '../../datas/word/Word'
 import { BaseWordDbAccess } from '../../datas/basedict/BaseWordDbAccess'
+import { WordUser } from '../../datas/myData/WordUser'
 
 // MARK: - Constant 常量类
 /**
  * OnlineWord 常量定义
  * 包含业务相关的固定值常量
  */
-export class Constant {
+export class OnlineWordConstant {
   /** baseDict 的 idx 也是从 1 开始的，Word 中的 idx 也是从 1 开始的，
    *  两者有重复的可能，所以这里在 baseWord 的 idx 上加固定值 */
   static readonly Idx_     = 100000
@@ -101,31 +102,36 @@ export class OnlineWord {
   }
 
   /// 将 OnlineWord 转换成 Word，用于查询返回
-  async asWord(): Promise<Word> {
-    const word   = new Word()
+  asWordUser(): WordUser {
+    const word      = new WordUser()
 
-    word.idx     = await this.getIdx()   // 不能为 0，录音时需要此 idx
-    word.partId  = Constant.PartId
-    word.partName= Constant.PartName
-    word.unitId  = Constant.UnitId
-    word.unitName= Constant.UnitName
-    word.unitNo  = Constant.UnitNo
-    word.titleEn = this.titleEn
-    word.titleCn1= this.titleCn1
+    word.idx        = this.getIdx()   // 不能为 0，录音时需要此 idx
+    word.partId     = OnlineWordConstant.PartId
+    word.partName   = OnlineWordConstant.PartName
+    word.unitId     = OnlineWordConstant.UnitId
+    word.unitName   = OnlineWordConstant.UnitName
+
+    word.unitNo     = OnlineWordConstant.UnitNo
+    word.titleEn    = this.titleEn
+    word.pronEn     = this.pronEn
+    word.pronUs     = this.pronUs
+    word.titleCn1   = this.titleCn1
+    word.exampleEn1 = this.exampleEn1
+    word.exampleCn1 = this.exampleCn1
 
     return word
   }
 
   /// 将 OnlineWord 转换成 WordDetail，用于写入 DB
-  async asWordDetail(): Promise<WordDetail> {
+   asWordDetail(): WordDetail {
     const wordDetail      = new WordDetail()
 
-    wordDetail.idx        = await this.getIdx()
-    wordDetail.partId     = Constant.PartId
-    wordDetail.partName   = Constant.PartName
-    wordDetail.unitId     = Constant.UnitId
-    wordDetail.unitName   = Constant.UnitName
-    wordDetail.unitNo     = Constant.UnitNo
+    wordDetail.idx        = this.getIdx()
+    wordDetail.partId     = OnlineWordConstant.PartId
+    wordDetail.partName   = OnlineWordConstant.PartName
+    wordDetail.unitId     = OnlineWordConstant.UnitId
+    wordDetail.unitName   = OnlineWordConstant.UnitName
+    wordDetail.unitNo     = OnlineWordConstant.UnitNo
     wordDetail.titleEn    = this.titleEn
     wordDetail.pronEn     = this.pronEn
     wordDetail.pronUs     = this.pronUs
@@ -150,17 +156,17 @@ export class OnlineWord {
   }
 
   /// 获取本地 baseWord 中对应的 idx
-  async getIdx(): Promise<number> {
+  getIdx(): number {
     const title = this.titleEn
     if (!title) return 0
 
-    const baseWord = await BaseWordDbAccess.shared.getBaseWordByText(title)
-    if (baseWord) {
-      return Constant.Idx_ + (baseWord.idx ?? 0)
-    }
+    // const baseWord = await BaseWordDbAccess.shared.getBaseWordByText(title)
+    // if (baseWord) {
+    //   return Constant.Idx_ + (baseWord.idx ?? 0)
+    // }
 
     const hashCode = this._stringHashCode(title)
-    return Constant.Idx_ * 10 + (Math.abs(hashCode) % (Constant.Idx_ * 10))
+    return OnlineWordConstant.Idx_ * 10 + (Math.abs(hashCode) % (OnlineWordConstant.Idx_ * 10))
   }
 
   /// 字符串 hashCode 实现

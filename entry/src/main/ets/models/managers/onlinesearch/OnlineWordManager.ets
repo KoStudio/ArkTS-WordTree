@@ -2,7 +2,7 @@ import { LanguageManager } from '../../../common/components/Language/LanguageMan
 import { Http } from '../../networks/Http';
 import { HttpUtils } from '../../networks/HttpUtils';
 import { Servers, Route } from '../../networks/Server_Routes';
-import { OnlineWord, Constant, CodingKeys } from './OnlineWord';
+import { OnlineWord, OnlineWordConstant, CodingKeys } from './OnlineWord';
 
 // MARK: - OnlineWordManager 管理器
 export class OnlineWordManager {
@@ -13,7 +13,7 @@ export class OnlineWordManager {
   }
 
   /// 获取单例实例
-  static shared(): OnlineWordManager {
+  static get shared(): OnlineWordManager {
     if (!OnlineWordManager.instance) {
       OnlineWordManager.instance = new OnlineWordManager()
     }

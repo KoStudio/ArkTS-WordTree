@@ -18,6 +18,7 @@ import { SetViewConfig } from '../views/main/under/SetView';
 import { MemberView } from '../views/setting/member/MemberView';
 import { BookListViewConfig } from '../views/books/BookListView';
 import { StatusBarUtil } from '../common/utils/StatusBarUtils';
+import { OnlineSearchWordsViewConfig } from '../views/onlinesearch/OnlineSearchWordsView';
 
 
 @Entry
@@ -156,7 +157,10 @@ struct Index {
       rightButtons: [
         {
           icon: $r('app.media.search'),
-          onClick: () => {  }
+          onClick: () => { 
+            // 跳转到在线查询页面
+            OnlineSearchWordsViewConfig.open()
+          }
         },
         {
           icon: $r('app.media.ic_more'),
