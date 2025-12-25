@@ -1,3 +1,4 @@
+import { ListWordRow } from "../../../app/views/ListWordRow"
 import { SpeechRecordManager } from "../../../common/components/Speech/Recorder/SpeechRecordManager"
 import { SearchManager } from "../../../models/datas/model/SearchManager"
 import { WordUser } from "../../../models/datas/myData/WordUser"
@@ -58,53 +59,41 @@ export struct UnitWordListView {
 
   @Builder
   buildRowContent(rowIndex: number, word: WordUser) {
-   Row(){
-     Text(`${rowIndex + 1}`)
-       .fontSize(18)
-       .fontColor($r('app.color.color_list_item_detail'))
-       .margin({right: 10})
+    ListWordRow({no: rowIndex + 1, word: word, isShowMemoFlg: true})
 
-     ///left
-     Column(){
-
-
-       Text(`${word.titleEn}`)
-         .fontSize(18)
-         .fontColor($r('app.color.color_list_item_title'))
-
-       Text(word.titleCn1ClippedShort)
-         .fontSize(15)
-         .fontColor($r('app.color.color_list_item_subtitle'))
-         .margin({left: 5, top: 5})
-
-     }
-     .width('100%')
-     .justifyContent(FlexAlign.Center)
-     .alignItems(HorizontalAlign.Start)
-
-     //right
-     Row({space: 10}){
-       if (word.memo){
-         //memo icon
-         //TintImage({src: $r('app.media.learn_icon_memo'), iconSize: 20, colorStr:"#888888"})
-         Image($r('app.media.learn_icon_memo'))
-           .width(14)
-           .height(17)
-       }
-
-       //录音icon
-       //TintImage({src: $r('app.media.learn_icon_voice')})
-
-     }
-
-   }
-   .justifyContent(FlexAlign.SpaceBetween)
-   .alignItems(VerticalAlign.Center)
-    .width('100%')
-    .padding(10)
-    .layoutWeight(1)
-    .border({width: {bottom: 1}, color: $r('app.color.color_obscure')})
-    .backgroundColor($r('app.color.color_background'))
+   // Row(){
+   //   Text(`${rowIndex + 1}`)
+   //     .fontSize(18)
+   //     .fontColor($r('app.color.color_list_item_detail'))
+   //     .margin({right: 10})
+   //
+   //   ///left
+   //   Column(){
+   //
+   //
+   //     Text(`${word.titleEn}`)
+   //       .fontSize(18)
+   //       .fontColor($r('app.color.color_list_item_title'))
+   //
+   //     Text(word.titleCn1ClippedShort)
+   //       .fontSize(15)
+   //       .fontColor($r('app.color.color_list_item_subtitle'))
+   //       .margin({left: 5, top: 5})
+   //
+   //   }
+   //   .width('100%')
+   //   .justifyContent(FlexAlign.Center)
+   //   .alignItems(HorizontalAlign.Start)
+   //
+   //
+   // }
+   // .justifyContent(FlexAlign.SpaceBetween)
+   // .alignItems(VerticalAlign.Center)
+   //  .width('100%')
+   //  .padding(10)
+   //  .layoutWeight(1)
+   //  .border({width: {bottom: 1}, color: $r('app.color.color_obscure')})
+   //  .backgroundColor($r('app.color.color_background'))
   }
 
   handleRowClick(rowIndex: number){

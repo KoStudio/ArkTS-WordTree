@@ -36,7 +36,7 @@ export struct LinkText {
   @Param content: string            = '';          // 原始文本内容
   @Param linkTexts: string[]        = [];      // 需要作为链接的文本数组
   @Param linkColor: ResourceColor   = $r('app.color.color_link'); // 链接颜色（默认蓝色）
-  @Param normalColor: ResourceColor = $r('app.color.color_text2'); // 链接颜色（默认蓝色）
+  @Param normalColor: ResourceColor = $r('app.color.color_text'); // 链接颜色（默认蓝色）
   @Param isLinkUnderline: boolean   = true; // 链接是否显示下划线（默认显示）
   @Param @Require onLinkTapped: (text: string) => void; // 链接点击回调
 

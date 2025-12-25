@@ -16,6 +16,9 @@ import { buildNavTitle } from "../../app/constants/AppBuilders"
 import { dNavBackIcon } from "../../app/constants/AppDefines"
 import { NavTo } from "../../pages/NavPathManager"
 import { MemberManager } from "../../models/managers/member/MemberManager"
+import { WordCardsViewConfig } from "../card/wordcard/WordCardsView"
+import { DetailCardsViewConfig } from "../card/detail/DetailCardsView"
+import { WordUser } from "../../models/datas/myData/WordUser"
 
 
 export namespace DayOfsViewConfig {
@@ -325,38 +328,38 @@ export struct DayOfsView {
     ///会员检查， 当前Dayof是否可用
     if(!MemberManager.shared.checkDayOfUsable(dayOf.num ?? 0, true)) { return }
 
-    let wordsOfDayOf: number[] = []
+    let words: WordUser[] = []
 
     // 按 distance 排序，新字在前，复习在后
     for (const box of dayOf.boxes) {
-      const wordIds = this.plan.wordIdsFor(dayOf, [box.distance])
-      if (wordIds && wordIds.length > 0) {
-        wordsOfDayOf.push(...wordIds)
-      }
+      words.push(...this.plan.wordsFor(dayOf, [box.distance]))
     }
 
     // 缓存当前日份中已经学习过的wordIds
-    const learnedWords = new Set<number>();
-    //this.plan.learnedWordIds(dayOf)?.forEach(w => learnedTexts.add(w));
-    this.plan.learnedWordIdsFor(dayOf).forEach(w => learnedWords.add(w))
+    const learnedIds = new Set(this.plan.learnedWordIdsFor(dayOf))
 
     // 默认第一个
     // 自动获取下一个未学习的
-    let indexToShow = wordsOfDayOf.findIndex(w => !learnedWords.has(w));
+    let indexToShow = words.findIndex(w => !learnedIds.has(w.idx || 0));
     if (indexToShow < 0) indexToShow = 0;
 
-    // // 有词语时，强制使用词语卡
-    // if (ArrayWords.containsWords(wordsOfDayOf)) {
-    //   SettingManager.shared.currentCardStyleType = CardStyleType.STYLE4
-    // }
-    //
-    //
-    // // 拼接文字（词语:空格连接，单字:直接连接）
-    // const text = ArrayWords.joinedWordsString(wordsOfDayOf)
-    //
-    // // 跳转到学习卡片页
-    // MakeViewConfig.NavTo(this.navPath, {initTexts: text, initIndex: indexToShow, plan: this.plan, dayOf: dayOf})
 
+    //打开详细
+    this.gotoDetail(words, indexToShow)
+
+  }
+
+  gotoDetail(words: WordUser[], index: number = 0){
+    if (!this.plan) return;
+
+    const dayOf = this.dayOfs[index];
+    if (!dayOf) return;
+
+    if (SettingManager.shared.planQuickLearn) {
+      WordCardsViewConfig.open({words: words, initIndex: index, plan: this.plan, dayOf: dayOf})
+    }else{
+      DetailCardsViewConfig.open({words: words, initIndex: index, plan: this.plan, dayOf: dayOf})
+    }
 
   }
 

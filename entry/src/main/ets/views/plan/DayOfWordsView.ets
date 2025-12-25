@@ -26,6 +26,7 @@ import { TEUtility } from "../../common/utils/TEUtility"
 import { Box } from "../../models/managers/plan/plancurve/Box"
 import { DetailCardsViewConfig } from "../card/detail/DetailCardsView"
 import { TextCheckBox } from "../../app/views/buttons/TextCheckBox"
+import { ListWordRow } from "../../app/views/ListWordRow"
 
 
 export namespace DayOfWordsViewConfig {
@@ -60,6 +61,9 @@ export struct DayOfWordsView {
 
   @Local private dayOf: DayOf | null = null
   @Local private plan: Plan | null = null
+
+
+  @Local learnedWordIds    : Set<number> = new Set()
 
 
   @Local  sectionWords  : SectionDatas<string, WordUser> = new SectionDatas()
@@ -106,7 +110,7 @@ export struct DayOfWordsView {
     .menus(buildStandardMenu(this.buildMenuItems()))
     .onShown(()=>{
       ///加载数据
-      //this.loadDatas()
+      this.loadDatas()
 
       logEvent("DayOfWordsView_onShown") //日志
     })
@@ -145,7 +149,7 @@ export struct DayOfWordsView {
 
             ForEach(this.sectionWords.allDatasOfSectionIndex(sectionIndex), (word: WordUser, rowIndex: number) => {
               ListItem() {
-                this.buildRowContent(word, rowIndex)
+                this.buildRowContent(this.sectionWords.indexOfAllFromIndex(rowIndex, sectionIndex), word)
               }
               .onClick(()=>{
                 this.handleRowClick(sectionIndex, rowIndex)
@@ -178,7 +182,7 @@ export struct DayOfWordsView {
       Text(`${section}`)
         .margin({ top: 5, bottom: 5, left: 10, right: 10 })
         // .fontColor(TEUtility.getSectionTextColor(index))
-        .fontColor($r('app.color.color_list_section'))
+        .fontColor($r('app.color.color_title'))
         .fontSize(16)
         .fontWeight(FontWeight.Medium)
       Blank().layoutWeight(1)
@@ -188,51 +192,10 @@ export struct DayOfWordsView {
     .backgroundColor($r('app.color.color_list_section_bg'))
   }
 
+
   @Builder
-  buildRowContent(word: WordUser, rowIndex: number) {
-    Row(){
-
-      ///left
-      Column(){
-
-        Text(`${word.titleEn}`)
-          .fontSize(18)
-          .fontColor($r('app.color.color_text'))
-
-
-        Text(word.wordJpClippedString)
-          .fontSize(15)
-          .fontColor($r('app.color.color_detail'))
-          .margin({left: 15, top: 5})
-
-
-      }
-      .justifyContent(FlexAlign.Center)
-      .alignItems(HorizontalAlign.Start)
-
-      //right
-      Row({space: 10}){
-        if (word.memo){
-          //memo icon
-          //TintImage({src: $r('app.media.learn_icon_memo'), iconSize: 20, colorStr:"#888888"})
-          Image($r('app.media.learn_icon_memo'))
-            .width(14)
-            .height(17)
-        }
-
-        //录音icon
-        //TintImage({src: $r('app.media.learn_icon_voice')})
-
-      }
-
-    }
-    .justifyContent(FlexAlign.SpaceBetween)
-    .alignItems(VerticalAlign.Center)
-    .width('100%')
-    .padding({left: 10, top: 5, bottom: 5})
-    .layoutWeight(1)
-    .backgroundColor($r('app.color.color_clear'))
-    .border({width: {bottom: 1}, style: BorderStyle.Dashed, color: $r('app.color.color_obscure')})
+  buildRowContent(index: number, word: WordUser) {
+    ListWordRow({no: index + 1, word: word, titleColor: this.learnedWordIds.has(word.idx || 0) ? $r('app.color.color_list_item_subtitle') : $r('app.color.color_list_item_title')})
   }
 
 
@@ -256,6 +219,7 @@ export struct DayOfWordsView {
 
         ///学习按钮
         TextButton({text: $r('app.string.dayof_btn_study'), minWidth: 160, onClickCallBack: ()=>{this.actionStudy()}})
+          .margin({left: 50})
 
         ///快速学习
         TextCheckBox({text: $r('app.string.dayof_btn_chk_quicklearn'), checked: this.isQucklearn, $checked:(isChecked)=>{
@@ -319,18 +283,8 @@ export struct DayOfWordsView {
 
   /// 重新刷新数据
   private async loadDatas() {
-    // // 如果有planId时，说明是已经保存到Db中的plan
-    // // 这里需要重新读取 plan的learn数据
-    // if (this.plan?.planId != null) {
-    //   // 重新从db加载 plan
-    //   if (this.plan.bookId != null) {
-    //     this.plan = await PlanManager.getPlanByBookId(this.plan.bookId)
-    //   }
-    // }
-
 
     let sectionData: SectionDatas<string, WordUser> = new SectionDatas()
-    let learnedWordIds: Set<number> = new Set()
 
     const dayOf = this.dayOf
     if (!dayOf || !this.plan) {
@@ -354,20 +308,14 @@ export struct DayOfWordsView {
     })
 
     // 缓存当前日份中已经学习过的wordIds
-    const learnedWords = this.plan?.learnedWordsFor(dayOf)
-    if (learnedWords) {
-      learnedWords.forEach((word: WordUser) => {
-        if (word.idx != null) {
-          learnedWordIds.add(word.idx)
-        }
-      })
-    }
+    this.learnedWordIds = new Set(this.plan?.learnedWordIdsFor(dayOf))
 
     // 更新UI数据
     this.sectionWords = sectionData
-    // 这里需要将learnedWordIds传递给适配器，但当前DayOfWordsView没有适配器属性
-    // 可能需要根据实际需求调整
+
+
   }
+
 
   /// 获取通用计数字符串
   private getStringForCommonCount(count: number): string {
@@ -401,9 +349,16 @@ export struct DayOfWordsView {
     for (const box of dayOf.boxes) {
       words.push(...plan.wordsFor(dayOf, [box.distance]))
     }
+    // 缓存当前日份中已经学习过的wordIds
+    const learnedIds = new Set(plan.learnedWordIdsFor(dayOf))
+
+    // 默认第一个
+    // 自动获取下一个未学习的
+    let indexToShow = words.findIndex(w => !learnedIds.has(w.idx || 0));
+    if (indexToShow < 0) indexToShow = 0;
 
     //打开详细
-    this.gotoDetail(words, 0)
+    this.gotoDetail(words, indexToShow)
 
 
     logEvent("DayOfWordsView_study") //日志

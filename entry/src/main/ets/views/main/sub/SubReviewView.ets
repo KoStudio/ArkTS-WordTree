@@ -11,6 +11,7 @@ import { DateUtils } from "../../../common/utils/DateUtils";
 import { QuizStartViewConfig } from "../../quiz/start/QuizStartView";
 import { NoDataPanel } from "../../../app/views/NoDataView";
 import { TextButton } from "../../../app/views/buttons/TextButton";
+import { ListWordRow } from "../../../app/views/ListWordRow";
 
 @ComponentV2
 export struct SubReviewView {
@@ -63,6 +64,8 @@ export struct SubReviewView {
         }
 
       }
+      .backgroundColor($r('app.color.color_background'))
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       .justifyContent(FlexAlign.Start)
       .width('100%')
       .height('100%')
@@ -144,49 +147,51 @@ export struct SubReviewView {
 
   @Builder
   buildRowContent(word: WordUser, rowIndex: number) {
-    Row(){
+    ListWordRow({no: rowIndex + 1, word: word})
 
-      ///left
-      Column(){
-
-        Text(`${word.titleEn}`)
-          .fontSize(18)
-          .fontColor($r('app.color.color_text'))
-
-
-        Text(word.titleCn1ClippedShort)
-          .fontSize(15)
-          .fontColor($r('app.color.color_detail'))
-          .margin({left: 15, top: 5})
-
-
-      }
-      .justifyContent(FlexAlign.Center)
-      .alignItems(HorizontalAlign.Start)
-
-      //right
-      Row({space: 10}){
-        if (word.memo){
-          //memo icon
-          //TintImage({src: $r('app.media.learn_icon_memo'), iconSize: 20, colorStr:"#888888"})
-          Image($r('app.media.learn_icon_memo'))
-            .width(14)
-            .height(17)
-        }
-
-        //录音icon
-        //TintImage({src: $r('app.media.learn_icon_voice')})
-
-      }
-
-    }
-    .justifyContent(FlexAlign.SpaceBetween)
-    .alignItems(VerticalAlign.Center)
-    .width('100%')
-    .padding({left: 30, top: 5, bottom: 5})
-    .layoutWeight(1)
-    .backgroundColor($r('app.color.color_clear'))
-    .border({width: {bottom: 1}, style: BorderStyle.Dashed, color: $r('app.color.color_line')})
+    // Row(){
+    //
+    //   ///left
+    //   Column(){
+    //
+    //     Text(`${word.titleEn}`)
+    //       .fontSize(18)
+    //       .fontColor($r('app.color.color_text'))
+    //
+    //
+    //     Text(word.titleCn1ClippedShort)
+    //       .fontSize(15)
+    //       .fontColor($r('app.color.color_detail'))
+    //       .margin({left: 15, top: 5})
+    //
+    //
+    //   }
+    //   .justifyContent(FlexAlign.Center)
+    //   .alignItems(HorizontalAlign.Start)
+    //
+    //   //right
+    //   Row({space: 10}){
+    //     if (word.memo){
+    //       //memo icon
+    //       //TintImage({src: $r('app.media.learn_icon_memo'), iconSize: 20, colorStr:"#888888"})
+    //       Image($r('app.media.learn_icon_memo'))
+    //         .width(14)
+    //         .height(17)
+    //     }
+    //
+    //     //录音icon
+    //     //TintImage({src: $r('app.media.learn_icon_voice')})
+    //
+    //   }
+    //
+    // }
+    // .justifyContent(FlexAlign.SpaceBetween)
+    // .alignItems(VerticalAlign.Center)
+    // .width('100%')
+    // .padding({left: 30, top: 5, bottom: 5})
+    // .layoutWeight(1)
+    // .backgroundColor($r('app.color.color_clear'))
+    // .border({width: {bottom: 1}, style: BorderStyle.Dashed, color: $r('app.color.color_line')})
   }
 
 

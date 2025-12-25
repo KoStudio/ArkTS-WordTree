@@ -113,7 +113,7 @@ export struct UnitListView {
 
           Text(unit.unitName)
             .fontSize(16)
-            .fontColor($r('app.color.color_text'))
+            .fontColor($r('app.color.color_list_item_subtitle'))
             .margin({left: 5})
           //
           // // Text(getStringF($r('app.string.str_unit_no'), unit.unitId)) //`Lesson${unit.unitNo}`
