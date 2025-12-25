@@ -3,6 +3,7 @@ import { DebugLog } from '../../../app/debug/DebugLog';
 import { SubscribeManager } from '../../../common/iab/SubscribeManager';
 import { DateUtils } from '../../../common/utils/DateUtils';
 import { Toast } from '../../../common/utils/Toast';
+import { BookManager } from '../../datas/book/BookManager';
 import { DailyCountManager, DailyCountType } from './DailyCountManaer';
 import { EncourageManager, EncourageType } from './EncourageManager';
 
@@ -12,10 +13,13 @@ class NonMemberDefaultLimits {
   static readonly wordPronCountDaily       : number = 20   // 每日 发音50次 （单词, 字典）
   static readonly examplePronCountDaily    : number = 10   // 每日 发音10次 （例句）
   static readonly dictShowCountDaily       : number = 5    // 每日 内置词典显示 10次
+  static readonly freeBookscount           : number = 1   // 免费Books 1个
   static readonly freeUnitsCount           : number = 100  // 免费单元个数 （通常一个Book是40个单元，这里默认是100个单元，表示不限制)
   static readonly freePlanDayOfsCount      : number = 5    // 记忆曲线免费天数
   static readonly onlineDictUseCountDaily  : number = 100  // 每日 在线字曲　使用 100次
   static readonly challengeUseCountDaily   : number = 10   // 每日 挑战模式　使用 100次
+
+
 }
 
 // ============================================================
@@ -25,6 +29,7 @@ class NonMember {
   maxWordPronCountDaily        : number = NonMemberDefaultLimits.wordPronCountDaily
   maxExamplePronCountDaily     : number = NonMemberDefaultLimits.examplePronCountDaily
   maxDictShowCountDaily        : number = NonMemberDefaultLimits.dictShowCountDaily
+  maxFreeBooksCount            : number = NonMemberDefaultLimits.freeBookscount
   maxFreeUnitsCount            : number = NonMemberDefaultLimits.freeUnitsCount
   maxFreePlanDayOfsCount       : number = NonMemberDefaultLimits.freePlanDayOfsCount
   maxOnlineDictUseCountDaily   : number = NonMemberDefaultLimits.onlineDictUseCountDaily
@@ -157,6 +162,7 @@ export class MemberManager {
   private get maxWordPronCountDaily()      : number { return this.isActive ? BeMember.maxCount : this.nonMember.maxWordPronCountDaily }
   private get maxExamplePronCountDaily()   : number { return this.isActive ? BeMember.maxCount : this.nonMember.maxExamplePronCountDaily }
   private get maxDictShowCountDaily()      : number { return this.isActive ? BeMember.maxCount : this.nonMember.maxDictShowCountDaily }
+  private get maxFreeBooksCount()          : number { return this.isActive ? BeMember.maxCount : this.nonMember.maxFreeBooksCount }
   private get maxFreeUnitsCount()          : number { return this.isActive ? BeMember.maxCount : this.nonMember.maxFreeUnitsCount }
   private get maxFreePlanDayOfsCount()     : number { return this.isActive ? BeMember.maxCount : this.nonMember.maxFreePlanDayOfsCount }
   private get maxOnlineDictUseCountDaily() : number { return this.isActive ? BeMember.maxCount : this.nonMember.maxOnlineDictUseCountDaily }
@@ -233,6 +239,21 @@ export class MemberManager {
     return true
   }
 
+  /// 检查 是否能下载 是否可用
+  public checkBooksDownloadable(showMessage: boolean = true): boolean {
+    if (this.isActive) { return true } // 非会员才做检查
+
+    const booksCnt = BookManager.shared.books.length
+
+    if (this.maxFreeBooksCount <= booksCnt) {
+      if (showMessage) {
+        Toast.showMessage($r('app.string.member_manager_msg_limit_use_all_books'))
+      }
+      return false
+    }
+
+    return true
+  }
   /// 检查 单元 是否可用
   public checkUnitUsable(curUnitNo: number, showMessage: boolean = true): boolean {
     if (this.isActive) { return true } // 非会员才做检查

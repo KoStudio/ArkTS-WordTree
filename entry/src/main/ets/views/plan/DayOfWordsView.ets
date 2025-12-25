@@ -242,6 +242,10 @@ export struct DayOfWordsView {
     // WordCardsViewConfig.open({words: words, initIndex: this.sectionWords.indexOfAllFromIndex(rowIndex, sectionIndex)})
     let initIndex = this.sectionWords.indexOfAllFromIndex(rowIndex, sectionIndex)
 
+
+    ///会员检查， 当前Dayof是否可用
+    if(!MemberManager.shared.checkDayOfUsable(this.dayOf?.num ?? 0, true)) { return }
+
     //打开详细
     this.gotoDetail(words, initIndex)
   }

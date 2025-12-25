@@ -50,9 +50,8 @@ export struct DetailItemSortView {
       List({ space: 1 }) {
         ForEach(this.itemOrders, (itemOrder: ItemOrder, index: number) => {
           ListItem() {
-            this.buildRow(itemOrder, index)
+            this.buildRow(()=> itemOrder, index)
           }
-          .key(itemOrder.item)
         })
           ///拖动排序 (直接使用ForEach的onMove)
           .onMove((fromIndex: number, toIndex: number) =>{
@@ -90,15 +89,15 @@ export struct DetailItemSortView {
   }
 
   // 构建列表行
-  @Builder buildRow(itemOrder: ItemOrder, index: number){
+  @Builder buildRow(itemOrder: ()=>ItemOrder, index: number){
     Row() {
-      Toggle({ type: ToggleType.Switch, isOn: itemOrder.isVisible })
+      Toggle({ type: ToggleType.Switch, isOn: itemOrder().isVisible })
         .onChange((isOn: boolean) => this.changeVisible(index, isOn))
         .selectedColor($r('app.color.color_switch_tint'))
 
-      Text(DetailItemManager.shared.getLocalizedName(itemOrder.item))
+      Text(DetailItemManager.shared.getLocalizedName(itemOrder().item))
         .fontSize(18)
-        .fontColor(itemOrder.isVisible ? $r('app.color.colorPrimaryDark') : $r('app.color.color_obscure'))
+        .fontColor(itemOrder().isVisible ? $r('app.color.colorPrimaryDark') : $r('app.color.color_obscure'))
         .layoutWeight(1)
         .margin({left: 5})
 

@@ -706,6 +706,7 @@
     { "name": "member_manager_msg_limit_use_night_mode"       , "value": "加入会员可以任意使用夜晚模式" },
     { "name": "member_manager_msg_limit_use_hide_trans"       , "value": "加入会员可以任意使用隐藏翻译" },
     { "name": "member_manager_msg_limit_use_retest_mistake"   , "value": "加入会员可以任意使用再测一次" },
+    { "name": "member_manager_msg_limit_use_all_books"        , "value": "加入会员可以任意任意课本" },
     { "name": "member_manager_msg_limit_use_all_units"        , "value": "加入会员可以任意学习所有单元" },
     { "name": "member_manager_msg_limit_use_all_plan_dayofs"  , "value": "加入会员可任意使用记忆曲线" },
     { "name": "member_manager_msg_limit_use_cigen"            , "value": "加入会员可以任意使用词根助记" },

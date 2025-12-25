@@ -10,6 +10,7 @@ import { Category } from "../../../models/datas/book/CategoryManager"
 import { NavPopTop, NavTo } from "../../../pages/NavPathManager"
 import { LoadingDialog } from "@kit.ArkUI"
 import { BookManager } from "../../../models/datas/book/BookManager"
+import { MemberManager } from "../../../models/managers/member/MemberManager"
 
 
 export namespace BooksOnlineViewConfig {
@@ -152,6 +153,10 @@ export struct BooksOnlineView {
       return
     }
 
+    //会员检查
+    if (!MemberManager.shared.checkBooksDownloadable()) {
+      return
+    }
     Toast.showCustomDialog(()=> { this.buildLoadingDialog($r('app.string.books_msg_download_start_word'))}, false)
     CBookManager.shared.startUpdateBookCheckIfNeeds(book.textDb, book.bookName, true, (percent: number)=>{
       Toast.showDebugMessage(`${percent}%..`)
