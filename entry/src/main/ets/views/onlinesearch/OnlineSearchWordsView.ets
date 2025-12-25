@@ -220,15 +220,6 @@ export struct OnlineSearchWordsView {
   }
 
 
-  handleRowClick(rowIndex: number, word: WordUser){
-
-    /////显示在线查询单字
-    SearchManager.shared.searchWord(word.titleEn, (wordUser: WordUser | null)=>{
-      if (wordUser) {
-        DetailCardsViewConfig.open({words: [wordUser], initIndex : 0})
-      }
-    })
-  }
 
   // 执行搜索
   private async search(val: string): Promise<void> {
@@ -277,5 +268,14 @@ export struct OnlineSearchWordsView {
     })
   }
 
+  handleRowClick(rowIndex: number, word: WordUser){
+
+    /////显示在线查询单字
+    SearchManager.shared.searchWord(word.titleEn, (wordUser: WordUser | null)=>{
+      if (wordUser) {
+        DetailCardsViewConfig.open({words: [wordUser], initIndex : 0})
+      }
+    })
+  }
 }
 

@@ -592,7 +592,7 @@
 
     {"name": "set_cell_txt_clear_cache"                     , "value": "清空缓存"                   },
     {"name": "set_cell_txt_crm_btn_clear_cache"             , "value": "清空本机缓存"               },
-    {"name": "set_msg_clear_done"                           , "value": "清空完成[%s]"               },
+    {"name": "set_msg_clear_done"                           , "value": "清空完成"               },
 
     {"name": "set_msg_learn"                                , "value": "确定要删除所有学习履历吗？"},
     {"name": "set_msg_test"                                 , "value": "确定要删除所有测试结果吗？"},

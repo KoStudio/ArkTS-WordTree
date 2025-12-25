@@ -319,7 +319,7 @@ export struct DetailCardsView {
 
   ///创建DictView
   @Builder buildDictView(){
-    DictView({title: this.showingDictText})
+    DictView({title: this.showingDictText, isShowing: this.isShowDictView!!})
 
   }
 

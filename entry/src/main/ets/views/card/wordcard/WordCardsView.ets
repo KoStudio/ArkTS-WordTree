@@ -318,7 +318,7 @@ export struct WordCardsView {
 
   ///创建DictView
   @Builder buildDictView(){
-    DictView({title: this.showingDictText})
+    DictView({title: this.showingDictText, isShowing: this.isShowDictView!!})
 
   }
 

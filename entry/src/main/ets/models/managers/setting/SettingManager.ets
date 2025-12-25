@@ -2,6 +2,14 @@ import preferences from '@ohos.data.preferences';
 import { BusinessError } from '@ohos.base';
 import common from '@ohos.app.ability.common';
 import { getAppContext } from '../../../app/constants/AppContext';
+import { DiskStatus } from '../../../app/constants/DiskStatus';
+import { CSoundManager } from '../../../common/components/Sounds/Cloud/Manager/CSoundManager';
+import { AudioTool } from '../../../common/components/Sounds/Player/AudioTool';
+import { CosDownloader } from '../../../common/components/Sounds/Cloud/Download/Downloader/CosDownloader';
+import { WordUserDbAccess } from '../../datas/myData/WordUserDbAccess';
+import { Toast } from '../../../common/utils/Toast';
+import { FileSizeUtils } from '../../../common/utils/FileSizeUtils';
+import { getStringF } from '../../../common/utils/ResourceUtils';
 
 // ============================================================
 // MARK: - Pref - 设置键常量
@@ -177,5 +185,33 @@ export class SettingManager {
     this.hideTranslation  = false;
 
     await this.save();
+  }
+
+  clearCache(){
+    // 获取清理前的可用空间 (单位为字节)
+    const before: number = DiskStatus.getAvailableBytesForDataDirectorySync(getContext());
+
+    ///清空缓存的CSounds
+    CSoundManager.shared.removeAllCachedSounds()
+
+
+    //清理缓存的mp3
+    AudioTool.removeTempAudioFiles()
+
+
+    //清空cos sounds缓存
+    CosDownloader.clearTempFolder()
+
+    ///清空Online
+    WordUserDbAccess.shared.resetWordTables()
+
+    // 获取清理后的可用空间
+    const after: number = DiskStatus.getAvailableBytesForDataDirectorySync(getContext());
+
+    // 计算释放的空间大小 (确保非负)
+    const freedBytes: number = Math.max(before - after, 0);
+    const bytes: string = FileSizeUtils.formatBytes(freedBytes)
+    const extra = freedBytes > 0 ?  `[${bytes}]` : ''
+    Toast.showMessage(getStringF($r('app.string.set_msg_clear_done')) +  extra)//[%s]
   }
 }

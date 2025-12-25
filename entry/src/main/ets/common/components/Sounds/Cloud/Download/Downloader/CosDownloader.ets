@@ -10,6 +10,7 @@ import { DebugLog } from '../../../../../../app/debug/DebugLog';
 import { FileUtility } from '../../../../../utils/FileUtility';
 import { NetWorkTool } from '../../../../../utils/NetworkUtils';
 import { logEvent } from '../../../../Logger/Logger';
+import { getAppContext } from '../../../../../../app/constants/AppContext';
 
 // MARK: - COS配置常量
 namespace CosConfig {
@@ -179,4 +180,12 @@ export class CosDownloader {
     FileUtility.readFileAsUint8Array(filePath, callback)
   }
 
+
+  /**
+   * 清空临时文件目录（temp_folder）
+   */
+  static clearTempFolder(): boolean {
+    const tempDir = `${getContext().cacheDir}/CosDownloads`;
+    return FileUtility.deleteDirectoryAt(tempDir);
+  }
 }

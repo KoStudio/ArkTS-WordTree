@@ -3,7 +3,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import {  initAppContext, initUIContext } from '../app/constants/AppContext';
 import { SystemSizeManager as SystemSizeManager } from '../common/managers/SystemSizeManager';
-import { SEService } from '../common/components/SoundEffect/SEManager';
+
 import { BundleUtils } from '../common/utils/BundleUtils';
 import { DebugFlg } from '../app/debug/DebugFlg';
 
@@ -20,7 +20,6 @@ export default class EntryAbility extends UIAbility {
     ///初始化全局context
     initAppContext(this.context)
 
-    //let hasHzkb = FileTypeManager.checkExtension('.hzkb')
 
     ///初始化ShareUtils
     import('../common/utils/ShareUtils').then((it)=>{it.ShareUtils.init(this.context)})
@@ -29,7 +28,7 @@ export default class EntryAbility extends UIAbility {
     import('../common/components/Language/LanguageManager').then((it)=>{it.LanguageManager.applySavedLanguage()})
 
     ///初始化SE
-    SEService.shared.initialize(this.context)
+    import('../common/components/SoundEffect/SEManager').then((it)=> {it.SEService.shared.initialize(this.context)})
 
     ///这里没效果，改成在UI画面index.ets中设置
     ///设置状态栏背景色

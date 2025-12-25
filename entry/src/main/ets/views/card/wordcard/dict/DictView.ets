@@ -7,13 +7,18 @@ import { Toast } from "../../../../common/utils/Toast"
 import { BaseWord } from "../../../../models/datas/basedict/BaseWord"
 import { BaseWordDbAccess } from "../../../../models/datas/basedict/BaseWordDbAccess"
 import { TitleItem } from "../../../../models/datas/basedict/utils/BaseWordUtility"
+import { SearchManager } from "../../../../models/datas/model/SearchManager"
+import { WordUser } from "../../../../models/datas/myData/WordUser"
 import { MemberManager } from "../../../../models/managers/member/MemberManager"
+import { DetailCardsViewConfig } from "../../detail/DetailCardsView"
 
 
 @ComponentV2
 export struct DictView {
 
   @Param title: string = ''
+  @Param isShowing: boolean         = false
+  @Event $isShowing: (val: boolean) => void
 
   @Local isShowTip            : boolean         = false
   @Local baseWord             : BaseWord | null = null
@@ -71,10 +76,21 @@ export struct DictView {
 
     Blank().layoutWeight(1)
 
-    // 复制按钮
-    IconButton({icon: $r('app.media.plus'), iconSize: 22, onClickCallBack: ()=> {
-      this.actionCopy()
-    }})
+    if (this.baseWord?.titleEn){
+
+      Row({space: 16}){
+        // 复制按钮
+        IconButton({icon: $r('app.media.plus'), iconSize: 22, onClickCallBack: ()=> {
+          this.actionCopy()
+        }})
+
+        // more按钮
+        IconButton({icon: $r('app.media.morev'), iconSize: 22, onClickCallBack: ()=> {
+          this.actionMore()
+        }})
+
+      }
+    }
 
   }
   .width('100%')
@@ -223,6 +239,20 @@ export struct DictView {
     // 显示复制成功的提示信息
     Toast.showMessage("内容已复制");
 
+    //关闭
+    this.$isShowing(false)
+  }
+
+  actionMore(){
+    /////显示在线查询单字
+    SearchManager.shared.searchWord(this.baseWord?.titleEn || '', (wordUser: WordUser | null)=>{
+      if (wordUser) {
+        DetailCardsViewConfig.open({words: [wordUser], initIndex : 0})
+      }
+    })
+
+    //关闭
+    this.$isShowing(false)
   }
 
   actionPlaySound(){

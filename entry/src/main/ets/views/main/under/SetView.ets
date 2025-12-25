@@ -37,6 +37,8 @@ import { FileSizeUtils } from "../../../common/utils/FileSizeUtils";
 import { UserData, UserDataJson } from "../../../models/managers/userdata/UserData";
 import { UserDataManager } from "../../../models/managers/userdata/UserDataManager";
 import { WordUserDbAccess } from "../../../models/datas/myData/WordUserDbAccess";
+import { PlanManager } from "../../../models/managers/plan/plancurve/PlanManager";
+import { CosDownloader } from "../../../common/components/Sounds/Cloud/Download/Downloader/CosDownloader";
 
 export namespace SetViewConfig {
 
@@ -713,23 +715,7 @@ export struct SetView {
       secondaryButton: {value: $r('app.string.cfm_btn_cancel'), fontColor: Color.Gray, action: () => {}},
       primaryButton: {value: $r('app.string.set_cell_txt_crm_btn_clear_cache'), action: () => {
 
-        // 获取清理前的可用空间 (单位为字节)
-        const before: number = DiskStatus.getAvailableBytesForDataDirectorySync(getContext());
-
-        ///清空缓存的CSounds
-        CSoundManager.shared.removeAllCachedSounds()
-
-
-        //清理缓存的mp3
-        AudioTool.removeTempAudioFiles()
-
-        // 获取清理后的可用空间
-        const after: number = DiskStatus.getAvailableBytesForDataDirectorySync(getContext());
-
-        // 计算释放的空间大小 (确保非负)
-        const freedBytes: number = Math.max(before - after, 0);
-
-        Toast.showMessage($r('app.string.set_msg_clear_done', `${FileSizeUtils.formatBytes(freedBytes)}`))
+        SettingManager.shared.clearCache()
       }}
     })
   }
@@ -854,12 +840,12 @@ export struct SetView {
 
 
     ///刷新当前Plan，不然会有缓存
-    // const currentPlanId = PlanManager.shared.plan?.planId;
-    // if (currentPlanId) {
-    //   PlanManager.getPlanByPlanId(currentPlanId).then((plan)=>{
-    //     PlanManager.shared.plan = plan
-    //   })
-    // }
+    const currentPlanId = PlanManager.shared.plan?.planId;
+    if (currentPlanId) {
+      PlanManager.getPlanByPlanId(currentPlanId).then((plan)=>{
+        PlanManager.shared.plan = plan
+      })
+    }
     //
     // //清空缓存
     // EBookManager.shared.clearCaches()
