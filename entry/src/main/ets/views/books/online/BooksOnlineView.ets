@@ -104,7 +104,7 @@ export struct BooksOnlineView {
   @Builder
   buildRowContent(rowIndex: number, book: Book) {
 
-    Row(){
+    Row({space: 8}){
       Column({space:5}){
         Text(book.bookName)
           .fontSize(22)
@@ -125,6 +125,7 @@ export struct BooksOnlineView {
       }
       .justifyContent(FlexAlign.Start)
       .alignItems(HorizontalAlign.Start)
+      .layoutWeight(1)
 
 
       //right
