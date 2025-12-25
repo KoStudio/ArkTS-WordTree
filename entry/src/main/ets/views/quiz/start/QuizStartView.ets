@@ -13,6 +13,7 @@ import {
   QuestionType,
   QuizManager, QuizType
 } from "../../../models/datas/model/QuizManager";
+import { DailyCountManager, DailyCountType } from "../../../models/managers/member/DailyCountManaer";
 import { MemberManager } from "../../../models/managers/member/MemberManager";
 import { NavTo } from "../../../pages/NavPathManager";
 import { QuizChallengeViewConfig } from "../running/QuizChallengeView";
@@ -471,6 +472,13 @@ export struct QuizStartView {
     if (this.questionMode === QuestionMode.Spell) {
       SpellRunningViewConfig.open()
     }else if(this.questionMode === QuestionMode.Challenge) {
+      ///会员检查
+      if (!MemberManager.shared.checkChallengeDictUsable()) {
+        return
+      }
+      //记录次数
+      DailyCountManager.shared.increase(DailyCountType.challenge)
+
       QuizChallengeViewConfig.open()
     }else{
       QuizRunningViewConfig.open()

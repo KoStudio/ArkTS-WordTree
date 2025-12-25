@@ -33,6 +33,7 @@ import { DetailItemNotification } from "../../../models/managers/detailitem/Deta
 import { Plan } from "../../../models/managers/plan/plancurve/Plan"
 import { DayOf } from "../../../models/managers/plan/plancurve/DayOf"
 import { OnlineSearchWordsViewConfig } from "../../onlinesearch/OnlineSearchWordsView"
+import { DailyCountManager, DailyCountType } from "../../../models/managers/member/DailyCountManaer"
 
 export namespace DetailCardsViewConfig {
 
@@ -282,6 +283,10 @@ export struct DetailCardsView {
               this.actionPlayExampleSound(text)
             },
             onClickedText:(text: string)=>{
+              if (!MemberManager.shared.checkDictShowable(true)) {
+                return
+              }
+
               this.showingDictText = text
               this.isShowDictView = true
             },
@@ -624,6 +629,9 @@ export struct DetailCardsView {
     }
 
     this.playSound(text)
+
+    // 记录当前的 发音次数
+    DailyCountManager.shared.increase(DailyCountType.wordPron)
   }
 
   actionPlayExampleSound(text: string | null){
@@ -634,6 +642,9 @@ export struct DetailCardsView {
     }
 
     this.playSound(text)
+
+    // 记录当前的 发音次数
+    DailyCountManager.shared.increase(DailyCountType.examplePron)
   }
 
   /// [直接]播放 (汉字 or 词语的) 声音

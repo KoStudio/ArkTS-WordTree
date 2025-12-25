@@ -1,5 +1,6 @@
 import { NavBarView } from "../../../../app/views/NavBarView"
-import { DetailItemManager, ItemOrder } from "../../../../models/managers/detailitem/DetailItemManager"
+import { DetailItem, DetailItemManager, ItemOrder } from "../../../../models/managers/detailitem/DetailItemManager"
+import { MemberManager } from "../../../../models/managers/member/MemberManager"
 
 
 @ComponentV2
@@ -134,6 +135,30 @@ export struct DetailItemSortView {
   private changeVisible(index: number, isOn: boolean) {
 
     const item = this.itemOrders[index].item
+
+    if (isOn) {
+      /////词根助记　要开启时
+      if (item === DetailItem.Cigens && !MemberManager.shared.checkCigenUsable()) {
+        setTimeout(() => {
+          DetailItemManager.shared.changeVisible(item, false)
+          this.itemOrders = DetailItemManager.shared.getItemOrders()
+        }, 500)
+        return
+      }
+
+
+      /////同根词　要开启时
+      if (item === DetailItem.SameRootDesc && !MemberManager.shared.checkSameRootUsable()) {
+        setTimeout(() => {
+          DetailItemManager.shared.changeVisible(item, false)
+          this.itemOrders = DetailItemManager.shared.getItemOrders()
+        }, 500)
+        return
+      }
+    }
+
+
+
     DetailItemManager.shared.changeVisible(item, isOn)
     //this.itemOrders[index].isVisible = isOn
     this.itemOrders = DetailItemManager.shared.getItemOrders()

@@ -4,6 +4,7 @@ import { SearchConstants, SearchManager } from "../../../models/datas/model/Sear
 import json from "@ohos.util.json";
 import { getStringF } from "../../../common/utils/ResourceUtils";
 import { IconTintButton } from "../../../app/views/buttons/IconTintButton";
+import { MemberManager } from "../../../models/managers/member/MemberManager";
 
 
 @ComponentV2
@@ -168,6 +169,11 @@ export struct UnitListView {
   handleRowClick(sectionIndex: number, rowIndex: number, unit: Unit){
     //   goto card
     // WordCardsViewConfig.open({words: unit.aliveWords, initIndex: unit.indexOfNextLearnWord})
+
+    if (!MemberManager.shared.checkUnitUsable(unit.unitId)) {
+      return
+    }
+
     this.onClickedRow(sectionIndex, rowIndex, unit)
   }
 }

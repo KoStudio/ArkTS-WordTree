@@ -15,6 +15,7 @@ import { CreatePlanViewConfig } from "./CreatePlanView"
 import { buildNavTitle } from "../../app/constants/AppBuilders"
 import { dNavBackIcon } from "../../app/constants/AppDefines"
 import { NavTo } from "../../pages/NavPathManager"
+import { MemberManager } from "../../models/managers/member/MemberManager"
 
 
 export namespace DayOfsViewConfig {
@@ -320,6 +321,9 @@ export struct DayOfsView {
 
     const dayOf = this.dayOfs[index];
     if (!dayOf) return;
+
+    ///会员检查， 当前Dayof是否可用
+    if(!MemberManager.shared.checkDayOfUsable(dayOf.num ?? 0, true)) { return }
 
     let wordsOfDayOf: number[] = []
 

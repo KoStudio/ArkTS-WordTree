@@ -17,6 +17,7 @@ import { TextAnimator } from "../../../common/components/animation/TextAnimator"
 import { KeyboardAvoidMode } from '@kit.ArkUI';
 import { logEvent } from "../../../common/components/Logger/Logger"
 import { MemberManager } from "../../../models/managers/member/MemberManager"
+import { DailyCountManager, DailyCountType } from "../../../models/managers/member/DailyCountManaer"
 
 
 export namespace SpellRunningViewConfig {
@@ -441,6 +442,9 @@ export struct SpellRunningView {
 
     ///播放声音
     await AudioPlayer.shared.play(text)
+
+    // 记录当前的 发音次数
+    DailyCountManager.shared.increase(DailyCountType.wordPron)
   }
 
   // 自动发音

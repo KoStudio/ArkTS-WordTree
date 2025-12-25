@@ -9,6 +9,7 @@ import { BaseWordDbAccess } from "../../../../models/datas/basedict/BaseWordDbAc
 import { TitleItem } from "../../../../models/datas/basedict/utils/BaseWordUtility"
 import { SearchManager } from "../../../../models/datas/model/SearchManager"
 import { WordUser } from "../../../../models/datas/myData/WordUser"
+import { DailyCountManager, DailyCountType } from "../../../../models/managers/member/DailyCountManaer"
 import { MemberManager } from "../../../../models/managers/member/MemberManager"
 import { DetailCardsViewConfig } from "../../detail/DetailCardsView"
 
@@ -30,6 +31,12 @@ export struct DictView {
     this.isShowTip = this.title.length ===0
 
     this.loadData()
+
+    if (!this.isShowTip) {
+      // 记录当前的 次数
+      DailyCountManager.shared.increase(DailyCountType.dictShow)
+    }
+
   }
 
   build() {
@@ -290,6 +297,8 @@ export struct DictView {
     ///播放声音
     await AudioPlayer.shared.play(text)
 
+    // 记录当前的 发音次数
+    DailyCountManager.shared.increase(DailyCountType.wordPron)
   }
 }
 

@@ -13,6 +13,7 @@ import { getStringF } from "../../../common/utils/ResourceUtils"
 import { Toast } from "../../../common/utils/Toast"
 import { QuestionType, QuizManager } from "../../../models/datas/model/QuizManager"
 import { WordUser } from "../../../models/datas/myData/WordUser"
+import { DailyCountManager, DailyCountType } from "../../../models/managers/member/DailyCountManaer"
 import { MemberManager } from "../../../models/managers/member/MemberManager"
 import { NavPop, NavPopTop, NavTo } from "../../../pages/NavPathManager"
 import { QuizResultViewConfig } from "../result/QuizResultView"
@@ -515,6 +516,9 @@ export struct QuizRunningView {
 
     ///播放声音
     await AudioPlayer.shared.play(text)
+
+    // 记录当前的 发音次数
+    DailyCountManager.shared.increase(DailyCountType.wordPron)
   }
 
   // 自动发音

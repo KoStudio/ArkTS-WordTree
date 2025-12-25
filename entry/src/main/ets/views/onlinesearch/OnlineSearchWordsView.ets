@@ -10,6 +10,8 @@ import { WordUser } from '../../models/datas/myData/WordUser';
 import { NoDataPanel } from '../../app/views/NoDataView';
 import { LoadingDialog } from '@kit.ArkUI';
 import { Toast } from '../../common/utils/Toast';
+import { MemberManager } from '../../models/managers/member/MemberManager';
+import { DailyCountManager, DailyCountType } from '../../models/managers/member/DailyCountManaer';
 
 
 export namespace OnlineSearchWordsViewConfig {
@@ -227,6 +229,13 @@ export struct OnlineSearchWordsView {
       this.errorMessage = '请输入搜索内容';
       return;
     }
+
+    ///会员检查
+    if (!MemberManager.shared.checkOnlineDictUsable()) {
+      return
+    }
+    //记录次数
+    DailyCountManager.shared.increase(DailyCountType.onlineDict)
 
     this.isLoading = true;
     this.errorMessage = '';
