@@ -1,5 +1,6 @@
 import { buildNavTitle } from "../../../app/constants/AppBuilders"
 import { dNavBackIcon } from "../../../app/constants/AppDefines"
+import { ListWordRow } from "../../../app/views/ListWordRow"
 import { WordUser } from "../../../models/datas/myData/WordUser"
 import { NavTo } from "../../../pages/NavPathManager"
 import { WordCardsViewConfig } from "../wordcard/WordCardsView"
@@ -76,50 +77,52 @@ export struct CigenWordsView {
 
   @Builder
   buildRowContent(rowIndex: number, word: WordUser) {
-    Row(){
-      Text(`${rowIndex + 1}`)
-        .fontSize(18)
-        .fontColor($r('app.color.color_list_item_detail'))
-        .margin({right: 10})
+    ListWordRow({no: rowIndex + 1, word: word})
 
-      ///left
-      Column(){
-
-
-        Text(`${word.titleEn}`)
-          .fontSize(18)
-          .fontColor($r('app.color.color_list_item_title'))
-
-        Text(word.titleCn1ClippedShort)
-          .fontSize(15)
-          .fontColor($r('app.color.color_list_item_subtitle'))
-          .margin({left: 5, top: 5})
-
-      }
-      .width('100%')
-      .justifyContent(FlexAlign.Center)
-      .alignItems(HorizontalAlign.Start)
-
-      //right
-      Row({space: 10}){
-        if (word.memo){
-
-          Image($r('app.media.learn_icon_memo'))
-            .width(14)
-            .height(17)
-        }
-
-
-      }
-
-    }
-    .justifyContent(FlexAlign.SpaceBetween)
-    .alignItems(VerticalAlign.Center)
-    .width('100%')
-    .padding(10)
-    .layoutWeight(1)
-    .border({width: {bottom: 1}, color: $r('app.color.color_obscure')})
-    .backgroundColor($r('app.color.color_background'))
+    // Row(){
+    //   Text(`${rowIndex + 1}`)
+    //     .fontSize(18)
+    //     .fontColor($r('app.color.color_list_item_detail'))
+    //     .margin({right: 10})
+    //
+    //   ///left
+    //   Column(){
+    //
+    //
+    //     Text(`${word.titleEn}`)
+    //       .fontSize(18)
+    //       .fontColor($r('app.color.color_list_item_title'))
+    //
+    //     Text(word.titleCn1ClippedShort)
+    //       .fontSize(15)
+    //       .fontColor($r('app.color.color_list_item_subtitle'))
+    //       .margin({left: 5, top: 5})
+    //
+    //   }
+    //   .width('100%')
+    //   .justifyContent(FlexAlign.Center)
+    //   .alignItems(HorizontalAlign.Start)
+    //
+    //   //right
+    //   Row({space: 10}){
+    //     if (word.memo){
+    //
+    //       Image($r('app.media.learn_icon_memo'))
+    //         .width(14)
+    //         .height(17)
+    //     }
+    //
+    //
+    //   }
+    //
+    // }
+    // .justifyContent(FlexAlign.SpaceBetween)
+    // .alignItems(VerticalAlign.Center)
+    // .width('100%')
+    // .padding(10)
+    // .layoutWeight(1)
+    // .border({width: {bottom: 1}, color: $r('app.color.color_obscure')})
+    // .backgroundColor($r('app.color.color_background'))
   }
 
   handleRowClick(rowIndex: number){

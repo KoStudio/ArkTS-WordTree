@@ -10,6 +10,7 @@ import { WordUserDbAccess } from '../../datas/myData/WordUserDbAccess';
 import { Toast } from '../../../common/utils/Toast';
 import { FileSizeUtils } from '../../../common/utils/FileSizeUtils';
 import { getStringF } from '../../../common/utils/ResourceUtils';
+import { SearchManager } from '../../datas/model/SearchManager';
 
 // ============================================================
 // MARK: - Pref - 设置键常量
@@ -204,6 +205,9 @@ export class SettingManager {
 
     ///清空Online
     WordUserDbAccess.shared.resetWordTables()
+
+    ///重新加载数据
+    SearchManager.shared.refreshData()
 
     // 获取清理后的可用空间
     const after: number = DiskStatus.getAvailableBytesForDataDirectorySync(getContext());

@@ -431,7 +431,7 @@ export struct SetView {
 
   @Builder
   buildIcon(param: SetItemOption){
-    TintImage({src: param.icon, colorStr: param.iconColor ?? "#474B7E", isSvg: param.isSvg})
+    TintImage({src: param.icon, colorStr: param.iconColor ?? "#cccccc", isSvg: param.isSvg})//474B7E
       .width(22)
       .height(22)
   }
@@ -657,7 +657,7 @@ export struct SetView {
         this.memberExpiryDate       = getStringF($r('app.string.member_txt_will_expire'), MemberManager.shared.expireDateString);
         this.memberExpiryDateColor  = $r('app.color.color_detail')
 
-        this.memberIcon             = $r('app.media.sdiamonded')
+        this.memberIcon             = $r('app.media.set_icon_crown')//sdiamonded
         this.memberIconColor        = '#FFD700' //gold color
 
       } else {
@@ -666,7 +666,7 @@ export struct SetView {
         this.memberExpiryDate       = getStringF($r('app.string.member_txt_was_expired'), MemberManager.shared.expireDateString);
         this.memberExpiryDateColor  = $r('app.color.colorAccent')
 
-        this.memberIcon             = $r('app.media.sdiamonded')
+        this.memberIcon             = $r('app.media.set_icon_crown')//
         this.memberIconColor        = undefined//green color '#ff1450' //red color
       }
     } else {
@@ -676,7 +676,7 @@ export struct SetView {
       //未购买过会员
       this.memberExpiryDate         = undefined
       this.memberExpiryDateColor    = $r('app.color.color_detail')
-      this.memberIcon               = $r('app.media.sdiamond')
+      this.memberIcon               = $r('app.media.set_icon_crown')//sdiamond
       this.memberIconColor          = undefined //green color
     }
 
