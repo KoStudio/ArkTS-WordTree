@@ -316,14 +316,22 @@ export class SearchManager {
     const recorder = new SpeechRecordManager()
     const result: WordUser[] = []
 
-    recorder.getAllSounds()
+    // 先获取所有录音记录
+    const allSounds = await recorder.getAllSounds()
+    if (!allSounds || allSounds.length === 0) {
+      return result
+    }
 
-    for (const word of this.getAliveWords()) {
-      const titleEn = word.titleEn
-      if (!titleEn) continue
-
-      if (await recorder.isExistsSound(titleEn)) {
-        result.push(word)
+    // 只遍历录音记录，查找对应的单词
+    for (const sound of allSounds) {
+      if (sound.name) {
+        // 在活跃单词中查找对应单词
+        for (const word of this.getAliveWords()) {
+          if (word.titleEn === sound.name) {
+            result.push(word)
+            break // 找到后跳出内层循环
+          }
+        }
       }
     }
 
