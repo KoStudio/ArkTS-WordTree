@@ -117,9 +117,9 @@ export struct BooksOnlineView {
 
 
 
-        Text(getStringF($r('app.string.books_txt_info_golds'), book.golds || 0))
-          .fontSize(15)
-          .fontColor($r('app.color.color_gold'))
+        // Text(getStringF($r('app.string.books_txt_info_golds'), book.golds || 0))
+        //   .fontSize(15)
+        //   .fontColor($r('app.color.color_gold'))
 
 
       }
