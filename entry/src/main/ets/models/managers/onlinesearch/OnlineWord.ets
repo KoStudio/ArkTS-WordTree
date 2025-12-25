@@ -116,6 +116,8 @@ export class OnlineWord {
     word.pronEn     = this.pronEn
     word.pronUs     = this.pronUs
     word.titleCn1   = this.titleCn1
+    word.titleCn2   = this.titleCn2;
+    word.titleCn3   = this.titleCn3;
     word.exampleEn1 = this.exampleEn1
     word.exampleCn1 = this.exampleCn1
 

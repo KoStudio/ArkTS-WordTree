@@ -286,7 +286,7 @@ export class WordUserDbAccess {
       word.unitId,
       StringEncoder.encodeAndAddSalt(word.unitName),
       word.unitNo,
-      word.titleEnEncodeToBase64, // 加密 + 加盐（与 Word 表统一）
+      word.titleEnEncodeAndAddSalt, // 加密 + 加盐（与 Word 表统一）
       StringEncoder.encodeAndAddSalt(word.pronEn),
       StringEncoder.encodeAndAddSalt(word.pronUs),
       StringEncoder.encodeAndAddSalt(word.titleCn1),
@@ -559,6 +559,11 @@ export class WordUserDbAccess {
       word.titleCn1 = ResultSetTool.decodeString(rs, WordTable.Col.TITLECN1);
       word.exampleEn1 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLEEN1);
       word.exampleCn1 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLECN1);
+
+      if (!word.unitName) {
+        word.unitName = `Unit${word.unitId}`
+      }
+
     } catch (error) {
       DebugLog.e(`WordDbAccess: 创建Word对象失败 - ${error}`);
     }
@@ -595,6 +600,11 @@ export class WordUserDbAccess {
       wordDetail.usedPhrase = ResultSetTool.decodeString(rs, WordTable.Col.USEDPHRASE);
       wordDetail.en2En      = ResultSetTool.decodeString(rs, WordTable.Col.EN2EN);
       wordDetail.discriminate = ResultSetTool.decodeString(rs, WordTable.Col.DISCRIMINATE);
+
+      if (!wordDetail.unitName) {
+        wordDetail.unitName = `Unit${wordDetail.unitId}`
+      }
+
     } catch (error) {
       DebugLog.e(`WordDbAccess: 创建WordDetail对象失败 - ${error}`);
     }

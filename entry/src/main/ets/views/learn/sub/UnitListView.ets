@@ -109,17 +109,24 @@ export struct UnitListView {
       Column(){
 
         Row(){
-          Text(getStringF($r('app.string.str_unit_no'), unit.unitId)) //`Lesson${unit.unitNo}`
+
+          Text(unit.unitName)
             .fontSize(16)
-            .fontColor($r('app.color.color_list_item_subtitle'))
-
-          if (unit.unitName){
-            Text(unit.unitName)
-              .fontSize(16)
-              .fontColor($r('app.color.color_text'))
-              .margin({left: 5})
-
-          }
+            .fontColor($r('app.color.color_text'))
+            .margin({left: 5})
+          //
+          // // Text(getStringF($r('app.string.str_unit_no'), unit.unitId)) //`Lesson${unit.unitNo}`
+          // Text(getStringF($r('app.string.str_unit_no'), unit.unitId)) //`Lesson${unit.unitNo}`
+          //   .fontSize(16)
+          //   .fontColor($r('app.color.color_list_item_subtitle'))
+          //
+          // if (unit.unitName){
+          //   Text(unit.unitName)
+          //     .fontSize(16)
+          //     .fontColor($r('app.color.color_text'))
+          //     .margin({left: 5})
+          //
+          // }
         }
         .width('100%')
         .justifyContent(FlexAlign.Start)

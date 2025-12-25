@@ -45,11 +45,13 @@ export struct DeletedWordsView {
       Stack(){
 
         //通用 背景
-        BgImage()
+        //BgImage()
 
         //构建列表
         this.buildList()
       }
+      .backgroundColor($r('app.color.color_background'))
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       .onAppear(() => {
         this.loadData()
       })

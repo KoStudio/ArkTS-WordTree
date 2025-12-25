@@ -119,6 +119,8 @@ export class SearchManager {
         existed.unitName       = w.unitName;
         existed.titleEn        = w.titleEn;
         existed.titleCn1       = w.titleCn1;
+        existed.titleCn2       = w.titleCn2;
+        existed.titleCn3       = w.titleCn3;
 
         existed.pronEn         = w.pronEn;
         existed.pronUs         = w.pronUs;
@@ -138,7 +140,8 @@ export class SearchManager {
       newWord.unitName         = w.unitName;
       newWord.titleEn          = w.titleEn;
       newWord.titleCn1         = w.titleCn1;
-
+      newWord.titleCn2         = w.titleCn2;
+      newWord.titleCn3         = w.titleCn3;
       newWord.pronEn           = w.pronEn;
       newWord.pronUs           = w.pronUs;
       newWord.exampleEn1       = w.exampleEn1;
@@ -870,7 +873,7 @@ export class SearchManager {
 
           // 构建分类和单元的数据结构
           this.preparePartsAndUnits();
-          this.parts.push()
+
 
 
         } else {

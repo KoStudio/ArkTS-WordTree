@@ -15,8 +15,8 @@ export class WordDetail extends Word {
   // pronEn           : string | null = null;
   // pronUs           : string | null = null;
 
-  titleCn2         : string | null = null;
-  titleCn3         : string | null = null;
+  // titleCn2         : string | null = null;
+  // titleCn3         : string | null = null;
   wordImage        : string | null = null;
   wordChange       : string | null = null;
   synWords         : string | null = null;
@@ -39,28 +39,28 @@ export class WordDetail extends Word {
   override async getWordDetail(): Promise<WordDetail | null> {
     return this
   }
-
-  /**
-   * 将多个中文释义合并为一个字符串（去重）
-   */
-  getTitleCnsJoined(): string {
-    const titles: string[] = [];
-
-    if (this.titleCn1) {
-      titles.push(this.titleCn1);
-    }
-    if (this.titleCn2) {
-      titles.push(this.titleCn2);
-    }
-    if (this.titleCn3) {
-      titles.push(this.titleCn3);
-    }
-
-    return AppUtility.getJoinedStringByRemovingDuplications(
-      titles,
-      Constants.TitleTextJp.wordsMaxPart
-    );
-  }
+  //
+  // /**
+  //  * 将多个中文释义合并为一个字符串（去重）
+  //  */
+  // getTitleCnsJoined(): string {
+  //   const titles: string[] = [];
+  //
+  //   if (this.titleCn1) {
+  //     titles.push(this.titleCn1);
+  //   }
+  //   if (this.titleCn2) {
+  //     titles.push(this.titleCn2);
+  //   }
+  //   if (this.titleCn3) {
+  //     titles.push(this.titleCn3);
+  //   }
+  //
+  //   return AppUtility.getJoinedStringByRemovingDuplications(
+  //     titles,
+  //     Constants.TitleTextJp.wordsMaxPart
+  //   );
+  // }
 
   /**
    * 从词形变化中提取英文单词

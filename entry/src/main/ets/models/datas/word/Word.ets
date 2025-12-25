@@ -1,3 +1,4 @@
+import { Constants } from "../../../app/constants/Constants";
 import { AppUtility } from "../../../common/utils/AppUtility";
 import { StringEncoder } from "../../../common/utils/strings/StringEncrypt";
 import { SearchManager } from "../model/SearchManager";
@@ -14,6 +15,9 @@ export class Word {
 
   titleEn         : string | null = null;
   titleCn1        : string | null = null;
+  titleCn2        : string | null = null;
+  titleCn3        : string | null = null;
+
   pronEn          : string | null = null;
   pronUs          : string | null = null;
   exampleEn1      : string | null = null;
@@ -67,5 +71,27 @@ export class Word {
 
   get titleCn1Kind(): string {
     return AppUtility.getKindOfString(this.titleCn1 || '')
+  }
+
+  /**
+   * 将多个中文释义合并为一个字符串（去重）
+   */
+  getTitleCnsJoined(): string {
+    const titles: string[] = [];
+
+    if (this.titleCn1) {
+      titles.push(this.titleCn1);
+    }
+    if (this.titleCn2) {
+      titles.push(this.titleCn2);
+    }
+    if (this.titleCn3) {
+      titles.push(this.titleCn3);
+    }
+
+    return AppUtility.getJoinedStringByRemovingDuplications(
+      titles,
+      Constants.TitleTextJp.wordsMaxPart
+    );
   }
 }

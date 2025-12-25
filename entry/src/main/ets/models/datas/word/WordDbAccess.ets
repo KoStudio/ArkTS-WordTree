@@ -203,6 +203,11 @@ export class WordDbAccess implements DBPrepareProtocol {
       word.titleCn1 = ResultSetTool.decodeString(rs, WordTable.Col.TITLECN1);
       word.exampleEn1 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLEEN1);
       word.exampleCn1 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLECN1);
+
+      if (!word.unitName) {
+        word.unitName = `Unit${word.unitId}`
+      }
+
     } catch (error) {
       DebugLog.e(`WordDbAccess: 创建Word对象失败 - ${error}`);
     }
@@ -239,6 +244,11 @@ export class WordDbAccess implements DBPrepareProtocol {
       wordDetail.usedPhrase = ResultSetTool.decodeString(rs, WordTable.Col.USEDPHRASE);
       wordDetail.en2En      = ResultSetTool.decodeString(rs, WordTable.Col.EN2EN);
       wordDetail.discriminate = ResultSetTool.decodeString(rs, WordTable.Col.DISCRIMINATE);
+
+      if (!wordDetail.unitName) {
+        wordDetail.unitName = `Unit${wordDetail.unitId}`
+      }
+
     } catch (error) {
       DebugLog.e(`WordDbAccess: 创建WordDetail对象失败 - ${error}`);
     }

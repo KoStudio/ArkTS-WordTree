@@ -35,6 +35,7 @@ export struct HighlightText {
   @Param content: string = '';          // 原始文本内容
   @Param keyword: string = '';          // 需要高亮的关键词
   @Param highlightColor: ResourceColor = Color.Red; // 高亮颜色（默认红色）
+  @Param normalColor: ResourceColor = Color.Black //普通文本
 
   // ---------- 样式配置参数 ----------
   @Param textStyle: TextStyleConfig = {  // 文本基础样式
@@ -104,7 +105,7 @@ export struct HighlightText {
     Text() {
       ForEach(this.getHighlightParts(), (item: TextSegment) => {
         Span(item.text)
-          .fontColor(item.isHighlight ? this.highlightColor : Color.Black)           // 高亮颜色切换
+          .fontColor(item.isHighlight ? this.highlightColor : this.normalColor)           // 高亮颜色切换
 
       })
 

@@ -1,14 +1,13 @@
 import { buildNavTitle } from '../../app/constants/AppBuilders';
 import { dNavBackIcon } from '../../app/constants/AppDefines';
-import { AppTextInput } from '../../app/views/AppTextInput';
 import { HighlightText } from '../../app/views/HighlightText';
-import { WordUser } from '../../models/datas/myData/WordUser';
 import { OnlineWord } from '../../models/managers/onlinesearch/OnlineWord';
 import { OnlineWordManager } from '../../models/managers/onlinesearch/OnlineWordManager';
 import { DetailCardsViewConfig } from '../card/detail/DetailCardsView';
-import { SearchModifier } from '@kit.ArkUI';
 import { SearchManager } from '../../models/datas/model/SearchManager';
 import { NavTo } from '../../pages/NavPathManager';
+import { WordUser } from '../../models/datas/myData/WordUser';
+import { NoDataPanel } from '../../app/views/NoDataView';
 
 
 export namespace OnlineSearchWordsViewConfig {
@@ -39,15 +38,26 @@ export struct OnlineSearchWordsView {
 
   aboutToAppear(): void {
     // 页面显示时的初始化
+    setTimeout(()=> {
+      this.getUIContext().getFocusController().requestFocus("searchText")
+    }, 1000)
+
   }
 
 
   build() {
     NavDestination(){
-      Stack(){
+      Column(){
         this.SearchPanel()
-        this.buildList()
+        if (this.searchResults.length > 0 ){
+          this.buildList()
+        }else{
+          NoDataPanel({message: $r('app.string.online_search_input_tip')})
+        }
+
       }
+      .backgroundColor($r('app.color.color_background'))
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
 
     }
     .title(buildNavTitle(this.getNavTitle())) // 设置导航栏标题
@@ -69,6 +79,7 @@ export struct OnlineSearchWordsView {
         .layoutWeight(1)
         .enterKeyType(EnterKeyType.Search)
         .enableHapticFeedback(true)
+        .id('searchText')
         //.enableKeyboardOnFocus(true)
         //.enablePreviewText(true)
         .onBlur(()=>{
@@ -165,7 +176,16 @@ export struct OnlineSearchWordsView {
           .fontColor($r('app.color.color_text'))
 
 
-        Text(word.wordJpClippedString)
+        // HighlightText({
+        //   content: word.getTitleCnsJoined(),
+        //   keyword: this.searchText,
+        //   normalColor: $r('app.color.color_detail'),
+        //   textStyle: {
+        //     fontSize: 15,
+        //   },
+        //
+        // })
+        Text(word.getTitleCnsJoined())
           .fontSize(15)
           .fontColor($r('app.color.color_detail'))
           .margin({left: 15, top: 5})
@@ -175,20 +195,7 @@ export struct OnlineSearchWordsView {
       .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Start)
 
-      //right
-      Row({space: 10}){
-        if (word.memo){
-          //memo icon
-          //TintImage({src: $r('app.media.learn_icon_memo'), iconSize: 20, colorStr:"#888888"})
-          Image($r('app.media.learn_icon_memo'))
-            .width(14)
-            .height(17)
-        }
 
-        //录音icon
-        //TintImage({src: $r('app.media.learn_icon_voice')})
-
-      }
 
     }
     .justifyContent(FlexAlign.SpaceBetween)
