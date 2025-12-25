@@ -13,6 +13,8 @@ import { OnlineWord } from "../../managers/onlinesearch/OnlineWord";
 import { Word } from "../word/Word";
 import call from "@ohos.telephony.call";
 import { Toast } from "../../../common/utils/Toast";
+import { SpeechRecordManager } from "../../../common/components/Speech/Recorder/SpeechRecordManager";
+import { getAppContext } from "../../../app/constants/AppContext";
 
 // MARK: - 常量定义（类似Swift的static let或Kotlin的const val）
 export class SearchConstants {
@@ -300,6 +302,32 @@ export class SearchManager {
    */
   getDeletedWords(): WordUser[] {
     return this.allWords.filter(word => word.deleted);
+  }
+
+
+  ///获取 有笔记的单词
+  getWordsWithMemos(): WordUser[] {
+    return this.getAliveWords().filter(word => !!word.memo || (word.shareMemos?.length ?? 0) > 0
+    )
+  }
+
+  ///获取 有录音的单词
+  async getWordsWithRecord(): Promise<WordUser[]> {
+    const recorder = new SpeechRecordManager()
+    const result: WordUser[] = []
+
+    recorder.getAllSounds()
+
+    for (const word of this.getAliveWords()) {
+      const titleEn = word.titleEn
+      if (!titleEn) continue
+
+      if (await recorder.isExistsSound(titleEn)) {
+        result.push(word)
+      }
+    }
+
+    return result
   }
 
   /**

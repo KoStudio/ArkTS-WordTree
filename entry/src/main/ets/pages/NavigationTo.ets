@@ -33,6 +33,8 @@ import { DayOfsView, DayOfsViewConfig } from '../views/plan/DayOfsView';
 import { DayOfWordsView, DayOfWordsViewConfig } from '../views/plan/DayOfWordsView';
 import { PlanDetailView, PlanDetailViewConfig } from '../views/plan/PlanDetailView';
 import { OnlineSearchWordsView, OnlineSearchWordsViewConfig } from '../views/onlinesearch/OnlineSearchWordsView';
+import { MyMemosView, MyMemosViewConfig } from '../views/setting/mine/MyMemosView';
+import { MyRecordsView, MyRecordsViewConfig } from '../views/setting/mine/MyRecordsView';
 
 
 @Builder
@@ -70,6 +72,8 @@ export function navigationTo<T>(name: string, param: T){
   }else if (name === ReclaimViewConfig.NavKey)            { ReclaimView()
   }else if (name === LogOffViewConfig.NavKey)             { LogOffView()
   }else if (name === SetViewConfig.NavKey)                { SetView()
+  }else if (name === MyMemosViewConfig.NavKey)            { MyMemosView()
+  }else if (name === MyRecordsViewConfig.NavKey)          { MyRecordsView()
   }else if (name === AboutViewConfig.NavKey)              { AboutView()
   }else if (name === OnlineSearchWordsViewConfig.NavKey)  { OnlineSearchWordsView()
   }else{ NavDestination(){Text(`<Index.ets>未配置navigationTo: ${name}`)}

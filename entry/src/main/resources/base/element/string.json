@@ -643,6 +643,15 @@
     {"name": "encourage_btn_txt_yes"                        , "value": "现在观看"},
     {"name": "encourage_btn_txt_no"                         , "value": "以后再说"},
 
+    {"name": "set_more_txt_mine_memo"                       , "value": "我的笔记"               },
+    {"name": "set_more_txt_mine_record"                     , "value": "我的录音"               },
+    {"name": "set_more_txt_mine_deletes"                    , "value": "我删除的单词"           },
+
+    {"name": "set_more_txt_update_now"                      , "value": "立即更新已下载词汇"     },
+    {"name": "set_more_txt_update_auto"                     , "value": "Wifi下自动更新词汇"     },
+    {"name": "set_more_msg_update_started"                  , "value": "正在检查词汇更新.."     },
+    {"name": "set_more_msg_update_finished"                 , "value": "词汇更新完成。"         }
+  ,
     {"name": "set_txt_word_deleted"                         , "value": "查看已删除单词"},
     {"name": "nav_title_deleted_word"                       , "value": "已删除单词"},
     {"name": "word_delete_msg_recover_confirm"              , "value": "确定要恢复所有已删除的单词吗？"},

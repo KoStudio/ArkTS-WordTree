@@ -1,31 +1,29 @@
-import { buildNavTitle } from "../../app/constants/AppBuilders";
-import { dNavBackIcon } from "../../app/constants/AppDefines";
-import { SearchManager } from "../../models/datas/model/SearchManager";
-import { NavTo } from "../../pages/NavPathManager";
-import { BgImage } from "../../app/views/BgImage";
-import { WordUser } from "../../models/datas/myData/WordUser";
-import { getString } from "../../common/utils/ResourceUtils";
-import { WordCardsViewConfig } from "../card/wordcard/WordCardsView";
-import { buildStandardMenu } from "../../app/constants/AppFunctions";
-import { Toast } from "../../common/utils/Toast";
-import { NoDataPanel } from "../../app/views/NoDataView";
+import { buildNavTitle } from "../../../app/constants/AppBuilders"
+import { dNavBackIcon } from "../../../app/constants/AppDefines"
+import { buildStandardMenu } from "../../../app/constants/AppFunctions"
+import { NoDataPanel } from "../../../app/views/NoDataView"
+import { getString } from "../../../common/utils/ResourceUtils"
+import { SearchManager } from "../../../models/datas/model/SearchManager"
+import { WordUser } from "../../../models/datas/myData/WordUser"
+import { NavTo } from "../../../pages/NavPathManager"
+import { WordCardsViewConfig } from "../../card/wordcard/WordCardsView"
 
 
-export namespace DeletedWordsViewConfig {
+export namespace MyRecordsViewConfig {
 
   ///导航key
-  export const NavKey = "DeletedWordsView_show"
+  export const NavKey = "MyRecordsView_show"
 
   ///打开方式
   export function open(){
-    NavTo(DeletedWordsViewConfig.NavKey, undefined, true)
+    NavTo(MyRecordsViewConfig.NavKey, undefined, true)
   }
 
 
 }
 
 @ComponentV2
-export struct DeletedWordsView {
+export struct MyRecordsView {
 
 
 
@@ -38,12 +36,15 @@ export struct DeletedWordsView {
 
   // 更新全局数据
   private async loadData() {
-    this.words = SearchManager.shared.getDeletedWords()
+    this.words = await SearchManager.shared.getWordsWithRecord()
   }
 
   build() {
     NavDestination(){
       Stack(){
+
+        //通用 背景
+        //BgImage()
 
         if (this.words.length > 0){
           //构建列表
@@ -51,6 +52,7 @@ export struct DeletedWordsView {
         }else{
           NoDataPanel()
         }
+
       }
       .backgroundColor($r('app.color.color_background'))
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
@@ -70,18 +72,11 @@ export struct DeletedWordsView {
 
 
   buildMenuItems(): NavigationMenuItem[] {
-    return [
-      {value: $r('app.string.word_delete_btn_recover') , icon: undefined, action: () => {
-        //恢复已经删除的单词
-        this.confirmDeletedWords()
-
-      }
-      }
-    ]
+    return [ ]
   }
 
   getNavTitle(): ResourceStr {
-    return getString($r('app.string.nav_title_deleted_word'))
+    return getString($r('app.string.nav_title_mine_record'))
   }
 
   @Builder buildList(){
@@ -156,7 +151,7 @@ export struct DeletedWordsView {
     .layoutWeight(1)
     .padding(16)
     .backgroundColor($r('app.color.color_clear'))
-    .border({width: {bottom: 1}, style: BorderStyle.Dashed, color: $r('app.color.color_obscure')})
+   .border({width: {bottom: 1}, style: BorderStyle.Dashed, color: $r('app.color.color_obscure')})
   }
 
   handleRowClick(rowIndex: number){
@@ -164,14 +159,5 @@ export struct DeletedWordsView {
     WordCardsViewConfig.open({words: this.words, initIndex: rowIndex})
   }
 
-  ///测试结果删除
-  confirmDeletedWords(){
-    Toast.showConfirm({ msg:$r('app.string.word_delete_msg_recover_confirm'), yesAction: async ()=>{
-      await SearchManager.shared.deleteDeletedWords()
-      Toast.showMessage($r('app.string.word_delete_msg_recover_success'))
-      this.loadData()
-    }
-    })
-  }
 }
 

@@ -39,6 +39,9 @@ import { UserDataManager } from "../../../models/managers/userdata/UserDataManag
 import { WordUserDbAccess } from "../../../models/datas/myData/WordUserDbAccess";
 import { PlanManager } from "../../../models/managers/plan/plancurve/PlanManager";
 import { CosDownloader } from "../../../common/components/Sounds/Cloud/Download/Downloader/CosDownloader";
+import { MyMemosViewConfig } from "../../setting/mine/MyMemosView";
+import { MyRecordsViewConfig } from "../../setting/mine/MyRecordsView";
+import { BookManager } from "../../../models/datas/book/BookManager";
 
 export namespace SetViewConfig {
 
@@ -232,8 +235,39 @@ export struct SetView {
           this.confirmDeletedWords()
         }})
 
-        // 查看已删除单词
-        this.buildListItem({icon: $r('app.media.set_icon_del_review'), title: $r('app.string.set_txt_word_deleted'), onClicked: ()=>{
+
+
+      }
+      .divider({strokeWidth: 1})
+
+
+      ListItemGroup({space: 0, style: ListItemGroupStyle.NONE}){
+        // 立即更新
+        this.buildListItem({icon: $r('app.media.set_icon_do_download'), title: $r('app.string.set_more_txt_update_now'), onClicked: ()=>{
+           this.actionDoUpdateBooks()
+        }})
+
+        // Wifi下自动更新
+        this.buildListItem({icon: $r('app.media.set_icon_wifi_update'), title: $r('app.string.set_more_txt_update_auto'), builderType: CustomBuilderType.wifiAutoUpdateSwitch})
+
+
+      }
+      .divider({strokeWidth: 1})
+
+
+      ListItemGroup({space: 0, style: ListItemGroupStyle.NONE}){
+        // 我的笔记
+        this.buildListItem({icon: $r('app.media.set_icon_del_review'), title: $r('app.string.set_more_txt_mine_memo'), onClicked: ()=>{
+          MyMemosViewConfig.open()
+        }})
+
+        // 我的录音
+        this.buildListItem({icon: $r('app.media.set_icon_record'), title: $r('app.string.set_more_txt_mine_record'), onClicked: ()=>{
+          MyRecordsViewConfig.open()
+        }})
+
+        // 我的删除的单词
+        this.buildListItem({icon: $r('app.media.set_icon_deleted'), title: $r('app.string.set_txt_word_deleted'), onClicked: ()=>{
           DeletedWordsViewConfig.open()
         }})
 
@@ -261,6 +295,7 @@ export struct SetView {
 
       }
       .divider({strokeWidth: 1})
+
 
       ListItemGroup({space: 0, style: ListItemGroupStyle.NONE}){
 
@@ -498,7 +533,13 @@ export struct SetView {
         .onChange(async (isOn: boolean)=>{
           SettingManager.shared.enableCurve    = isOn
         })
-
+    }else if (type === CustomBuilderType.wifiAutoUpdateSwitch){
+      ///Wifi下自动更新
+      Toggle({type: ToggleType.Switch, isOn: SettingManager.shared.enableCurve })
+        .selectedColor($r('app.color.color_switch_tint'))
+        .onChange(async (isOn: boolean)=>{
+          SettingManager.shared.autoUpdate    = isOn
+        })
     }
   }
 
@@ -817,6 +858,20 @@ export struct SetView {
 
   }
 
+  actionDoUpdateBooks(){
+
+    const book = BookManager.shared.currentBook
+    const name = book?.textDb
+    if (name) {
+      Toast.showMessage($r('app.string.set_more_msg_update_started'))
+      CBookManager.shared.startUpdateBookCheckIfNeeds(name,null, true,undefined, (succeed: boolean, msg: string | null) => {
+        Toast.showMessage($r('app.string.set_more_msg_update_finished'))
+      })
+    }
+
+
+  }
+
   @Builder
   buildLoadingDialog(msg?: ResourceStr | null): void {
     LoadingDialog({
@@ -914,4 +969,5 @@ enum CustomBuilderType {
   remindSwitch,
   seSwitch,
   curveSwitch,
+  wifiAutoUpdateSwitch,
 }
