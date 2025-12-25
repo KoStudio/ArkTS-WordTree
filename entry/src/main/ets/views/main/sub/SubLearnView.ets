@@ -1,5 +1,6 @@
 import { IconTintButton } from "../../../app/views/buttons/IconTintButton"
 import { TextButton } from "../../../app/views/buttons/TextButton"
+import { SimpleEventBus } from "../../../common/components/eventbus/SimpleEventBus"
 import { DateUtils } from "../../../common/utils/DateUtils"
 import { getStringF } from "../../../common/utils/ResourceUtils"
 import { Book } from "../../../models/datas/book/Book"
@@ -7,7 +8,7 @@ import { BookManager } from "../../../models/datas/book/BookManager"
 import { SearchManager } from "../../../models/datas/model/SearchManager"
 import { DayOf } from "../../../models/managers/plan/plancurve/DayOf"
 import { Plan } from "../../../models/managers/plan/plancurve/Plan"
-import { PlanManager } from "../../../models/managers/plan/plancurve/PlanManager"
+import { PlanManager, PlanManagerNotification } from "../../../models/managers/plan/plancurve/PlanManager"
 import { SettingManager } from "../../../models/managers/setting/SettingManager"
 import { BookListViewConfig } from "../../books/BookListView"
 import { UnitsViewConfig } from "../../learn/UnitsView"
@@ -48,6 +49,17 @@ export struct SubLearnView {
       this.loadData()
     }
 
+    ///监听plan变化，有可能在DayOfWords页面修改过每日学习个数
+    SimpleEventBus.on<number>(PlanManagerNotification.namePlanUpdated, async (planId)=>{
+      /// plan的设置有变化，这里需要更新UI
+      await this.loadPlanData()
+    })
+
+  }
+
+  aboutToDisappear(): void {
+    ///取消监听
+    SimpleEventBus.off(PlanManagerNotification.namePlanUpdated)
   }
 
   @Monitor('isShowing')

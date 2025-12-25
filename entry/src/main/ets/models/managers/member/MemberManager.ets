@@ -247,7 +247,7 @@ export class MemberManager {
 
     if (this.maxFreeBooksCount <= booksCnt) {
       if (showMessage) {
-        Toast.showMessage($r('app.string.member_manager_msg_limit_use_all_books'))
+        Toast.showMessage($r('app.string.member_manager_msg_limit_download_books'))
       }
       return false
     }

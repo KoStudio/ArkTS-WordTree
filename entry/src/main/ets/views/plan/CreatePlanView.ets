@@ -61,7 +61,7 @@ export struct CreatePlanView {
 
   @Local wordIds       : number[]           = []       // 单词ID数组
   @Local planName      : string             = ''        // 计划名称
-  @Local countPerDay   : number             = 5         // 每天学习数量
+  @Local countPerDay   : number             = 40         // 每天学习数量
   @Local days          : number             = 0
 
   @Local startDate        : ResourceStr        = ''        // 开始于：2025-10-16

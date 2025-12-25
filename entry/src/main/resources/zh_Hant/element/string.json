@@ -592,7 +592,7 @@
 
     {"name": "set_cell_txt_clear_cache"                     , "value": "清空緩存"                   },
     {"name": "set_cell_txt_crm_btn_clear_cache"             , "value": "清空本機緩存"               },
-    {"name": "set_msg_clear_done"                           , "value": "清空完成[%s]"               },
+    {"name": "set_msg_clear_done"                           , "value": "清空完成"               },
 
     {"name": "set_msg_learn"                                , "value": "確定要刪除所有學習履歷嗎？"},
     {"name": "set_msg_test"                                 , "value": "確定要刪除所有測試結果嗎？"},
@@ -643,6 +643,15 @@
     {"name": "encourage_btn_txt_yes"                        , "value": "現在觀看"},
     {"name": "encourage_btn_txt_no"                         , "value": "以後再說"},
 
+    {"name": "set_more_txt_mine_memo"                       , "value": "我的筆記"               },
+    {"name": "set_more_txt_mine_record"                     , "value": "我的錄音"               },
+    {"name": "set_more_txt_mine_deletes"                    , "value": "我刪除的單詞"           },
+
+    {"name": "set_more_txt_update_now"                      , "value": "立即更新已下載詞彙"     },
+    {"name": "set_more_txt_update_auto"                     , "value": "Wifi下自動更新詞彙"     },
+    {"name": "set_more_msg_update_started"                  , "value": "正在檢查詞彙更新.."     },
+    {"name": "set_more_msg_update_finished"                 , "value": "詞彙更新完成。"         }
+  ,
     {"name": "set_txt_word_deleted"                         , "value": "查看已刪除單詞"},
     {"name": "nav_title_deleted_word"                       , "value": "已刪除單詞"},
     {"name": "word_delete_msg_recover_confirm"              , "value": "確定要恢復所有已刪除的單詞嗎？"},
