@@ -2,6 +2,7 @@ import { DebugFlg } from '../../../app/debug/DebugFlg';
 import { DebugLog } from '../../../app/debug/DebugLog';
 import { SubscribeManager } from '../../../common/iab/SubscribeManager';
 import { DateUtils } from '../../../common/utils/DateUtils';
+import { getStringF } from '../../../common/utils/ResourceUtils';
 import { Toast } from '../../../common/utils/Toast';
 import { BookManager } from '../../datas/book/BookManager';
 import { DailyCountManager, DailyCountType } from './DailyCountManaer';
@@ -13,7 +14,7 @@ class NonMemberDefaultLimits {
   static readonly wordPronCountDaily       : number = 20   // 每日 发音50次 （单词, 字典）
   static readonly examplePronCountDaily    : number = 10   // 每日 发音10次 （例句）
   static readonly dictShowCountDaily       : number = 5    // 每日 内置词典显示 10次
-  static readonly freeBookscount           : number = 1   // 免费Books 1个
+  static readonly freeBookscount           : number = 2   // 免费Books 2个
   static readonly freeUnitsCount           : number = 100  // 免费单元个数 （通常一个Book是40个单元，这里默认是100个单元，表示不限制)
   static readonly freePlanDayOfsCount      : number = 5    // 记忆曲线免费天数
   static readonly onlineDictUseCountDaily  : number = 100  // 每日 在线字曲　使用 100次
@@ -190,7 +191,7 @@ export class MemberManager {
     /// 剩余 单词发音次数
     if (this.remainWordPronCount() === 0) {
       if (showMessage) {
-        Toast.showMessage($r('app.string.member_manager_msg_limit_word_pron'))
+        Toast.showMessage(getStringF($r('app.string.member_manager_msg_limit_word_pron'), this.maxWordPronCountDaily))
       }
       return false
     }
@@ -217,7 +218,7 @@ export class MemberManager {
 
     if (this.maxExamplePronCountDaily <= DailyCountManager.shared.dailyCount(DailyCountType.examplePron)) {
       if (showMessage) {
-        Toast.showMessage($r('app.string.member_manager_msg_limit_example_pron'))
+        Toast.showMessage(getStringF($r('app.string.member_manager_msg_limit_example_pron'), this.maxExamplePronCountDaily))
       }
       return false
     }
@@ -231,7 +232,7 @@ export class MemberManager {
 
     if (this.maxDictShowCountDaily <= DailyCountManager.shared.dailyCount(DailyCountType.dictShow)) {
       if (showMessage) {
-        Toast.showMessage($r('app.string.member_manager_msg_limit_dict_show'))
+        Toast.showMessage(getStringF($r('app.string.member_manager_msg_limit_dict_show'), this.maxDictShowCountDaily))
       }
       return false
     }
@@ -363,7 +364,7 @@ export class MemberManager {
 
     if (this.maxOnlineDictUseCountDaily <= DailyCountManager.shared.dailyCount(DailyCountType.onlineDict)) {
       if (showMessage) {
-        Toast.showMessage($r('app.string.member_manager_msg_limit_online_dict_use'))
+        Toast.showMessage(getStringF($r('app.string.member_manager_msg_limit_online_dict_use'), this.maxOnlineDictUseCountDaily))
       }
       return false
     }
@@ -377,7 +378,7 @@ export class MemberManager {
 
     if (this.maxChallengeUseCountDaily <= DailyCountManager.shared.dailyCount(DailyCountType.challenge)) {
       if (showMessage) {
-        Toast.showMessage($r('app.string.member_manager_msg_limit_challenge_use'))
+        Toast.showMessage(getStringF($r('app.string.member_manager_msg_limit_challenge_use'), this.maxChallengeUseCountDaily))
       }
       return false
     }

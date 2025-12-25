@@ -43,7 +43,7 @@ export struct SubLearnView {
   @Local planInfoText : ResourceStr = $r('app.string.main_curve_txt_info_create')
 
   aboutToAppear(): void {
-    if (!BookManager.shared.currentBook) {
+    if (BookManager.shared.books.length === 0) {//BookManager.shared.currentBook
       BookListViewConfig.open({ isShowAllOnly: true }) //首次进入，需要下载单词本
     }else{
       this.loadData()

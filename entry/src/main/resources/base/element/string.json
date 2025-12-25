@@ -384,7 +384,7 @@
     { "name": "wordcard_result_wrong"                       , "value": "不正确:" },
     { "name": "wordcard_result_times"                       , "value": "次" },
     { "name": "wordcard_txt_example"                        , "value": "例句" },
-    { "name": "wordcard_txt_show_translation"               , "value": "点击显示中文翻译" },
+    { "name": "wordcard_txt_show_translation"               , "value": "【点击显示中文翻译】" },
     { "name": "wordcard_info_hidetranslation"               , "value": "隐藏翻译" },
     { "name": "wordcard_info_autopronunce"                  , "value": "自动发音(单词)" },
     { "name": "wordcard_info_autopronunce_ex"               , "value": "自动发音(例句)" },
