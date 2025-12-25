@@ -32,6 +32,7 @@ import { SimpleEventBus } from "../../../common/components/eventbus/SimpleEventB
 import { DetailItemNotification } from "../../../models/managers/detailitem/DetailItemManager"
 import { Plan } from "../../../models/managers/plan/plancurve/Plan"
 import { DayOf } from "../../../models/managers/plan/plancurve/DayOf"
+import { OnlineSearchWordsViewConfig } from "../../onlinesearch/OnlineSearchWordsView"
 
 export namespace DetailCardsViewConfig {
 
@@ -170,7 +171,8 @@ export struct DetailCardsView {
   }
 
   getNavTitle(): ResourceStr | null | undefined {
-    return getStringF($r('app.string.str_unit_no'), this.words[this.pageIndex].unitId ?? '')
+    // return getStringF($r('app.string.str_unit_no'), this.words[this.pageIndex].unitId ?? '')
+    return this.word.unitName
   }
 
   @Builder buildNavBar(){
@@ -334,7 +336,7 @@ export struct DetailCardsView {
   }
 
   private actionSearch(){
-
+    OnlineSearchWordsViewConfig.open()
   }
 
   ///显示转到测验或挑战页面的弹出选项

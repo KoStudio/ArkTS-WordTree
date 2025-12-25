@@ -30,6 +30,7 @@ import { NavBarCommonView } from "../../../app/views/NavBarCommonView"
 import { DetailCardsViewConfig } from "../detail/DetailCardsView"
 import { Plan } from "../../../models/managers/plan/plancurve/Plan"
 import { DayOf } from "../../../models/managers/plan/plancurve/DayOf"
+import { OnlineSearchWordsViewConfig } from "../../onlinesearch/OnlineSearchWordsView"
 
 export namespace WordCardsViewConfig {
 
@@ -166,7 +167,8 @@ export struct WordCardsView {
   }
 
   getNavTitle(): ResourceStr | null | undefined {
-    return getStringF($r('app.string.str_unit_no'), this.words[this.pageIndex].unitId ?? '')
+    // return getStringF($r('app.string.str_unit_no'), this.words[this.pageIndex].unitId ?? '')
+    return this.word.unitName
   }
 
   @Builder buildNavBar(){
@@ -333,7 +335,7 @@ export struct WordCardsView {
   }
 
   private actionSearch(){
-
+    OnlineSearchWordsViewConfig.open()
   }
 
   ///显示转到测验或挑战页面的弹出选项

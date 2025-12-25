@@ -24,12 +24,26 @@ export class NavPathManager {
   // MARK: - 常用导航操作封装
   // ======================================================================
 
-  /** 推入一个页面路径 */
-  push<T>(path: string, params?: T, animated?: boolean) {
-    if (params !== undefined) {
-      this._navPath.pushPathByName(path, params, animated ?? true)
+  /**
+   * 推入一个页面路径
+   * @param alwaysNew 如果为true，总是创建新实例；如果为false，页面已存在时复用现有页面
+   */
+  push<T>(path: string, params?: T, animated: boolean = true, alwaysNew: boolean = true) {
+    // 检查目标路径是否已存在于导航栈中[1](@ref)
+    const existingIndexes: Array<number> = this._navPath.getIndexByName(path);
+    const pageExists = existingIndexes.length > 0;
+
+    if (pageExists && !alwaysNew) {
+      // 页面已存在且不要求新建：回退到栈中最后一个该页面（离栈顶最近的）
+      const targetIndex = existingIndexes[existingIndexes.length - 1];
+      this._navPath.popToIndex(targetIndex, animated ?? true);
     } else {
-      this._navPath.pushPathByName(path, animated ?? true)
+      // 要求新建或页面不存在：正常推入新页面
+      if (params !== undefined) {
+        this._navPath.pushPathByName(path, params, animated ?? true);
+      } else {
+        this._navPath.pushPathByName(path, animated ?? true);
+      }
     }
   }
 
@@ -73,8 +87,8 @@ export class NavPathManager {
 // ======================================================================
 
 /** 跳转页面 */
-export function NavTo<T>(path: string, params?: T, animated?: boolean) {
-  NavPathManager.shared.push(path, params, animated)
+export function NavTo<T>(path: string, params?: T, animated: boolean = true, alwaysNew: boolean = true) {
+  NavPathManager.shared.push(path, params, animated, alwaysNew)
 }
 
 /** 返回上一个页面 */

@@ -8,6 +8,8 @@ import { SearchManager } from '../../models/datas/model/SearchManager';
 import { NavTo } from '../../pages/NavPathManager';
 import { WordUser } from '../../models/datas/myData/WordUser';
 import { NoDataPanel } from '../../app/views/NoDataView';
+import { LoadingDialog } from '@kit.ArkUI';
+import { Toast } from '../../common/utils/Toast';
 
 
 export namespace OnlineSearchWordsViewConfig {
@@ -17,7 +19,7 @@ export namespace OnlineSearchWordsViewConfig {
 
   ///打开方式
   export function open(){
-    NavTo(NavKey, undefined, true)
+    NavTo(NavKey, undefined, true, false)
   }
 
 
@@ -40,7 +42,7 @@ export struct OnlineSearchWordsView {
     // 页面显示时的初始化
     setTimeout(()=> {
       this.getUIContext().getFocusController().requestFocus("searchText")
-    }, 1000)
+    }, 100)
 
   }
 
@@ -169,26 +171,36 @@ export struct OnlineSearchWordsView {
     Row(){
 
       ///left
-      Column(){
+      Column({space: 10}){
 
-        Text(`${word.titleEn}`)
-          .fontSize(18)
-          .fontColor($r('app.color.color_text'))
+        // Text(`${word.titleEn}`)
+        //   .fontSize(18)
+        //   .fontColor($r('app.color.color_text'))
+        HighlightText({
+          content: word.titleEn || '',
+          keyword: this.searchText,
+          normalColor: $r('app.color.color_title'),
+          textStyle: {
+            fontSize: 18,
+            maxLines: 1
+          },
 
+        })
 
-        // HighlightText({
-        //   content: word.getTitleCnsJoined(),
-        //   keyword: this.searchText,
-        //   normalColor: $r('app.color.color_detail'),
-        //   textStyle: {
-        //     fontSize: 15,
-        //   },
-        //
-        // })
-        Text(word.getTitleCnsJoined())
-          .fontSize(15)
-          .fontColor($r('app.color.color_detail'))
-          .margin({left: 15, top: 5})
+        HighlightText({
+          content: word.getTitleCnsJoined(),
+          keyword: this.searchText,
+          normalColor: $r('app.color.color_detail'),
+          textStyle: {
+            fontSize: 15,
+            maxLines: 3
+          },
+
+        })
+        // Text(word.getTitleCnsJoined())
+        //   .fontSize(15)
+        //   .fontColor($r('app.color.color_detail'))
+        //   .margin({left: 15, top: 5})
 
 
       }
@@ -230,7 +242,10 @@ export struct OnlineSearchWordsView {
     this.searchResults = [];
 
     try {
+      Toast.showCustomDialog(()=> { this.buildLoadingDialog($r('app.string.online_search_loading'))}, false)
+
       OnlineWordManager.shared.searchWords(this.searchText.trim(), 0, (success: boolean, msg: string | null, words: OnlineWord[] | null) => {
+        Toast.closeCustomDialog()
           this.isLoading = false;
           if (success && words) {
             this.searchResults = words.map(v => v.asWordUser());
@@ -253,6 +268,13 @@ export struct OnlineSearchWordsView {
     this.searchText = '';
     this.searchResults = [];
     this.errorMessage = '';
+  }
+
+  @Builder
+  buildLoadingDialog(msg?: ResourceStr | null): void {
+    LoadingDialog({
+      content: msg ?? 'searching..'
+    })
   }
 
 }
