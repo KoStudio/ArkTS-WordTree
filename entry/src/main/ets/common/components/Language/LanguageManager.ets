@@ -27,6 +27,13 @@ export class LanguageManager {
     return AppLanguage.Simplified;
   }
 
+  static isTraditionalChinese(): boolean {
+    return LanguageManager.getCurrentLanguage() === AppLanguage.Traditional
+  }
+
+  static isSimpleChinese(): boolean {
+    return LanguageManager.getCurrentLanguage() === AppLanguage.Simplified
+  }
 
   /**
    * 获取当前实际使用的语言
