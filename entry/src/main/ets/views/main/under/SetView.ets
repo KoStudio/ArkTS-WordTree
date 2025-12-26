@@ -42,6 +42,8 @@ import { CosDownloader } from "../../../common/components/Sounds/Cloud/Download/
 import { MyMemosViewConfig } from "../../setting/mine/MyMemosView";
 import { MyRecordsViewConfig } from "../../setting/mine/MyRecordsView";
 import { BookManager } from "../../../models/datas/book/BookManager";
+import { PlanDbAccess } from "../../../models/managers/plan/plandb/PlanDbAccess";
+import { SpeechRecordDbAccessor } from "../../../common/components/Speech/Recorder/SpeechRecordDbAccessor";
 
 export namespace SetViewConfig {
 
@@ -884,15 +886,11 @@ export struct SetView {
 
     //检查 DB结构
     WordUserDbAccess.shared.refreshDb()
+    PlanDbAccess.shared.refreshDb()
+    SpeechRecordDbAccessor.shared.refreshDb()
+
+    //重新加载数据
     SearchManager.shared.refreshData()
-    // PlanDbAccess.shared.refreshDb()
-
-
-    // EBookDbAccess.shared.refreshDb()
-    // CColorDbAccess.shared.refreshDb()
-    // UPinyinDbAccess.shared.refreshDb()
-
-
 
     ///刷新当前Plan，不然会有缓存
     const currentPlanId = PlanManager.shared.plan?.planId;
@@ -901,11 +899,7 @@ export struct SetView {
         PlanManager.shared.plan = plan
       })
     }
-    //
-    // //清空缓存
-    // EBookManager.shared.clearCaches()
-    // CColorManager.shared.clearCaches()
-    // UPinyinManager.shared.clearCaches()
+
   }
 
   //确认退出登录

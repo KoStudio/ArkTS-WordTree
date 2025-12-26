@@ -19,7 +19,9 @@ export const dAppSoundFolderPath = AppConstants.dataBasePath + 'SoundDatas/'
 export const dMyDataFolderPath = AppConstants.dataBasePath + MyDatas.FolderName + '/'
 
 /** 用户sqlite数据 ~/app_Database/MyDatas/UserData.sqlite */
-export const dMyDataFilePath = dMyDataFolderPath + MyDatas.DBName;
+//应该使用基于BookManager下的方法获取
+// Book的子目录下的DB，如:~/app_Database/MyDatas/1/learnDb.sqlite
+// export const dMyDataFilePath = dMyDataFolderPath + MyDatas.DBName;
 
 /** 云声音 缓存sqlite数据目录 ~/app_Database/CloudSoundDatas/ */
 export const dAppCloudSoundFolderPath = AppConstants.dataBasePath + 'CloudSoundDatas/'

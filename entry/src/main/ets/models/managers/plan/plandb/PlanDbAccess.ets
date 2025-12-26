@@ -1,10 +1,11 @@
-import { dMyDataFilePath, dMyDataFolderPath } from "../../../../app/constants/AppDefines";
+import {  dMyDataFolderPath } from "../../../../app/constants/AppDefines";
 import { createFolderIfNeeds } from "../../../../app/constants/AppFunctions";
 import { StringEncoder } from "../../../../common/utils/strings/StringEncrypt";
 import { DBAccessor, ParamType, SqlObj } from "../../../dbUtils/DBAccessor";
 import { relationalStore } from "@kit.ArkData";
 import { ResultSetTool } from "../../../dbUtils/ResultSetTool";
 import { DBBox, DBLearn, DBPiece, DBPlan } from "./DBPlan_Piece_Box_learn";
+import { BookManager } from "../../../datas/book/BookManager";
 
 // MARK: - 数据表常量
 namespace Tables {
@@ -63,17 +64,30 @@ export class PlanDbAccess {
   private static instance: PlanDbAccess;
   private db: DBAccessor | null = null;
 
-  private constructor() {
-    createFolderIfNeeds(dMyDataFolderPath);
-    this.db = new DBAccessor(dMyDataFilePath, null, false);
-    this.createDbIfNeeds();
-  }
 
   public static get shared(): PlanDbAccess {
     if (!PlanDbAccess.instance) {
       PlanDbAccess.instance = new PlanDbAccess();
     }
     return PlanDbAccess.instance;
+  }
+
+  private constructor() {
+    //createFolderIfNeeds(this.getDbFolder());
+    this.db = new DBAccessor(this.getDbPath(), null, false);
+    this.createDbIfNeeds();
+  }
+
+  getDbFolder():string {
+    return BookManager.getCurrentDirectoryOfUserData()
+  }
+
+  getDbPath(): string {
+    return BookManager.getCurrentPathOfUserData()
+  }
+
+  refreshDb(): void {
+    this.createDbIfNeeds();
   }
 
   // ====== 创建表（如果不存在） ======
@@ -119,10 +133,6 @@ export class PlanDbAccess {
     this.db.updateDb(sqlLearn);
   }
 
-  // ====== 恢复数据时刷新 DB ======
-  refreshDb(): void {
-    this.createDbIfNeeds();
-  }
 
   // ====== 插入 / 更新 ======
   async insertOrUpdatePlan(plan: DBPlan): Promise<void> {
@@ -436,10 +446,7 @@ export class PlanDbAccess {
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`;
   }
 
-  // ====== dbPath getter ======
-  get dbPath(): string | null {
-    return dMyDataFilePath ?? null;
-  }
+
 }
 
 // DBPlan, DBPiece, DBBox, DBLearn 可根据实际定义补充

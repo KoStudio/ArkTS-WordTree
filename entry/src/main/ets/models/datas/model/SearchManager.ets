@@ -94,21 +94,35 @@ export class SearchManager {
   }
 
   private async loadWords(): Promise<void> {
+    // 并行获取数据，减少等待时间
+    const results = await Promise.all([
+      this.getWordDbAccess()?.getAllWords() || [],
+      WordUserDbAccess.shared.getAllOnlineWords() || [],
+      WordUserDbAccess.shared.getAllWordUsers() || []
+    ]);
 
-    const words        = await this.getWordDbAccess()?.getAllWords() || [];
-    const wordsOnline  = await WordUserDbAccess.shared.getAllOnlineWords() || [];
-    words.push(...wordsOnline)
+    const words       = results[0] || [];
+    const wordsOnline = results[1] || []; 
+    const wordUsers   = results[2] || [];
 
-    const wordUsers    = await WordUserDbAccess.shared.getAllWordUsers() || [];
-
-    const userMap      = new Map<string, WordUser>();
-    for (const u of wordUsers) {
+    // 合并所有基础单词
+    const allBaseWords = words.concat(wordsOnline);
+    
+    // 优化：使用更高效的Map构建方式
+    const userMap = new Map<string, WordUser>();
+    for (let i = 0; i < wordUsers.length; i++) {
+      const u = wordUsers[i];
       if (u.titleEn !== null) {
         userMap.set(u.titleEn, u);
       }
     }
 
-    const merged: WordUser[] = words.map(w => {
+    // 预分配数组空间，避免频繁扩容
+    const merged: WordUser[] = new Array(allBaseWords.length);
+    
+    // 使用for循环替代map，减少函数调用开销
+    for (let i = 0; i < allBaseWords.length; i++) {
+      const w = allBaseWords[i];
       const existed = w.titleEn !== null ? userMap.get(w.titleEn) : null;
 
       if (existed) {
@@ -129,48 +143,39 @@ export class SearchManager {
         existed.exampleEn1     = w.exampleEn1;
         existed.exampleCn1     = w.exampleCn1;
 
-        return existed;
+        merged[i] = existed;
+      } else {
+        // 没有用户记录 → 创建新的 WordUser（手动赋值）
+        const newWord            = new WordUser();
+        newWord.idx              = w.idx;
+        newWord.partId           = w.partId;
+        newWord.partName         = w.partName;
+        newWord.unitId           = w.unitId;
+        newWord.unitNo           = w.unitNo;
+        newWord.unitName         = w.unitName;
+        newWord.titleEn          = w.titleEn;
+        newWord.titleCn1         = w.titleCn1;
+        newWord.titleCn2         = w.titleCn2;
+        newWord.titleCn3         = w.titleCn3;
+        newWord.pronEn           = w.pronEn;
+        newWord.pronUs           = w.pronUs;
+        newWord.exampleEn1       = w.exampleEn1;
+        newWord.exampleCn1       = w.exampleCn1;
+
+        // 初始化用户字段
+        newWord.favoriteLevel    = 0;
+        newWord.learnTimes       = 0;
+        newWord.correctedTimes   = 0;
+        newWord.wrangTimes       = 0;
+        newWord.lastResultType   = 0;
+        newWord.wrangDate        = null;
+        newWord.memo             = null;
+        newWord.shareMemos       = [];
+        newWord.deleted          = false;
+
+        merged[i] = newWord;
       }
-
-      // 没有用户记录 → 创建新的 WordUser（手动赋值）
-      const newWord            = new WordUser();
-      newWord.idx              = w.idx;
-      newWord.partId           = w.partId;
-      newWord.partName         = w.partName;
-      newWord.unitId           = w.unitId;
-      newWord.unitNo           = w.unitNo;
-      newWord.unitName         = w.unitName;
-      newWord.titleEn          = w.titleEn;
-      newWord.titleCn1         = w.titleCn1;
-      newWord.titleCn2         = w.titleCn2;
-      newWord.titleCn3         = w.titleCn3;
-      newWord.pronEn           = w.pronEn;
-      newWord.pronUs           = w.pronUs;
-      newWord.exampleEn1       = w.exampleEn1;
-      newWord.exampleCn1       = w.exampleCn1;
-
-      // 初始化用户字段
-      newWord.favoriteLevel    = 0;
-      newWord.learnTimes       = 0;
-      newWord.correctedTimes   = 0;
-      newWord.wrangTimes       = 0; // (Math.random() * 100 % 12);
-
-      /// 调试用
-      if (DebugFlg.isDebugMode()) {
-        // newWord.favoriteLevel  = ((Math.round(Math.random() * 100)) % 5 === 1 ? 0 : 1)
-        // newWord.learnTimes     = ((Math.round(Math.random() * 100)) % 5 === 1 ? 0 : 1)
-        // newWord.wrangTimes     = (Math.random() * 100 % 12)
-        // newWord.correctedTimes = ((Math.round(Math.random() * 100)) % 5 === 1 ? 0 : 1)
-      }
-
-      newWord.lastResultType   = 0;
-      newWord.wrangDate        = null;
-      newWord.memo             = null;
-      newWord.shareMemos       = [];
-      newWord.deleted          = false;
-
-      return newWord;
-    });
+    }
 
     this.allWords = merged;
 
@@ -184,40 +189,60 @@ export class SearchManager {
     this.parts = [];
     this.units = [];
 
-    let currentUnitId     : number | null = -1;
-    let currentPartId     : number | null = -1;
-    let currentUnit       : Unit   | null = null;
-    let currentPart       : Part   | null = null;
+    // 使用Map来快速查找和分组，避免重复遍历
+    const unitMap = new Map<number, Unit>();
+    const partMap = new Map<number, Part>();
 
-    // 使用函数式编程处理数据构建
-    this.allWords.forEach(word => {
-      // 单元变化时创建新单元
-      if (currentUnitId !== word.unitId) {
-        currentUnitId = word.unitId;
-        currentUnit   = this.createUnitFromWord(word);
-        this.units.push(currentUnit);
+    // 先按unitId和partId分组
+    for (let i = 0; i < this.allWords.length; i++) {
+      const word = this.allWords[i];
+      const unitId = word.unitId || 0;
+      const partId = word.partId || 0;
+      
+      // 处理单元
+      if (!unitMap.has(unitId)) {
+        const unit = this.createUnitFromWord(word);
+        unitMap.set(unitId, unit);
+        this.units.push(unit);
       }
-
-      // 分类变化时创建新分类
-      if (currentPartId !== word.partId) {
-        currentPartId = word.partId;
-        currentPart   = this.createPartFromWord(word);
-        this.parts.push(currentPart);
+      
+      // 处理分类
+      if (!partMap.has(partId)) {
+        const part = this.createPartFromWord(word);
+        partMap.set(partId, part);
+        this.parts.push(part);
       }
+    }
 
-      // 将单词添加到当前单元
-      if (currentUnit) {
-        currentUnit.words.push(word);
+    // 将单词分配到对应的单元
+    for (let i = 0; i < this.allWords.length; i++) {
+      const word = this.allWords[i];
+      const unitId = word.unitId || 0;
+      const unit = unitMap.get(unitId);
+      if (unit) {
+        unit.words.push(word);
       }
+    }
 
-      // 将单元添加到当前分类（如果尚未添加）
-      if (currentPart && currentUnit) {
-        const unitExists = currentPart.units.some(u => u.unitId === currentUnit!.unitId);
-        if (!unitExists) {
-          currentPart.units.push(currentUnit);
+    // 将单元分配到对应的分类
+    for (let i = 0; i < this.units.length; i++) {
+      const unit = this.units[i];
+      const partId = unit.partId || 0;
+      const part = partMap.get(partId);
+      if (part) {
+        // 检查是否已存在，避免重复添加
+        let exists = false;
+        for (let j = 0; j < part.units.length; j++) {
+          if (part.units[j].unitId === unit.unitId) {
+            exists = true;
+            break;
+          }
+        }
+        if (!exists) {
+          part.units.push(unit);
         }
       }
-    });
+    }
   }
 
   /**

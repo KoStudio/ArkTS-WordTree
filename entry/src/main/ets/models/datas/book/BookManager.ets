@@ -1,6 +1,10 @@
 // BookManager.ts
 import preferences from '@ohos.data.preferences'
 import { getAppContext } from '../../../app/constants/AppContext'
+import { dAppCBookDbFolderPath, dMyDataFolderPath, MyDatas } from '../../../app/constants/AppDefines'
+import { createFolderIfNeeds } from '../../../app/constants/AppFunctions'
+import { CBookDbPath } from '../../../common/components/Sounds/Cloud/Download/CBook/CBookPath'
+import { Toast } from '../../../common/utils/Toast'
 import { BaseDict, Book, CigenData } from './Book'
 
 
@@ -9,12 +13,10 @@ class BookPrefKeys {
 
   static readonly kBOOK_LIST         = 'book_list'
   static readonly kCURRENT_BOOK      = 'current_book'
+}
 
-  static readonly kBASEDICT_LIST     = 'basedict_list'
-  static readonly kCURRENT_BASEDICT  = 'current_basedict'
-
-  static readonly kCIGENDATA_LIST    = 'cigendata_list'
-  static readonly kCURRENT_CIGENDATA = 'current_cigendata'
+class BookConstant {
+  static readonly FILE_BOOK_TEXTDB    = "textDb.sqlite"
 }
 
 @ObservedV2
@@ -33,11 +35,6 @@ export class BookManager {
   @Trace public books            : Book[]           = []
   @Trace public currentBook      : Book | null      = null
 
-  // @Trace public baseDicts        : BaseDict[]       = []
-  // @Trace public currentBaseDict  : BaseDict | null  = null
-  //
-  // @Trace public cigenDatas       : CigenData[]      = []
-  // @Trace public currentCigenData : CigenData | null = null
 
   private pref: preferences.Preferences | null = null
 
@@ -52,16 +49,7 @@ export class BookManager {
     this.restoreBooks()
     this.restoreCurrentBook()
 
-    // this.restoreBaseDicts()
-    // this.restoreCurrentBaseDict()
-    //
-    // this.restoreCigenDatas()
-    // this.restoreCurrentCigenData()
   }
-
-  // ==========================================================
-  // MARK: - Save
-  // ==========================================================
 
   saveBooks(): void {
     if (!this.pref) return
@@ -79,46 +67,6 @@ export class BookManager {
     this.pref.flush()
   }
 
-  // saveBaseDicts(): void {
-  //   if (!this.pref) return
-  //   this.pref.put(BookPrefKeys.kBASEDICT_LIST, JSON.stringify(this.baseDicts))
-  //   this.pref.flush()
-  // }
-
-  // saveCurrentBaseDict(): void {
-  //   if (!this.pref) return
-  //   if (this.currentBaseDict) {
-  //     this.pref.put(
-  //       BookPrefKeys.kCURRENT_BASEDICT,
-  //       JSON.stringify(this.currentBaseDict)
-  //     )
-  //   } else {
-  //     this.pref.delete(BookPrefKeys.kCURRENT_BASEDICT)
-  //   }
-  //   this.pref.flush()
-  // }
-  //
-  // saveCigenDatas(): void {
-  //   if (!this.pref) return
-  //   this.pref.put(BookPrefKeys.kCIGENDATA_LIST, JSON.stringify(this.cigenDatas))
-  //   this.pref.flush()
-  // }
-  //
-  // saveCurrentCigenData(): void {
-  //   if (!this.pref) return
-  //   if (this.currentCigenData) {
-  //     this.pref.put(
-  //       BookPrefKeys.kCURRENT_CIGENDATA,
-  //       JSON.stringify(this.currentCigenData)
-  //     )
-  //   } else {
-  //     this.pref.delete(BookPrefKeys.kCURRENT_CIGENDATA)
-  //   }
-  //   this.pref.flush()
-  // }
-  // ==========================================================
-  // MARK: - Restore
-  // ==========================================================
 
   private restoreBooks(): void {
     if (!this.pref) return
@@ -163,97 +111,6 @@ export class BookManager {
       this.currentBook = null
     }
   }
-  // private restoreBaseDicts(): void {
-  //   if (!this.pref) return
-  //
-  //   const json = this.pref.getSync(
-  //     BookPrefKeys.kBASEDICT_LIST,
-  //     ''
-  //   ) as string
-  //
-  //   if (!json) {
-  //     this.baseDicts = []
-  //     return
-  //   }
-  //
-  //   try {
-  //     const arr = JSON.parse(json) as Object[]
-  //     this.baseDicts = BaseDict.fromArray(arr)
-  //   } catch (e) {
-  //     console.error('restoreBaseDicts failed', e)
-  //     this.baseDicts = []
-  //   }
-  // }
-  //
-  // private restoreCurrentBaseDict(): void {
-  //   if (!this.pref) return
-  //
-  //   const json = this.pref.getSync(
-  //     BookPrefKeys.kCURRENT_BASEDICT,
-  //     ''
-  //   ) as string
-  //
-  //   if (!json) {
-  //     this.currentBaseDict = null
-  //     return
-  //   }
-  //
-  //   try {
-  //     const obj = JSON.parse(json) as Record<string, Object>
-  //     this.currentBaseDict = new BaseDict(obj)
-  //   } catch (e) {
-  //     console.error('restoreCurrentBaseDict failed', e)
-  //     this.currentBaseDict = null
-  //   }
-  // }
-  //
-  // private restoreCigenDatas(): void {
-  //   if (!this.pref) return
-  //
-  //   const json = this.pref.getSync(
-  //     BookPrefKeys.kCIGENDATA_LIST,
-  //     ''
-  //   ) as string
-  //
-  //   if (!json) {
-  //     this.cigenDatas = []
-  //     return
-  //   }
-  //
-  //   try {
-  //     const arr = JSON.parse(json) as Object[]
-  //     this.cigenDatas = CigenData.fromArray(arr)
-  //   } catch (e) {
-  //     console.error('restoreCigenDatas failed', e)
-  //     this.cigenDatas = []
-  //   }
-  // }
-  //
-  // private restoreCurrentCigenData(): void {
-  //   if (!this.pref) return
-  //
-  //   const json = this.pref.getSync(
-  //     BookPrefKeys.kCURRENT_CIGENDATA,
-  //     ''
-  //   ) as string
-  //
-  //   if (!json) {
-  //     this.currentCigenData = null
-  //     return
-  //   }
-  //
-  //   try {
-  //     const obj = JSON.parse(json) as Record<string, Object>
-  //     this.currentCigenData = new CigenData(obj)
-  //   } catch (e) {
-  //     console.error('restoreCurrentCigenData failed', e)
-  //     this.currentCigenData = null
-  //   }
-  // }
-
-  // ==========================================================
-  // MARK: - API
-  // ==========================================================
 
   saveBook(book: Book){
     this.books.push(book)
@@ -273,33 +130,67 @@ export class BookManager {
     // 3️⃣ 保存 books
     this.saveBooks()
   }
-  // setBooks(books: Book[]): void {
-  //   this.books = books
-  //   this.saveBooks()
-  // }
+
 
   setCurrentBook(book: Book | null): void {
     this.currentBook = book
     this.saveCurrentBook()
   }
 
-  // setBaseDicts(dicts: BaseDict[]): void {
-  //   this.baseDicts = dicts
-  //   this.saveBaseDicts()
-  // }
-  //
-  // setCurrentBaseDict(dict: BaseDict | null): void {
-  //   this.currentBaseDict = dict
-  //   this.saveCurrentBaseDict()
-  // }
-  //
-  // setCigenDatas(datas: CigenData[]): void {
-  //   this.cigenDatas = datas
-  //   this.saveCigenDatas()
-  // }
-  //
-  // setCurrentCigenData(data: CigenData | null): void {
-  //   this.currentCigenData = data
-  //   this.saveCurrentCigenData()
-  // }
+/*
+  ///not using..可以直接使用dAppCBookDbFolderPath
+  static getDirectoryPathForBook(book: Book): string {
+    ///.../app_Document/Books/1/
+    // return dAppCBookDbFolderPath + book.bookId + "/"
+
+    ///因为使用的是CBook，所以全部是：~/app_Database/CBookDatas/
+    return dAppCBookDbFolderPath
+  }
+
+  ///not using ..可以直接使用CBookDbPath
+  static getPathOfTextDbForBook(book: Book): string {
+    ///.../app_Document/Books/1/textDb.sqlite
+     //return BookManager.getDirectoryPathForBook(book) + BookConstant.FILE_BOOK_TEXTDB
+
+    ///因为使用的是CBook，所以全部是：~/app_Database/CBookDatas/CET4_Sub1.sqlite
+    return (new CBookDbPath(book.textDb || '')).baseName
+  }
+*/
+  // example:..~/app_Database/MyDatas/
+  static getDirectoryOfUserData(): string {
+    return dMyDataFolderPath
+  }
+
+  // example:..~/app_Database/MyDatas/1/
+  static getDirectoryOfUserDataForBook(book: Book): string {
+     const folder = BookManager.getDirectoryOfUserData() + book.bookId + '/'
+     createFolderIfNeeds(folder);
+     return folder
+  }
+
+  // example:..~/app_Database/MyDatas/bookId/learnDb.sqlite
+  static getPathOfUserDataForLearnWithBook(book: Book): string {
+    return BookManager.getDirectoryOfUserDataForBook(book) + MyDatas.DBName
+  }
+
+  // example:..~/app_Database/MyDatas/1/learnDb.sqlite
+  static getCurrentDirectoryOfUserData(): string {
+    const book = BookManager.shared.currentBook
+    if (book) {
+      return BookManager.getDirectoryOfUserDataForBook(book)
+    }
+    Toast.showDebugMessage('getCurrentDirectoryOfUserData failed: current book is null')
+    return ''
+  }
+
+  // example:..~/app_Database/MyDatas/1/learnDb.sqlite
+  static getCurrentPathOfUserData(): string {
+    const book = BookManager.shared.currentBook
+    if (book) {
+      return BookManager.getPathOfUserDataForLearnWithBook(book)
+    }
+    Toast.showDebugMessage('getCurrentPathOfUserData failed: current book is null')
+    return ''
+  }
+
 }

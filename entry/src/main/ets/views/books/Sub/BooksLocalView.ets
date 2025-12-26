@@ -122,6 +122,7 @@ export struct BooksLocalView {
   handleRowClick(rowIndex: number, book: Book){
     if (!book.isCurrentBook){
       BookManager.shared.setCurrentBook(book)
+      SearchManager.shared.refreshData()
       this.loadData()
       //SearchManager.shared.refreshData()
     }

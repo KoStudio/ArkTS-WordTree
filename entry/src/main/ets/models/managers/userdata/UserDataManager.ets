@@ -63,7 +63,7 @@ export class UserDataManager {
     }
 
     // 1. 获取本地数据目录
-    const localMainFolder     = dMyDataFolderPath
+    const localMainFolder     = BookManager.getCurrentDirectoryOfUserData()//dMyDataFolderPath
 
     // 2. 创建ZIP压缩文件
     ZipTool.createOneZip(localMainFolder).then((zipPath) => {
@@ -133,7 +133,7 @@ export class UserDataManager {
       return;
     }
 
-    const localMainFolder     = dMyDataFolderPath
+    const localMainFolder     = BookManager.getCurrentDirectoryOfUserData()//dMyDataFolderPath
     const fileName            = FileUtility.getLastPathComponent(localMainFolder)
     const myDataParentFolder  = FileUtility.deleteLastPathComponent(localMainFolder)
     const localDownloadFolder = FileUtility.appendPathComponent(myDataParentFolder, `${fileName}_download`)

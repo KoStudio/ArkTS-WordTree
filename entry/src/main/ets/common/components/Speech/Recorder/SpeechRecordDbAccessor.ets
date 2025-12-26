@@ -1,6 +1,7 @@
 import { relationalStore } from "@kit.ArkData";
-import { dMyDataFilePath, dMyDataFolderPath } from "../../../../app/constants/AppDefines";
+import { dMyDataFolderPath } from "../../../../app/constants/AppDefines";
 import { createFolderIfNeeds } from "../../../../app/constants/AppFunctions";
+import { BookManager } from "../../../../models/datas/book/BookManager";
 import { DBAccessor, ParamType } from "../../../../models/dbUtils/DBAccessor";
 import { DB } from "../../../../models/dbUtils/DBConstants";
 import { ResultSetTool } from "../../../../models/dbUtils/ResultSetTool";
@@ -32,17 +33,6 @@ export class SpeechRecordDbAccessor {
   // 数据库访问器
   private db: DBAccessor | null = null;
 
-  // 私有构造函数
-  private constructor() {
-    // 创建必要的文件夹
-    createFolderIfNeeds(dMyDataFolderPath);
-
-    // 初始化数据库访问器
-    this.db = new DBAccessor(dMyDataFilePath, null, false);
-    this.createDbsIfNeeds();
-  }
-
-  // 获取单例实例
   public static get shared(): SpeechRecordDbAccessor {
     if (!SpeechRecordDbAccessor.instance) {
       SpeechRecordDbAccessor.instance = new SpeechRecordDbAccessor();
@@ -50,8 +40,31 @@ export class SpeechRecordDbAccessor {
     return SpeechRecordDbAccessor.instance;
   }
 
+  // 私有构造函数
+  private constructor() {
+    //createFolderIfNeeds(this.getDbFolder());
+    this.db = new DBAccessor(this.getDbPath(), null, false);
+    this.createDbIfNeeds();
+  }
+
+
+  getDbFolder():string {
+    return BookManager.getCurrentDirectoryOfUserData()
+  }
+
+  getDbPath(): string {
+    return BookManager.getCurrentPathOfUserData()
+  }
+
+  refreshDb(): void {
+    this.createDbIfNeeds();
+  }
+
+  // 获取单例实例
+
+
   // MARK: - 数据库初始化
-  private async  createDbsIfNeeds() {
+  private async  createDbIfNeeds() {
     if (!this.db) return;
 
     // 创建录音表
@@ -66,7 +79,7 @@ export class SpeechRecordDbAccessor {
 
   // 用于恢复数据时检查是否有新表
   refreshDbs(): void {
-    this.createDbsIfNeeds();
+    this.createDbIfNeeds();
   }
 
   // MARK: - 插入/更新操作

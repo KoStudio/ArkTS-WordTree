@@ -1,4 +1,3 @@
-import { dMyDataFilePath, dMyDataFolderPath } from "../../../app/constants/AppDefines";
 import { createFolderIfNeeds } from "../../../app/constants/AppFunctions";
 import { DBAccessor, ParamType } from "../../dbUtils/DBAccessor";
 import { relationalStore } from "@kit.ArkData";
@@ -13,6 +12,7 @@ import { DB } from "../../dbUtils/DBConstants";
 import { WordDetail } from "../word/WordDetail";
 import { WordTable } from "../word/WordDbAccess";
 import { Word } from "../word/Word";
+import { BookManager } from "../book/BookManager";
 
 export namespace Tables {
 
@@ -55,19 +55,27 @@ export class WordUserDbAccess {
   private static instance: WordUserDbAccess;
   private db: DBAccessor | null = null;
 
-  // 私有构造函数
-  private constructor() {
-    createFolderIfNeeds(dMyDataFolderPath);
-    this.db = new DBAccessor(dMyDataFilePath, null, false);
-    this.createDbIfNeeds();
-  }
-
   // 获取单例
   public static get shared(): WordUserDbAccess {
     if (!WordUserDbAccess.instance) {
       WordUserDbAccess.instance = new WordUserDbAccess();
     }
     return WordUserDbAccess.instance;
+  }
+
+  // 私有构造函数
+  private constructor() {
+    //createFolderIfNeeds(this.getDbFolder());
+    this.db = new DBAccessor(this.getDbPath(), null, false);
+    this.createDbIfNeeds();
+  }
+
+  getDbFolder():string {
+    return BookManager.getCurrentDirectoryOfUserData()
+  }
+
+  getDbPath(): string {
+    return BookManager.getCurrentPathOfUserData()
   }
 
   refreshDb(): void {
