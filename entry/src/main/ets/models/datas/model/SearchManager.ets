@@ -243,6 +243,9 @@ export class SearchManager {
         }
       }
     }
+
+    // 对parts和units进行排序
+    this.sortPartsAndUnits();
   }
 
   /**
@@ -267,6 +270,31 @@ export class SearchManager {
     part.partName     = word.partName  || '';
     part.units        = [];
     return part;
+  }
+
+  /**
+   * 对parts和units进行排序
+   */
+  private sortPartsAndUnits(): void {
+    // 对parts按partId升序排序
+    this.parts.sort((a, b) => {
+      return (a.partId || 0) - (b.partId || 0);
+    });
+
+    // 对units按unitId升序排序
+    this.units.sort((a, b) => {
+      return (a.unitId || 0) - (b.unitId || 0);
+    });
+
+    // 对每个part中的units按unitId排序
+    for (let i = 0; i < this.parts.length; i++) {
+      const part = this.parts[i];
+      if (part.units && part.units.length > 0) {
+        part.units.sort((a, b) => {
+          return (a.unitId || 0) - (b.unitId || 0);
+        });
+      }
+    }
   }
 
 

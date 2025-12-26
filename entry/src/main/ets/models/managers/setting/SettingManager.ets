@@ -188,26 +188,27 @@ export class SettingManager {
     await this.save();
   }
 
-  clearCache(){
+  async clearCache(){
     // 获取清理前的可用空间 (单位为字节)
     const before: number = DiskStatus.getAvailableBytesForDataDirectorySync(getContext());
 
     ///清空缓存的CSounds
-    CSoundManager.shared.removeAllCachedSounds()
+    await CSoundManager.shared.removeAllCachedSounds()
 
 
     //清理缓存的mp3
-    AudioTool.removeTempAudioFiles()
+    await AudioTool.removeTempAudioFiles()
 
 
     //清空cos sounds缓存
     CosDownloader.clearTempFolder()
 
     ///清空Online
-    WordUserDbAccess.shared.resetWordTables()
+    await WordUserDbAccess.shared.resetWordTables()
+    WordUserDbAccess.shared.refreshDb()
 
     ///重新加载数据
-    SearchManager.shared.refreshData()
+    await SearchManager.shared.refreshData()
 
     // 获取清理后的可用空间
     const after: number = DiskStatus.getAvailableBytesForDataDirectorySync(getContext());
