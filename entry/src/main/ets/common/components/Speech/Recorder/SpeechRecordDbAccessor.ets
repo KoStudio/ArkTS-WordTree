@@ -2,6 +2,7 @@ import { relationalStore } from "@kit.ArkData";
 import { dMyDataFolderPath } from "../../../../app/constants/AppDefines";
 import { createFolderIfNeeds } from "../../../../app/constants/AppFunctions";
 import { BookManager } from "../../../../models/datas/book/BookManager";
+import { UserDbSuperAccess } from "../../../../models/datas/myData/UserDbSuperAccess";
 import { DBAccessor, ParamType } from "../../../../models/dbUtils/DBAccessor";
 import { DB } from "../../../../models/dbUtils/DBConstants";
 import { ResultSetTool } from "../../../../models/dbUtils/ResultSetTool";
@@ -26,12 +27,14 @@ export class RecordSound {
 }
 
 // MARK: - 录音数据库访问类
-export class SpeechRecordDbAccessor {
+export class SpeechRecordDbAccessor extends UserDbSuperAccess {
   // 单例实例
   private static instance: SpeechRecordDbAccessor;
 
   // 数据库访问器
-  private db: DBAccessor | null = null;
+  // private db: DBAccessor | null = null;
+
+  private constructor(){ super();}
 
   public static get shared(): SpeechRecordDbAccessor {
     if (!SpeechRecordDbAccessor.instance) {
@@ -40,31 +43,32 @@ export class SpeechRecordDbAccessor {
     return SpeechRecordDbAccessor.instance;
   }
 
-  // 私有构造函数
-  private constructor() {
-    //createFolderIfNeeds(this.getDbFolder());
-    this.db = new DBAccessor(this.getDbPath(), null, false);
-    this.createDbIfNeeds();
-  }
-
-
-  getDbFolder():string {
-    return BookManager.getCurrentDirectoryOfUserData()
-  }
-
-  getDbPath(): string {
-    return BookManager.getCurrentPathOfUserData()
-  }
-
-  refreshDb(): void {
-    this.createDbIfNeeds();
-  }
+  // // 私有构造函数
+  // private constructor() {
+  //   //createFolderIfNeeds(this.getDbFolder());
+  //   this.db = new DBAccessor(this.getDbPath(), null, false);
+  //   this.createDbIfNeeds();
+  // }
+  //
+  //
+  // getDbFolder():string {
+  //   return BookManager.getCurrentDirectoryOfUserData()
+  // }
+  //
+  // getDbPath(): string {
+  //   return BookManager.getCurrentPathOfUserData()
+  // }
+  //
+  // refreshDb(): void {
+  //   this.db = new DBAccessor(this.getDbPath(), null, false);
+  //   this.createDbIfNeeds();
+  // }
 
   // 获取单例实例
 
 
   // MARK: - 数据库初始化
-  private async  createDbIfNeeds() {
+  createDbIfNeeds() {
     if (!this.db) return;
 
     // 创建录音表

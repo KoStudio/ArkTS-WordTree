@@ -13,6 +13,7 @@ import { WordDetail } from "../word/WordDetail";
 import { WordTable } from "../word/WordDbAccess";
 import { Word } from "../word/Word";
 import { BookManager } from "../book/BookManager";
+import { UserDbSuperAccess } from "./UserDbSuperAccess";
 
 export namespace Tables {
 
@@ -50,10 +51,10 @@ export namespace Tables {
 
 
 // MARK: - WordUser 数据库访问类
-export class WordUserDbAccess {
+export class WordUserDbAccess extends UserDbSuperAccess {
 
   private static instance: WordUserDbAccess;
-  private db: DBAccessor | null = null;
+  // private db: DBAccessor | null = null;
 
   // 获取单例
   public static get shared(): WordUserDbAccess {
@@ -63,29 +64,33 @@ export class WordUserDbAccess {
     return WordUserDbAccess.instance;
   }
 
-  // 私有构造函数
-  private constructor() {
-    //createFolderIfNeeds(this.getDbFolder());
-    this.db = new DBAccessor(this.getDbPath(), null, false);
-    this.createDbIfNeeds();
-  }
+  private constructor(){ super();}
 
-  getDbFolder():string {
-    return BookManager.getCurrentDirectoryOfUserData()
-  }
-
-  getDbPath(): string {
-    return BookManager.getCurrentPathOfUserData()
-  }
-
-  refreshDb(): void {
-    this.createDbIfNeeds();
-  }
+  //
+  // // 私有构造函数
+  // private constructor() {
+  //   //createFolderIfNeeds(this.getDbFolder());
+  //   this.db = new DBAccessor(this.getDbPath(), null, false);
+  //   this.createDbIfNeeds();
+  // }
+  //
+  // getDbFolder():string {
+  //   return BookManager.getCurrentDirectoryOfUserData()
+  // }
+  //
+  // getDbPath(): string {
+  //   return BookManager.getCurrentPathOfUserData()
+  // }
+  //
+  // refreshDb(): void {
+  //   this.db = new DBAccessor(this.getDbPath(), null, false);
+  //   this.createDbIfNeeds();
+  // }
 
   // ====== 创建表 ======
 
   // MARK: - 创建表（完全等价 Java createLearnDbIfNeeded）
-  private createDbIfNeeds(): void {
+  createDbIfNeeds(): void {
     if (!this.db) return
 
     const sqlLearn = `

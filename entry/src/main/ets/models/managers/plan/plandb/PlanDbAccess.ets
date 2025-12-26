@@ -6,6 +6,7 @@ import { relationalStore } from "@kit.ArkData";
 import { ResultSetTool } from "../../../dbUtils/ResultSetTool";
 import { DBBox, DBLearn, DBPiece, DBPlan } from "./DBPlan_Piece_Box_learn";
 import { BookManager } from "../../../datas/book/BookManager";
+import { UserDbSuperAccess } from "../../../datas/myData/UserDbSuperAccess";
 
 // MARK: - 数据表常量
 namespace Tables {
@@ -60,10 +61,11 @@ namespace Tables {
 }
 
 // MARK: - PlanDbAccess
-export class PlanDbAccess {
+export class PlanDbAccess extends  UserDbSuperAccess{
   private static instance: PlanDbAccess;
-  private db: DBAccessor | null = null;
+  // private db: DBAccessor | null = null;
 
+  private constructor(){ super();}
 
   public static get shared(): PlanDbAccess {
     if (!PlanDbAccess.instance) {
@@ -72,26 +74,26 @@ export class PlanDbAccess {
     return PlanDbAccess.instance;
   }
 
-  private constructor() {
-    //createFolderIfNeeds(this.getDbFolder());
-    this.db = new DBAccessor(this.getDbPath(), null, false);
-    this.createDbIfNeeds();
-  }
-
-  getDbFolder():string {
-    return BookManager.getCurrentDirectoryOfUserData()
-  }
-
-  getDbPath(): string {
-    return BookManager.getCurrentPathOfUserData()
-  }
-
-  refreshDb(): void {
-    this.createDbIfNeeds();
-  }
+  // private constructor() {
+  //   //createFolderIfNeeds(this.getDbFolder());
+  //   this.db = new DBAccessor(this.getDbPath(), null, false);
+  //   this.createDbIfNeeds();
+  // }
+  //
+  // getDbFolder():string {
+  //   return BookManager.getCurrentDirectoryOfUserData()
+  // }
+  //
+  // getDbPath(): string {
+  //   return BookManager.getCurrentPathOfUserData()
+  // }
+  //
+  // refreshDb(): void {
+  //   this.createDbIfNeeds();
+  // }
 
   // ====== 创建表（如果不存在） ======
-  private createDbIfNeeds(): void {
+  createDbIfNeeds(): void {
     if (!this.db) return;
 
     const sqlPlan = `CREATE TABLE IF NOT EXISTS "${Tables.Plan.name}" (
