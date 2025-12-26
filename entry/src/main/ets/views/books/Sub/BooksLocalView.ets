@@ -6,6 +6,7 @@ import { Book } from "../../../models/datas/book/Book"
 import { BookManager } from "../../../models/datas/book/BookManager"
 import { Category, CategoryManager } from "../../../models/datas/book/CategoryManager"
 import { SearchManager } from "../../../models/datas/model/SearchManager"
+import { WordUserDbAccess } from "../../../models/datas/myData/WordUserDbAccess"
 
 
 @ComponentV2
@@ -122,6 +123,8 @@ export struct BooksLocalView {
   handleRowClick(rowIndex: number, book: Book){
     if (!book.isCurrentBook){
       BookManager.shared.setCurrentBook(book)
+      WordUserDbAccess.shared.resetWordTables()
+      WordUserDbAccess.shared.refreshDb()
       SearchManager.shared.refreshData()
       this.loadData()
       //SearchManager.shared.refreshData()
