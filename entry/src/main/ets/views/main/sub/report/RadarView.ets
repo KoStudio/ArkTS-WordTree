@@ -21,7 +21,7 @@ export struct RandarChartV2 {
   @Local private isCanvasReady: boolean = false;
 
   // 常量定义
-  private readonly START_ANGLE_OFFSET: number = -Math.PI / 2; // 从顶部开始[2](@ref)
+  private readonly START_ANGLE_OFFSET: number = 0//从右边开始 //-Math.PI / 2; // 从顶部开始[2](@ref)
   private readonly GUIDE_LINE_COLOR: string = '#E0E0E0';
   private readonly POINT_RADIUS: number = 4;
 

@@ -229,12 +229,16 @@ export struct SubReportView {
     ///分类 ChartView
     let categories = SearchManager.shared.getAllPart()
     this.chartData = []
-    this.chartData.push(new ChartPart(getString($r('app.string.report_txt_chart_all')), this.cntAll, this.cntCorrected))
+
     for (let i = 0; i < categories.length; i++) {
       const category = categories[i];
       const allCount = category.aliveWords.length;
       const curCount = category.correctedWords.length;
       this.chartData.push(new ChartPart(category.partName, allCount, curCount))
+    }
+
+    if (this.chartData.length % 2 != 0 ) {
+      this.chartData.push(new ChartPart(getString($r('app.string.report_txt_chart_all')), this.cntAll, this.cntCorrected))
     }
 
   }
