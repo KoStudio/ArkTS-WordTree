@@ -20,6 +20,7 @@ import { ItemInfo } from '@kit.MediaLibraryKit';
 import { SimpleEventBus } from '../../../common/components/eventbus/SimpleEventBus';
 import { DetailStyle, StyleItem } from '../detailstyle/DetailStyle';
 import { CigenWordsViewConfig } from '../cigen/CigenWordsView';
+import { ReclaimWordViewConfig } from '../../reclaimword/ReclaimWordView';
 
 
 @ComponentV2
@@ -458,6 +459,9 @@ export struct DetailCardOne {
 
       }
       .backgroundColor(Color.Transparent)
+      .onClick(()=> {
+        ReclaimWordViewConfig.open({titleEn: this.word.titleEn || ''})
+      })
     }
     .padding(10)
     .border({width: {top: 1}, color: $r('app.color.color_line')})

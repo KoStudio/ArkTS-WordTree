@@ -23,8 +23,11 @@ export enum Route {
   user_data             = "user_data",
   login                 = "login",
 
+  reclaimWord           = "reclaim_word",
   subscription          = "subscription",
   servercfg             = "servercfg",//TODO
+
+
 
   //dict
   word                  = "w",

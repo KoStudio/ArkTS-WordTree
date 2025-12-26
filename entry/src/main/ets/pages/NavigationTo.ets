@@ -35,6 +35,7 @@ import { PlanDetailView, PlanDetailViewConfig } from '../views/plan/PlanDetailVi
 import { OnlineSearchWordsView, OnlineSearchWordsViewConfig } from '../views/onlinesearch/OnlineSearchWordsView';
 import { MyMemosView, MyMemosViewConfig } from '../views/setting/mine/MyMemosView';
 import { MyRecordsView, MyRecordsViewConfig } from '../views/setting/mine/MyRecordsView';
+import { ReclaimWordView, ReclaimWordViewConfig } from '../views/reclaimword/ReclaimWordView';
 
 
 @Builder
@@ -69,6 +70,7 @@ export function navigationTo<T>(name: string, param: T){
   }else if (name === SpellRunningViewConfig.NavKey)       { SpellRunningView()
   }else if (name === QuizResultViewConfig.NavKey)         { QuizResultView()
   }else if (name === AdviceViewConfig.NavKey)             { AdviceView()
+  }else if (name === ReclaimWordViewConfig.NavKey)        { ReclaimWordView({titleEn: (param as ReclaimWordViewConfig.Param).titleEn})
   }else if (name === ReclaimViewConfig.NavKey)            { ReclaimView()
   }else if (name === LogOffViewConfig.NavKey)             { LogOffView()
   }else if (name === SetViewConfig.NavKey)                { SetView()

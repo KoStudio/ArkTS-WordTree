@@ -9,6 +9,8 @@ import { SearchConstants, SearchManager } from '../../../models/datas/model/Sear
 import { WordUser } from '../../../models/datas/myData/WordUser';
 import { MemberManager } from '../../../models/managers/member/MemberManager';
 import { SettingManager } from '../../../models/managers/setting/SettingManager';
+import { ReclaimWordViewConfig } from '../../reclaimword/ReclaimWordView';
+import { ReclaimViewConfig } from '../../setting/ReclaimView';
 import { DetailCardsViewConfig } from '../detail/DetailCardsView';
 import { ComposeMemoViewConfig } from './memo/ComposeMemoView';
 
@@ -368,7 +370,10 @@ export struct WordCardOne {
           .fontColor($r('app.color.color_text2'))
 
       }
-        .backgroundColor(Color.Transparent)
+      .backgroundColor(Color.Transparent)
+      .onClick(()=> {
+        ReclaimWordViewConfig.open({titleEn: this.word.titleEn || ''})
+      })
     }
     .padding(20)
     .margin({bottom: 20})
