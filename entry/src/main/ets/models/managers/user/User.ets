@@ -41,9 +41,10 @@ export class UserCodingKeys {
   static readonly imageAddr       = "image_addr";
 
   static readonly safeCode        = "safe_code";
-
   static readonly deviceType      = "device_type";
-  static readonly userCode        = "user_code";
+  static readonly appName         = "app_name";
+
+  //static readonly userCode        = "user_code";
 }
 
 ///用于Http表示后收到的json转换对象

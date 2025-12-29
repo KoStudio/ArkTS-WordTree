@@ -104,11 +104,11 @@
             ],
             "actions": [
               "action.system.home",
-              "wxentity.action.open",         // 微信登录
-              "ohos.want.action.sendData",    // 打开分享的文件
-              "ohos.want.action.view",        // 查看动作
+//              "wxentity.action.open",         // 微信登录
+//              "ohos.want.action.sendData",    // 打开分享的文件
+//              "ohos.want.action.view",        // 查看动作
               "ohos.want.action.viewData",    // QQ登录配置
-              "action.system.open",           // 打开本地文件
+//              "action.system.open",           // 打开本地文件
             ],
             "uris": [
               {
@@ -117,23 +117,23 @@
                 "pathRegex": "\\b(auth|share)\\b",  // QQ登录配置;
                 "linkFeature": "Login"
               },
-              {
-                "scheme": "file",                // 必填，声明协议类型为文件,允许打开uri中以file://协议开头标识的本地文件
-                "type": "general.plain-text",    // 必填，表示支持打开的文件类型
-                "linkFeature": "FileOpen"        // 必填且大小写敏感，表示此URI的功能为文件打开
-              },
-              {
-                "scheme": "file",
-                "type": "general.comma-separated-values-text",
-                "linkFeature": "FileOpen"
-              },
+//              {
+//                "scheme": "file",                // 必填，声明协议类型为文件,允许打开uri中以file://协议开头标识的本地文件
+//                "type": "general.plain-text",    // 必填，表示支持打开的文件类型
+//                "linkFeature": "FileOpen"        // 必填且大小写敏感，表示此URI的功能为文件打开
+//              },
+//              {
+//                "scheme": "file",
+//                "type": "general.comma-separated-values-text",
+//                "linkFeature": "FileOpen"
+//              },
 
 
-              {
-                "scheme": "file",
-                "type": "com.zhika.hzkb",
-                "linkFeature": "FileOpen"
-              },
+//              {
+//                "scheme": "file",
+//                "type": "com.zhika.hzkb",
+//                "linkFeature": "FileOpen"
+//              },
 //              {
 //                "scheme": "file",
 //                "type": "application/hzkb",
@@ -172,8 +172,8 @@
       }
     ],
     "querySchemes": [
-      "weixin",     //微信登录
-      "wxopensdk",  //微信登录
+//      "weixin",     //微信登录
+//      "wxopensdk",  //微信登录
       "https",      //QQ登录
       "qqopenapi"   //QQ登录
     ]

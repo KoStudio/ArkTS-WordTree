@@ -20,6 +20,7 @@ import { FileUtility } from '../../../common/utils/FileUtility';
 import { WXLoginManager } from '../sns/wx/WxLoginManager';
 import { DebugLog } from '../../../app/debug/DebugLog';
 import { QQLoginManager } from '../sns/qq/QQLoginManager';
+import { AppSettings } from '../../../app/constants/AppSettings';
 
 class Prefs {
   static readonly Name              = "UserInfos";         // 存储用户信息的Key
@@ -99,9 +100,11 @@ export class UserManager {
   signUp(email: string, userName: string, password: string, completion: (succeed: boolean, msg: string | null) => void){
     const url                          = `${Servers.getRouteUrl(Route.login)}/signup`
     const params: HttpUtils.HttpParams = {};
-    params[UserCodingKeys.email]    = email
-    params[UserCodingKeys.userName] = userName
-    params[UserCodingKeys.password] = StringEncoder.encodedToBase64(password) ?? ''
+    params[UserCodingKeys.email]       = email
+    params[UserCodingKeys.userName]    = userName
+    params[UserCodingKeys.password]    = StringEncoder.encodedToBase64(password) ?? ''
+    params[UserCodingKeys.deviceType]  = DeviceUtil.getDeviceType()
+    params[UserCodingKeys.appName]     = AppSettings.App.appName
 
     Http.send(url, HttpUtils.Method.GET, params, completion)
   }
@@ -110,9 +113,11 @@ export class UserManager {
   login(email: string, password: string, completion: (succeed: boolean, msg: string | null) => void) {
 
     const params: HttpUtils.HttpParams  = {};
-    params[UserCodingKeys.email]     = email
-    params[UserCodingKeys.loginType] = LoginType.email.valueOf()
-    params[UserCodingKeys.password]  = StringEncoder.encodedToBase64(password) ?? ''
+    params[UserCodingKeys.email]      = email
+    params[UserCodingKeys.loginType]  = LoginType.email.valueOf()
+    params[UserCodingKeys.password]   = StringEncoder.encodedToBase64(password) ?? ''
+    params[UserCodingKeys.deviceType] = DeviceUtil.getDeviceType()
+    params[UserCodingKeys.appName]    = AppSettings.App.appName
 
     ///执行登录
     this.doLogin(params, completion);
@@ -120,11 +125,12 @@ export class UserManager {
 
   ///sns登录
   loginByIdentifier(identifier: string, userName: string, loginType: LoginType, completion: (succeed: boolean, msg: string | null) => void) {
-    const params: HttpUtils.HttpParams           = {};
+    const params: HttpUtils.HttpParams        = {};
     params[UserCodingKeys.loginIdentifier]    = identifier
     params[UserCodingKeys.loginType]          = loginType.valueOf()
     params[UserCodingKeys.userName]           = userName
     params[UserCodingKeys.deviceType]         = DeviceUtil.getDeviceType()
+    params[UserCodingKeys.appName]            = AppSettings.App.appName
 
     ///执行登录
     this.doLogin(params, completion);
@@ -136,7 +142,10 @@ export class UserManager {
   sendSafeCode(email: string, completion: (succeed: boolean, msg: string | null) => void) {
     const url                          = `${Servers.getRouteUrl(Route.login)}/safe_code`
     const params: HttpUtils.HttpParams = {};
-    params[UserCodingKeys.email]    = email
+    params[UserCodingKeys.email]       = email
+    params[UserCodingKeys.appName]     = AppSettings.App.appName
+    params['app_name_display']         = AppSettings.App.appDisplayName
+
     Http.send(url, HttpUtils.Method.GET, params, completion)
 
   }
@@ -146,49 +155,32 @@ export class UserManager {
   ///   - safeCode: 验证码
   ///   - password: 新密码
   ///   - completion: 回调，返回是否成功及错误信息
-   resetPassword(email: string, safeCode: string, password: string, completion:  (succeed: boolean, msg: string | null) => void) {
-     const url                          = `${Servers.getRouteUrl(Route.login)}/reset`
-     const params: HttpUtils.HttpParams = {};
-     params[UserCodingKeys.email]    = email
-     params[UserCodingKeys.safeCode] = safeCode
-     params[UserCodingKeys.password] = StringEncoder.encodedToBase64(password) ?? ''
-     Http.send(url, HttpUtils.Method.GET, params, completion)
-   }
+  resetPassword(email: string, safeCode: string, password: string, completion:  (succeed: boolean, msg: string | null) => void) {
+    const url                          = `${Servers.getRouteUrl(Route.login)}/reset`
+    const params: HttpUtils.HttpParams = {};
+    params[UserCodingKeys.email]       = email
+    params[UserCodingKeys.safeCode]    = safeCode
+    params[UserCodingKeys.password]    = StringEncoder.encodedToBase64(password) ?? ''
+    params[UserCodingKeys.appName]     = AppSettings.App.appName
 
-  /// 获取用户编码
-  getUserCode(completion:  (succeed: boolean, msg: string | null, code: string | null) => void) {
-    if (!(this.userId !== null)) {
-      return
-    }
-    const url                                  = `${Servers.getRouteUrl(Route.login)}/user_code`
-    const params: HttpUtils.HttpParams         = {};
-    params[UserCodingKeys.userId]              = this.userId
-
-    Http.request(url, HttpUtils.Method.GET, params, (succeed: boolean, msg: string | null, oneUserJsons: UserJson[] | null) => {
-
-      let userCode  = ''
-      if (oneUserJsons !== null && oneUserJsons.length > 0) {
-        const user  = User.from(oneUserJsons[0])
-        userCode    = user.userCode || ''
-      }
-      ///回调
-      completion(succeed, msg, userCode)
-    })
+    Http.send(url, HttpUtils.Method.GET, params, completion)
   }
 
   /// 注销用户账号
   /// - Parameter completion: 回调，返回是否成功及错误信息
-   loginOff(completion:  (succeed: boolean, msg: string | null) => void) {
-     if (!(this.userId !== null && this.loginIdentifier !== null && this.loginType !== null)) {
-       return
-     }
-     const url                                  = `${Servers.getRouteUrl(Route.login)}/remove`
-     const params: HttpUtils.HttpParams         = {};
-     params[UserCodingKeys.userId]           = this.userId
-     params[UserCodingKeys.loginIdentifier]  = this.loginIdentifier
-     params[UserCodingKeys.loginType]        = this.loginType
-     Http.send(url, HttpUtils.Method.GET, params, completion)
-   }
+  loginOff(completion:  (succeed: boolean, msg: string | null) => void) {
+    if (!(this.userId !== null && this.loginIdentifier !== null && this.loginType !== null)) {
+      return
+    }
+    const url                                  = `${Servers.getRouteUrl(Route.login)}/remove`
+    const params: HttpUtils.HttpParams         = {};
+    params[UserCodingKeys.userId]              = this.userId
+    params[UserCodingKeys.loginIdentifier]     = this.loginIdentifier
+    params[UserCodingKeys.loginType]           = this.loginType
+    params[UserCodingKeys.appName]             = AppSettings.App.appName
+
+    Http.send(url, HttpUtils.Method.GET, params, completion)
+  }
 
   //  退出登录
   logout() {
