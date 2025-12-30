@@ -15,8 +15,6 @@ import { LoginViewConfig } from './LoginConfig';
 import { Toast } from '../../common/utils/Toast';
 import { IconButton } from '../../app/views/buttons/IconButton';
 import { LoginType } from '../../models/managers/user/User';
-import { WXQRLoginView, WXQRLoginViewConfig } from '../../models/managers/sns/wx/WXQRLoginView';
-import { WXLoginManager } from '../../models/managers/sns/wx/WxLoginManager';
 import { logEvent } from '../../common/components/Logger/Logger';
 import { SubscriptionInfoManager } from '../../models/managers/subscription/SubscriptionInfoManager';
 import { QQLoginManager } from '../../models/managers/sns/qq/QQLoginManager';
@@ -80,7 +78,7 @@ export struct LoginView {
     }else  if (name === SignUpViewConfig.NavKey)        { SignUpView()
     }else  if (name === SendCodeViewConfig.NavKey)      { SendCodeView()
     }else  if (name === ResetPasswordViewConfig.NavKey) { ResetPasswordView({email: (param as ResetPasswordViewConfig.Param).email})
-    }else  if (name === WXQRLoginViewConfig.NavKey)     { WXQRLoginView({image: (param as WXQRLoginViewConfig.Param).image})
+    // }else  if (name === WXQRLoginViewConfig.NavKey)     { WXQRLoginView({image: (param as WXQRLoginViewConfig.Param).image})
     }else{ NavDestination(){Text(`<LoginView.ets>未配置navigationTo: ${name}`)}
     }
   }
@@ -296,20 +294,20 @@ export struct LoginView {
   }
   actionLoginWeChat(){
     ///微信 已安装
-    if (WXLoginManager.shared.isWxAppInstalled()) {
-      this.loginBySns(LoginType.wechat)
-    }else{
-      if (!this.checkAggree()) return;
-
-      UserManager.shared.loginBySns(LoginType.wechat_qr, (base64stringImage: string )=>{
-
-        //转向 QR扫码页面
-        WXQRLoginViewConfig.NavTo(this.navPath, {image: base64stringImage})
-
-      }, (succeed: boolean, msg:string|null)=>{
-        this.handleLoginCompletion(succeed, msg);
-      })
-    }
+    // if (WXLoginManager.shared.isWxAppInstalled()) {
+    //   this.loginBySns(LoginType.wechat)
+    // }else{
+    //   if (!this.checkAggree()) return;
+    //
+    //   UserManager.shared.loginBySns(LoginType.wechat_qr, (base64stringImage: string )=>{
+    //
+    //     //转向 QR扫码页面
+    //     WXQRLoginViewConfig.NavTo(this.navPath, {image: base64stringImage})
+    //
+    //   }, (succeed: boolean, msg:string|null)=>{
+    //     this.handleLoginCompletion(succeed, msg);
+    //   })
+    // }
   }
 
   // sns登录方法
