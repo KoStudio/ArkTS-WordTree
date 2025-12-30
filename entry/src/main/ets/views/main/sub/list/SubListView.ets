@@ -29,6 +29,7 @@ export struct SubListView {
   @Local searchText       : string                            = '';
   private focusController                                     = this.getUIContext().getFocusController();
   private searchController: SearchController                  = new SearchController();
+  private searchDebounceTimer: number | null                  = null; // debounce 定时器
 
   get wordsList(): SectionDatas<string, WordUser>[]{
     return [
@@ -123,7 +124,7 @@ export struct SubListView {
         })
         .onChange((val)=>{
           this.searchText = val
-          this.search(this.searchText)
+          this.debouncedSearch(this.searchText)
         })
         .onSubmit((value: string) => {
           //this.search(this.searchText)
@@ -214,10 +215,38 @@ export struct SubListView {
     if (toSearch) {
       //do nothing
     }else{
-
+      // 取消待执行的搜索
+      this.cancelDebouncedSearch()
+      
       this.searchController.clearPreviewText()
       this.focusController.clearFocus()
       this.searchText = ''
+    }
+  }
+
+  /**
+   * Debounce 搜索方法，延迟执行搜索以避免频繁触发
+   * @param text 搜索文本
+   * @param delay 延迟时间（毫秒），默认 300ms
+   */
+  private debouncedSearch(text: string, delay: number = 300): void {
+    // 清除之前的定时器
+    this.cancelDebouncedSearch()
+    
+    // 设置新的定时器
+    this.searchDebounceTimer = setTimeout(() => {
+      this.search(text)
+      this.searchDebounceTimer = null
+    }, delay)
+  }
+
+  /**
+   * 取消待执行的 debounce 搜索
+   */
+  private cancelDebouncedSearch(): void {
+    if (this.searchDebounceTimer !== null) {
+      clearTimeout(this.searchDebounceTimer)
+      this.searchDebounceTimer = null
     }
   }
 
