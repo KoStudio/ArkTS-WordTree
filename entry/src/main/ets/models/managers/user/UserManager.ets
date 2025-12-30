@@ -17,9 +17,7 @@ import { dAppFilefolder, dMyDataFolderPath } from '../../../app/constants/AppDef
 import { createFolderIfNeeds } from '../../../app/constants/AppFunctions';
 import { SimpleDownloader } from '../../../common/components/SimpleDownloader/SimpleDownloader';
 import { FileUtility } from '../../../common/utils/FileUtility';
-import { WXLoginManager } from '../sns/wx/WxLoginManager';
 import { DebugLog } from '../../../app/debug/DebugLog';
-import { QQLoginManager } from '../sns/qq/QQLoginManager';
 import { AppSettings } from '../../../app/constants/AppSettings';
 
 class Prefs {
@@ -248,51 +246,51 @@ export class UserManager {
         completion(false, `登录失败: ${error.code}, ${error.message}`)
       });
     }else if (type === LoginType.wechat){
-      WXLoginManager.shared.login((success: boolean, isCancelled: boolean, error?: string, user?: SnsOneUser) => {
-
-        if (user) {
-          ///登录成功，向服务器写入信息
-          this.createServerUserForSnsLogin(type, true, null, user, completion)
-
-          // 登录成功，处理用户信息
-          DebugLog.i(`登录成功，用户ID: ${user.userId}`);
-        }else{
-          // 登录失败，处理错误
-          completion(false, `${error}`)
-        }
-
-      })
+      // WXLoginManager.shared.login((success: boolean, isCancelled: boolean, error?: string, user?: SnsOneUser) => {
+      //
+      //   if (user) {
+      //     ///登录成功，向服务器写入信息
+      //     this.createServerUserForSnsLogin(type, true, null, user, completion)
+      //
+      //     // 登录成功，处理用户信息
+      //     DebugLog.i(`登录成功，用户ID: ${user.userId}`);
+      //   }else{
+      //     // 登录失败，处理错误
+      //     completion(false, `${error}`)
+      //   }
+      //
+      // })
     }else if (type === LoginType.wechat_qr){
-      WXLoginManager.shared.loginQr(onReceivedQrImage,(success: boolean, isCancelled: boolean, error?: string, user?: SnsOneUser) => {
-
-        if (user) {
-          ///登录成功，向服务器写入信息
-          this.createServerUserForSnsLogin(type, true, null, user, completion)
-
-          // 登录成功，处理用户信息
-          DebugLog.i(`登录成功，用户ID: ${user.userId}`);
-        }else{
-          // 登录失败，处理错误
-          completion(false, `${error}`)
-        }
-
-      })
+      // WXLoginManager.shared.loginQr(onReceivedQrImage,(success: boolean, isCancelled: boolean, error?: string, user?: SnsOneUser) => {
+      //
+      //   if (user) {
+      //     ///登录成功，向服务器写入信息
+      //     this.createServerUserForSnsLogin(type, true, null, user, completion)
+      //
+      //     // 登录成功，处理用户信息
+      //     DebugLog.i(`登录成功，用户ID: ${user.userId}`);
+      //   }else{
+      //     // 登录失败，处理错误
+      //     completion(false, `${error}`)
+      //   }
+      //
+      // })
     }else if (type === LoginType.qq){
 
-      QQLoginManager.shared.loginWithCallback((success: boolean, isCancelled: boolean, error?: string, user?: SnsOneUser) => {
-
-        if (user) {
-          ///登录成功，向服务器写入信息
-          this.createServerUserForSnsLogin(type, true, null, user, completion)
-
-          // 登录成功，处理用户信息
-          DebugLog.i(`登录成功，用户ID: ${user.userId}`);
-        }else{
-          // 登录失败，处理错误
-          completion(false, `${error}`)
-        }
-
-      })
+      // QQLoginManager.shared.loginWithCallback((success: boolean, isCancelled: boolean, error?: string, user?: SnsOneUser) => {
+      //
+      //   if (user) {
+      //     ///登录成功，向服务器写入信息
+      //     this.createServerUserForSnsLogin(type, true, null, user, completion)
+      //
+      //     // 登录成功，处理用户信息
+      //     DebugLog.i(`登录成功，用户ID: ${user.userId}`);
+      //   }else{
+      //     // 登录失败，处理错误
+      //     completion(false, `${error}`)
+      //   }
+      //
+      // })
 
     }
   }

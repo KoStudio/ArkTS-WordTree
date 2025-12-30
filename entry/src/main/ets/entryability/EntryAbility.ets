@@ -55,11 +55,11 @@ export default class EntryAbility extends UIAbility {
 
   onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     ///配置微信登录回调
-    import('../models/managers/sns/wx/WxLoginManager').then((it)=>{it.WXLoginManager.shared.handleWeChatCallIfNeed(want)})
+    // import('../models/managers/sns/wx/WxLoginManager').then((it)=>{it.WXLoginManager.shared.handleWeChatCallIfNeed(want)})
 
     //QQ登录配置
 
-    import('../models/managers/sns/qq/QQLoginManager').then((it)=> {it.QQLoginManager.shared.handleResult(want)})
+    // import('../models/managers/sns/qq/QQLoginManager').then((it)=> {it.QQLoginManager.shared.handleResult(want)})
   }
 
   onDestroy(): void {
@@ -180,13 +180,13 @@ export default class EntryAbility extends UIAbility {
     ////////////////////////////////////////////////////////////
 
     ///配置微信登录回调
-    import('../models/managers/sns/wx/WxLoginManager').then((it)=>{
-      // 尽早初始化微信SDK
-      it.WXLoginManager.shared.registerApp();
-
-      //处理回调
-      it.WXLoginManager.shared.handleWeChatCallIfNeed(want)}
-    )
+    // import('../models/managers/sns/wx/WxLoginManager').then((it)=>{
+    //   // 尽早初始化微信SDK
+    //   it.WXLoginManager.shared.registerApp();
+    //
+    //   //处理回调
+    //   it.WXLoginManager.shared.handleWeChatCallIfNeed(want)}
+    // )
   }
 
 
