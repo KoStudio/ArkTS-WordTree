@@ -113,6 +113,7 @@ export class UserDataManager {
             params[UserDataCodingKeys.userId]             = userId!.toString()
             params[UserDataCodingKeys.bookId]             = bookId!.toString()
             params[UserDataCodingKeys.userDataAddr]       = objectName
+            params[UserDataCodingKeys.appName]            = dAppName
 
             Http.send(url, HttpUtils.Method.POST, params, completion)
 
