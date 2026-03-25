@@ -865,7 +865,7 @@
     {"name": "set_txt_member_will_expire"              , "value": "会员到期时间：%s"},
     {"name": "set_txt_member_was_expired"              , "value": "会员已于：%s 到期"},
     {"name": "set_txt_data_last_backup"                , "value": "上次备份：%s"},
-    {"name": "set_txt_data_to_restore"                 , "value": "从云端恢复数据"},
+    {"name": "set_txt_data_to_restore"                 , "value": "从云端恢复: %s 的学习记录"},
     {"name": "set_txt_about_version"                   , "value": "版本：%s"},
     {"name": "set_alert_clear_msg"                     , "value": "清空本机缓存数据？"},
     {"name": "set_alert_clear_btn_yes"                 , "value": "清空"},

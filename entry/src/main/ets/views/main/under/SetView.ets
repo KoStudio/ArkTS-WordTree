@@ -27,7 +27,7 @@ import { SimpleEventBus } from "../../../common/components/eventbus/SimpleEventB
 import { HwSubscriber } from "../../../common/iab/huawei/HwSubscriber";
 import { SubscriptionInfoManager } from "../../../models/managers/subscription/SubscriptionInfoManager";
 import { MemberManager } from "../../../models/managers/member/MemberManager";
-import { getStringF } from "../../../common/utils/ResourceUtils";
+import { getString, getStringF } from "../../../common/utils/ResourceUtils";
 import { MemberView } from "../../setting/member/MemberView";
 import { DiskStatus } from "../../../app/constants/DiskStatus";
 import { CBookManager } from "../../../common/components/Sounds/Cloud/Download/CBook/CBookManager";
@@ -606,7 +606,7 @@ export struct SetView {
     if (this.userData.updateDate) {
       const dateStr = DateUtils.toDateTimeString(this.userData.updateDate)
       this.subTitleForBackup  =  $r('app.string.set_txt_data_last_backup', dateStr)
-      this.subTitleForRestore =  $r('app.string.set_txt_data_to_restore')
+      this.subTitleForRestore =  getStringF($r('app.string.set_txt_data_to_restore'), (BookManager.shared.currentBook?.bookName　?? ""))
     }else {
       this.subTitleForBackup  = undefined
       this.subTitleForRestore = undefined

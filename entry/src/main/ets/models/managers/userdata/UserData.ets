@@ -4,6 +4,8 @@ export class UserDataCodingKeys {
 
   static readonly userId       = "user_id";
   static readonly bookId       = "book_id";
+  // Dcs 接口需要：用于区分客户端/包名
+  static readonly appName      = "app_name";
   static readonly userDataAddr = "user_data_addr";
   static readonly createDate   = "create_date";
   static readonly updateDate   = "update_date";

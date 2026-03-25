@@ -5,6 +5,7 @@ import { getString } from '../../common/utils/ResourceUtils';
 import { DebugFlg } from '../debug/DebugFlg';
 import { AppConstants } from './AppConstants';
 import { getAppContext } from './AppContext';
+import { AppSettings } from './AppSettings';
 
 export class MyDatas  {
   static readonly FolderName = 'MyDatas'
@@ -62,3 +63,5 @@ export const dFlashFlag       = "\u26a1";       // ⚡
 export const dStarFlag        = "\u2728";       // ✨
 export const dCorrectFlag     = "\u2705";    // ✅
 export const dWrongFlag       = "\u274c";      // ❌
+
+export const dAppName         = AppSettings.App.appName //WordTree
