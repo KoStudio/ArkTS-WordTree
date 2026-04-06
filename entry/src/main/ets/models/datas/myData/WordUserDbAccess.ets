@@ -67,6 +67,11 @@ export class WordUserDbAccess extends UserDbSuperAccess {
 
   private constructor(){ super();}
 
+  // 备份前关闭当前书的 WAL，确保 learnDb 变更已全部写入主库（与 Android CUserDataManager、iOS `WordManager.sharedManager.closeWalIfNeeds` 一致）
+  closeWalIfNeeds(): Promise<void> {
+    return DBAccessor.closeWalIfNeedsAtPath(this.getDbPath());
+  }
+
   //
   // // 私有构造函数
   // private constructor() {

@@ -6,6 +6,8 @@ import { SystemSizeManager as SystemSizeManager } from '../common/managers/Syste
 
 import { BundleUtils } from '../common/utils/BundleUtils';
 import { DebugFlg } from '../app/debug/DebugFlg';
+import { EBookExportImportManager } from '../models/managers/ebook/EBookExportImportManager';
+import { PrivacyManager } from '../common/components/Privacy/PrivacyManager';
 
 
 const DOMAIN = 0x0000;
@@ -20,6 +22,7 @@ export default class EntryAbility extends UIAbility {
     ///初始化全局context
     initAppContext(this.context)
 
+    EBookExportImportManager.offerWantForWteOpenIfNeed(want)
 
     ///初始化ShareUtils
     import('../common/utils/ShareUtils').then((it)=>{it.ShareUtils.init(this.context)})
@@ -57,8 +60,13 @@ export default class EntryAbility extends UIAbility {
     ///配置微信登录回调
     // import('../models/managers/sns/wx/WxLoginManager').then((it)=>{it.WXLoginManager.shared.handleWeChatCallIfNeed(want)})
 
-    //QQ登录配置
+    EBookExportImportManager.offerWantForWteOpenIfNeed(want)
 
+    if (PrivacyManager.shared.checkAgreement()) {
+      EBookExportImportManager.tryPresentPendingWteImportIfReady()
+    }
+
+    //QQ登录配置
     import('../models/managers/sns/qq/QQLoginManager').then((it)=> {it.QQLoginManager.shared.handleResult(want)})
   }
 

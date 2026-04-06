@@ -21,6 +21,7 @@ import { MemberView } from '../views/setting/member/MemberView';
 import { BookListViewConfig } from '../views/books/BookListView';
 import { StatusBarUtil } from '../common/utils/StatusBarUtils';
 import { OnlineSearchWordsViewConfig } from '../views/onlinesearch/OnlineSearchWordsView';
+import { EBookExportImportManager } from '../models/managers/ebook/EBookExportImportManager';
 
 
 @Entry
@@ -80,6 +81,8 @@ struct Index {
       Logger.initilaze()
 
       logEvent("index_showed") //日志
+
+      EBookExportImportManager.tryPresentPendingWteImportIfReady()
     }
   }
 

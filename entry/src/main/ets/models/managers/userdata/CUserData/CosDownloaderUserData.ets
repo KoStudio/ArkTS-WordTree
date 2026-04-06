@@ -1,9 +1,9 @@
 import fs from '@ohos.file.fs';
 import { CosXmlBaseService, HttpProgress, PutObjectRequest, GetObjectRequest,
   UploadTask, DownloadTask, CosError, CosXmlUploadTaskResult } from '@tencentcloud/cos';
-import { CurrentBucket, CosService } from '../../../common/components/Sounds/Cloud/Download/CDownloadable/CosService';
-import { FileUtility } from '../../../common/utils/FileUtility';
-import { DebugLog } from '../../../app/debug/DebugLog';
+import { CurrentBucket, CosService } from '../../../../common/components/Sounds/Cloud/Download/CDownloadable/CosService';
+import { FileUtility } from '../../../../common/utils/FileUtility';
+import { DebugLog } from '../../../../app/debug/DebugLog';
 
 // MARK: - 常量定义
 namespace CosConfig {

@@ -1,992 +1,3536 @@
 {
   "string": [
-    {"name": "module_desc"                                  , "value": "module description"           },
-    {"name": "EntryAbility_desc"                            , "value": "description"                  },
-    {"name": "EntryAbility_label"                           , "value": "label"                        },
-
-    {"name": "app_share_title"                              , "value": "高效的英文单词学习工具"},
-
-    {"name": "main_words_cbook_msg_update_succeed"          , "value": "更新成功"},
-
-    { "name": "nav_title_home"                   , "value": "单词树" },
-    { "name": "nav_title_books"                  , "value": "词汇管理" },
-    { "name": "nav_title_quick_learn_unit"       , "value": "快速记忆" },
-    { "name": "nav_title_learn_unit"             , "value": "单元列表" },
-    { "name": "nav_title_test"                   , "value": "测验选择" },
-    { "name": "nav_title_challenge"              , "value": "挑战选择" },
-    { "name": "nav_title_advice"                 , "value": "反馈建议" },
-    { "name": "nav_title_reclaim"                , "value": "单词纠错" },
-    { "name": "nav_title_books_all"              , "value": "单词下载" },
-    { "name": "nav_title_iap"                    , "value": "应用内购买" },
-    { "name": "nav_title_login"                  , "value": "登录" },
-    { "name": "nav_title_set_more"               , "value": "设置" },
-    { "name": "nav_title_mine_memo"              , "value": "我的笔记" },
-    { "name": "nav_title_mine_record"            , "value": "我的录音" },
-    { "name": "nav_title_mine_deletes"           , "value": "我删除的单词" },
-    { "name": "nav_title_set_terms"              , "value": "服务条款" },
-    { "name": "nav_title_set_privacy"            , "value": "隐私协议" },
-    { "name": "nav_title_set_contact"            , "value": "联系客服" },
-
-    { "name": "nav_title_test_scope_unit"        , "value": "单元选择" },
-    { "name": "nav_title_test_scope_all"         , "value": "全部单词" },
-    { "name": "nav_title_test_scope_favorite"    , "value": "收藏单词" },
-    { "name": "nav_title_test_scope_part"        , "value": "part别" },
-    { "name": "nav_title_test_scope_mistake"     , "value": "常错单词" },
-
-    { "name": "nav_title_test_start"             , "value": "测试设定" },
-    { "name": "nav_title_test_result"            , "value": "测试结果" },
-
-    { "name": "main_tab_title_home"              , "value": "学习" },
-    { "name": "main_tab_title_list"              , "value": "一览" },
-    { "name": "main_tab_title_review"            , "value": "复习" },
-    { "name": "main_tab_title_report"            , "value": "报告" },
-    { "name": "main_tab_title_social"            , "value": "社区" },
-
-    { "name": "main_msg_no_books"                , "value": "请先下载单词！" },
-
-    { "name": "no_books_exit_cfm_title"          , "value": "退出应用" },
-    { "name": "no_books_exit_cfm_msg"            , "value": "您确定要退出应用吗？" },
-    { "name": "no_books_exit_cfm_yes"            , "value": "退出应用" },
-    { "name": "no_books_exit_cfm_no"             , "value": "取消" },
-
-    { "name": "main_study_txt_info_units"        , "value": "%d个单元" },
-    { "name": "main_study_txt_info_words"        , "value": "%d个单词" },
-    { "name": "main_study_txt_info_learned"      , "value": "已学习:" },
-    { "name": "main_study_txt_info_tested"       , "value": "已测验:" },
-    { "name": "main_study_txt_no_books"          , "value": "请选择要学习的词汇！" },
-    { "name": "main_study_btn_quickremember"     , "value": "快速记忆" },
-    { "name": "main_study_btn_study"             , "value": "学习" },
-    { "name": "main_study_btn_test"              , "value": "测验" },
-    { "name": "main_study_btn_challenge"         , "value": "挑战" },
-
-    { "name": "main_curve_txt_curve"             , "value": "记忆曲线" },
-    { "name": "main_curve_btn_study_start"       , "value": "开始学习" },
-    { "name": "main_curve_btn_create_plam"       , "value": "+创建学习计划" },
-    { "name": "main_curve_btn_no_words_today"    , "value": "今天没有学习" },
-    { "name": "main_curve_txt_info_create"       , "value": "使用记忆曲线创建学习计划" },
-    { "name": "main_curve_txt_info_days"         , "value": "第%d天，%d个单词" },
-    { "name": "main_curve_txt_info_days2"        , "value": "需要%d天， 共%d个单词" },
-
-    { "name": "main_other_link_txt"              , "value": "使用「速词」创建单词集" },
-    { "name": "main_other_link_title"            , "value": "更多应用" },
-
-    { "name": "books_tab_title_mybooks"          , "value": "我的词汇" },
-    { "name": "books_tab_title_allbooks"         , "value": "所有词汇" },
-    { "name": "books_txt_info_counts"            , "value": "%d个单元，共%d个单词" },
-    { "name": "books_txt_info_downloads"         , "value": "下载%d次" },
-    { "name": "books_txt_info_size"              , "value": "单词:%s 发音:%s" },
-    { "name": "books_txt_info_golds"             , "value": "金币:%d个" },
-    { "name": "books_btn_title_to_download"      , "value": "点击下载" },
-    { "name": "books_btn_title_downloaded"       , "value": "已下载" },
-    { "name": "books_msg_download_start_word"    , "value": "词汇下载中.." },
-    { "name": "books_msg_download_start_sound"   , "value": "发音下载中.." },
-    { "name": "books_btn_title_edit"             , "value": "编辑" },
-    { "name": "books_btn_title_buygolds"         , "value": "购买金币" },
-    { "name": "books_btn_title_reject_buy"       , "value": "就不买" },
-    { "name": "books_msg_download_succeed"       , "value": "下载成功！" },
-    { "name": "books_msg_download_failed"        , "value": "下载失败,请稍后再试！" },
-    { "name": "books_msg_golds_shotage"           , "value": "金币不足" },
-    { "name": "books_msg_golds_needs"             , "value": "需要金币%d个， 剩余金币%d个。" },
-    { "name": "books_msg_golds_costed"            , "value": "用去金币%d个， 剩余金币%d个。" },
-    { "name": "gain_gold_for_install"             , "value": "初次安装成功，获得%d个金币!" },
-    { "name": "set_txt_got_gold"                  , "value": "获得%d个金币，已经有金币%d个" },
-    { "name": "books_msg_updated_book_txt"       , "value": "更新:%s 词汇成功！" },
-    { "name": "books_msg_updated_book_sound"     , "value": "更新:%s 声音成功！" },
-    { "name": "books_msg_need_disk_space"        , "value": "磁盘空间不足！" },
-    { "name": "books_msg_change_book"            , "value": "切换词汇到： %s" },
-    { "name": "books_btn_title_delete"           , "value": "删除" },
-    { "name": "books_txt_selected"               , "value": "选中" },
-
-    { "name": "list_tab_title_abc"                    , "value": "abc" },
-    { "name": "list_tab_title_part"                   , "value": "parts" },
-    { "name": "list_tab_title_favorite"               , "value": "收藏夹" },
-    { "name": "list_tab_title_mistake"                , "value": "常错单词" },
-    { "name": "list_tab_title_still"                  , "value": "未测验" },
-
-    { "name": "learn_detail_txt_info_correct"         , "value": "正确:" },
-    { "name": "learn_detail_txt_info_wrong"           , "value": "不正确:" },
-    { "name": "learn_detail_txt_wordchang"            , "value": "【单词变形】" },
-    { "name": "learn_detail_txt_mnemonic"             , "value": "【词根助记】" },
-    { "name": "learn_detail_txt_example"              , "value": "【例句】" },
-    { "name": "learn_detail_txt_synwords"             , "value": "【同义词】" },
-    { "name": "learn_detail_txt_asynwords"            , "value": "【反义词】" },
-    { "name": "learn_detail_txt_usedphrase"           , "value": "【常用短语】" },
-    { "name": "learn_detail_txt_en2en"                , "value": "【英英释义】" },
-    { "name": "learn_detail_txt_discriminate"         , "value": "【详细说明】" },
-    { "name": "learn_detail_txt_samerootdesc"         , "value": "【同根词】" },
-    { "name": "learn_detail_txt_memo"                 , "value": "笔记" },
-    { "name": "learn_detail_btn_reclaim"              , "value": "纠错" },
-
-    { "name": "learn_detail_reclaim_txt_pre1"         , "value": "单词翻译有误" },
-    { "name": "learn_detail_reclaim_txt_pre2"         , "value": "单词音标有误" },
-    { "name": "learn_detail_reclaim_txt_pre3"         , "value": "单词发音有误" },
-    { "name": "learn_detail_reclaim_txt_pre4"         , "value": "例句翻译有误" },
-    { "name": "learn_detail_reclaim_txt_pre5"         , "value": "例句和单词不匹配" },
-    { "name": "learn_detail_reclaim_txt_pre6"         , "value": "例句发音有误" },
-
-    { "name": "learn_detail_reclaim_placehold"        , "value": "手动填写错误信息" },
-    { "name": "learn_detail_reclaim_txt_info"         , "value": "如果发现此单词(翻译，例句，发音等)有错误，请向我们发送报告。\n经确认之后，我们会及时更新数据库！" },
-
-    { "name": "learn_detail_to_test_msg"              , "value": "要用这些单词进行测验或挑战吗？" },
-    { "name": "learn_detail_to_test_btn_test"         , "value": "我要测验" },
-    { "name": "learn_detail_to_test_btn_chlg"         , "value": "我要挑战" },
-    { "name": "learn_detail_to_test_btn_spell"        , "value": "拼写练习" },
-    { "name": "learn_detail_to_test_btn_cancel"       , "value": "暂时不要" },
-
-    { "name": "learn_detail_info_txt_hide_tip"        , "value": "【点击显示中文翻译】" },
-    { "name": "learn_detail_info_txt_hidetrans"       , "value": "隐藏翻译" },
-    { "name": "learn_detail_info_txt_autopron"        , "value": "自动发音(单词)" },
-    { "name": "learn_detail_info_txt_autopron2"       , "value": "自动发音(例句)" },
-    { "name": "learn_detail_info_txt_pron_speed"      , "value": "发音播放速度" },
-    { "name": "learn_detail_info_txt_pron_times"      , "value": "发音次数" },
-    { "name": "learn_detail_info_txt_font_style"      , "value": "字体大小" },
-    { "name": "learn_detail_info_txt_font_style_1"    , "value": "小" },
-    { "name": "learn_detail_info_txt_font_style_2"    , "value": "中" },
-    { "name": "learn_detail_info_txt_font_style_3"    , "value": "大" },
-    { "name": "learn_detail_info_txt_set_order"       , "value": "调整显示顺序" },
-    { "name": "learn_detail_info_txt_pron_gap"        , "value": "自动发音间隔" },
-    { "name": "learn_detail_info_txt_pron_gap_1"      , "value": "短" },
-    { "name": "learn_detail_info_txt_pron_gap_2"      , "value": "中" },
-    { "name": "learn_detail_info_txt_pron_gap_3"      , "value": "长" },
-
-    { "name": "wrang_times_1_only"              , "value": "仅1次" },
-    { "name": "wrang_times_1_3"                 , "value": "1~3次" },
-    { "name": "wrang_times_3_5"                 , "value": "3~5次" },
-    { "name": "wrang_times_5_10"                , "value": "5~10次" },
-    { "name": "wrang_times_10_over"             , "value": "10次以上" },
-
-    { "name": "test_top_txt_unit"               , "value": "单元别" },
-    { "name": "test_top_txt_all"                , "value": "全部单词" },
-    { "name": "test_top_txt_part"               , "value": "part别" },
-    { "name": "test_top_txt_mistake"            , "value": "常错单词" },
-    { "name": "test_top_txt_favorite"           , "value": "收藏单词" },
-
-    { "name": "test_scope_btn_selectall"        , "value": "全部选择" },
-    { "name": "test_scope_btn_next"             , "value": "下一步" },
-    { "name": "test_scope_err"                  , "value": "请选择出题范围。" },
-
-    { "name": "test_question_scope_txt"         , "value": "测验范围" },
-    { "name": "test_question_scope_all"         , "value": "全部" },
-    { "name": "test_question_scope_still"       , "value": "未测验" },
-    { "name": "test_question_scope_wrang"       , "value": "常错" },
-
-    { "name": "test_question_count_txt"         , "value": "问题数" },
-    { "name": "test_question_count_1"           , "value": "10问" },
-    { "name": "test_question_count_2"           , "value": "20问" },
-    { "name": "test_question_count_3"           , "value": "50问" },
-    { "name": "test_question_count_4"           , "value": "100问" },
-
-    { "name": "test_question_type_txt"          , "value": "出题种类" },
-    { "name": "test_question_type_eiwa"         , "value": "英→中" },
-    { "name": "test_question_type_waei"         , "value": "中→英" },
-
-    { "name": "test_question_speed_txt"         , "value": "出题速度" },
-    { "name": "test_question_speed_slow"        , "value": "慢速" },
-    { "name": "test_question_speed_normal"      , "value": "中速" },
-    { "name": "test_question_speed_fast"        , "value": "快速" },
-
-    { "name": "test_question_order_txt"         , "value": "出题顺序" },
-    { "name": "test_question_order_serialno"    , "value": "番号顺序" },
-    { "name": "test_question_order_random"      , "value": "随机" },
-
-    { "name": "test_question_pronounce_txt"     , "value": "自动发音" },
-    { "name": "test_question_pronounce_on"      , "value": "on" },
-    { "name": "test_question_pronounce_off"     , "value": "off" },
-    { "name": "test_btn_start"                  , "value": "Start" },
-
-    { "name": "test_running_btn_pause"          , "value": "暂停" },
-    { "name": "test_running_txt_cnt"            , "value": "%d/%d问" },
-
-    { "name": "spell_running_txt_try_again"     , "value": "再试一次" },
-    { "name": "spell_running_txt_input_answer"  , "value": "输入答案" },
-    { "name": "spell_running_txt_right"         , "value": "正确" },
-    { "name": "spell_running_txt_wrong"         , "value": "错误" },
-    { "name": "spell_running_btn_unknown"       , "value": "不知道" },
-    { "name": "spell_running_btn_done"          , "value": "完成" },
-
-    { "name": "test_result_rate_txt"            , "value": "正确率" },
-    { "name": "test_result_info"                , "value": "全:%d问  正确:%d问" },
-    { "name": "test_result_btn_retry"           , "value": "再测一次" },
-    { "name": "test_result_btn_mistake"         , "value": "再测一次\n(仅错误单词)" },
-    { "name": "test_result_btn_next"            , "value": "下一问题" },
-    { "name": "test_result_all_corrected"       , "value": "全部正确" },
-    { "name": "test_result_share_app"           , "value": "分享" },
-    { "name": "test_result_share_title"         , "value": "%s 正确率:%s!" },
-    { "name": "test_result_share_description"   , "value": "我在《单词树》测验 %s，正确率:%s!  " },
-
-    { "name": "test_result_comment_studyharder" , "value": "Come on!Study harder!" },
-    { "name": "test_result_comment_good"        , "value": "Good!Keep it up!" },
-    { "name": "test_result_comment_welldone"    , "value": "Great!Well done!" },
-
-    { "name": "data_refresh_pull"                 , "value": "下拉刷新" },
-    { "name": "data_refresh_release"              , "value": "释放更新" },
-    { "name": "data_refresh_loading"              , "value": "加载中.." },
-    { "name": "data_loading_more"                 , "value": "加载更多.." },
-    { "name": "data_no_more_datas"                , "value": "没有更多数据" },
-
-    { "name": "memo_compose_btn_save"             , "value": "保存" },
-    { "name": "memo_compose_menu_edit"            , "value": "编辑" },
-    { "name": "memo_compose_menu_done"            , "value": "完成" },
-    { "name": "memo_compose_btn_save_share"       , "value": "分享" },
-    { "name": "memo_author_txt"                   , "value": "作者" },
-    { "name": "memo_author_self"                  , "value": "我" },
-    { "name": "memo_pri_memo_title"               , "value": "笔记" },
-    { "name": "memo_pri_memo_txt"                 , "value": "写笔记.." },
-    { "name": "memo_pub_memo_title"               , "value": "分享笔记" },
-
-    { "name": "memo_msg_no_share_memo"            , "value": "暂无分享笔记." },
-    { "name": "memo_msg_save_success"             , "value": "保存笔记成功。" },
-    { "name": "memo_msg_share_start"              , "value": "笔记分享中..." },
-    { "name": "memo_msg_share_success"            , "value": "分享笔记成功。" },
-    { "name": "memo_msg_remove_share_success"     , "value": "已删除分享笔记。" },
-    { "name": "memo_msg_add_share_success"        , "value": "笔记添加成功。" },
-    { "name": "memo_msg_add_share_error"          , "value": "最多只能添加%d条分享笔记。" },
-    { "name": "memo_msg_remove_memo_success"      , "value": "已删除笔记。" },
-    { "name": "memo_msg_audit_fail"               , "value": "内容不合规或包含敏感字符" },
-
-    { "name": "help_caption_home_btn_menu"        , "value": "设置菜单" },
-    { "name": "help_caption_home_btn_more"        , "value": "下载更多词汇" },
-
-    { "name": "help_caption_detail_btn_favorite"  , "value": "左右滑动星星可以收藏单词" },
-    { "name": "help_caption_detail_btn_info"      , "value": "可设置自动发音，循环滚动" },
-    { "name": "help_caption_detail_btn_record"    , "value": "录音" },
-    { "name": "help_caption_detail_btn_contrast"  , "value": "录音播放" },
-    { "name": "help_caption_card_btn_show_detail" , "value": "点击单词，查看详细释义" },
-    { "name": "help_caption_detail_btn_del_word"  , "value": "下拉页面，\n删除已会单词" },
-
-    { "name": "set_cell_txt_share_info"           , "value": "分享应用，可立即获赠单词发音" },
-    { "name": "set_msg_share_done"                , "value": "分享成功，获赠单词发音 %d次 \n [今日剩余%d次]" },
-    { "name": "instruction_nav_title"             , "value": "使用帮助" },
-
-    { "name": "plan_create_nav_title"             , "value": "设置学习计划" },
-    { "name": "plan_create_txt_name"              , "value": "计划名称" },
-    { "name": "plan_create_chk_reviewday"         , "value": "+%d天" },
-    { "name": "plan_create_chk_reviewdays"        , "value": "+%d天" },
-    { "name": "plan_create_words_cnt"             , "value": "共%d个词语" },
-    { "name": "plan_create_words_cnts"            , "value": "共%d个词语" },
-    { "name": "plan_create_btn_days_cnt"          , "value": "%d天" },
-    { "name": "plan_create_btn_days_cnts"         , "value": "%d天" },
-
-    { "name": "plan_create_txt_everyday"          , "value": "每天" },
-    { "name": "plan_create_txt_everydayunit"      , "value": "个" },
-    { "name": "plan_create_txt_need"              , "value": "需要" },
-    { "name": "plan_create_txt_review"            , "value": "复习(艾宾浩斯记忆曲线)" },
-    { "name": "plan_create_txt_start_date"        , "value": "开始于：%s" },
-
-    { "name": "plan_create_btn_update"            , "value": "更新计划" },
-    { "name": "plan_create_btn_save"              , "value": "保存计划" },
-
-    { "name": "plan_create_msg_need_name"         , "value": "请输入计划名称" },
-    { "name": "plan_create_alert_update_title"    , "value": "确认要更新吗？" },
-    { "name": "plan_create_alert_update_msg"      , "value": "更新计划将会删除已存在的学习记录" },
-    { "name": "plan_create_alert_update_btn_yes"  , "value": "更新计划" },
-    { "name": "plan_create_alert_btn_cancel"      , "value": "取消" },
-    { "name": "plan_create_alert_msg_making"      , "value": "计划制作中.." },
-    { "name": "plan_create_alert_msg_make_done"   , "value": "计划制作完成" },
-
-    { "name": "plan_detail_nav_title"              , "value": "计划详细" },
-    { "name": "plan_detail_txt_learned"            , "value": "已学习" },
-    { "name": "plan_detail_txt_deleted"            , "value": "已删除" },
-    { "name": "plan_detail_txt_wordsall"           , "value": "单词总数" },
-    { "name": "plan_detail_txt_everydaystudy"      , "value": "每天学习" },
-    { "name": "plan_detail_txt_review"             , "value": "复习" },
-    { "name": "plan_detail_txt_cur"                , "value": "当前" },
-    { "name": "plan_detail_txt_needs"              , "value": "共需要" },
-    { "name": "plan_detail_txt_startdate"          , "value": "开始日期" },
-    { "name": "plan_detail_txt_enddate"            , "value": "预计结束日期" },
-
-    { "name": "plan_detail_words_cnt"              , "value": "%d个" },
-    { "name": "plan_detail_review_day"             , "value": "+%d天" },
-    { "name": "plan_detail_review_days"            , "value": "+%d天" },
-    { "name": "plan_detail_cur_day"                , "value": "第%d天" },
-    { "name": "plan_detail_days_cnt"               , "value": "%d天" },
-    { "name": "plan_detail_days_cnts"              , "value": "%d天" },
-
-    { "name": "plan_str_today"                     , "value": "今天" },
-    { "name": "plan_str_yesterday"                 , "value": "昨天" },
-    { "name": "plan_str_tomorrow"                  , "value": "明天" },
-
-    { "name": "dayofs_nav_title"                   , "value": "查看计划" },
-    { "name": "dayofs_alert_btn_detail"            , "value": "查看计划详细信息" },
-    { "name": "dayofs_alert_btn_edit"              , "value": "修改计划" },
-    { "name": "dayofs_alert_btn_remove"            , "value": "删除计划" },
-    { "name": "dayofs_alert_btn_clear"             , "value": "清空学习记录" },
-    { "name": "dayofs_alert_btn_cancel"            , "value": "取消" },
-
-    { "name": "dayofs_cell_txt_study"              , "value": "学习" },
-    { "name": "dayofs_cell_txt_review"             , "value": "复习" },
-    { "name": "dayofs_cell_btn_study"              , "value": "学习" },
-    { "name": "dayofs_cell_btn_edit"               , "value": "修改" },
-
-    { "name": "dayofs_alert_msg_delete_plan"       , "value": "确定要删除学习计划吗?" },
-    { "name": "dayofs_alert_btn_delete"            , "value": "立即删除" },
-    { "name": "dayofs_alert_msg_delete_done"       , "value": "已删除学习计划" },
-
-    { "name": "dayof_num_string"                   , "value": "第%d天" },
-    { "name": "dayof_section_words_new"            , "value": "学习 %s" },
-    { "name": "dayof_section_words_review"         , "value": "复习(%s) %s" },
-    { "name": "dayof_btn_study"                    , "value": "开始学习" },
-    { "name": "dayof_btn_chk_quicklearn"           , "value": "快速记忆" },
-
-    { "name": "dayof_alert_btn_edit"               , "value": "修改学习单字个数.." },
-    { "name": "dayof_alert_btn_cancel"             , "value": "取消" },
-
-    { "name": "distance_new_string"                , "value": "学习" },
-    { "name": "distance_review_string"             , "value": "复习" },
-    { "name": "distance_string_day"                , "value": "+%d天" },
-    { "name": "distance_string_days"               , "value": "+%d天" },
-
-    { "name": "piececount_txt_study"               , "value": "学习" },
-    { "name": "piececount_txt_unit"                , "value": "个" },
-    { "name": "piececount_txt_chk_repeat"          , "value": "同时修改此后所有日期的学习个数" },
-    { "name": "piececount_msg_exclude_0_and_repeat", "value": "学习个数为0时，\n不能勾选【同时修改此后所有日期的学习个数】" },
-    { "name": "piececount_msg_done"                , "value": "修改完成" },
-    { "name": "piececount_btn_ok"                  , "value": "确定" },
-
-    { "name": "common_str_word_cnt"                , "value": "%d个" },
-    { "name": "common_str_word_cnts"               , "value": "%d个" },
-
-    { "name": "detail_item_sort_nav_title"         , "value": "调整显示顺序" },
-    { "name": "detail_item_sort_btn_done"          , "value": "完成" },
-    { "name": "detail_item_sort_open_tip"          , "value": "【开启】" },
-    { "name": "detail_item_sort_drag_tip"          , "value": "按住拖动，调整顺序" },
-
-    { "name": "cigen_txt_download_finished"        , "value": "下载词根数据成功" },
-    { "name": "cigen_txt_update_finished"          , "value": "更新词根数据成功" },
-
-    { "name": "cigen_vname_1"                      , "value": "前缀" },
-    { "name": "cigen_vname_2"                      , "value": "前缀" },
-    { "name": "cigen_vname_3"                      , "value": "词根" },
-    { "name": "cigen_vname_4"                      , "value": "后缀" },
-    { "name": "cigen_vname_5"                      , "value": "后缀" },
-    { "name": "cigen_vname_6"                      , "value": "词缀" },
-
-    { "name": "online_search_nav_title"            , "value": "单词查询" },
-    { "name": "online_search_input_tip"            , "value": "输入英文或中文，在线查询单词" },
-    { "name": "online_search_loading"              , "value": "加载中.." },
-    { "name": "online_search_load_no_more"         , "value": "没有了" },
-    { "name": "online_search_btn_cancel"           , "value": "取消" },
-    { "name": "online_search_txt_running"          , "value": "加载中.." },
-    { "name": "online_search_txt_no_found"         , "value": "未找到相关单词" },
-
-
-    {"name": "tab_title_learn"                              , "value": "学习"},
-    {"name": "tab_title_list"                               , "value": "一览"},
-    {"name": "tab_title_quiz"                               , "value": "测试"},
-    {"name": "tab_title_review"                             , "value": "复习"},
-    {"name": "tab_title_report"                             , "value": "报告"},
-
-    {"name": "cat_tab_title_abc"                            , "value": "ABC"},
-    {"name": "cat_tab_title_category"                       , "value": "PARTS"},
-    {"name": "cat_tab_title_favorite"                       , "value": "收藏夹"},
-    {"name": "cat_tab_title_mistake"                        , "value": "常错单词"},
-    {"name": "cat_tab_title_still"                          , "value": "未测验"},
-
-    {"name": "search_btn_cancel"                            , "value": "取消"   },
-    {"name": "str_unit_no"                                  , "value": "Unit%s"},
-
-    { "name": "wordcard_result_right"                       , "value": "正确:" },
-    { "name": "wordcard_result_wrong"                       , "value": "不正确:" },
-    { "name": "wordcard_result_times"                       , "value": "次" },
-    { "name": "wordcard_txt_example"                        , "value": "例句" },
-    { "name": "wordcard_txt_show_translation"               , "value": "【点击显示中文翻译】" },
-    { "name": "wordcard_info_hidetranslation"               , "value": "隐藏翻译" },
-    { "name": "wordcard_info_autopronunce"                  , "value": "自动发音(单词)" },
-    { "name": "wordcard_info_autopronunce_ex"               , "value": "自动发音(例句)" },
-    { "name": "wordcard_info_repeat"                        , "value": "循环" },
-    { "name": "wordcard_info_inteval"                       , "value": "滚动速度" },
-    { "name": "wordcard_info_inteval_second"                , "value": "%s秒" },
-    { "name": "wordcard_record_name"                        , "value": "sound_%s" },
-    { "name": "wordcard_info_no_pron"                       , "value": "请先购买发音内容！" },
-    { "name": "wordcard_msg_audio_permission"               , "value": "要使用录音功能，请先在手机【设置】中开启[录音]权限！" },
-
-    { "name": "wordcard_memo_txt_title"                     , "value": "笔记" },
-    { "name": "wordcard_memo_txt_tip"                       , "value": "写笔记.." },
-    { "name": "wordcard_memo_btn_save"                      , "value": "保存" },
-    { "name": "wordcard_memo_btn_share"                     , "value": "分享" },
-    { "name": "wordcard_memo_msg_saved"                     , "value": "保存笔记成功。" },
-    { "name": "wordcard_memo_msg_deleted"                   , "value": "删除笔记成功。" },
-
-    { "name": "wordcard_detail_to_test_msg"                 , "value": "要用这些单词进行测验或拼写练习吗？" },
-    { "name": "wordcard_detail_to_test_btn_test"            , "value": "立即测验" },
-    { "name": "wordcard_detail_to_test_btn_spell"           , "value": "拼写练习" },
-    { "name": "wordcard_detail_to_test_btn_cancel"          , "value": "暂时不要" },
-
-
-    { "name": "quiz_top_txt_unit"                           , "value": "单元别" },
-    { "name": "quiz_top_txt_all"                            , "value": "全部单词" },
-    { "name": "quiz_top_txt_category"                       , "value": "Part别" },
-    { "name": "quiz_top_txt_mistake"                        , "value": "常错单词" },
-    { "name": "quiz_top_txt_favorite"                       , "value": "收藏单词" },
-
-    { "name": "quiz_scope_err"                              , "value": "请选择测试范围。" },
-
-    { "name": "quiz_start_txt_mode"                         , "value": "测试模式" },
-    { "name": "quiz_start_txt_count"                        , "value": "问题数" },
-    { "name": "quiz_start_txt_type"                         , "value": "出题种类" },
-    { "name": "quiz_start_txt_speed"                        , "value": "出题速度" },
-    { "name": "quiz_start_txt_order"                        , "value": "出题顺序" },
-    { "name": "quiz_start_txt_pronounce"                    , "value": "自动发音" },
-    { "name": "quiz_start_mode_normal"                      , "value": "普通" },
-    { "name": "quiz_start_mode_challenge"                   , "value": "挑战" },
-    { "name": "quiz_start_count_10"                         , "value": "10问" },
-    { "name": "quiz_start_count_20"                         , "value": "20问" },
-    { "name": "quiz_start_count_50"                         , "value": "50问" },
-    { "name": "quiz_start_count_100"                        , "value": "100问" },
-    { "name": "quiz_start_type_eiwa"                        , "value": "英→中" },
-    { "name": "quiz_start_type_waei"                        , "value": "中→英" },
-    { "name": "quiz_start_speed_slow"                       , "value": "慢速" },
-    { "name": "quiz_start_speed_normal"                     , "value": "中速" },
-    { "name": "quiz_start_speed_fast"                       , "value": "快速" },
-    { "name": "quiz_start_order_no"                         , "value": "番号顺序" },
-    { "name": "quiz_start_order_random"                     , "value": "随机" },
-    { "name": "quiz_start_pronounce_on"                     , "value": "ON" },
-    { "name": "quiz_start_pronounce_off"                    , "value": "OFF" },
-    { "name": "quiz_start_btn_text"                         , "value": "Start" },
-
-    { "name": "quiz_result_score_rate"                      , "value": "正确率" },
-    { "name": "quiz_result_score_count_all"                 , "value": "全%s问" },
-    { "name": "quiz_result_score_count_correct"             , "value": "正确:%s问" },
-    { "name": "quiz_result_score_comment_studyharder"       , "value": "Come on!Study harder!" },
-    { "name": "quiz_result_score_comment_good"              , "value": "Good!Keep it up!" },
-    { "name": "quiz_result_score_comment_welldone"          , "value": "Great!Well done!" },
-    { "name": "quiz_result_btn_txt_retry"                   , "value": "再测一次" },
-    { "name": "quiz_result_btn_txt_mistake"                 , "value": "再测一次\n(仅错误单词)" },
-    { "name": "quiz_result_btn_txt_next"                    , "value": "下一问题" },
-
-    { "name": "report_title_learn"                          , "value": "学习状况" },
-    { "name": "report_title_test"                           , "value": "测试状况" },
-    { "name": "report_title_mistake"                        , "value": "单词错误次数状况" },
-    { "name": "report_title_category_radar"                 , "value": "正确率(Part别)" },
-    { "name": "report_txt_learn_wordscount"                 , "value": "已学习单词数" },
-    { "name": "report_txt_test_correct"                     , "value": "正确率" },
-    { "name": "report_txt_test_wrang"                       , "value": "不正确率" },
-    { "name": "report_txt_test_still"                       , "value": "未测试" },
-    { "name": "report_txt_test_percent_format"              , "value": "%.01f%%" },
-    { "name": "report_txt_test_percent_format2"             , "value": "%.00f%%" },
-    { "name": "report_txt_chart_all"                        , "value": "全部" },
-
-    { "name": "setting_txt_learn"                           , "value": "学习履历删除" },
-    { "name": "setting_txt_test"                            , "value": "测试结果删除" },
-    { "name": "setting_txt_review"                          , "value": "复习列表清空" },
-    { "name": "setting_txt_record"                          , "value": "录音清空" },
-    { "name": "setting_txt_memo"                            , "value": "笔记删除" },
-    { "name": "setting_txt_favorite"                        , "value": "收藏夹清空" },
-    { "name": "set_txt_deleteword"                          , "value": "恢复已删除单词" },
-    { "name": "set_txt_curve"                               , "value": "启用记忆曲线" },
-    { "name": "set_txt_cache"                               , "value": "清空缓存" },
-    { "name": "setting_txt_soundeffect"                     , "value": "效果音" },
-    { "name": "setting_txt_write_review"                    , "value": "撰写评论" },
-    { "name": "change_language_title"                       , "value": "切换语言" },
-    { "name": "setting_txt_moreapps"                        , "value": "【MoreApps..】" },
-    { "name": "setting_txt_version"                         , "value": "版本" },
-    { "name": "setting_txt_privacy"                         , "value": "隐私政策" },
-    { "name": "setting_txt_contact"                         , "value": "联系客服" },
-    { "name": "setting_msg_del_learn"                       , "value": "确定要删除学习履历吗？" },
-    { "name": "setting_msg_del_test"                        , "value": "确定要删除测试结果吗？" },
-    { "name": "setting_msg_del_review"                      , "value": "确定要清空复习列表吗？" },
-    { "name": "setting_msg_del_record"                      , "value": "确定要清空所有录音数据吗？" },
-    { "name": "setting_msg_del_memo"                        , "value": "确定要删除所有笔记内容吗？" },
-    { "name": "setting_msg_del_favorite"                    , "value": "确定要清空收藏夹吗？" },
-    { "name": "setting_msg_done_del_learn"                  , "value": "已成功删除学习履历。" },
-    { "name": "setting_msg_done_del_test"                   , "value": "已成功删除测试结果。" },
-    { "name": "setting_msg_done_del_review"                 , "value": "已成功清空复习列表。" },
-    { "name": "setting_msg_done_del_record"                 , "value": "已成功清空所有录音数据。" },
-    { "name": "setting_msg_done_del_memo"                   , "value": "已成功删除所有笔记内容。" },
-    { "name": "setting_msg_done_del_favorite"               , "value": "已成功清空收藏夹。" },
-
-
-    {"name": "nav_title_main_learn"                         , "value": "单词树"},
-    {"name": "nav_title_main_list"                          , "value": "单词一览"},
-    {"name": "nav_title_main_quiz"                          , "value": "测试选择"},
-    {"name": "nav_title_main_review"                        , "value": "复习"},
-    {"name": "nav_title_main_report"                        , "value": "报告"},
-    {"name": "nav_title_main_set_left"                      , "value": "设定"},
-    {"name": "nav_title_main_set_right"                     , "value": "应用内购买"},
-    {"name": "nav_title_learn_unitlist"                     , "value": "单元列表"},
-
-    {"name": "nav_title_quiz_scope_unit"                    , "value": "单元选择"},
-    {"name": "nav_title_quiz_scope_all"                     , "value": "全部单词"},
-    {"name": "nav_title_quiz_scope_favorite"                , "value": "收藏单词"},
-    {"name": "nav_title_quiz_scope_category"                , "value": "Part别"},
-    {"name": "nav_title_quiz_scope_mistake"                 , "value": "常错单词"},
-
-    {"name": "nav_title_quiz_start"                         , "value": "测试设定"},
-    {"name": "nav_title_quiz_result"                        , "value": "测试结果"},
-
-    {"name": "card_txt_example_title"                       , "value": "例句"},
-    {"name": "card_info_slide_interval"                     , "value": "%.0f秒"},
-    {"name": "card_txt_show_translation"                    , "value": "点击显示中文翻译"},
-    {"name": "card_info_txt_hide_translation"               , "value": "隐藏翻译"},
-    {"name": "card_info_txt_autopron"                       , "value": "自动发音(单词)"},
-    {"name": "card_info_txt_autopron_ex"                    , "value": "自动发音(例句)"},
-    {"name": "card_info_txt_repeat"                         , "value": "循环"},
-    {"name": "card_info_txt_rollspeed"                      , "value": "滚动速度"},
-    {"name": "card_info_txt_no_pron"                        , "value": "请先购买发音内容！"},
-    {"name": "card_result_txt"                              , "value": "正确: %d次 不正确: %d次"},
-
-
-    {"name": "quiz_question_mode_txt"                       , "value": "测试模式"},
-    {"name": "quiz_question_mode_normal"                    , "value": "普通"},
-    {"name": "quiz_question_mode_challenge"                 , "value": "挑战"},
-
-    {"name": "quiz_question_count_txt"                      , "value": "问题数"},
-    {"name": "quiz_question_count_1"                        , "value": "10问"},
-    {"name": "quiz_question_count_2"                        , "value": "20问"},
-    {"name": "quiz_question_count_3"                        , "value": "50问"},
-    {"name": "quiz_question_count_4"                        , "value": "100问"},
-
-    {"name": "quiz_question_type_txt"                       , "value": "出题种类"},
-    {"name": "quiz_question_type_eiwa"                      , "value": "英→中"},
-    {"name": "quiz_question_type_waei"                      , "value": "中→英"},
-
-    {"name": "quiz_question_speed_txt"                      , "value": "出题速度"},
-    {"name": "quiz_question_speed_slow"                     , "value": "慢速"},
-    {"name": "quiz_question_speed_normal"                   , "value": "中速"},
-    {"name": "quiz_question_speed_fast"                     , "value": "快速"},
-
-    {"name": "quiz_question_order_txt"                      , "value": "出题顺序"},
-    {"name": "quiz_question_order_serialno"                 , "value": "番号顺序"},
-    {"name": "quiz_question_order_random"                   , "value": "随机"},
-
-    {"name": "quiz_question_pronounce_txt"                  , "value": "发音"},
-    {"name": "quiz_question_pronounce_on"                   , "value": "ON"},
-    {"name": "quiz_question_pronounce_off"                  , "value": "OFF"},
-
-    {"name": "quiz_running_btn_pause"                       , "value": "暂停"},
-    {"name": "quiz_running_txt_cnt"                         , "value": "%d/%d问"},
-
-    {"name": "quiz_result_rate_txt"                         , "value": "正确率"},
-    {"name": "quiz_result_info"                             , "value": "全:%d问  正确:%d问"},
-    {"name": "quiz_result_btn_retry"                        , "value": "再测一次"},
-    {"name": "quiz_result_btn_mistake"                      , "value": "　再测一次\n(仅错误单词)"},
-    {"name": "quiz_result_btn_next"                         , "value": "下一问题"},
-    {"name": "quiz_result_all_corrected"                    , "value": "全部正确"},
-
-    {"name": "review_btn_edit"                              , "value": "编辑"},
-    {"name": "review_btn_done"                              , "value": "完成"},
-    {"name": "review_btn_retest"                            , "value": "再测试"},
-    {"name": "review_btn_retest_pad"                        , "value": "□再测试"},
-    {"name": "review_btn_retest_pad_hilighted"              , "value": "■再测试"},
-    {"name": "review_btn_delete"                            , "value": "删除"},
-    {"name": "review_confirm_msg"                           , "value": "确定要删除吗？"},
-
-    {"name": "review_no_data"                               , "value": "没有需要复习的单词。\n请先进行测验或挑战!"},
-
-    {"name": "report_learn_title"                           , "value": "学习状况"},
-    {"name": "report_learn_txt"                             , "value": "已学习单词数"},
-
-    {"name": "report_test_title"                            , "value": "测试状况"},
-    {"name": "report_test_txt_correct"                      , "value": "正确率"},
-    {"name": "report_test_txt_wrong"                        , "value": "不正确率"},
-    {"name": "report_test_txt_still"                        , "value": "未测试"},
-
-    {"name": "report_mistake_title"                         , "value": "单词错误次数状况"},
-    {"name": "report_category_title"                        , "value": "正确率(Part别)"},
-
-    {"name": "set_txt_title"                                , "value": "设定"},
-    {"name": "set_txt_learn"                                , "value": "学习履历删除"},
-    {"name": "set_txt_test"                                 , "value": "测试结果删除"},
-    {"name": "set_txt_review"                               , "value": "复习列表清空"},
-    {"name": "set_txt_record"                               , "value": "录音清空"},
-    {"name": "set_txt_memo"                                 , "value": "备注删除"},
-    {"name": "set_txt_favorite"                             , "value": "收藏夹清空"},
-    {"name": "set_txt_se"                                   , "value": "效果音"},
-    {"name": "set_txt_wtreview"                             , "value": "撰写评论"},
-    {"name": "set_txt_encourage_info"                       , "value": "免费获取发音的方法"},
-
-    {"name": "set_cell_txt_clear_cache"                     , "value": "清空缓存"                   },
-    {"name": "set_cell_txt_crm_btn_clear_cache"             , "value": "清空本机缓存"               },
-    {"name": "set_msg_clear_done"                           , "value": "清空完成"               },
-
-    {"name": "set_msg_learn"                                , "value": "确定要删除所有学习履历吗？"},
-    {"name": "set_msg_test"                                 , "value": "确定要删除所有测试结果吗？"},
-    {"name": "set_msg_review"                               , "value": "确定要清空复习列表吗？"},
-    {"name": "set_msg_record"                               , "value": "确定要清空所有录音数据吗？"},
-    {"name": "set_msg_memo"                                 , "value": "确定要删除所有备注内容吗？"},
-    {"name": "set_msg_favorite"                             , "value": "确定要清空收藏夹吗？"},
-
-    {"name": "set_msg_success_learn"                        , "value": "已成功删除学习履历。"},
-    {"name": "set_msg_success_test"                         , "value": "已成功删除测试结果。"},
-    {"name": "set_msg_success_review"                       , "value": "已成功清空复习列表。"},
-    {"name": "set_msg_success_record"                       , "value": "已成功清空录音数据。"},
-    {"name": "set_msg_success_memo"                         , "value": "已成功删除备注内容。"},
-    {"name": "set_msg_success_favorite"                     , "value": "已成功清空收藏夹。"},
-
-    {"name": "set_left_btn_more"                            , "value": "更多.."},
-
-    {"name": "iap_txt_title"                                , "value": "应用内购买"},
-    {"name": "iap_btn_txt_restore"                          , "value": "还原"},
-    {"name": "iap_btn_txt_purchased"                        , "value": "已购买"},
-
-    {"name": "iap_msg_success_title"                        , "value": "应用内购买"},
-    {"name": "iap_msg_success_content"                      , "value": "完成！"},
-    {"name": "iap_msg_restore_error"                        , "value": "还没有已经购买的内容，不能进行还原。"},
-
-    {"name": "icloud_restore_success"                       , "value": "已成功完成从【免费版】的数据同步。"},
-
-    {"name": "rate_title"                                   , "value": "评价"},
-    {"name": "rate_msg"                                     , "value": "为此应用评分？"},
-    {"name": "rate_cancel"                                  , "value": "下次再说！"},
-    {"name": "rate_ok"                                      , "value": "好的，现在就去！"},
-    {"name": "rate_never"                                   , "value": "不用，永不评论！"},
-
-    {"name": "cat_txt_level_1"                              , "value": "TOEIC600"},
-    {"name": "cat_txt_level_2"                              , "value": "TOEIC730"},
-    {"name": "cat_txt_level_3"                              , "value": "TOEIC860"},
-    {"name": "cat_txt_level_all"                            , "value": "全部"},
-
-
-    {"name": "error_sign_in_icloud_title"                   , "value": "登录iCloud"},
-    {"name": "error_sign_in_icloud_txt"                     , "value": "分享笔记需要登录到iCloud。\n(在设定页面，点击iCloud,然后输入您的Apple ID，同时打开iCloud Drive)"},
-
-    {"name": "encourage_instruction_title"                  , "value": "获取发音"},
-    {"name": "encourage_instruction_msg"                    , "value": "🎉观看广告可以立即获得单词和例句发音。"},
-    {"name": "encourage_msg_word"                           , "value": "已经解锁「%s」单词发音。"},
-    {"name": "encourage_msg_example"                        , "value": "已经解锁「%s」例句发音。"},
-    {"name": "encourage_msg_word_example"                   , "value": "已经解锁「%s」单词和例句发音。"},
-    {"name": "encourage_btn_txt_yes"                        , "value": "现在观看"},
-    {"name": "encourage_btn_txt_no"                         , "value": "以后再说"},
-
-    {"name": "set_more_txt_mine_memo"                       , "value": "我的笔记"               },
-    {"name": "set_more_txt_mine_record"                     , "value": "我的录音"               },
-    {"name": "set_more_txt_mine_deletes"                    , "value": "我删除的单词"           },
-
-    {"name": "set_more_txt_update_now"                      , "value": "立即更新已下载词汇"     },
-    {"name": "set_more_txt_update_auto"                     , "value": "Wifi下自动更新词汇"     },
-    {"name": "set_more_msg_update_started"                  , "value": "正在检查词汇更新.."     },
-    {"name": "set_more_msg_update_finished"                 , "value": "词汇更新完成。"         }
-  ,
-    {"name": "set_txt_word_deleted"                         , "value": "查看已删除单词"},
-    {"name": "nav_title_deleted_word"                       , "value": "已删除单词"},
-    {"name": "word_delete_msg_recover_confirm"              , "value": "确定要恢复所有已删除的单词吗？"},
-    {"name": "word_delete_msg_recover_success"              , "value": "已成功恢复所有已删除单词。"},
-    {"name": "word_delete_btn_recover"                      , "value": "全部恢复"},
-
-    {"name": "word_delete_pull_to_delete"                   , "value": "下拉删除此单词.."},
-    {"name": "word_delete_pull_to_recover"                  , "value": "下拉恢复此单词.."},
-    {"name": "word_delete_release_to_delete"                , "value": "释放删除此单词.."},
-    {"name": "word_delete_release_to_recover"               , "value": "释放恢复此单词.."},
-    {"name": "word_delete_deleting"                         , "value": "删除中.."},
-    {"name": "word_delete_recoverring"                      , "value": "恢复中.."},
-    {"name": "word_delete_msg_deleted"                      , "value": "已删除"},
-    {"name": "word_delete_msg_recoverred"                   , "value": "已恢复"},
-    {"name": "word_delete_lbl_txt_deleted"                  , "value": "已删除"},
-
-    {"name": "set_txt_remind_title"                         , "value": "学习提醒"},
-    {"name": "set_txt_remind_daily"                         , "value": "每天"},
-    {"name": "set_txt_remind_off"                           , "value": "OFF"},
-
-
-
-    {"name": "set_cell_txt_to_member"                      , "value": "升级为会员"},
-    {"name": "set_cell_txt_member"                         , "value": "会员功能"},
-
-    {"name": "member_title"                                , "value": "会员功能"},
-    {"name": "member_desc"                                 , "value": "・完全无广告;        \n・任意下载词汇数据;        \n・任意查看单词发音;        \n・任意查看例句发音;        \n・任意使用自动发音;        \n・任意使用内置词典;        \n・任意使用记忆曲线;"},
-
-    {"name": "member_txt_recommend"                        , "value": "推荐"},
-    {"name": "member_txt_info"                             , "value": "・用户确认购买并付款后，计入华为账户;        \n・通过华为购买的内容或服务，仅限华为Harmony系统使用，不能在其它系统使用;        \n・如需取消续订，请在当前订阅周期到期前24小时以前，手动在华为设置管理中关闭自动续费功能，到期前24小时内取消，将会收取订阅费用；        \n・华为账户会在到期前24小时内扣费，扣费成功后订阅周期顺延一个订阅周期；        \n・用户若在免费试用期有任何未使用完的部分，剩余试用期将在购买订阅产品时被没收。目前本产品不提供免费试用期。"},
-    {"name": "member_txt_will_expire"                      , "value": "会员到期时间：%s"},
-    {"name": "member_txt_was_expired"                      , "value": "会员已于：%s 到期"},
-    {"name": "member_btn_restore"                          , "value": "恢复"},
-    {"name": "member_btn_subscribe"                        , "value": "升级为会员"},
-    {"name": "member_msg_subscribe_purchasing"             , "value": "订阅中.."},
-    {"name": "member_btn_subscribe_done"                   , "value": "恭喜您成功升级为会员"},
-    {"name": "member_msg_restoring"                        , "value": "恢复中.."},
-    {"name": "member_msg_restore_done"                     , "value": "恢复完成"},
-    {"name": "member_msg_restored_nothing"                 , "value": "没有可供恢复的项目"},
-    {"name": "member_btn_terms"                            , "value": "服务条款"},
-    {"name": "member_btn_privacy"                          , "value": "隐私政策"},
-    {"name": "member_btn_cancel"                           , "value": "取消"},
-    {"name": "member_btn_manage_subs"                      , "value": "查看订阅"},
-
-
-
-    { "name": "member_manager_msg_limit_download_books"       , "value": "加入会员可以任意下载词汇" },
-    { "name": "member_manager_msg_limit_add_ebook"            , "value": "加入会员可以创建更多词汇本" },
-    { "name": "member_manager_msg_limit_word_pron"            , "value": "加入会员可以任意查看单词发音, \n今日免费次数已用完(每日%d次)" },
-    { "name": "member_manager_msg_limit_example_pron"         , "value": "加入会员可以任意查看例句发音, \n今日免费次数已用完(每日%d次)" },
-    { "name": "member_manager_msg_limit_auto_pron"            , "value": "加入会员可以任意使用自动发音" },
-    { "name": "member_manager_msg_limit_dict_show"            , "value": "加入会员可以任意使用内置词典, \n今日免费次数已用完(每日%d次)" },
-    { "name": "member_manager_msg_limit_use_night_mode"       , "value": "加入会员可以任意使用夜晚模式" },
-    { "name": "member_manager_msg_limit_use_hide_trans"       , "value": "加入会员可以任意使用隐藏翻译" },
-    { "name": "member_manager_msg_limit_use_retest_mistake"   , "value": "加入会员可以任意使用再测一次" },
-    { "name": "member_manager_msg_limit_use_all_units"        , "value": "加入会员可以任意学习所有单元" },
-    { "name": "member_manager_msg_limit_use_all_plan_dayofs"  , "value": "加入会员可任意使用记忆曲线" },
-    { "name": "member_manager_msg_limit_use_cigen"            , "value": "加入会员可以任意使用词根助记" },
-    { "name": "member_manager_msg_limit_use_sameroot"         , "value": "加入会员可以任意使用同根词" },
-    { "name": "member_manager_msg_limit_online_dict_use"      , "value": "加入会员可以任意使用单词查询, \n今日免费次数已用完(每日%d次)" },
-    { "name": "member_manager_msg_limit_challenge_use"        , "value": "加入会员可以任意使用单词挑战, \n今日免费次数已用完(每日%d次)" }
-
-  ,
-    {"name": "member_gift_one_year"                        , "value": "感谢您对我们的支持，赠送1年会员"},
-
-    {"name": "member_subscribe_txt_unit_day"               , "value": "天"},
-    {"name": "member_subscribe_txt_unit_days"              , "value": "天"},
-    {"name": "member_subscribe_txt_unit_week"              , "value": "周"},
-    {"name": "member_subscribe_txt_unit_weeks"             , "value": "周"},
-    {"name": "member_subscribe_txt_unit_month"             , "value": "月"},
-    {"name": "member_subscribe_txt_unit_months"            , "value": "月"},
-    {"name": "member_subscribe_txt_unit_year"              , "value": "年"},
-    {"name": "member_subscribe_txt_unit_years"             , "value": "年"},
-
-    {"name": "member_sub_tip_month"                        , "value": "连续包月会员，%s元/月" },
-    {"name": "member_sub_tip_quarter"                      , "value": "连续包季会员，%s元/季，相当于%s元/月" },
-    {"name": "member_sub_tip_year"                         , "value": "连续包年会员，%s元/年，相当于%s元/月" },
-
-
-    {"name": "advice_nav_title"                        , "value": "意见反馈"},
-    {"name": "advice_txt_tip"                          , "value": "请在此处留下您的Email"},
-    {"name": "advice_btn_send"                         , "value": "发送"},
-    {"name": "advice_msg_send_suceed"                  , "value": "发送成功。"},
-    {"name": "advice_msg_send_failed"                  , "value": "发送失败！"},
-
-    {"name": "reclaim_nav_title"                        , "value": "投诉"},
-    {"name": "reclaim_btn_send"                         , "value": "发送"},
-
-    {"name": "about_nav_title"                         , "value": "关于"},
-    {"name": "about_btn_term"                          , "value": "《服务协议》"},
-    {"name": "about_btn_privacy"                       , "value": "《隐私政策》"},
-    {"name": "about_btn_privacy_kid"                   , "value": "《儿童隐私政策》"},
-    {"name": "about_btn_redeem"                        , "value": "兑换会员码"},
-    {"name": "about_btn_reclaim"                       , "value": "投诉"},
-    {"name": "about_btn_contact"                       , "value": "联系客服"},
-
-    {"name": "login_not_login"                         , "value": "请登录"},
-    {"name": "login_nav_title"                         , "value": "登录"},
-    {"name": "login_txt_email"                         , "value": "邮箱"},
-    {"name": "login_txt_pwd"                           , "value": "密码"},
-    {"name": "login_btn_forget"                        , "value": "忘记密码?"},
-    {"name": "login_btn_login"                         , "value": "登录"},
-    {"name": "login_btn_signup"                        , "value": "注册"},
-    {"name": "login_btn_cancel"                        , "value": "取消"},
-    {"name": "login_msg_invalid_email"                 , "value": "请输入正确的Email"},
-    {"name": "login_msg_need_pwd"                      , "value": "请输入密码"},
-    {"name": "login_msg_logining"                      , "value": "登录中.."},
-    {"name": "login_msg_login_succeed"                , "value": "登录成功"},
-    {"name": "login_msg_login_failed"                  , "value": "登录失败"},
-
-    {"name": "login_sns_txt_other"                     , "value": "其它登录方式"},
-    {"name": "login_sns_weibo"                         , "value": "新浪微博"},
-    {"name": "login_sns_qq"                            , "value": "QQ"},
-    {"name": "login_sns_weixin"                        , "value": "微信"},
-    {"name": "login_sns_facebook"                      , "value": "Facebook"},
-    {"name": "login_agree_txt"                         , "value": "已阅读并同意服务条款和隐私政策"},
-    {"name": "login_agree_tip"                         , "value": "请阅读并同意服务条款和隐私政策"},
-    {"name": "login_agree_link_terms"                  , "value": "服务条款"},
-    {"name": "login_agree_link_privacy"                , "value": "隐私政策"},
-
-    { "name": "member_agree_txt"                       , "value": "同意《会员服务》、《自动续费协议》和《隐私政策》" },
-    { "name": "member_agree_tip"                       , "value": "订阅会员需要同意《会员服务》《自动续费协议》《隐私政策》" },
-    { "name": "member_agree_link_terms"                , "value": "《会员服务》" },
-    { "name": "member_agree_link_privacy"              , "value": "《隐私政策》" },
-    { "name": "member_agree_link_terms_subscription"   , "value": "《自动续费协议》" },
-
-    { "name": "member_buy_cfm_msg_title"               , "value": "确认" },
-    { "name": "member_buy_cfm_msg_info"                , "value": "订阅会员，开通自动续费服务。" },
-    { "name": "member_buy_cfm_msg_info2"               , "value": "你可以随时取消订阅，关闭自动续费服务。" },
-    { "name": "member_buy_cfm_txt_terms_link"          , "value": "自动续费服务" },
-    { "name": "member_buy_cfm_btn_yes"                 , "value": "确定" },
-    { "name": "member_buy_cfm_btn_no"                  , "value": "取消" },
-
-    {"name": "logoff_nav_title"                        , "value": "资料管理"},
-    {"name": "logoff_btn_logoff"                       , "value": "注销帐号"},
-    {"name": "logoff_txt_tip"                          , "value": "注销帐号，将会从服务器上删除此账户的所有信息，包括所有备份数据，且不可恢复，请谨慎操作。"},
-    {"name": "logoff_msg_logoff"                       , "value": "确定要删除此帐号的所有数据吗？(删除之后不可恢复)"},
-    {"name": "logoff_cfm_yes"                          , "value": "确认注销"},
-    {"name": "logoff_cfm_no"                           , "value": "取消"},
-    {"name": "logoff_msg_logoff_succee"                , "value": "帐号注销成功"},
-    {"name": "logoff_msg_logoff_fail"                  , "value": "操作失败"},
-
-    {"name": "signup_nav_title"                        , "value": "注册"},
-    {"name": "signup_txt_email"                        , "value": "邮箱"},
-    {"name": "signup_txt_username"                     , "value": "用户名"},
-    {"name": "signup_txt_pwd"                          , "value": "密码"},
-    {"name": "signup_txt_pwd2"                         , "value": "再次输入密码"},
-    {"name": "signup_chk_agree"                        , "value": "同意"},
-    {"name": "signup_btn_terms"                        , "value": "服务条款"},
-    {"name": "signup_btn_signup"                       , "value": "注册"},
-    {"name": "signup_msg_need_email"                   , "value": "请输入正确的Email"},
-    {"name": "signup_msg_need_username"                , "value": "请输入用户名"},
-    {"name": "signup_msg_need_pwd"                     , "value": "请输入密码"},
-    {"name": "signup_msg_need_pwd2"                    , "value": "请输入验证密码"},
-    {"name": "signup_msg_username_too_long"            , "value": "用户名太长"},
-    {"name": "signup_msg_pwd_out_range"                , "value": "请输入6～20位之内的密码"},
-    {"name": "signup_msg_pwd_different"                , "value": "两次输入的密码不同"},
-    {"name": "signup_msg_need_agree_terms"             , "value": "继续注册您需要同意我们的服务条款"},
-    {"name": "signup_msg_signuping"                    , "value": "注册中.."},
-    {"name": "signup_msg_signup_succeed"               , "value": "注册成功"},
-    {"name": "signup_msg_signup_failed"                , "value": "注册失败"},
-    {"name": "signup_msg_signup_auditing"              , "value": "审核中.."},
-    {"name": "signup_msg_signup_fail_on_username"      , "value": "注册失败，用户名违规"},
-
-    {"name": "sendcode_nav_title"                      , "value": "发送验证码"},
-    {"name": "sendcode_txt_email"                      , "value": "请输入邮箱"},
-    {"name": "sendcode_btn_send"                       , "value": "发送验证码"},
-    {"name": "sendcode_msg_need_email"                 , "value": "请输入正确的Email"},
-    {"name": "sendcode_msg_sending"                    , "value": "正在发送验证码.."},
-    {"name": "sendcode_msg_send_done"                  , "value": "验证码已经发送到邮箱"},
-    {"name": "sendcode_msg_send_failed"                , "value": "发送验证码失败"},
-
-    {"name": "resetpwd_nav_title"                      , "value": "重置密码"},
-    {"name": "resetpwd_txt_code"                       , "value": "请输入验证码"},
-    {"name": "resetpwd_txt_pwd"                        , "value": "新密码"},
-    {"name": "resetpwd_txt_pwd2"                       , "value": "再次输入密码"},
-    {"name": "resetpwd_btn_excute"                     , "value": "确认"},
-    {"name": "resetpwd_msg_need_code"                  , "value": "请输入验证码"},
-    {"name": "resetpwd_msg_need_pwd"                   , "value": "请输入密码"},
-    {"name": "resetpwd_msg_need_pwd2"                  , "value": "请输入验证密码"},
-    {"name": "resetpwd_msg_pwd_out_range"              , "value": "请输入6～20位之内的密码"},
-    {"name": "resetpwd_msg_pwd_different"              , "value": "两次输入的密码不同"},
-    {"name": "resetpwd_msg_resetting"                  , "value": "密码重置中.."},
-    {"name": "resetpwd_msg_reset_succeed"              , "value": "重置密码成功"},
-    {"name": "resetpwd_msg_reset_failed"               , "value": "重置密码失败"},
-
-    {"name": "login_qr_nav_title"                      , "value": "微信扫码登录" },
-
-    {"name": "server_code_m402"                        , "value": "Email已经注册过"},
-    {"name": "server_code_m405"                        , "value": "帐户不存在"},
-    {"name": "server_code_m406"                        , "value": "密码不正确"},
-    {"name": "server_code_m410"                        , "value": "验证码不正确"},
-    {"name": "server_code_m701"                        , "value": "会员码无效"},
-    {"name": "server_code_m702"                        , "value": "会员码已被使用"},
-
-    {"name": "set_alert_logut_msg"                     , "value": "确定要退出登录吗？"},
-    {"name": "set_alert_logut_btn_yes"                , "value": "是的"},
-    {"name": "set_btn_login"                           , "value": "登录"},
-    {"name": "set_btn_logout"                          , "value": "退出登录"},
-    {"name": "set_txt_not_login"                       , "value": "未登录"},
-    {"name": "set_alert_backup_msg"                    , "value": "将本地数据备份到云端？"},
-    {"name": "set_alert_backup_btn_yes"                , "value": "立即备份"},
-    {"name": "set_msg_backuping"                       , "value": "数据备份中.."},
-    {"name": "set_msg_backup_done"                     , "value": "备份成功"},
-    {"name": "set_msg_backup_failed"                   , "value": "备份失败"},
-    {"name": "set_alert_restore_msg"                   , "value": "从云端恢复数据到本地？"},
-    {"name": "set_alert_restore_btn_yes"               , "value": "立即恢复"},
-    {"name": "set_msg_restoreing"                      , "value": "数据恢复中.."},
-    {"name": "set_msg_restore_done"                    , "value": "恢复成功"},
-    {"name": "set_msg_restore_failed"                  , "value": "恢复失败"},
-    {"name": "set_msg_restore_no_found"                , "value": "未找到备份数据"},
-    {"name": "set_txt_member_will_expire"              , "value": "会员到期时间：%s"},
-    {"name": "set_txt_member_was_expired"              , "value": "会员已于：%s 到期"},
-    {"name": "set_txt_data_last_backup"                , "value": "上次备份：%s"},
-    {"name": "set_txt_data_to_restore"                 , "value": "从云端恢复: %s 的学习记录"},
-    {"name": "set_txt_about_version"                   , "value": "版本：%s"},
-    {"name": "set_alert_clear_msg"                     , "value": "清空本机缓存数据？"},
-    {"name": "set_alert_clear_btn_yes"                 , "value": "清空"},
-
-    {"name": "set_nav_title"                           , "value": "设置"},
-
-    {"name": "set_cell_txt_data_backup"                , "value": "备份数据"},
-    {"name": "set_cell_txt_data_restore"               , "value": "恢复数据"},
-
-    {"name": "set_cell_txt_remind_switch"              , "value": "学习提醒"},
-    {"name": "set_cell_txt_remind_time"                , "value": "每日"},
-
-
-    {"name": "set_cell_txt_advice"                     , "value": "意见反馈"},
-    {"name": "set_cell_txt_review"                     , "value": "给个好评"},
-    {"name": "set_cell_txt_share"                      , "value": "分享应用"},
-    {"name": "set_cell_txt_about"                      , "value": "关于"},
-    {"name": "set_cell_txt_version"                    , "value": "版本:%s"},
-
-    {"name": "base_dict_msg_copied"                    , "value": "已经拷贝到剪贴板。"},
-    {"name": "base_dict_tip_title"                     , "value": "提示"},
-    {"name": "base_dict_tip_text"                      , "value": "点击例句英文单词，可查看中文释义。"},
-
-    {"name": "word_kind_n"                             , "value": "【名】"},
-    {"name": "word_kind_v"                             , "value": "【动】"},
-    {"name": "word_kind_vt"                            , "value": "【动】"},
-    {"name": "word_kind_vi"                            , "value": "【动】"},
-    {"name": "word_kind_vt_vi"                         , "value": "【动】"},
-    {"name": "word_kind_adj"                           , "value": "【形】"},
-    {"name": "word_kind_adv"                           , "value": "【副】"},
-    {"name": "word_kind_pron"                          , "value": "【代】"},
-    {"name": "word_kind_prep"                          , "value": "【介】"},
-    {"name": "word_kind_aux"                           , "value": "【助】"},
-    {"name": "word_kind_abbr"                          , "value": "【缩】"},
-    {"name": "word_kind_conj"                          , "value": "【连】"},
-    {"name": "word_kind_art"                           , "value": "【冠】"},
-    {"name": "word_kind_int"                           , "value": "【感】"},
-    {"name": "word_kind_interj"                        , "value": "【感】"},
-    {"name": "word_kind_det"                           , "value": "【限】"},
-    {"name": "word_kind_num"                           , "value": "【数】"},
-    {"name": "word_kind_phr"                           , "value": "【短】"},
-
-    {"name": "cfm_title_select"                        , "value": "请选择" },
-    {"name": "cfm_btn_cancel"                          , "value": "取消"   },
-    {"name": "alert_title_confirm"                     , "value": "确认"   },
-    {"name": "alert_msg_confirm_remove"                , "value": "确定要删除吗?"   },
-
-    {"name": "confirm_btn_remove"                      , "value": "删除"},
-    {"name": "confirm_btn_yes"                         , "value": "是的"},
-    {"name": "confirm_btn_no"                          , "value": "不要"},
-    {"name": "confirm_btn_ok"                          , "value": "好的"},
-    {"name": "confirm_btn_cancel"                      , "value": "取消"},
-
-    {"name": "common_date_str_today"                   , "value": "今天"},
-    {"name": "common_date_str_yesterday"               , "value": "昨天"},
-    {"name": "common_date_str_tomorrow"                , "value": "明天"},
-
-    {"name": "network_not_available"                  , "value": "网络连接失败！"},
-    {"name": "network_wifi_not_available"              , "value": "当前网络未连接到WIFI，继续下载可能会消耗流量，是否继续下载？"},
-
-    {"name": "remind_title"                            , "value": " "},
-    {"name": "remind_daily_msg_1"                     , "value": "你设置的学习时间到了！"},
-    {"name": "remind_daily_msg_2"                     , "value": "学习时间到了，加油吧！"},
-
-    {"name": "remind_sys_msg_day3"                    , "value": "同学，你已经有三天没有学习了， 要加油哦^_^。"},
-    {"name": "remind_sys_msg_day7"                    , "value": "同学，你已经有一周没有学习了，其它同学可都在努学习哦^_^。"},
-    {"name": "remind_sys_msg_day15"                   , "value": "同学，你已经有半个月没有学习了， 不会是不想进步了吧^_^。"},
-    {"name": "remind_sys_msg_day30"                   , "value": "同学，你已经有一个月没有学习了，哎， 我们都懒得提醒你了。"},
-
-    {"name": "help_tip_swipe_left_default"            , "value": "←向左滑動"},
-    {"name": "help_tip_swipe_left_to_delete"          , "value": "←左滑刪除"},
-    {"name": "help_tip_swipe_left_to_fav"             , "value": "←左滑收藏"},
-
-
-    {"name": "privacy_pop_txt_title"                  , "value": "隐私政策"                   },
-    {"name": "privacy_pop_btn_disagree"               , "value": "不同意"                    },
-    {"name": "privacy_pop_btn_agree"                  , "value": "同意并继续"                 },
-    {"name": "privacy_pop_content"                    , "value": "    请你务必审慎阅读，充分理解「服务协议」和「隐私政策」各条款，包括但不限于： \n    为了向你提供内容分享，数据备份及恢复等服务，我们需要收集你的设备基本信息，操作日志等个人信息。\n    你可以在设置中查看，管理你的数据。你可以阅读《服务协议》和《隐私政策》了解详细信息。如果您是14周岁以下的未成年人，您需要和您的监护人一起仔细阅读《儿童隐私政策》，并在征得您的监护人同意后，使用我们的产品、服务或向我们提供信息。 \n    如你同意，请点击“同意并继续”，开始接受我们的服务。"},
-    {"name": "privacy_pop_link_privacy"               , "value": "《隐私政策》"                },
-    {"name": "privacy_pop_link_privacy_kid"           , "value": "《儿童隐私政策》"             },
-    {"name": "privacy_pop_link_terms"                 , "value": "《服务协议》"                },
-
-
-
-    {"name": "link_url_cfm_btn_sharelink"             , "value": "分享链接"},
-    {"name": "microphone_permission_reason"           , "value": "用于单词录音跟读学习。"     },
-
-    {"name": "image_write_permission_reason"          , "value": "用于存储字卡到相册"     },
-    {"name": "image_read_permission_reason"           , "value": "用于选择相册图片识别字卡内容。"     },
-    {"name": "camera_permission_reason"               , "value": "用于扫描并识别文字。"     },
-
-    {"name": "set_msg_permission_notification"        , "value": "开启提醒需要通知权限。"       },
-    {"name": "sys_msg_volume_small"                   , "value": "手机音量太小，可能无法听到声音！\n请按手机侧边音量键调整。"},
-    {"name": "sys_msg_disk_space_not_enough"          , "value": "手机容量不足，可能会影响应用运行.."                    },
-
-    {"name": "photo_picker_nav_title"                 , "value": "照片选择"                        },
-
-    {"name": "eword_field_pron_us"                    , "value": "音标"},
-    {"name": "eword_field_title_cn1"                  , "value": "单词释义1"},
-    {"name": "eword_field_title_cn2"                  , "value": "单词释义2"},
-    {"name": "eword_field_title_cn3"                  , "value": "单词释义3"},
-    {"name": "eword_field_word_change"              , "value": "单词变形"},
-    {"name": "eword_field_syn_words"                , "value": "近义词"},
-    {"name": "eword_field_asyn_words"               , "value": "反义词"},
-    {"name": "eword_field_example_en1"              , "value": "例句1(英)"},
-    {"name": "eword_field_example_cn1"              , "value": "例句1(中)"},
-    {"name": "eword_field_example_en2"              , "value": "例句2(英)"},
-    {"name": "eword_field_example_cn2"              , "value": "例句2(中)"},
-    {"name": "eword_field_example_en3"              , "value": "例句3(英)"},
-    {"name": "eword_field_example_cn3"              , "value": "例句3(中)"},
-    {"name": "eword_field_used_phrase"              , "value": "常用短语"},
-    {"name": "eword_field_en2en"                    , "value": "英英释义"},
-    {"name": "eword_field_discriminate"             , "value": "详细说明"},
-    {"name": "eword_field_root"                     , "value": "词根助记"},
-    {"name": "eword_field_cognates"                 , "value": "同根词"}
-
+    {
+      "name": "module_desc",
+      "value": "module description"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "description"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "label"
+    },
+    {
+      "name": "app_share_title",
+      "value": "高效的英文单词学习工具"
+    },
+    {
+      "name": "main_words_cbook_msg_update_succeed",
+      "value": "更新成功"
+    },
+    {
+      "name": "nav_title_home",
+      "value": "单词树"
+    },
+    {
+      "name": "nav_title_books",
+      "value": "词汇管理"
+    },
+    {
+      "name": "nav_title_quick_learn_unit",
+      "value": "快速记忆"
+    },
+    {
+      "name": "nav_title_learn_unit",
+      "value": "单元列表"
+    },
+    {
+      "name": "nav_title_test",
+      "value": "测验选择"
+    },
+    {
+      "name": "nav_title_challenge",
+      "value": "挑战选择"
+    },
+    {
+      "name": "nav_title_advice",
+      "value": "反馈建议"
+    },
+    {
+      "name": "nav_title_reclaim",
+      "value": "单词纠错"
+    },
+    {
+      "name": "nav_title_books_all",
+      "value": "单词下载"
+    },
+    {
+      "name": "nav_title_iap",
+      "value": "应用内购买"
+    },
+    {
+      "name": "nav_title_login",
+      "value": "登录"
+    },
+    {
+      "name": "nav_title_set_more",
+      "value": "设置"
+    },
+    {
+      "name": "nav_title_mine_memo",
+      "value": "我的笔记"
+    },
+    {
+      "name": "nav_title_mine_record",
+      "value": "我的录音"
+    },
+    {
+      "name": "nav_title_mine_deletes",
+      "value": "我删除的单词"
+    },
+    {
+      "name": "nav_title_set_terms",
+      "value": "服务条款"
+    },
+    {
+      "name": "nav_title_set_privacy",
+      "value": "隐私协议"
+    },
+    {
+      "name": "nav_title_set_contact",
+      "value": "联系客服"
+    },
+    {
+      "name": "nav_title_test_scope_unit",
+      "value": "单元选择"
+    },
+    {
+      "name": "nav_title_test_scope_all",
+      "value": "全部单词"
+    },
+    {
+      "name": "nav_title_test_scope_favorite",
+      "value": "收藏单词"
+    },
+    {
+      "name": "nav_title_test_scope_part",
+      "value": "part别"
+    },
+    {
+      "name": "nav_title_test_scope_mistake",
+      "value": "常错单词"
+    },
+    {
+      "name": "nav_title_test_start",
+      "value": "测试设定"
+    },
+    {
+      "name": "nav_title_test_result",
+      "value": "测试结果"
+    },
+    {
+      "name": "main_tab_title_home",
+      "value": "学习"
+    },
+    {
+      "name": "main_tab_title_list",
+      "value": "一览"
+    },
+    {
+      "name": "main_tab_title_review",
+      "value": "复习"
+    },
+    {
+      "name": "main_tab_title_report",
+      "value": "报告"
+    },
+    {
+      "name": "main_tab_title_social",
+      "value": "社区"
+    },
+    {
+      "name": "main_msg_no_books",
+      "value": "请先下载单词！"
+    },
+    {
+      "name": "no_books_exit_cfm_title",
+      "value": "退出应用"
+    },
+    {
+      "name": "no_books_exit_cfm_msg",
+      "value": "您确定要退出应用吗？"
+    },
+    {
+      "name": "no_books_exit_cfm_yes",
+      "value": "退出应用"
+    },
+    {
+      "name": "no_books_exit_cfm_no",
+      "value": "取消"
+    },
+    {
+      "name": "main_study_txt_info_units",
+      "value": "%d个单元"
+    },
+    {
+      "name": "main_study_txt_info_words",
+      "value": "%d个单词"
+    },
+    {
+      "name": "main_study_txt_info_learned",
+      "value": "已学习:"
+    },
+    {
+      "name": "main_study_txt_info_tested",
+      "value": "已测验:"
+    },
+    {
+      "name": "main_study_txt_no_books",
+      "value": "请选择要学习的词汇！"
+    },
+    {
+      "name": "main_study_btn_quickremember",
+      "value": "快速记忆"
+    },
+    {
+      "name": "main_study_btn_study",
+      "value": "学习"
+    },
+    {
+      "name": "main_study_btn_test",
+      "value": "测验"
+    },
+    {
+      "name": "main_study_btn_challenge",
+      "value": "挑战"
+    },
+    {
+      "name": "main_curve_txt_curve",
+      "value": "记忆曲线"
+    },
+    {
+      "name": "main_curve_btn_study_start",
+      "value": "开始学习"
+    },
+    {
+      "name": "main_curve_btn_create_plam",
+      "value": "+创建学习计划"
+    },
+    {
+      "name": "main_curve_btn_no_words_today",
+      "value": "今天没有学习"
+    },
+    {
+      "name": "main_curve_txt_info_create",
+      "value": "使用记忆曲线创建学习计划"
+    },
+    {
+      "name": "main_curve_txt_info_days",
+      "value": "第%d天，%d个单词"
+    },
+    {
+      "name": "main_curve_txt_info_days2",
+      "value": "需要%d天， 共%d个单词"
+    },
+    {
+      "name": "main_other_link_txt",
+      "value": "使用「速词」创建单词集"
+    },
+    {
+      "name": "main_other_link_title",
+      "value": "更多应用"
+    },
+    {
+      "name": "books_tab_title_mybooks",
+      "value": "我的词汇"
+    },
+    {
+      "name": "books_tab_title_allbooks",
+      "value": "所有词汇"
+    },
+    {
+      "name": "books_txt_info_counts",
+      "value": "%d个单元，共%d个单词"
+    },
+    {
+      "name": "books_txt_info_downloads",
+      "value": "下载%d次"
+    },
+    {
+      "name": "books_txt_info_size",
+      "value": "单词:%s 发音:%s"
+    },
+    {
+      "name": "books_txt_info_golds",
+      "value": "金币:%d个"
+    },
+    {
+      "name": "books_btn_title_to_download",
+      "value": "点击下载"
+    },
+    {
+      "name": "books_btn_title_downloaded",
+      "value": "已下载"
+    },
+    {
+      "name": "books_msg_download_start_word",
+      "value": "词汇下载中.."
+    },
+    {
+      "name": "books_msg_download_start_sound",
+      "value": "发音下载中.."
+    },
+    {
+      "name": "books_btn_title_edit",
+      "value": "编辑"
+    },
+    {
+      "name": "books_btn_title_buygolds",
+      "value": "购买金币"
+    },
+    {
+      "name": "books_btn_title_reject_buy",
+      "value": "就不买"
+    },
+    {
+      "name": "books_msg_download_succeed",
+      "value": "下载成功！"
+    },
+    {
+      "name": "books_msg_download_failed",
+      "value": "下载失败,请稍后再试！"
+    },
+    {
+      "name": "books_msg_golds_shotage",
+      "value": "金币不足"
+    },
+    {
+      "name": "books_msg_golds_needs",
+      "value": "需要金币%d个， 剩余金币%d个。"
+    },
+    {
+      "name": "books_msg_golds_costed",
+      "value": "用去金币%d个， 剩余金币%d个。"
+    },
+    {
+      "name": "gain_gold_for_install",
+      "value": "初次安装成功，获得%d个金币!"
+    },
+    {
+      "name": "set_txt_got_gold",
+      "value": "获得%d个金币，已经有金币%d个"
+    },
+    {
+      "name": "books_msg_updated_book_txt",
+      "value": "更新:%s 词汇成功！"
+    },
+    {
+      "name": "books_msg_updated_book_sound",
+      "value": "更新:%s 声音成功！"
+    },
+    {
+      "name": "books_msg_need_disk_space",
+      "value": "磁盘空间不足！"
+    },
+    {
+      "name": "books_msg_change_book",
+      "value": "切换词汇到： %s"
+    },
+    {
+      "name": "books_btn_title_delete",
+      "value": "删除"
+    },
+    {
+      "name": "books_txt_selected",
+      "value": "选中"
+    },
+    {
+      "name": "books_section_cbook_header",
+      "value": ""
+    },
+    {
+      "name": "books_section_ebook_header",
+      "value": "自建词汇本"
+    },
+    {
+      "name": "ebook_plus_btn",
+      "value": "＋ 自建 / 导入 / 备份"
+    },
+    {
+      "name": "ebook_choose_action",
+      "value": "请选择操作"
+    },
+    {
+      "name": "ebook_new_book",
+      "value": "新建词汇本"
+    },
+    {
+      "name": "ebook_import_btn",
+      "value": "导入 .wte 文件"
+    },
+    {
+      "name": "ebook_my_backed_up_btn",
+      "value": "下载我备份的词汇本"
+    },
+    {
+      "name": "ebook_my_backed_up_title",
+      "value": "我备份的词汇本"
+    },
+    {
+      "name": "ebook_my_backed_up_empty_hint",
+      "value": "暂无云端备份记录"
+    },
+    {
+      "name": "ebook_download_btn",
+      "value": "下载"
+    },
+    {
+      "name": "ebook_already_downloaded",
+      "value": "已下载"
+    },
+    {
+      "name": "ebook_save_failed",
+      "value": "保存失败"
+    },
+    {
+      "name": "ebook_nav_add_word",
+      "value": "添加单词"
+    },
+    {
+      "name": "ebook_add",
+      "value": "添加"
+    },
+    {
+      "name": "ebook_add_word_ok",
+      "value": "已添加到词汇本"
+    },
+    {
+      "name": "ebook_msg_select_ebook_first",
+      "value": "请先选择自建词汇本"
+    },
+    {
+      "name": "ebook_msg_input_query",
+      "value": "请输入查询内容"
+    },
+    {
+      "name": "ebook_get_detail_failed",
+      "value": "获取词条详情失败"
+    },
+    {
+      "name": "ebook_rename_label",
+      "value": "改名"
+    },
+    {
+      "name": "ebook_rename_title",
+      "value": "修改名称"
+    },
+    {
+      "name": "ebook_create_title",
+      "value": "新建词汇本"
+    },
+    {
+      "name": "ebook_name_hint",
+      "value": "请输入书名"
+    },
+    {
+      "name": "ebook_import_title",
+      "value": "导入词汇本"
+    },
+    {
+      "name": "ebook_import_pick_btn",
+      "value": "选择 .wte 文件"
+    },
+    {
+      "name": "ebook_import_help_link",
+      "value": "如何导入导出词汇本"
+    },
+    {
+      "name": "ebook_export_failed_msg",
+      "value": "导出失败"
+    },
+    {
+      "name": "ebook_export_btn",
+      "value": "导出"
+    },
+    {
+      "name": "ebook_default_book_name",
+      "value": "词汇本"
+    },
+    {
+      "name": "ebook_import_detect_title",
+      "value": "检测到词汇本文件，是否导入？"
+    },
+    {
+      "name": "confirm_btn_import",
+      "value": "导入"
+    },
+    {
+      "name": "ebook_import_success_fmt",
+      "value": "已成功导入「%s」。"
+    },
+    {
+      "name": "ebook_import_failed_msg",
+      "value": "导入失败，请稍后重试。"
+    },
+    {
+      "name": "ebook_select_title",
+      "value": "选择要保存到的词汇本"
+    },
+    {
+      "name": "ebook_no_other",
+      "value": "暂无其它可用词汇本"
+    },
+    {
+      "name": "ebook_part_header",
+      "value": "选择 Part"
+    },
+    {
+      "name": "ebook_unit_header",
+      "value": "选择 Unit"
+    },
+    {
+      "name": "ebook_save_to_nav_title",
+      "value": "保存到词汇本"
+    },
+    {
+      "name": "ebook_overwrite_confirm_title",
+      "value": "已存在相同单词"
+    },
+    {
+      "name": "ebook_overwrite_btn",
+      "value": "覆盖"
+    },
+    {
+      "name": "ebook_overwrite_msg",
+      "value": "该单词已存在于 %s / %s，是否覆盖？"
+    },
+    {
+      "name": "ebook_added",
+      "value": "已添加「%s」"
+    },
+    {
+      "name": "ebook_add_failed",
+      "value": "添加失败"
+    },
+    {
+      "name": "ebook_not_found_manual_add",
+      "value": "找不到结果？手动输入单词"
+    },
+    {
+      "name": "ebook_manual_add_word_hint",
+      "value": "输入英文单词并选择 Part/Unit 后保存。"
+    },
+    {
+      "name": "ebook_manual_add_word_title",
+      "value": "单词"
+    },
+    {
+      "name": "ebook_manual_add_word_placeholder",
+      "value": "请输入英文单词"
+    },
+    {
+      "name": "ebook_manual_add_titlecn1_placeholder",
+      "value": "可选：输入释义"
+    },
+    {
+      "name": "ebook_manual_add_next",
+      "value": "下一步"
+    },
+    {
+      "name": "ebook_manual_add_nav_title",
+      "value": "手动添加单词"
+    },
+    {
+      "name": "ebook_name_section",
+      "value": "词汇本名称"
+    },
+    {
+      "name": "ebook_name_placeholder",
+      "value": "请输入词汇本名称"
+    },
+    {
+      "name": "ebook_create_nav_title",
+      "value": "新建词汇本"
+    },
+    {
+      "name": "ebook_rename_nav_title",
+      "value": "修改词汇本名称"
+    },
+    {
+      "name": "list_tab_title_abc",
+      "value": "abc"
+    },
+    {
+      "name": "list_tab_title_part",
+      "value": "parts"
+    },
+    {
+      "name": "list_tab_title_favorite",
+      "value": "收藏夹"
+    },
+    {
+      "name": "list_tab_title_mistake",
+      "value": "常错单词"
+    },
+    {
+      "name": "list_tab_title_still",
+      "value": "未测验"
+    },
+    {
+      "name": "learn_detail_txt_info_correct",
+      "value": "正确:"
+    },
+    {
+      "name": "learn_detail_txt_info_wrong",
+      "value": "不正确:"
+    },
+    {
+      "name": "learn_detail_txt_wordchang",
+      "value": "【单词变形】"
+    },
+    {
+      "name": "learn_detail_txt_mnemonic",
+      "value": "【词根助记】"
+    },
+    {
+      "name": "learn_detail_txt_example",
+      "value": "【例句】"
+    },
+    {
+      "name": "learn_detail_txt_synwords",
+      "value": "【同义词】"
+    },
+    {
+      "name": "learn_detail_txt_asynwords",
+      "value": "【反义词】"
+    },
+    {
+      "name": "learn_detail_txt_usedphrase",
+      "value": "【常用短语】"
+    },
+    {
+      "name": "learn_detail_txt_en2en",
+      "value": "【英英释义】"
+    },
+    {
+      "name": "learn_detail_txt_discriminate",
+      "value": "【详细说明】"
+    },
+    {
+      "name": "learn_detail_txt_samerootdesc",
+      "value": "【同根词】"
+    },
+    {
+      "name": "learn_detail_txt_memo",
+      "value": "笔记"
+    },
+    {
+      "name": "learn_detail_btn_reclaim",
+      "value": "纠错"
+    },
+    {
+      "name": "learn_detail_reclaim_txt_pre1",
+      "value": "单词翻译有误"
+    },
+    {
+      "name": "learn_detail_reclaim_txt_pre2",
+      "value": "单词音标有误"
+    },
+    {
+      "name": "learn_detail_reclaim_txt_pre3",
+      "value": "单词发音有误"
+    },
+    {
+      "name": "learn_detail_reclaim_txt_pre4",
+      "value": "例句翻译有误"
+    },
+    {
+      "name": "learn_detail_reclaim_txt_pre5",
+      "value": "例句和单词不匹配"
+    },
+    {
+      "name": "learn_detail_reclaim_txt_pre6",
+      "value": "例句发音有误"
+    },
+    {
+      "name": "learn_detail_reclaim_placehold",
+      "value": "手动填写错误信息"
+    },
+    {
+      "name": "learn_detail_reclaim_txt_info",
+      "value": "如果发现此单词(翻译，例句，发音等)有错误，请向我们发送报告。\n经确认之后，我们会及时更新数据库！"
+    },
+    {
+      "name": "learn_detail_to_test_msg",
+      "value": "要用这些单词进行测验或挑战吗？"
+    },
+    {
+      "name": "learn_detail_to_test_btn_test",
+      "value": "我要测验"
+    },
+    {
+      "name": "learn_detail_to_test_btn_chlg",
+      "value": "我要挑战"
+    },
+    {
+      "name": "learn_detail_to_test_btn_spell",
+      "value": "拼写练习"
+    },
+    {
+      "name": "learn_detail_to_test_btn_cancel",
+      "value": "暂时不要"
+    },
+    {
+      "name": "learn_detail_info_txt_hide_tip",
+      "value": "【点击显示中文翻译】"
+    },
+    {
+      "name": "learn_detail_info_txt_hidetrans",
+      "value": "隐藏翻译"
+    },
+    {
+      "name": "learn_detail_info_txt_autopron",
+      "value": "自动发音(单词)"
+    },
+    {
+      "name": "learn_detail_info_txt_autopron2",
+      "value": "自动发音(例句)"
+    },
+    {
+      "name": "learn_detail_info_txt_pron_speed",
+      "value": "发音播放速度"
+    },
+    {
+      "name": "learn_detail_info_txt_pron_times",
+      "value": "发音次数"
+    },
+    {
+      "name": "learn_detail_info_txt_font_style",
+      "value": "字体大小"
+    },
+    {
+      "name": "learn_detail_info_txt_font_style_1",
+      "value": "小"
+    },
+    {
+      "name": "learn_detail_info_txt_font_style_2",
+      "value": "中"
+    },
+    {
+      "name": "learn_detail_info_txt_font_style_3",
+      "value": "大"
+    },
+    {
+      "name": "learn_detail_info_txt_set_order",
+      "value": "调整显示顺序"
+    },
+    {
+      "name": "learn_detail_info_txt_pron_gap",
+      "value": "自动发音间隔"
+    },
+    {
+      "name": "learn_detail_info_txt_pron_gap_1",
+      "value": "短"
+    },
+    {
+      "name": "learn_detail_info_txt_pron_gap_2",
+      "value": "中"
+    },
+    {
+      "name": "learn_detail_info_txt_pron_gap_3",
+      "value": "长"
+    },
+    {
+      "name": "wrang_times_1_only",
+      "value": "仅1次"
+    },
+    {
+      "name": "wrang_times_1_3",
+      "value": "1~3次"
+    },
+    {
+      "name": "wrang_times_3_5",
+      "value": "3~5次"
+    },
+    {
+      "name": "wrang_times_5_10",
+      "value": "5~10次"
+    },
+    {
+      "name": "wrang_times_10_over",
+      "value": "10次以上"
+    },
+    {
+      "name": "test_top_txt_unit",
+      "value": "单元别"
+    },
+    {
+      "name": "test_top_txt_all",
+      "value": "全部单词"
+    },
+    {
+      "name": "test_top_txt_part",
+      "value": "part别"
+    },
+    {
+      "name": "test_top_txt_mistake",
+      "value": "常错单词"
+    },
+    {
+      "name": "test_top_txt_favorite",
+      "value": "收藏单词"
+    },
+    {
+      "name": "test_scope_btn_selectall",
+      "value": "全部选择"
+    },
+    {
+      "name": "test_scope_btn_next",
+      "value": "下一步"
+    },
+    {
+      "name": "test_scope_err",
+      "value": "请选择出题范围。"
+    },
+    {
+      "name": "test_question_scope_txt",
+      "value": "测验范围"
+    },
+    {
+      "name": "test_question_scope_all",
+      "value": "全部"
+    },
+    {
+      "name": "test_question_scope_still",
+      "value": "未测验"
+    },
+    {
+      "name": "test_question_scope_wrang",
+      "value": "常错"
+    },
+    {
+      "name": "test_question_count_txt",
+      "value": "问题数"
+    },
+    {
+      "name": "test_question_count_1",
+      "value": "10问"
+    },
+    {
+      "name": "test_question_count_2",
+      "value": "20问"
+    },
+    {
+      "name": "test_question_count_3",
+      "value": "50问"
+    },
+    {
+      "name": "test_question_count_4",
+      "value": "100问"
+    },
+    {
+      "name": "test_question_type_txt",
+      "value": "出题种类"
+    },
+    {
+      "name": "test_question_type_eiwa",
+      "value": "英→中"
+    },
+    {
+      "name": "test_question_type_waei",
+      "value": "中→英"
+    },
+    {
+      "name": "test_question_speed_txt",
+      "value": "出题速度"
+    },
+    {
+      "name": "test_question_speed_slow",
+      "value": "慢速"
+    },
+    {
+      "name": "test_question_speed_normal",
+      "value": "中速"
+    },
+    {
+      "name": "test_question_speed_fast",
+      "value": "快速"
+    },
+    {
+      "name": "test_question_order_txt",
+      "value": "出题顺序"
+    },
+    {
+      "name": "test_question_order_serialno",
+      "value": "番号顺序"
+    },
+    {
+      "name": "test_question_order_random",
+      "value": "随机"
+    },
+    {
+      "name": "test_question_pronounce_txt",
+      "value": "自动发音"
+    },
+    {
+      "name": "test_question_pronounce_on",
+      "value": "on"
+    },
+    {
+      "name": "test_question_pronounce_off",
+      "value": "off"
+    },
+    {
+      "name": "test_btn_start",
+      "value": "Start"
+    },
+    {
+      "name": "test_running_btn_pause",
+      "value": "暂停"
+    },
+    {
+      "name": "test_running_txt_cnt",
+      "value": "%d/%d问"
+    },
+    {
+      "name": "spell_running_txt_try_again",
+      "value": "再试一次"
+    },
+    {
+      "name": "spell_running_txt_input_answer",
+      "value": "输入答案"
+    },
+    {
+      "name": "spell_running_txt_right",
+      "value": "正确"
+    },
+    {
+      "name": "spell_running_txt_wrong",
+      "value": "错误"
+    },
+    {
+      "name": "spell_running_btn_unknown",
+      "value": "不知道"
+    },
+    {
+      "name": "spell_running_btn_done",
+      "value": "完成"
+    },
+    {
+      "name": "test_result_rate_txt",
+      "value": "正确率"
+    },
+    {
+      "name": "test_result_info",
+      "value": "全:%d问  正确:%d问"
+    },
+    {
+      "name": "test_result_btn_retry",
+      "value": "再测一次"
+    },
+    {
+      "name": "test_result_btn_mistake",
+      "value": "再测一次\n(仅错误单词)"
+    },
+    {
+      "name": "test_result_btn_next",
+      "value": "下一问题"
+    },
+    {
+      "name": "test_result_all_corrected",
+      "value": "全部正确"
+    },
+    {
+      "name": "test_result_share_app",
+      "value": "分享"
+    },
+    {
+      "name": "test_result_share_title",
+      "value": "%s 正确率:%s!"
+    },
+    {
+      "name": "test_result_share_description",
+      "value": "我在《单词树》测验 %s，正确率:%s!  "
+    },
+    {
+      "name": "test_result_comment_studyharder",
+      "value": "Come on!Study harder!"
+    },
+    {
+      "name": "test_result_comment_good",
+      "value": "Good!Keep it up!"
+    },
+    {
+      "name": "test_result_comment_welldone",
+      "value": "Great!Well done!"
+    },
+    {
+      "name": "data_refresh_pull",
+      "value": "下拉刷新"
+    },
+    {
+      "name": "data_refresh_release",
+      "value": "释放更新"
+    },
+    {
+      "name": "data_refresh_loading",
+      "value": "加载中.."
+    },
+    {
+      "name": "data_loading_more",
+      "value": "加载更多.."
+    },
+    {
+      "name": "data_no_more_datas",
+      "value": "没有更多数据"
+    },
+    {
+      "name": "memo_compose_btn_save",
+      "value": "保存"
+    },
+    {
+      "name": "memo_compose_menu_edit",
+      "value": "编辑"
+    },
+    {
+      "name": "memo_compose_menu_done",
+      "value": "完成"
+    },
+    {
+      "name": "memo_compose_btn_save_share",
+      "value": "分享"
+    },
+    {
+      "name": "memo_author_txt",
+      "value": "作者"
+    },
+    {
+      "name": "memo_author_self",
+      "value": "我"
+    },
+    {
+      "name": "memo_pri_memo_title",
+      "value": "笔记"
+    },
+    {
+      "name": "memo_pri_memo_txt",
+      "value": "写笔记.."
+    },
+    {
+      "name": "memo_pub_memo_title",
+      "value": "分享笔记"
+    },
+    {
+      "name": "memo_msg_no_share_memo",
+      "value": "暂无分享笔记."
+    },
+    {
+      "name": "memo_msg_save_success",
+      "value": "保存笔记成功。"
+    },
+    {
+      "name": "memo_msg_share_start",
+      "value": "笔记分享中..."
+    },
+    {
+      "name": "memo_msg_share_success",
+      "value": "分享笔记成功。"
+    },
+    {
+      "name": "memo_msg_remove_share_success",
+      "value": "已删除分享笔记。"
+    },
+    {
+      "name": "memo_msg_add_share_success",
+      "value": "笔记添加成功。"
+    },
+    {
+      "name": "memo_msg_add_share_error",
+      "value": "最多只能添加%d条分享笔记。"
+    },
+    {
+      "name": "memo_msg_remove_memo_success",
+      "value": "已删除笔记。"
+    },
+    {
+      "name": "memo_msg_audit_fail",
+      "value": "内容不合规或包含敏感字符"
+    },
+    {
+      "name": "help_caption_home_btn_menu",
+      "value": "设置菜单"
+    },
+    {
+      "name": "help_caption_home_btn_more",
+      "value": "下载更多词汇"
+    },
+    {
+      "name": "help_caption_detail_btn_favorite",
+      "value": "左右滑动星星可以收藏单词"
+    },
+    {
+      "name": "help_caption_detail_btn_info",
+      "value": "可设置自动发音，循环滚动"
+    },
+    {
+      "name": "help_caption_detail_btn_record",
+      "value": "录音"
+    },
+    {
+      "name": "help_caption_detail_btn_contrast",
+      "value": "录音播放"
+    },
+    {
+      "name": "help_caption_card_btn_show_detail",
+      "value": "点击单词，查看详细释义"
+    },
+    {
+      "name": "help_caption_detail_btn_del_word",
+      "value": "下拉页面，\n删除已会单词"
+    },
+    {
+      "name": "set_cell_txt_share_info",
+      "value": "分享应用，可立即获赠单词发音"
+    },
+    {
+      "name": "set_msg_share_done",
+      "value": "分享成功，获赠单词发音 %d次 \n [今日剩余%d次]"
+    },
+    {
+      "name": "instruction_nav_title",
+      "value": "使用帮助"
+    },
+    {
+      "name": "plan_create_nav_title",
+      "value": "设置学习计划"
+    },
+    {
+      "name": "plan_create_txt_name",
+      "value": "计划名称"
+    },
+    {
+      "name": "plan_create_chk_reviewday",
+      "value": "+%d天"
+    },
+    {
+      "name": "plan_create_chk_reviewdays",
+      "value": "+%d天"
+    },
+    {
+      "name": "plan_create_words_cnt",
+      "value": "共%d个词语"
+    },
+    {
+      "name": "plan_create_words_cnts",
+      "value": "共%d个词语"
+    },
+    {
+      "name": "plan_create_btn_days_cnt",
+      "value": "%d天"
+    },
+    {
+      "name": "plan_create_btn_days_cnts",
+      "value": "%d天"
+    },
+    {
+      "name": "plan_create_txt_everyday",
+      "value": "每天"
+    },
+    {
+      "name": "plan_create_txt_everydayunit",
+      "value": "个"
+    },
+    {
+      "name": "plan_create_txt_need",
+      "value": "需要"
+    },
+    {
+      "name": "plan_create_txt_review",
+      "value": "复习(艾宾浩斯记忆曲线)"
+    },
+    {
+      "name": "plan_create_txt_start_date",
+      "value": "开始于：%s"
+    },
+    {
+      "name": "plan_create_btn_update",
+      "value": "更新计划"
+    },
+    {
+      "name": "plan_create_btn_save",
+      "value": "保存计划"
+    },
+    {
+      "name": "plan_create_msg_need_name",
+      "value": "请输入计划名称"
+    },
+    {
+      "name": "plan_create_alert_update_title",
+      "value": "确认要更新吗？"
+    },
+    {
+      "name": "plan_create_alert_update_msg",
+      "value": "更新计划将会删除已存在的学习记录"
+    },
+    {
+      "name": "plan_create_alert_update_btn_yes",
+      "value": "更新计划"
+    },
+    {
+      "name": "plan_create_alert_btn_cancel",
+      "value": "取消"
+    },
+    {
+      "name": "plan_create_alert_msg_making",
+      "value": "计划制作中.."
+    },
+    {
+      "name": "plan_create_alert_msg_make_done",
+      "value": "计划制作完成"
+    },
+    {
+      "name": "plan_detail_nav_title",
+      "value": "计划详细"
+    },
+    {
+      "name": "plan_detail_txt_learned",
+      "value": "已学习"
+    },
+    {
+      "name": "plan_detail_txt_deleted",
+      "value": "已删除"
+    },
+    {
+      "name": "plan_detail_txt_wordsall",
+      "value": "单词总数"
+    },
+    {
+      "name": "plan_detail_txt_everydaystudy",
+      "value": "每天学习"
+    },
+    {
+      "name": "plan_detail_txt_review",
+      "value": "复习"
+    },
+    {
+      "name": "plan_detail_txt_cur",
+      "value": "当前"
+    },
+    {
+      "name": "plan_detail_txt_needs",
+      "value": "共需要"
+    },
+    {
+      "name": "plan_detail_txt_startdate",
+      "value": "开始日期"
+    },
+    {
+      "name": "plan_detail_txt_enddate",
+      "value": "预计结束日期"
+    },
+    {
+      "name": "plan_detail_words_cnt",
+      "value": "%d个"
+    },
+    {
+      "name": "plan_detail_review_day",
+      "value": "+%d天"
+    },
+    {
+      "name": "plan_detail_review_days",
+      "value": "+%d天"
+    },
+    {
+      "name": "plan_detail_cur_day",
+      "value": "第%d天"
+    },
+    {
+      "name": "plan_detail_days_cnt",
+      "value": "%d天"
+    },
+    {
+      "name": "plan_detail_days_cnts",
+      "value": "%d天"
+    },
+    {
+      "name": "plan_str_today",
+      "value": "今天"
+    },
+    {
+      "name": "plan_str_yesterday",
+      "value": "昨天"
+    },
+    {
+      "name": "plan_str_tomorrow",
+      "value": "明天"
+    },
+    {
+      "name": "dayofs_nav_title",
+      "value": "查看计划"
+    },
+    {
+      "name": "dayofs_alert_btn_detail",
+      "value": "查看计划详细信息"
+    },
+    {
+      "name": "dayofs_alert_btn_edit",
+      "value": "修改计划"
+    },
+    {
+      "name": "dayofs_alert_btn_remove",
+      "value": "删除计划"
+    },
+    {
+      "name": "dayofs_alert_btn_clear",
+      "value": "清空学习记录"
+    },
+    {
+      "name": "dayofs_alert_btn_cancel",
+      "value": "取消"
+    },
+    {
+      "name": "dayofs_cell_txt_study",
+      "value": "学习"
+    },
+    {
+      "name": "dayofs_cell_txt_review",
+      "value": "复习"
+    },
+    {
+      "name": "dayofs_cell_btn_study",
+      "value": "学习"
+    },
+    {
+      "name": "dayofs_cell_btn_edit",
+      "value": "修改"
+    },
+    {
+      "name": "dayofs_alert_msg_delete_plan",
+      "value": "确定要删除学习计划吗?"
+    },
+    {
+      "name": "dayofs_alert_btn_delete",
+      "value": "立即删除"
+    },
+    {
+      "name": "dayofs_alert_msg_delete_done",
+      "value": "已删除学习计划"
+    },
+    {
+      "name": "dayof_num_string",
+      "value": "第%d天"
+    },
+    {
+      "name": "dayof_section_words_new",
+      "value": "学习 %s"
+    },
+    {
+      "name": "dayof_section_words_review",
+      "value": "复习(%s) %s"
+    },
+    {
+      "name": "dayof_btn_study",
+      "value": "开始学习"
+    },
+    {
+      "name": "dayof_btn_chk_quicklearn",
+      "value": "快速记忆"
+    },
+    {
+      "name": "dayof_alert_btn_edit",
+      "value": "修改学习单字个数.."
+    },
+    {
+      "name": "dayof_alert_btn_cancel",
+      "value": "取消"
+    },
+    {
+      "name": "distance_new_string",
+      "value": "学习"
+    },
+    {
+      "name": "distance_review_string",
+      "value": "复习"
+    },
+    {
+      "name": "distance_string_day",
+      "value": "+%d天"
+    },
+    {
+      "name": "distance_string_days",
+      "value": "+%d天"
+    },
+    {
+      "name": "piececount_txt_study",
+      "value": "学习"
+    },
+    {
+      "name": "piececount_txt_unit",
+      "value": "个"
+    },
+    {
+      "name": "piececount_txt_chk_repeat",
+      "value": "同时修改此后所有日期的学习个数"
+    },
+    {
+      "name": "piececount_msg_exclude_0_and_repeat",
+      "value": "学习个数为0时，\n不能勾选【同时修改此后所有日期的学习个数】"
+    },
+    {
+      "name": "piececount_msg_done",
+      "value": "修改完成"
+    },
+    {
+      "name": "piececount_btn_ok",
+      "value": "确定"
+    },
+    {
+      "name": "common_str_word_cnt",
+      "value": "%d个"
+    },
+    {
+      "name": "common_str_word_cnts",
+      "value": "%d个"
+    },
+    {
+      "name": "detail_item_sort_nav_title",
+      "value": "调整显示顺序"
+    },
+    {
+      "name": "detail_item_sort_btn_done",
+      "value": "完成"
+    },
+    {
+      "name": "detail_item_sort_open_tip",
+      "value": "【开启】"
+    },
+    {
+      "name": "detail_item_sort_drag_tip",
+      "value": "按住拖动，调整顺序"
+    },
+    {
+      "name": "cigen_txt_download_finished",
+      "value": "下载词根数据成功"
+    },
+    {
+      "name": "cigen_txt_update_finished",
+      "value": "更新词根数据成功"
+    },
+    {
+      "name": "cigen_vname_1",
+      "value": "前缀"
+    },
+    {
+      "name": "cigen_vname_2",
+      "value": "前缀"
+    },
+    {
+      "name": "cigen_vname_3",
+      "value": "词根"
+    },
+    {
+      "name": "cigen_vname_4",
+      "value": "后缀"
+    },
+    {
+      "name": "cigen_vname_5",
+      "value": "后缀"
+    },
+    {
+      "name": "cigen_vname_6",
+      "value": "词缀"
+    },
+    {
+      "name": "online_search_nav_title",
+      "value": "单词查询"
+    },
+    {
+      "name": "online_search_input_tip",
+      "value": "输入英文或中文，在线查询单词"
+    },
+    {
+      "name": "online_search_loading",
+      "value": "加载中.."
+    },
+    {
+      "name": "online_search_load_no_more",
+      "value": "没有了"
+    },
+    {
+      "name": "online_search_btn_cancel",
+      "value": "取消"
+    },
+    {
+      "name": "online_search_txt_running",
+      "value": "加载中.."
+    },
+    {
+      "name": "online_search_txt_no_found",
+      "value": "未找到相关单词"
+    },
+    {
+      "name": "tab_title_learn",
+      "value": "学习"
+    },
+    {
+      "name": "tab_title_list",
+      "value": "一览"
+    },
+    {
+      "name": "tab_title_quiz",
+      "value": "测试"
+    },
+    {
+      "name": "tab_title_review",
+      "value": "复习"
+    },
+    {
+      "name": "tab_title_report",
+      "value": "报告"
+    },
+    {
+      "name": "cat_tab_title_abc",
+      "value": "ABC"
+    },
+    {
+      "name": "cat_tab_title_category",
+      "value": "PARTS"
+    },
+    {
+      "name": "cat_tab_title_favorite",
+      "value": "收藏夹"
+    },
+    {
+      "name": "cat_tab_title_mistake",
+      "value": "常错单词"
+    },
+    {
+      "name": "cat_tab_title_still",
+      "value": "未测验"
+    },
+    {
+      "name": "search_btn_cancel",
+      "value": "取消"
+    },
+    {
+      "name": "str_unit_no",
+      "value": "Unit%s"
+    },
+    {
+      "name": "wordcard_result_right",
+      "value": "正确:"
+    },
+    {
+      "name": "wordcard_result_wrong",
+      "value": "不正确:"
+    },
+    {
+      "name": "wordcard_result_times",
+      "value": "次"
+    },
+    {
+      "name": "wordcard_txt_example",
+      "value": "例句"
+    },
+    {
+      "name": "wordcard_txt_show_translation",
+      "value": "【点击显示中文翻译】"
+    },
+    {
+      "name": "wordcard_info_hidetranslation",
+      "value": "隐藏翻译"
+    },
+    {
+      "name": "wordcard_info_autopronunce",
+      "value": "自动发音(单词)"
+    },
+    {
+      "name": "wordcard_info_autopronunce_ex",
+      "value": "自动发音(例句)"
+    },
+    {
+      "name": "wordcard_info_repeat",
+      "value": "循环"
+    },
+    {
+      "name": "wordcard_info_inteval",
+      "value": "滚动速度"
+    },
+    {
+      "name": "wordcard_info_inteval_second",
+      "value": "%s秒"
+    },
+    {
+      "name": "wordcard_record_name",
+      "value": "sound_%s"
+    },
+    {
+      "name": "wordcard_info_no_pron",
+      "value": "请先购买发音内容！"
+    },
+    {
+      "name": "wordcard_msg_audio_permission",
+      "value": "要使用录音功能，请先在手机【设置】中开启[录音]权限！"
+    },
+    {
+      "name": "wordcard_memo_txt_title",
+      "value": "笔记"
+    },
+    {
+      "name": "wordcard_memo_txt_tip",
+      "value": "写笔记.."
+    },
+    {
+      "name": "wordcard_memo_btn_save",
+      "value": "保存"
+    },
+    {
+      "name": "wordcard_memo_btn_share",
+      "value": "分享"
+    },
+    {
+      "name": "wordcard_memo_msg_saved",
+      "value": "保存笔记成功。"
+    },
+    {
+      "name": "wordcard_memo_msg_deleted",
+      "value": "删除笔记成功。"
+    },
+    {
+      "name": "wordcard_detail_to_test_msg",
+      "value": "要用这些单词进行测验或拼写练习吗？"
+    },
+    {
+      "name": "wordcard_detail_to_test_btn_test",
+      "value": "立即测验"
+    },
+    {
+      "name": "wordcard_detail_to_test_btn_spell",
+      "value": "拼写练习"
+    },
+    {
+      "name": "wordcard_detail_to_test_btn_cancel",
+      "value": "暂时不要"
+    },
+    {
+      "name": "quiz_top_txt_unit",
+      "value": "单元别"
+    },
+    {
+      "name": "quiz_top_txt_all",
+      "value": "全部单词"
+    },
+    {
+      "name": "quiz_top_txt_category",
+      "value": "Part别"
+    },
+    {
+      "name": "quiz_top_txt_mistake",
+      "value": "常错单词"
+    },
+    {
+      "name": "quiz_top_txt_favorite",
+      "value": "收藏单词"
+    },
+    {
+      "name": "quiz_scope_err",
+      "value": "请选择测试范围。"
+    },
+    {
+      "name": "quiz_start_txt_mode",
+      "value": "测试模式"
+    },
+    {
+      "name": "quiz_start_txt_count",
+      "value": "问题数"
+    },
+    {
+      "name": "quiz_start_txt_type",
+      "value": "出题种类"
+    },
+    {
+      "name": "quiz_start_txt_speed",
+      "value": "出题速度"
+    },
+    {
+      "name": "quiz_start_txt_order",
+      "value": "出题顺序"
+    },
+    {
+      "name": "quiz_start_txt_pronounce",
+      "value": "自动发音"
+    },
+    {
+      "name": "quiz_start_mode_normal",
+      "value": "普通"
+    },
+    {
+      "name": "quiz_start_mode_challenge",
+      "value": "挑战"
+    },
+    {
+      "name": "quiz_start_count_10",
+      "value": "10问"
+    },
+    {
+      "name": "quiz_start_count_20",
+      "value": "20问"
+    },
+    {
+      "name": "quiz_start_count_50",
+      "value": "50问"
+    },
+    {
+      "name": "quiz_start_count_100",
+      "value": "100问"
+    },
+    {
+      "name": "quiz_start_type_eiwa",
+      "value": "英→中"
+    },
+    {
+      "name": "quiz_start_type_waei",
+      "value": "中→英"
+    },
+    {
+      "name": "quiz_start_speed_slow",
+      "value": "慢速"
+    },
+    {
+      "name": "quiz_start_speed_normal",
+      "value": "中速"
+    },
+    {
+      "name": "quiz_start_speed_fast",
+      "value": "快速"
+    },
+    {
+      "name": "quiz_start_order_no",
+      "value": "番号顺序"
+    },
+    {
+      "name": "quiz_start_order_random",
+      "value": "随机"
+    },
+    {
+      "name": "quiz_start_pronounce_on",
+      "value": "ON"
+    },
+    {
+      "name": "quiz_start_pronounce_off",
+      "value": "OFF"
+    },
+    {
+      "name": "quiz_start_btn_text",
+      "value": "Start"
+    },
+    {
+      "name": "quiz_result_score_rate",
+      "value": "正确率"
+    },
+    {
+      "name": "quiz_result_score_count_all",
+      "value": "全%s问"
+    },
+    {
+      "name": "quiz_result_score_count_correct",
+      "value": "正确:%s问"
+    },
+    {
+      "name": "quiz_result_score_comment_studyharder",
+      "value": "Come on!Study harder!"
+    },
+    {
+      "name": "quiz_result_score_comment_good",
+      "value": "Good!Keep it up!"
+    },
+    {
+      "name": "quiz_result_score_comment_welldone",
+      "value": "Great!Well done!"
+    },
+    {
+      "name": "quiz_result_btn_txt_retry",
+      "value": "再测一次"
+    },
+    {
+      "name": "quiz_result_btn_txt_mistake",
+      "value": "再测一次\n(仅错误单词)"
+    },
+    {
+      "name": "quiz_result_btn_txt_next",
+      "value": "下一问题"
+    },
+    {
+      "name": "report_title_learn",
+      "value": "学习状况"
+    },
+    {
+      "name": "report_title_test",
+      "value": "测试状况"
+    },
+    {
+      "name": "report_title_mistake",
+      "value": "单词错误次数状况"
+    },
+    {
+      "name": "report_title_category_radar",
+      "value": "正确率(Part别)"
+    },
+    {
+      "name": "report_txt_learn_wordscount",
+      "value": "已学习单词数"
+    },
+    {
+      "name": "report_txt_test_correct",
+      "value": "正确率"
+    },
+    {
+      "name": "report_txt_test_wrang",
+      "value": "不正确率"
+    },
+    {
+      "name": "report_txt_test_still",
+      "value": "未测试"
+    },
+    {
+      "name": "report_txt_test_percent_format",
+      "value": "%.01f%%"
+    },
+    {
+      "name": "report_txt_test_percent_format2",
+      "value": "%.00f%%"
+    },
+    {
+      "name": "report_txt_chart_all",
+      "value": "全部"
+    },
+    {
+      "name": "setting_txt_learn",
+      "value": "学习履历删除"
+    },
+    {
+      "name": "setting_txt_test",
+      "value": "测试结果删除"
+    },
+    {
+      "name": "setting_txt_review",
+      "value": "复习列表清空"
+    },
+    {
+      "name": "setting_txt_record",
+      "value": "录音清空"
+    },
+    {
+      "name": "setting_txt_memo",
+      "value": "笔记删除"
+    },
+    {
+      "name": "setting_txt_favorite",
+      "value": "收藏夹清空"
+    },
+    {
+      "name": "set_txt_deleteword",
+      "value": "恢复已删除单词"
+    },
+    {
+      "name": "set_txt_curve",
+      "value": "启用记忆曲线"
+    },
+    {
+      "name": "set_txt_cache",
+      "value": "清空缓存"
+    },
+    {
+      "name": "setting_txt_soundeffect",
+      "value": "效果音"
+    },
+    {
+      "name": "setting_txt_write_review",
+      "value": "撰写评论"
+    },
+    {
+      "name": "change_language_title",
+      "value": "切换语言"
+    },
+    {
+      "name": "setting_txt_moreapps",
+      "value": "【MoreApps..】"
+    },
+    {
+      "name": "setting_txt_version",
+      "value": "版本"
+    },
+    {
+      "name": "setting_txt_privacy",
+      "value": "隐私政策"
+    },
+    {
+      "name": "setting_txt_contact",
+      "value": "联系客服"
+    },
+    {
+      "name": "setting_msg_del_learn",
+      "value": "确定要删除学习履历吗？"
+    },
+    {
+      "name": "setting_msg_del_test",
+      "value": "确定要删除测试结果吗？"
+    },
+    {
+      "name": "setting_msg_del_review",
+      "value": "确定要清空复习列表吗？"
+    },
+    {
+      "name": "setting_msg_del_record",
+      "value": "确定要清空所有录音数据吗？"
+    },
+    {
+      "name": "setting_msg_del_memo",
+      "value": "确定要删除所有笔记内容吗？"
+    },
+    {
+      "name": "setting_msg_del_favorite",
+      "value": "确定要清空收藏夹吗？"
+    },
+    {
+      "name": "setting_msg_done_del_learn",
+      "value": "已成功删除学习履历。"
+    },
+    {
+      "name": "setting_msg_done_del_test",
+      "value": "已成功删除测试结果。"
+    },
+    {
+      "name": "setting_msg_done_del_review",
+      "value": "已成功清空复习列表。"
+    },
+    {
+      "name": "setting_msg_done_del_record",
+      "value": "已成功清空所有录音数据。"
+    },
+    {
+      "name": "setting_msg_done_del_memo",
+      "value": "已成功删除所有笔记内容。"
+    },
+    {
+      "name": "setting_msg_done_del_favorite",
+      "value": "已成功清空收藏夹。"
+    },
+    {
+      "name": "nav_title_main_learn",
+      "value": "单词树"
+    },
+    {
+      "name": "nav_title_main_list",
+      "value": "单词一览"
+    },
+    {
+      "name": "nav_title_main_quiz",
+      "value": "测试选择"
+    },
+    {
+      "name": "nav_title_main_review",
+      "value": "复习"
+    },
+    {
+      "name": "nav_title_main_report",
+      "value": "报告"
+    },
+    {
+      "name": "nav_title_main_set_left",
+      "value": "设定"
+    },
+    {
+      "name": "nav_title_main_set_right",
+      "value": "应用内购买"
+    },
+    {
+      "name": "nav_title_learn_unitlist",
+      "value": "单元列表"
+    },
+    {
+      "name": "nav_title_quiz_scope_unit",
+      "value": "单元选择"
+    },
+    {
+      "name": "nav_title_quiz_scope_all",
+      "value": "全部单词"
+    },
+    {
+      "name": "nav_title_quiz_scope_favorite",
+      "value": "收藏单词"
+    },
+    {
+      "name": "nav_title_quiz_scope_category",
+      "value": "Part别"
+    },
+    {
+      "name": "nav_title_quiz_scope_mistake",
+      "value": "常错单词"
+    },
+    {
+      "name": "nav_title_quiz_start",
+      "value": "测试设定"
+    },
+    {
+      "name": "nav_title_quiz_result",
+      "value": "测试结果"
+    },
+    {
+      "name": "card_txt_example_title",
+      "value": "例句"
+    },
+    {
+      "name": "card_info_slide_interval",
+      "value": "%.0f秒"
+    },
+    {
+      "name": "card_txt_show_translation",
+      "value": "点击显示中文翻译"
+    },
+    {
+      "name": "card_info_txt_hide_translation",
+      "value": "隐藏翻译"
+    },
+    {
+      "name": "card_info_txt_autopron",
+      "value": "自动发音(单词)"
+    },
+    {
+      "name": "card_info_txt_autopron_ex",
+      "value": "自动发音(例句)"
+    },
+    {
+      "name": "card_info_txt_repeat",
+      "value": "循环"
+    },
+    {
+      "name": "card_info_txt_rollspeed",
+      "value": "滚动速度"
+    },
+    {
+      "name": "card_info_txt_no_pron",
+      "value": "请先购买发音内容！"
+    },
+    {
+      "name": "card_result_txt",
+      "value": "正确: %d次 不正确: %d次"
+    },
+    {
+      "name": "quiz_question_mode_txt",
+      "value": "测试模式"
+    },
+    {
+      "name": "quiz_question_mode_normal",
+      "value": "普通"
+    },
+    {
+      "name": "quiz_question_mode_challenge",
+      "value": "挑战"
+    },
+    {
+      "name": "quiz_question_count_txt",
+      "value": "问题数"
+    },
+    {
+      "name": "quiz_question_count_1",
+      "value": "10问"
+    },
+    {
+      "name": "quiz_question_count_2",
+      "value": "20问"
+    },
+    {
+      "name": "quiz_question_count_3",
+      "value": "50问"
+    },
+    {
+      "name": "quiz_question_count_4",
+      "value": "100问"
+    },
+    {
+      "name": "quiz_question_type_txt",
+      "value": "出题种类"
+    },
+    {
+      "name": "quiz_question_type_eiwa",
+      "value": "英→中"
+    },
+    {
+      "name": "quiz_question_type_waei",
+      "value": "中→英"
+    },
+    {
+      "name": "quiz_question_speed_txt",
+      "value": "出题速度"
+    },
+    {
+      "name": "quiz_question_speed_slow",
+      "value": "慢速"
+    },
+    {
+      "name": "quiz_question_speed_normal",
+      "value": "中速"
+    },
+    {
+      "name": "quiz_question_speed_fast",
+      "value": "快速"
+    },
+    {
+      "name": "quiz_question_order_txt",
+      "value": "出题顺序"
+    },
+    {
+      "name": "quiz_question_order_serialno",
+      "value": "番号顺序"
+    },
+    {
+      "name": "quiz_question_order_random",
+      "value": "随机"
+    },
+    {
+      "name": "quiz_question_pronounce_txt",
+      "value": "发音"
+    },
+    {
+      "name": "quiz_question_pronounce_on",
+      "value": "ON"
+    },
+    {
+      "name": "quiz_question_pronounce_off",
+      "value": "OFF"
+    },
+    {
+      "name": "quiz_running_btn_pause",
+      "value": "暂停"
+    },
+    {
+      "name": "quiz_running_txt_cnt",
+      "value": "%d/%d问"
+    },
+    {
+      "name": "quiz_result_rate_txt",
+      "value": "正确率"
+    },
+    {
+      "name": "quiz_result_info",
+      "value": "全:%d问  正确:%d问"
+    },
+    {
+      "name": "quiz_result_btn_retry",
+      "value": "再测一次"
+    },
+    {
+      "name": "quiz_result_btn_mistake",
+      "value": "　再测一次\n(仅错误单词)"
+    },
+    {
+      "name": "quiz_result_btn_next",
+      "value": "下一问题"
+    },
+    {
+      "name": "quiz_result_all_corrected",
+      "value": "全部正确"
+    },
+    {
+      "name": "review_btn_edit",
+      "value": "编辑"
+    },
+    {
+      "name": "review_btn_done",
+      "value": "完成"
+    },
+    {
+      "name": "review_btn_retest",
+      "value": "再测试"
+    },
+    {
+      "name": "review_btn_retest_pad",
+      "value": "□再测试"
+    },
+    {
+      "name": "review_btn_retest_pad_hilighted",
+      "value": "■再测试"
+    },
+    {
+      "name": "review_btn_delete",
+      "value": "删除"
+    },
+    {
+      "name": "review_confirm_msg",
+      "value": "确定要删除吗？"
+    },
+    {
+      "name": "review_no_data",
+      "value": "没有需要复习的单词。\n请先进行测验或挑战!"
+    },
+    {
+      "name": "report_learn_title",
+      "value": "学习状况"
+    },
+    {
+      "name": "report_learn_txt",
+      "value": "已学习单词数"
+    },
+    {
+      "name": "report_test_title",
+      "value": "测试状况"
+    },
+    {
+      "name": "report_test_txt_correct",
+      "value": "正确率"
+    },
+    {
+      "name": "report_test_txt_wrong",
+      "value": "不正确率"
+    },
+    {
+      "name": "report_test_txt_still",
+      "value": "未测试"
+    },
+    {
+      "name": "report_mistake_title",
+      "value": "单词错误次数状况"
+    },
+    {
+      "name": "report_category_title",
+      "value": "正确率(Part别)"
+    },
+    {
+      "name": "set_txt_title",
+      "value": "设定"
+    },
+    {
+      "name": "set_txt_learn",
+      "value": "学习履历删除"
+    },
+    {
+      "name": "set_txt_test",
+      "value": "测试结果删除"
+    },
+    {
+      "name": "set_txt_review",
+      "value": "复习列表清空"
+    },
+    {
+      "name": "set_txt_record",
+      "value": "录音清空"
+    },
+    {
+      "name": "set_txt_memo",
+      "value": "备注删除"
+    },
+    {
+      "name": "set_txt_favorite",
+      "value": "收藏夹清空"
+    },
+    {
+      "name": "set_txt_se",
+      "value": "效果音"
+    },
+    {
+      "name": "set_txt_wtreview",
+      "value": "撰写评论"
+    },
+    {
+      "name": "set_txt_encourage_info",
+      "value": "免费获取发音的方法"
+    },
+    {
+      "name": "set_cell_txt_clear_cache",
+      "value": "清空缓存"
+    },
+    {
+      "name": "set_cell_txt_crm_btn_clear_cache",
+      "value": "清空本机缓存"
+    },
+    {
+      "name": "set_msg_clear_done",
+      "value": "清空完成"
+    },
+    {
+      "name": "set_msg_learn",
+      "value": "确定要删除所有学习履历吗？"
+    },
+    {
+      "name": "set_msg_test",
+      "value": "确定要删除所有测试结果吗？"
+    },
+    {
+      "name": "set_msg_review",
+      "value": "确定要清空复习列表吗？"
+    },
+    {
+      "name": "set_msg_record",
+      "value": "确定要清空所有录音数据吗？"
+    },
+    {
+      "name": "set_msg_memo",
+      "value": "确定要删除所有备注内容吗？"
+    },
+    {
+      "name": "set_msg_favorite",
+      "value": "确定要清空收藏夹吗？"
+    },
+    {
+      "name": "set_msg_success_learn",
+      "value": "已成功删除学习履历。"
+    },
+    {
+      "name": "set_msg_success_test",
+      "value": "已成功删除测试结果。"
+    },
+    {
+      "name": "set_msg_success_review",
+      "value": "已成功清空复习列表。"
+    },
+    {
+      "name": "set_msg_success_record",
+      "value": "已成功清空录音数据。"
+    },
+    {
+      "name": "set_msg_success_memo",
+      "value": "已成功删除备注内容。"
+    },
+    {
+      "name": "set_msg_success_favorite",
+      "value": "已成功清空收藏夹。"
+    },
+    {
+      "name": "set_left_btn_more",
+      "value": "更多.."
+    },
+    {
+      "name": "iap_txt_title",
+      "value": "应用内购买"
+    },
+    {
+      "name": "iap_btn_txt_restore",
+      "value": "还原"
+    },
+    {
+      "name": "iap_btn_txt_purchased",
+      "value": "已购买"
+    },
+    {
+      "name": "iap_msg_success_title",
+      "value": "应用内购买"
+    },
+    {
+      "name": "iap_msg_success_content",
+      "value": "完成！"
+    },
+    {
+      "name": "iap_msg_restore_error",
+      "value": "还没有已经购买的内容，不能进行还原。"
+    },
+    {
+      "name": "icloud_restore_success",
+      "value": "已成功完成从【免费版】的数据同步。"
+    },
+    {
+      "name": "rate_title",
+      "value": "评价"
+    },
+    {
+      "name": "rate_msg",
+      "value": "为此应用评分？"
+    },
+    {
+      "name": "rate_cancel",
+      "value": "下次再说！"
+    },
+    {
+      "name": "rate_ok",
+      "value": "好的，现在就去！"
+    },
+    {
+      "name": "rate_never",
+      "value": "不用，永不评论！"
+    },
+    {
+      "name": "cat_txt_level_1",
+      "value": "TOEIC600"
+    },
+    {
+      "name": "cat_txt_level_2",
+      "value": "TOEIC730"
+    },
+    {
+      "name": "cat_txt_level_3",
+      "value": "TOEIC860"
+    },
+    {
+      "name": "cat_txt_level_all",
+      "value": "全部"
+    },
+    {
+      "name": "error_sign_in_icloud_title",
+      "value": "登录iCloud"
+    },
+    {
+      "name": "error_sign_in_icloud_txt",
+      "value": "分享笔记需要登录到iCloud。\n(在设定页面，点击iCloud,然后输入您的Apple ID，同时打开iCloud Drive)"
+    },
+    {
+      "name": "encourage_instruction_title",
+      "value": "获取发音"
+    },
+    {
+      "name": "encourage_instruction_msg",
+      "value": "🎉观看广告可以立即获得单词和例句发音。"
+    },
+    {
+      "name": "encourage_msg_word",
+      "value": "已经解锁「%s」单词发音。"
+    },
+    {
+      "name": "encourage_msg_example",
+      "value": "已经解锁「%s」例句发音。"
+    },
+    {
+      "name": "encourage_msg_word_example",
+      "value": "已经解锁「%s」单词和例句发音。"
+    },
+    {
+      "name": "encourage_btn_txt_yes",
+      "value": "现在观看"
+    },
+    {
+      "name": "encourage_btn_txt_no",
+      "value": "以后再说"
+    },
+    {
+      "name": "set_more_txt_mine_memo",
+      "value": "我的笔记"
+    },
+    {
+      "name": "set_more_txt_mine_record",
+      "value": "我的录音"
+    },
+    {
+      "name": "set_more_txt_mine_deletes",
+      "value": "我删除的单词"
+    },
+    {
+      "name": "set_more_txt_update_now",
+      "value": "立即更新已下载词汇"
+    },
+    {
+      "name": "set_more_txt_update_auto",
+      "value": "Wifi下自动更新词汇"
+    },
+    {
+      "name": "set_more_msg_update_started",
+      "value": "正在检查词汇更新.."
+    },
+    {
+      "name": "set_more_msg_update_finished",
+      "value": "词汇更新完成。"
+    },
+    {
+      "name": "set_txt_word_deleted",
+      "value": "查看已删除单词"
+    },
+    {
+      "name": "nav_title_deleted_word",
+      "value": "已删除单词"
+    },
+    {
+      "name": "word_delete_msg_recover_confirm",
+      "value": "确定要恢复所有已删除的单词吗？"
+    },
+    {
+      "name": "word_delete_msg_recover_success",
+      "value": "已成功恢复所有已删除单词。"
+    },
+    {
+      "name": "word_delete_btn_recover",
+      "value": "全部恢复"
+    },
+    {
+      "name": "word_delete_pull_to_delete",
+      "value": "下拉删除此单词.."
+    },
+    {
+      "name": "word_delete_pull_to_recover",
+      "value": "下拉恢复此单词.."
+    },
+    {
+      "name": "word_delete_release_to_delete",
+      "value": "释放删除此单词.."
+    },
+    {
+      "name": "word_delete_release_to_recover",
+      "value": "释放恢复此单词.."
+    },
+    {
+      "name": "word_delete_deleting",
+      "value": "删除中.."
+    },
+    {
+      "name": "word_delete_recoverring",
+      "value": "恢复中.."
+    },
+    {
+      "name": "word_delete_msg_deleted",
+      "value": "已删除"
+    },
+    {
+      "name": "word_delete_msg_recoverred",
+      "value": "已恢复"
+    },
+    {
+      "name": "word_delete_lbl_txt_deleted",
+      "value": "已删除"
+    },
+    {
+      "name": "set_txt_remind_title",
+      "value": "学习提醒"
+    },
+    {
+      "name": "set_txt_remind_daily",
+      "value": "每天"
+    },
+    {
+      "name": "set_txt_remind_off",
+      "value": "OFF"
+    },
+    {
+      "name": "set_cell_txt_to_member",
+      "value": "升级为会员"
+    },
+    {
+      "name": "set_cell_txt_member",
+      "value": "会员功能"
+    },
+    {
+      "name": "member_title",
+      "value": "会员功能"
+    },
+    {
+      "name": "member_desc",
+      "value": "・完全无广告;        \n・任意下载词汇数据;        \n・任意查看单词发音;        \n・任意查看例句发音;        \n・任意使用自动发音;        \n・任意使用内置词典;        \n・任意使用记忆曲线;"
+    },
+    {
+      "name": "member_txt_recommend",
+      "value": "推荐"
+    },
+    {
+      "name": "member_txt_info",
+      "value": "・用户确认购买并付款后，计入华为账户;        \n・通过华为购买的内容或服务，仅限华为Harmony系统使用，不能在其它系统使用;        \n・如需取消续订，请在当前订阅周期到期前24小时以前，手动在华为设置管理中关闭自动续费功能，到期前24小时内取消，将会收取订阅费用；        \n・华为账户会在到期前24小时内扣费，扣费成功后订阅周期顺延一个订阅周期；        \n・用户若在免费试用期有任何未使用完的部分，剩余试用期将在购买订阅产品时被没收。目前本产品不提供免费试用期。"
+    },
+    {
+      "name": "member_txt_will_expire",
+      "value": "会员到期时间：%s"
+    },
+    {
+      "name": "member_txt_was_expired",
+      "value": "会员已于：%s 到期"
+    },
+    {
+      "name": "member_btn_restore",
+      "value": "恢复"
+    },
+    {
+      "name": "member_btn_subscribe",
+      "value": "升级为会员"
+    },
+    {
+      "name": "member_msg_subscribe_purchasing",
+      "value": "订阅中.."
+    },
+    {
+      "name": "member_btn_subscribe_done",
+      "value": "恭喜您成功升级为会员"
+    },
+    {
+      "name": "member_msg_restoring",
+      "value": "恢复中.."
+    },
+    {
+      "name": "member_msg_restore_done",
+      "value": "恢复完成"
+    },
+    {
+      "name": "member_msg_restored_nothing",
+      "value": "没有可供恢复的项目"
+    },
+    {
+      "name": "member_btn_terms",
+      "value": "服务条款"
+    },
+    {
+      "name": "member_btn_privacy",
+      "value": "隐私政策"
+    },
+    {
+      "name": "member_btn_cancel",
+      "value": "取消"
+    },
+    {
+      "name": "member_btn_manage_subs",
+      "value": "查看订阅"
+    },
+    {
+      "name": "member_manager_msg_limit_download_books",
+      "value": "加入会员可以任意下载词汇"
+    },
+    {
+      "name": "member_manager_msg_limit_add_ebook",
+      "value": "加入会员可以创建更多词汇本"
+    },
+    {
+      "name": "member_manager_msg_limit_word_pron",
+      "value": "加入会员可以任意查看单词发音, \n今日免费次数已用完(每日%d次)"
+    },
+    {
+      "name": "member_manager_msg_limit_example_pron",
+      "value": "加入会员可以任意查看例句发音, \n今日免费次数已用完(每日%d次)"
+    },
+    {
+      "name": "member_manager_msg_limit_auto_pron",
+      "value": "加入会员可以任意使用自动发音"
+    },
+    {
+      "name": "member_manager_msg_limit_dict_show",
+      "value": "加入会员可以任意使用内置词典, \n今日免费次数已用完(每日%d次)"
+    },
+    {
+      "name": "member_manager_msg_limit_use_night_mode",
+      "value": "加入会员可以任意使用夜晚模式"
+    },
+    {
+      "name": "member_manager_msg_limit_use_hide_trans",
+      "value": "加入会员可以任意使用隐藏翻译"
+    },
+    {
+      "name": "member_manager_msg_limit_use_retest_mistake",
+      "value": "加入会员可以任意使用再测一次"
+    },
+    {
+      "name": "member_manager_msg_limit_use_all_units",
+      "value": "加入会员可以任意学习所有单元"
+    },
+    {
+      "name": "member_manager_msg_limit_use_all_plan_dayofs",
+      "value": "加入会员可任意使用记忆曲线"
+    },
+    {
+      "name": "member_manager_msg_limit_use_cigen",
+      "value": "加入会员可以任意使用词根助记"
+    },
+    {
+      "name": "member_manager_msg_limit_use_sameroot",
+      "value": "加入会员可以任意使用同根词"
+    },
+    {
+      "name": "member_manager_msg_limit_online_dict_use",
+      "value": "加入会员可以任意使用单词查询, \n今日免费次数已用完(每日%d次)"
+    },
+    {
+      "name": "member_manager_msg_limit_challenge_use",
+      "value": "加入会员可以任意使用单词挑战, \n今日免费次数已用完(每日%d次)"
+    },
+    {
+      "name": "member_gift_one_year",
+      "value": "感谢您对我们的支持，赠送1年会员"
+    },
+    {
+      "name": "member_subscribe_txt_unit_day",
+      "value": "天"
+    },
+    {
+      "name": "member_subscribe_txt_unit_days",
+      "value": "天"
+    },
+    {
+      "name": "member_subscribe_txt_unit_week",
+      "value": "周"
+    },
+    {
+      "name": "member_subscribe_txt_unit_weeks",
+      "value": "周"
+    },
+    {
+      "name": "member_subscribe_txt_unit_month",
+      "value": "月"
+    },
+    {
+      "name": "member_subscribe_txt_unit_months",
+      "value": "月"
+    },
+    {
+      "name": "member_subscribe_txt_unit_year",
+      "value": "年"
+    },
+    {
+      "name": "member_subscribe_txt_unit_years",
+      "value": "年"
+    },
+    {
+      "name": "member_sub_tip_month",
+      "value": "连续包月会员，%s元/月"
+    },
+    {
+      "name": "member_sub_tip_quarter",
+      "value": "连续包季会员，%s元/季，相当于%s元/月"
+    },
+    {
+      "name": "member_sub_tip_year",
+      "value": "连续包年会员，%s元/年，相当于%s元/月"
+    },
+    {
+      "name": "advice_nav_title",
+      "value": "意见反馈"
+    },
+    {
+      "name": "advice_txt_tip",
+      "value": "请在此处留下您的Email"
+    },
+    {
+      "name": "advice_btn_send",
+      "value": "发送"
+    },
+    {
+      "name": "advice_msg_send_suceed",
+      "value": "发送成功。"
+    },
+    {
+      "name": "advice_msg_send_failed",
+      "value": "发送失败！"
+    },
+    {
+      "name": "reclaim_nav_title",
+      "value": "投诉"
+    },
+    {
+      "name": "reclaim_btn_send",
+      "value": "发送"
+    },
+    {
+      "name": "about_nav_title",
+      "value": "关于"
+    },
+    {
+      "name": "about_btn_term",
+      "value": "《服务协议》"
+    },
+    {
+      "name": "about_btn_privacy",
+      "value": "《隐私政策》"
+    },
+    {
+      "name": "about_btn_privacy_kid",
+      "value": "《儿童隐私政策》"
+    },
+    {
+      "name": "about_btn_redeem",
+      "value": "兑换会员码"
+    },
+    {
+      "name": "about_btn_reclaim",
+      "value": "投诉"
+    },
+    {
+      "name": "about_btn_contact",
+      "value": "联系客服"
+    },
+    {
+      "name": "login_not_login",
+      "value": "请登录"
+    },
+    {
+      "name": "login_nav_title",
+      "value": "登录"
+    },
+    {
+      "name": "login_txt_email",
+      "value": "邮箱"
+    },
+    {
+      "name": "login_txt_pwd",
+      "value": "密码"
+    },
+    {
+      "name": "login_btn_forget",
+      "value": "忘记密码?"
+    },
+    {
+      "name": "login_btn_login",
+      "value": "登录"
+    },
+    {
+      "name": "login_btn_signup",
+      "value": "注册"
+    },
+    {
+      "name": "login_btn_cancel",
+      "value": "取消"
+    },
+    {
+      "name": "login_msg_invalid_email",
+      "value": "请输入正确的Email"
+    },
+    {
+      "name": "login_msg_need_pwd",
+      "value": "请输入密码"
+    },
+    {
+      "name": "login_msg_logining",
+      "value": "登录中.."
+    },
+    {
+      "name": "login_msg_login_succeed",
+      "value": "登录成功"
+    },
+    {
+      "name": "login_msg_login_failed",
+      "value": "登录失败"
+    },
+    {
+      "name": "login_sns_txt_other",
+      "value": "其它登录方式"
+    },
+    {
+      "name": "login_sns_weibo",
+      "value": "新浪微博"
+    },
+    {
+      "name": "login_sns_qq",
+      "value": "QQ"
+    },
+    {
+      "name": "login_sns_weixin",
+      "value": "微信"
+    },
+    {
+      "name": "login_sns_facebook",
+      "value": "Facebook"
+    },
+    {
+      "name": "login_agree_txt",
+      "value": "已阅读并同意服务条款和隐私政策"
+    },
+    {
+      "name": "login_agree_tip",
+      "value": "请阅读并同意服务条款和隐私政策"
+    },
+    {
+      "name": "login_agree_link_terms",
+      "value": "服务条款"
+    },
+    {
+      "name": "login_agree_link_privacy",
+      "value": "隐私政策"
+    },
+    {
+      "name": "member_agree_txt",
+      "value": "同意《会员服务》、《自动续费协议》和《隐私政策》"
+    },
+    {
+      "name": "member_agree_tip",
+      "value": "订阅会员需要同意《会员服务》《自动续费协议》《隐私政策》"
+    },
+    {
+      "name": "member_agree_link_terms",
+      "value": "《会员服务》"
+    },
+    {
+      "name": "member_agree_link_privacy",
+      "value": "《隐私政策》"
+    },
+    {
+      "name": "member_agree_link_terms_subscription",
+      "value": "《自动续费协议》"
+    },
+    {
+      "name": "member_buy_cfm_msg_title",
+      "value": "确认"
+    },
+    {
+      "name": "member_buy_cfm_msg_info",
+      "value": "订阅会员，开通自动续费服务。"
+    },
+    {
+      "name": "member_buy_cfm_msg_info2",
+      "value": "你可以随时取消订阅，关闭自动续费服务。"
+    },
+    {
+      "name": "member_buy_cfm_txt_terms_link",
+      "value": "自动续费服务"
+    },
+    {
+      "name": "member_buy_cfm_btn_yes",
+      "value": "确定"
+    },
+    {
+      "name": "member_buy_cfm_btn_no",
+      "value": "取消"
+    },
+    {
+      "name": "logoff_nav_title",
+      "value": "资料管理"
+    },
+    {
+      "name": "logoff_btn_logoff",
+      "value": "注销帐号"
+    },
+    {
+      "name": "logoff_txt_tip",
+      "value": "注销帐号，将会从服务器上删除此账户的所有信息，包括所有备份数据，且不可恢复，请谨慎操作。"
+    },
+    {
+      "name": "logoff_msg_logoff",
+      "value": "确定要删除此帐号的所有数据吗？(删除之后不可恢复)"
+    },
+    {
+      "name": "logoff_cfm_yes",
+      "value": "确认注销"
+    },
+    {
+      "name": "logoff_cfm_no",
+      "value": "取消"
+    },
+    {
+      "name": "logoff_msg_logoff_succee",
+      "value": "帐号注销成功"
+    },
+    {
+      "name": "logoff_msg_logoff_fail",
+      "value": "操作失败"
+    },
+    {
+      "name": "signup_nav_title",
+      "value": "注册"
+    },
+    {
+      "name": "signup_txt_email",
+      "value": "邮箱"
+    },
+    {
+      "name": "signup_txt_username",
+      "value": "用户名"
+    },
+    {
+      "name": "signup_txt_pwd",
+      "value": "密码"
+    },
+    {
+      "name": "signup_txt_pwd2",
+      "value": "再次输入密码"
+    },
+    {
+      "name": "signup_chk_agree",
+      "value": "同意"
+    },
+    {
+      "name": "signup_btn_terms",
+      "value": "服务条款"
+    },
+    {
+      "name": "signup_btn_signup",
+      "value": "注册"
+    },
+    {
+      "name": "signup_msg_need_email",
+      "value": "请输入正确的Email"
+    },
+    {
+      "name": "signup_msg_need_username",
+      "value": "请输入用户名"
+    },
+    {
+      "name": "signup_msg_need_pwd",
+      "value": "请输入密码"
+    },
+    {
+      "name": "signup_msg_need_pwd2",
+      "value": "请输入验证密码"
+    },
+    {
+      "name": "signup_msg_username_too_long",
+      "value": "用户名太长"
+    },
+    {
+      "name": "signup_msg_pwd_out_range",
+      "value": "请输入6～20位之内的密码"
+    },
+    {
+      "name": "signup_msg_pwd_different",
+      "value": "两次输入的密码不同"
+    },
+    {
+      "name": "signup_msg_need_agree_terms",
+      "value": "继续注册您需要同意我们的服务条款"
+    },
+    {
+      "name": "signup_msg_signuping",
+      "value": "注册中.."
+    },
+    {
+      "name": "signup_msg_signup_succeed",
+      "value": "注册成功"
+    },
+    {
+      "name": "signup_msg_signup_failed",
+      "value": "注册失败"
+    },
+    {
+      "name": "signup_msg_signup_auditing",
+      "value": "审核中.."
+    },
+    {
+      "name": "signup_msg_signup_fail_on_username",
+      "value": "注册失败，用户名违规"
+    },
+    {
+      "name": "sendcode_nav_title",
+      "value": "发送验证码"
+    },
+    {
+      "name": "sendcode_txt_email",
+      "value": "请输入邮箱"
+    },
+    {
+      "name": "sendcode_btn_send",
+      "value": "发送验证码"
+    },
+    {
+      "name": "sendcode_msg_need_email",
+      "value": "请输入正确的Email"
+    },
+    {
+      "name": "sendcode_msg_sending",
+      "value": "正在发送验证码.."
+    },
+    {
+      "name": "sendcode_msg_send_done",
+      "value": "验证码已经发送到邮箱"
+    },
+    {
+      "name": "sendcode_msg_send_failed",
+      "value": "发送验证码失败"
+    },
+    {
+      "name": "resetpwd_nav_title",
+      "value": "重置密码"
+    },
+    {
+      "name": "resetpwd_txt_code",
+      "value": "请输入验证码"
+    },
+    {
+      "name": "resetpwd_txt_pwd",
+      "value": "新密码"
+    },
+    {
+      "name": "resetpwd_txt_pwd2",
+      "value": "再次输入密码"
+    },
+    {
+      "name": "resetpwd_btn_excute",
+      "value": "确认"
+    },
+    {
+      "name": "resetpwd_msg_need_code",
+      "value": "请输入验证码"
+    },
+    {
+      "name": "resetpwd_msg_need_pwd",
+      "value": "请输入密码"
+    },
+    {
+      "name": "resetpwd_msg_need_pwd2",
+      "value": "请输入验证密码"
+    },
+    {
+      "name": "resetpwd_msg_pwd_out_range",
+      "value": "请输入6～20位之内的密码"
+    },
+    {
+      "name": "resetpwd_msg_pwd_different",
+      "value": "两次输入的密码不同"
+    },
+    {
+      "name": "resetpwd_msg_resetting",
+      "value": "密码重置中.."
+    },
+    {
+      "name": "resetpwd_msg_reset_succeed",
+      "value": "重置密码成功"
+    },
+    {
+      "name": "resetpwd_msg_reset_failed",
+      "value": "重置密码失败"
+    },
+    {
+      "name": "login_qr_nav_title",
+      "value": "微信扫码登录"
+    },
+    {
+      "name": "server_code_m402",
+      "value": "Email已经注册过"
+    },
+    {
+      "name": "server_code_m405",
+      "value": "帐户不存在"
+    },
+    {
+      "name": "server_code_m406",
+      "value": "密码不正确"
+    },
+    {
+      "name": "server_code_m410",
+      "value": "验证码不正确"
+    },
+    {
+      "name": "server_code_m701",
+      "value": "会员码无效"
+    },
+    {
+      "name": "server_code_m702",
+      "value": "会员码已被使用"
+    },
+    {
+      "name": "set_alert_logut_msg",
+      "value": "确定要退出登录吗？"
+    },
+    {
+      "name": "set_alert_logut_btn_yes",
+      "value": "是的"
+    },
+    {
+      "name": "set_btn_login",
+      "value": "登录"
+    },
+    {
+      "name": "set_btn_logout",
+      "value": "退出登录"
+    },
+    {
+      "name": "set_txt_not_login",
+      "value": "未登录"
+    },
+    {
+      "name": "set_alert_backup_msg",
+      "value": "将本地数据备份到云端？"
+    },
+    {
+      "name": "set_alert_backup_btn_yes",
+      "value": "立即备份"
+    },
+    {
+      "name": "set_msg_backuping",
+      "value": "数据备份中.."
+    },
+    {
+      "name": "set_msg_backup_done",
+      "value": "备份成功"
+    },
+    {
+      "name": "set_msg_backup_failed",
+      "value": "备份失败"
+    },
+    {
+      "name": "set_alert_restore_msg",
+      "value": "从云端恢复数据到本地？"
+    },
+    {
+      "name": "set_alert_restore_btn_yes",
+      "value": "立即恢复"
+    },
+    {
+      "name": "set_msg_restoreing",
+      "value": "数据恢复中.."
+    },
+    {
+      "name": "set_msg_restore_done",
+      "value": "恢复成功"
+    },
+    {
+      "name": "set_msg_restore_failed",
+      "value": "恢复失败"
+    },
+    {
+      "name": "set_msg_restore_no_found",
+      "value": "未找到备份数据"
+    },
+    {
+      "name": "set_txt_member_will_expire",
+      "value": "会员到期时间：%s"
+    },
+    {
+      "name": "set_txt_member_was_expired",
+      "value": "会员已于：%s 到期"
+    },
+    {
+      "name": "set_txt_data_last_backup",
+      "value": "上次备份：%s"
+    },
+    {
+      "name": "set_txt_data_to_restore",
+      "value": "从云端恢复: %s 的学习记录"
+    },
+    {
+      "name": "set_txt_about_version",
+      "value": "版本：%s"
+    },
+    {
+      "name": "set_alert_clear_msg",
+      "value": "清空本机缓存数据？"
+    },
+    {
+      "name": "set_alert_clear_btn_yes",
+      "value": "清空"
+    },
+    {
+      "name": "set_nav_title",
+      "value": "设置"
+    },
+    {
+      "name": "set_cell_txt_data_backup",
+      "value": "备份数据"
+    },
+    {
+      "name": "set_cell_txt_data_restore",
+      "value": "恢复数据"
+    },
+    {
+      "name": "set_cell_txt_remind_switch",
+      "value": "学习提醒"
+    },
+    {
+      "name": "set_cell_txt_remind_time",
+      "value": "每日"
+    },
+    {
+      "name": "set_cell_txt_advice",
+      "value": "意见反馈"
+    },
+    {
+      "name": "set_cell_txt_review",
+      "value": "给个好评"
+    },
+    {
+      "name": "set_cell_txt_share",
+      "value": "分享应用"
+    },
+    {
+      "name": "set_cell_txt_about",
+      "value": "关于"
+    },
+    {
+      "name": "set_cell_txt_version",
+      "value": "版本:%s"
+    },
+    {
+      "name": "base_dict_msg_copied",
+      "value": "已经拷贝到剪贴板。"
+    },
+    {
+      "name": "base_dict_tip_title",
+      "value": "提示"
+    },
+    {
+      "name": "base_dict_tip_text",
+      "value": "点击例句英文单词，可查看中文释义。"
+    },
+    {
+      "name": "word_kind_n",
+      "value": "【名】"
+    },
+    {
+      "name": "word_kind_v",
+      "value": "【动】"
+    },
+    {
+      "name": "word_kind_vt",
+      "value": "【动】"
+    },
+    {
+      "name": "word_kind_vi",
+      "value": "【动】"
+    },
+    {
+      "name": "word_kind_vt_vi",
+      "value": "【动】"
+    },
+    {
+      "name": "word_kind_adj",
+      "value": "【形】"
+    },
+    {
+      "name": "word_kind_adv",
+      "value": "【副】"
+    },
+    {
+      "name": "word_kind_pron",
+      "value": "【代】"
+    },
+    {
+      "name": "word_kind_prep",
+      "value": "【介】"
+    },
+    {
+      "name": "word_kind_aux",
+      "value": "【助】"
+    },
+    {
+      "name": "word_kind_abbr",
+      "value": "【缩】"
+    },
+    {
+      "name": "word_kind_conj",
+      "value": "【连】"
+    },
+    {
+      "name": "word_kind_art",
+      "value": "【冠】"
+    },
+    {
+      "name": "word_kind_int",
+      "value": "【感】"
+    },
+    {
+      "name": "word_kind_interj",
+      "value": "【感】"
+    },
+    {
+      "name": "word_kind_det",
+      "value": "【限】"
+    },
+    {
+      "name": "word_kind_num",
+      "value": "【数】"
+    },
+    {
+      "name": "word_kind_phr",
+      "value": "【短】"
+    },
+    {
+      "name": "cfm_title_select",
+      "value": "请选择"
+    },
+    {
+      "name": "cfm_btn_cancel",
+      "value": "取消"
+    },
+    {
+      "name": "alert_title_confirm",
+      "value": "确认"
+    },
+    {
+      "name": "alert_msg_confirm_remove",
+      "value": "确定要删除吗?"
+    },
+    {
+      "name": "confirm_btn_remove",
+      "value": "删除"
+    },
+    {
+      "name": "confirm_btn_yes",
+      "value": "是的"
+    },
+    {
+      "name": "confirm_btn_no",
+      "value": "不要"
+    },
+    {
+      "name": "confirm_btn_ok",
+      "value": "好的"
+    },
+    {
+      "name": "confirm_btn_cancel",
+      "value": "取消"
+    },
+    {
+      "name": "common_date_str_today",
+      "value": "今天"
+    },
+    {
+      "name": "common_date_str_yesterday",
+      "value": "昨天"
+    },
+    {
+      "name": "common_date_str_tomorrow",
+      "value": "明天"
+    },
+    {
+      "name": "network_not_available",
+      "value": "网络连接失败！"
+    },
+    {
+      "name": "network_wifi_not_available",
+      "value": "当前网络未连接到WIFI，继续下载可能会消耗流量，是否继续下载？"
+    },
+    {
+      "name": "remind_title",
+      "value": " "
+    },
+    {
+      "name": "remind_daily_msg_1",
+      "value": "你设置的学习时间到了！"
+    },
+    {
+      "name": "remind_daily_msg_2",
+      "value": "学习时间到了，加油吧！"
+    },
+    {
+      "name": "remind_sys_msg_day3",
+      "value": "同学，你已经有三天没有学习了， 要加油哦^_^。"
+    },
+    {
+      "name": "remind_sys_msg_day7",
+      "value": "同学，你已经有一周没有学习了，其它同学可都在努学习哦^_^。"
+    },
+    {
+      "name": "remind_sys_msg_day15",
+      "value": "同学，你已经有半个月没有学习了， 不会是不想进步了吧^_^。"
+    },
+    {
+      "name": "remind_sys_msg_day30",
+      "value": "同学，你已经有一个月没有学习了，哎， 我们都懒得提醒你了。"
+    },
+    {
+      "name": "help_tip_swipe_left_default",
+      "value": "←向左滑動"
+    },
+    {
+      "name": "help_tip_swipe_left_to_delete",
+      "value": "←左滑刪除"
+    },
+    {
+      "name": "help_tip_swipe_left_to_fav",
+      "value": "←左滑收藏"
+    },
+    {
+      "name": "privacy_pop_txt_title",
+      "value": "隐私政策"
+    },
+    {
+      "name": "privacy_pop_btn_disagree",
+      "value": "不同意"
+    },
+    {
+      "name": "privacy_pop_btn_agree",
+      "value": "同意并继续"
+    },
+    {
+      "name": "privacy_pop_content",
+      "value": "    请你务必审慎阅读，充分理解「服务协议」和「隐私政策」各条款，包括但不限于： \n    为了向你提供内容分享，数据备份及恢复等服务，我们需要收集你的设备基本信息，操作日志等个人信息。\n    你可以在设置中查看，管理你的数据。你可以阅读《服务协议》和《隐私政策》了解详细信息。如果您是14周岁以下的未成年人，您需要和您的监护人一起仔细阅读《儿童隐私政策》，并在征得您的监护人同意后，使用我们的产品、服务或向我们提供信息。 \n    如你同意，请点击“同意并继续”，开始接受我们的服务。"
+    },
+    {
+      "name": "privacy_pop_link_privacy",
+      "value": "《隐私政策》"
+    },
+    {
+      "name": "privacy_pop_link_privacy_kid",
+      "value": "《儿童隐私政策》"
+    },
+    {
+      "name": "privacy_pop_link_terms",
+      "value": "《服务协议》"
+    },
+    {
+      "name": "link_url_cfm_btn_sharelink",
+      "value": "分享链接"
+    },
+    {
+      "name": "microphone_permission_reason",
+      "value": "用于单词录音跟读学习。"
+    },
+    {
+      "name": "image_write_permission_reason",
+      "value": "用于存储字卡到相册"
+    },
+    {
+      "name": "image_read_permission_reason",
+      "value": "用于选择相册图片识别字卡内容。"
+    },
+    {
+      "name": "camera_permission_reason",
+      "value": "用于扫描并识别文字。"
+    },
+    {
+      "name": "set_msg_permission_notification",
+      "value": "开启提醒需要通知权限。"
+    },
+    {
+      "name": "sys_msg_volume_small",
+      "value": "手机音量太小，可能无法听到声音！\n请按手机侧边音量键调整。"
+    },
+    {
+      "name": "sys_msg_disk_space_not_enough",
+      "value": "手机容量不足，可能会影响应用运行.."
+    },
+    {
+      "name": "photo_picker_nav_title",
+      "value": "照片选择"
+    },
+    {
+      "name": "eword_field_pron_us",
+      "value": "音标"
+    },
+    {
+      "name": "eword_field_title_cn1",
+      "value": "单词释义1"
+    },
+    {
+      "name": "eword_field_title_cn2",
+      "value": "单词释义2"
+    },
+    {
+      "name": "eword_field_title_cn3",
+      "value": "单词释义3"
+    },
+    {
+      "name": "eword_field_word_change",
+      "value": "单词变形"
+    },
+    {
+      "name": "eword_field_syn_words",
+      "value": "近义词"
+    },
+    {
+      "name": "eword_field_asyn_words",
+      "value": "反义词"
+    },
+    {
+      "name": "eword_field_example_en1",
+      "value": "例句1(英)"
+    },
+    {
+      "name": "eword_field_example_cn1",
+      "value": "例句1(中)"
+    },
+    {
+      "name": "eword_field_example_en2",
+      "value": "例句2(英)"
+    },
+    {
+      "name": "eword_field_example_cn2",
+      "value": "例句2(中)"
+    },
+    {
+      "name": "eword_field_example_en3",
+      "value": "例句3(英)"
+    },
+    {
+      "name": "eword_field_example_cn3",
+      "value": "例句3(中)"
+    },
+    {
+      "name": "eword_field_used_phrase",
+      "value": "常用短语"
+    },
+    {
+      "name": "eword_field_en2en",
+      "value": "英英释义"
+    },
+    {
+      "name": "eword_field_discriminate",
+      "value": "详细说明"
+    },
+    {
+      "name": "eword_field_root",
+      "value": "词根助记"
+    },
+    {
+      "name": "eword_field_cognates",
+      "value": "同根词"
+    }
   ]
 }

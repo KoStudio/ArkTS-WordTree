@@ -15,6 +15,9 @@ import { ResultSetTool } from '../../dbUtils/ResultSetTool';
 import { AppCfgManager } from '../../managers/servercfg/AppCfgManager';
 import { Word } from './Word';
 import { WordDetail } from './WordDetail';
+import { StringEncoder } from '../../../common/utils/strings/StringEncrypt';
+import { DB } from '../../dbUtils/DBConstants';
+import { ParamType } from '../../dbUtils/DBAccessor';
 
 export namespace WordTable {
   export const Table_Name         = "Word";
@@ -318,5 +321,115 @@ export class WordDbAccess implements DBPrepareProtocol {
     const accessor = new DBAccessor(path, null)
     const sql = `SELECT COUNT(DISTINCT ${WordTable.Col.UNITID}) FROM ${WordTable.Table_Name}`
     return await accessor.getCount(sql, [])
+  }
+
+  /**
+   * 将在线词条写入指定 textDb.sqlite 的 Word 表（EBook 加词）。
+   * @param path  textDb 完整路径
+   * @param word  词条详情（通常来自 `OnlineWord.asWordDetail()`）
+   * @returns     是否执行成功
+   */
+  static async insertOrReplaceWordDetailAtTextDbPath(path: string, word: WordDetail): Promise<boolean> {
+
+    const titleEn = word.titleEn
+
+    if (titleEn === null || titleEn === undefined || titleEn.length < 1) {
+      return false
+    }
+
+    const titleEnBase64: string | null = word.titleEnEncodeToBase64
+
+    if (titleEnBase64 === null) {
+      return false
+    }
+
+    const titleRow: string | null = word.titleEnEncodeAndAddSalt
+
+    if (titleRow === null) {
+      return false
+    }
+
+    const accessor = new DBAccessor(path, null, false)
+    const maxIdx   = await accessor.getMax(WordTable.Col.IDX, WordTable.Table_Name)
+    const nextIdx  = maxIdx + 1
+
+    word.idx       = nextIdx
+    word.partId    = 1
+    word.partName  = '默认'
+    word.unitId    = 1
+    word.unitName  = '默认'
+    word.unitNo    = 1
+
+    const sqlDelete: string = `
+        DELETE FROM ${WordTable.Table_Name}
+        WHERE SUBSTR(
+            ${WordTable.Col.TITLEEN},
+            ${DB.salt} + 1,
+            LENGTH(${WordTable.Col.TITLEEN}) - ${DB.salt}
+        ) = ?
+    `;
+
+    const sqlInsert: string = `
+        INSERT INTO ${WordTable.Table_Name} (
+            ${WordTable.Col.IDX},
+            ${WordTable.Col.PARTID},
+            ${WordTable.Col.PARTNAME},
+            ${WordTable.Col.UNITID},
+            ${WordTable.Col.UNITNAME},
+            ${WordTable.Col.UNITNO},
+            ${WordTable.Col.TITLEEN},
+            ${WordTable.Col.PRONEN},
+            ${WordTable.Col.PRONUS},
+            ${WordTable.Col.TITLECN1},
+            ${WordTable.Col.TITLECN2},
+            ${WordTable.Col.TITLECN3},
+            ${WordTable.Col.WORDIMAGE},
+            ${WordTable.Col.WORDCHANGE},
+            ${WordTable.Col.SYNWORDS},
+            ${WordTable.Col.ASYNWORDS},
+            ${WordTable.Col.EXAMPLEEN1},
+            ${WordTable.Col.EXAMPLECN1},
+            ${WordTable.Col.EXAMPLEEN2},
+            ${WordTable.Col.EXAMPLECN2},
+            ${WordTable.Col.EXAMPLEEN3},
+            ${WordTable.Col.EXAMPLECN3},
+            ${WordTable.Col.USEDPHRASE},
+            ${WordTable.Col.EN2EN},
+            ${WordTable.Col.DISCRIMINATE}
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    `;
+
+    const paramsInsert: ParamType[] = [
+      word.idx,
+      word.partId,
+      StringEncoder.encodeAndAddSalt(word.partName),
+      word.unitId,
+      StringEncoder.encodeAndAddSalt(word.unitName),
+      word.unitNo,
+      titleRow,
+      StringEncoder.encodeAndAddSalt(word.pronEn),
+      StringEncoder.encodeAndAddSalt(word.pronUs),
+      StringEncoder.encodeAndAddSalt(word.titleCn1),
+      StringEncoder.encodeAndAddSalt(word.titleCn2),
+      StringEncoder.encodeAndAddSalt(word.titleCn3),
+      StringEncoder.encodeAndAddSalt(word.wordImage),
+      StringEncoder.encodeAndAddSalt(word.wordChange),
+      StringEncoder.encodeAndAddSalt(word.synWords),
+      StringEncoder.encodeAndAddSalt(word.asynWords),
+      StringEncoder.encodeAndAddSalt(word.exampleEn1),
+      StringEncoder.encodeAndAddSalt(word.exampleCn1),
+      StringEncoder.encodeAndAddSalt(word.exampleEn2),
+      StringEncoder.encodeAndAddSalt(word.exampleCn2),
+      StringEncoder.encodeAndAddSalt(word.exampleEn3),
+      StringEncoder.encodeAndAddSalt(word.exampleCn3),
+      StringEncoder.encodeAndAddSalt(word.usedPhrase),
+      StringEncoder.encodeAndAddSalt(word.en2En),
+      StringEncoder.encodeAndAddSalt(word.discriminate)
+    ];
+
+    const ok1 = await accessor.updateDb(sqlDelete, [titleEnBase64])
+    const ok2 = await accessor.updateDb(sqlInsert, paramsInsert)
+
+    return ok1 && ok2
   }
 }

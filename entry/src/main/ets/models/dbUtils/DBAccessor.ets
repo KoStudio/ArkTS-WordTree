@@ -1,5 +1,6 @@
 // DBAccessor.ets
 import relationalStore from '@ohos.data.relationalStore';
+import fs from '@ohos.file.fs';
 import { getAppContext } from '../../app/constants/AppContext';
 import { DebugLog } from '../../app/debug/DebugLog';
 import { PathUtility } from '../../common/utils/PathUtility';
@@ -353,6 +354,75 @@ export class DBAccessor {
       return false;
     } finally {
       this.closeDatabase(); // 确保关闭连接
+    }
+  }
+
+  /**
+   * 在同一连接内顺序执行多条 SQL（不使用事务；PRAGMA wal_checkpoint / journal_mode 等需同一连接连续执行）
+   * @param sqls SQL 列表
+   * @param paramsList 与 sqls 等长的参数数组；缺省或某元素缺省时按空参执行
+   * @returns 是否全部执行成功
+   */
+  async executeSqlSequence(sqls: string[], paramsList: ParamType[][] = []): Promise<boolean> {
+
+    if (!await this.initDatabase()) {
+      return false;
+    }
+
+    if (!this.isInitialized || !this.rdbStore) {
+      return false;
+    }
+
+    try {
+
+      for (let i = 0; i < sqls.length; i++) {
+        const params = paramsList.length > i ? paramsList[i] : [];
+        const bind: ParamType[] = params ? params : [];
+
+        await this.rdbStore.executeSql(sqls[i], bind);
+        DebugLog.d(sqls[i] + '  参数: ' + bind);
+      }
+
+      return true;
+    } catch (err) {
+      console.error(`DBAccessor: executeSqlSequence 失败 - ${err}`);
+      return false;
+    } finally {
+      this.closeDatabase();
+    }
+  }
+
+  /**
+   * 备份前：若存在主库同路径的 "-wal" 文件则 FULL checkpoint 并切回 DELETE（与 iOS `DBAccessable.closeWalIfNeeds`、Android `closeWalIfNeeds` 一致）
+   * @param absPath 主库路径（与构造 DBAccessor 时传入的 dbPath 一致）
+   */
+  static async closeWalIfNeedsAtPath(absPath: string | null): Promise<void> {
+
+    if (absPath === null || absPath === undefined || absPath.length < 1) {
+      return;
+    }
+
+    const walPath = `${absPath}-wal`;
+    let walPresent = false;
+
+    try {
+      walPresent = fs.accessSync(walPath);
+    } catch {
+      return;
+    }
+
+    if (!walPresent) {
+      return;
+    }
+
+    const accessor = new DBAccessor(absPath, null, false);
+    const ok       = await accessor.executeSqlSequence(
+      ['PRAGMA wal_checkpoint(FULL)', 'PRAGMA journal_mode=DELETE'],
+      [[], []]
+    );
+
+    if (!ok) {
+      DebugLog.e('DBAccessor.closeWalIfNeedsAtPath: PRAGMA 执行失败');
     }
   }
 

@@ -106,7 +106,7 @@
               "action.system.home",
 //              "wxentity.action.open",         // 微信登录
 //              "ohos.want.action.sendData",    // 打开分享的文件
-//              "ohos.want.action.view",        // 查看动作
+              "ohos.want.action.view",        // 查看本地文件（.wte 等）
               "ohos.want.action.viewData",    // QQ登录配置
 //              "action.system.open",           // 打开本地文件
             ],
@@ -116,6 +116,16 @@
                 "host": "1105391403",               // QQ登录配置;业务申请的互联 appId，如果填错会导致 QQ 无法回调
                 "pathRegex": "\\b(auth|share)\\b",  // QQ登录配置;
                 "linkFeature": "Login"
+              },
+              {
+                "scheme": "file",
+                "type": "application/zip",
+                "linkFeature": "FileOpen"
+              },
+              {
+                "scheme": "file",
+                "type": "application/octet-stream",
+                "linkFeature": "FileOpen"
               },
 //              {
 //                "scheme": "file",                // 必填，声明协议类型为文件,允许打开uri中以file://协议开头标识的本地文件

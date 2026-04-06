@@ -73,8 +73,9 @@ export class EWordManager {
     this.cachedAllOverrides = null
   }
 
-  /// Harmony：备份等场景占位；iOS 侧由 `DBAccessable` 扩展提供同类收口。
-  closeWalIfNeeds(): void {
+  /// 备份前 WAL 收口（与 iOS `DBAccessable.closeWalIfNeeds` 一致；实现见 `DBAccessor.closeWalIfNeedsAtPath`）
+  closeWalIfNeeds(): Promise<void> {
+    return DBAccessor.closeWalIfNeedsAtPath(this.learnDbPath())
   }
 
   /// 保存一条覆盖：存在则更新，不存在则插入

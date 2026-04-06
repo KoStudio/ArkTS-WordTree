@@ -303,6 +303,11 @@ export class BookManager {
     return ''
   }
 
+  // 与 iOS `BookManager2.getCurrentDirectoryOfUserDataForLearn()` 一致：当前书 learnDb 所在用户数据目录（zip learnDb 目录用）
+  static getCurrentDirectoryOfUserDataForLearn(): string {
+    return BookManager.getCurrentDirectoryOfUserData()
+  }
+
   /** 当前书 learnDb 完整路径（与 iOS `getCurrentPathOfUserDataForLearn` 同名） */
   static getCurrentPathOfUserDataForLearn(): string {
     return BookManager.getCurrentPathOfUserData()
