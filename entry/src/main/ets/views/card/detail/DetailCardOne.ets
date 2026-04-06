@@ -29,6 +29,7 @@ export struct DetailCardOne {
 
   @Param @Require word: WordUser
   @Param @Require pageInfo: string = ''
+  @Param wordIndexOnPage: number = 0
 
   @Event onClickedBtnWordPron: (word: WordUser) => void
   @Event onClickedBtnExamplePron: (text: string) => void
@@ -529,7 +530,7 @@ export struct DetailCardOne {
       .border({width: {bottom: 1}, style: BorderStyle.Dashed, color: $r('app.color.color_line')})
       .onClick(()=>{
         //编辑笔记
-        ComposeMemoViewConfig.open({word: this.word})
+        ComposeMemoViewConfig.open({ word: this.word, wordIndexOnPage: this.wordIndexOnPage })
       })
 
 

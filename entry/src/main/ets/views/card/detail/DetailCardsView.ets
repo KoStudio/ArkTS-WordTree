@@ -29,6 +29,10 @@ import { DictView } from "../wordcard/dict/DictView"
 import { InfoView } from "../wordcard/info/InfoView"
 import { DetailItemSortView } from "./detailitemsort/DetailItemSortView"
 import { SimpleEventBus } from "../../../common/components/eventbus/SimpleEventBus"
+import {
+  ShareMemoManager2Notification,
+  ShareMemoNotificationPayload
+} from "../../../models/managers/sharedata2/ShareMemoManager2"
 import { DetailItemNotification } from "../../../models/managers/detailitem/DetailItemManager"
 import { Plan } from "../../../models/managers/plan/plancurve/Plan"
 import { DayOf } from "../../../models/managers/plan/plancurve/DayOf"
@@ -84,9 +88,13 @@ export struct DetailCardsView {
   @Local private isEnableContrast      : boolean       = false
 
   @Local isRolling                     : boolean       = false
+  @Local shareMemoUiTick               : number        = 0
   @Local settingManager                : SettingManager = SettingManager.shared
   @Local rollInterval                  : number        = SettingManager.shared.autoPlayInterval
   @Local isRepeat                      : boolean       = SettingManager.shared.rollRepeat
+
+  private shareMemoUnsubPrivate: (() => void) | undefined = undefined
+  private shareMemoUnsubPublic: (() => void) | undefined = undefined
 
   @Monitor('settingManager.autoPlayInterval')
   onChangeOfRollInterval(){
@@ -118,7 +126,48 @@ export struct DetailCardsView {
       SettingManager.shared.restoreSettingsForNonMember()
     }
 
+    // ShareMemoManager2 同步公开/私有笔记变更（与 iOS NotificationCenter 一致）
+    if (this.shareMemoUnsubPrivate === undefined) {
+
+      this.shareMemoUnsubPrivate = SimpleEventBus.on<ShareMemoNotificationPayload>(
+        ShareMemoManager2Notification.Name.PrivateChanged,
+        (p?: ShareMemoNotificationPayload) => {
+          this.handleShareMemoNotification(p)
+        })
+
+      this.shareMemoUnsubPublic = SimpleEventBus.on<ShareMemoNotificationPayload>(
+        ShareMemoManager2Notification.Name.PublicChanged,
+        (p?: ShareMemoNotificationPayload) => {
+          this.handleShareMemoNotification(p)
+        })
+    }
+
     logEvent("CardsView_showed") //日志
+  }
+
+  aboutToDisappear(): void {
+
+    this.shareMemoUnsubPrivate?.()
+    this.shareMemoUnsubPrivate = undefined
+    this.shareMemoUnsubPublic?.()
+    this.shareMemoUnsubPublic = undefined
+  }
+
+  private handleShareMemoNotification(p?: ShareMemoNotificationPayload): void {
+
+    if (!p) {
+      return
+    }
+
+    const en = p.word.titleEn
+
+    if (!en) {
+      return
+    }
+
+    if (this.words.some((w: WordUser) => w.titleEn === en)) {
+      this.shareMemoUiTick++
+    }
   }
 
   @Monitor("pageIndex")
@@ -271,8 +320,10 @@ export struct DetailCardsView {
       Swiper(this.swiperController) {
         ForEach(this.words, (word: WordUser, index: number) => {
 
-          DetailCardOne({word: word,
+          DetailCardOne({
+            word: word,
             pageInfo: `${index + 1}/${this.words.length}`,
+            wordIndexOnPage: index,
             onClickedBtnWordPron:(wd: WordUser)=>{
               // this.playSound(wd.wordEnSoundText)
               this.actionPlayWordSound(wd.wordEnSoundText)
@@ -291,7 +342,7 @@ export struct DetailCardsView {
               this.isShowDictView = true
             },
           })
-        })
+        }, (word: WordUser, index: number) => `${word.titleEn}_${index}_${this.shareMemoUiTick}`)
       }
       .width('100%')
       .layoutWeight(1)

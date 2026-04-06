@@ -7,6 +7,12 @@ import { DebugLog } from '../../app/debug/DebugLog';
 import { StringEncoder } from '../../common/utils/strings/StringEncrypt';
 
 
+/** 可选网络超时（毫秒）；不传则与历史行为一致：连接/读取各 10s（如 Polly 可走 request 并传长 readTimeout） */
+export interface HttpRequestOptions {
+  connectTimeout?: number;
+  readTimeout?: number;
+}
+
 // HTTP工具类（完全静态方法）
 export class Http {
   /**
@@ -39,7 +45,8 @@ export class Http {
     url: string,
     method: HttpUtils.Method = HttpUtils.Method.GET,
     params: HttpUtils.HttpParams = null,
-    callback: (succeed: boolean, msg: string | null, data: T[] | null) => void
+    callback: (succeed: boolean, msg: string | null, data: T[] | null) => void,
+    options?: HttpRequestOptions
   ): void {
     Http._request(url, method, params, (responseData: string | null) => {
       if (!responseData) {
@@ -64,7 +71,7 @@ export class Http {
         const errMsg = (error as Error).message;
         callback(false, `JSON解析失败: ${errMsg}`, null);
       }
-    });
+    }, options);
   }
 
   /**
@@ -77,10 +84,11 @@ export class Http {
   static async requestPromise<T>(
     url: string,
     method: HttpUtils.Method = HttpUtils.Method.GET,
-    params: HttpUtils.HttpParams = null
+    params: HttpUtils.HttpParams = null,
+    options?: HttpRequestOptions
   ): Promise<HttpUtils.HttpResponse<T>> {
 
-    const responseData = await Http._requestPromise(url, method, params)
+    const responseData = await Http._requestPromise(url, method, params, options)
     if (responseData) {
       const jsonData: HttpUtils.ReceivedData<T> = JSON.parse(responseData) as HttpUtils.ReceivedData<T>;
 
@@ -98,13 +106,13 @@ export class Http {
   }
 
 
-
   // 私有方法：执行实际HTTP请求
   private static _request(
     url: string,
     method: HttpUtils.Method,
     params: HttpUtils.HttpParams,
-    callback: (responseData: string | null) => void
+    callback: (responseData: string | null) => void,
+    options?: HttpRequestOptions
   ): void {
     const httpRequest = http.createHttp();
 
@@ -129,8 +137,8 @@ export class Http {
           extraData: requestParams,
           expectDataType: http.HttpDataType.STRING, // 确保返回字符串
           header: headers ,
-          connectTimeout: 10000, // 10秒连接超时
-          readTimeout: 10000      // 10秒读取超时
+          connectTimeout: options?.connectTimeout ?? 10000,
+          readTimeout: options?.readTimeout ?? 10000
         },
         (err: BusinessError, data: http.HttpResponse) => {
           // 销毁请求对象释放资源
@@ -169,7 +177,8 @@ export class Http {
   private static async _requestPromise(
     url: string,
     method: HttpUtils.Method,
-    params: HttpUtils.HttpParams
+    params: HttpUtils.HttpParams,
+    options?: HttpRequestOptions
   ): Promise<string | null> {
     const httpRequest = http.createHttp();  // 创建HTTP请求实例
     let finalUrl = url;
@@ -196,8 +205,8 @@ export class Http {
           extraData: requestParams,
           expectDataType: http.HttpDataType.STRING,
           header: headers,
-          connectTimeout: 10000,
-          readTimeout: 10000
+          connectTimeout: options?.connectTimeout ?? 10000,
+          readTimeout: options?.readTimeout ?? 10000
         }
       );
 

@@ -119,6 +119,10 @@ export default class EntryAbility extends UIAbility {
   onForeground(): void {
     // Ability has brought to foreground
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onForeground');
+
+    import('../models/managers/marquee/MarqueeManager').then((m) => {
+      m.MarqueeManager.shared.sharedAppDoEncourageIfNeeds()
+    })
   }
 
   onBackground(): void {

@@ -36,6 +36,7 @@ import { OnlineSearchWordsView, OnlineSearchWordsViewConfig } from '../views/onl
 import { MyMemosView, MyMemosViewConfig } from '../views/setting/mine/MyMemosView';
 import { MyRecordsView, MyRecordsViewConfig } from '../views/setting/mine/MyRecordsView';
 import { ReclaimWordView, ReclaimWordViewConfig } from '../views/reclaimword/ReclaimWordView';
+import { InstructionsView, InstructionsViewConfig } from '../views/setting/instruction/InstructionsView';
 
 
 @Builder
@@ -48,7 +49,10 @@ export function navigationTo<T>(name: string, param: T){
   }else if (name === QuickLearnWordsViewConfig.NavKey)    { QuickLearnWordsView({unitId: (param as QuickLearnWordsViewConfig.Param).unitId})
   }else if (name === DetailCardsViewConfig.NavKey)        { DetailCardsView({words: (param as DetailCardsViewConfig.Param).words, initIndex: (param as DetailCardsViewConfig.Param).initIndex, plan: (param as DetailCardsViewConfig.Param).plan, dayOf: (param as DetailCardsViewConfig.Param).dayOf})
   }else if (name === WordCardsViewConfig.NavKey)          { WordCardsView({words: (param as WordCardsViewConfig.Param).words, initIndex: (param as WordCardsViewConfig.Param).initIndex, plan: (param as WordCardsViewConfig.Param).plan, dayOf: (param as WordCardsViewConfig.Param).dayOf})
-  }else if (name === ComposeMemoViewConfig.NavKey)        { ComposeMemoView({word: (param as ComposeMemoViewConfig.Param).word})
+  }else if (name === ComposeMemoViewConfig.NavKey)        { ComposeMemoView({
+    word: (param as ComposeMemoViewConfig.Param).word,
+    wordIndexOnPage: (param as ComposeMemoViewConfig.Param).wordIndexOnPage
+  })
   }else if (name === BookListViewConfig.NavKey)           { BookListView({isShowAllOnly: (param as BookListViewConfig.Param).isShowAllOnly})
   }else if (name === BooksOnlineViewConfig.NavKey)        { BooksOnlineView({category: (param as BooksOnlineViewConfig.Param).category})
   }else if (name === CigenWordsViewConfig.NavKey)         { CigenWordsView({words: (param as CigenWordsViewConfig.Param).words, navTitle:  (param as CigenWordsViewConfig.Param).navTitle})
@@ -78,6 +82,7 @@ export function navigationTo<T>(name: string, param: T){
   }else if (name === MyRecordsViewConfig.NavKey)          { MyRecordsView()
   }else if (name === AboutViewConfig.NavKey)              { AboutView()
   }else if (name === OnlineSearchWordsViewConfig.NavKey)  { OnlineSearchWordsView()
+  }else if (name === InstructionsViewConfig.NavKey)       { InstructionsView()
   }else{ NavDestination(){Text(`<Index.ets>未配置navigationTo: ${name}`)}
   }
 }

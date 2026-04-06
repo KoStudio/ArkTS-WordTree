@@ -32,6 +32,11 @@ import { Plan } from "../../../models/managers/plan/plancurve/Plan"
 import { DayOf } from "../../../models/managers/plan/plancurve/DayOf"
 import { OnlineSearchWordsViewConfig } from "../../onlinesearch/OnlineSearchWordsView"
 import { DailyCountManager, DailyCountType } from "../../../models/managers/member/DailyCountManaer"
+import { SimpleEventBus } from "../../../common/components/eventbus/SimpleEventBus"
+import {
+  ShareMemoManager2Notification,
+  ShareMemoNotificationPayload
+} from "../../../models/managers/sharedata2/ShareMemoManager2"
 
 export namespace WordCardsViewConfig {
 
@@ -80,9 +85,13 @@ export struct WordCardsView {
   @Local private isEnableContrast      : boolean       = false
 
   @Local isRolling                     : boolean       = false
+  @Local shareMemoUiTick               : number        = 0
   @Local settingManager                : SettingManager = SettingManager.shared
   @Local rollInterval                  : number        = SettingManager.shared.autoPlayInterval
   @Local isRepeat                      : boolean       = SettingManager.shared.rollRepeat
+
+  private shareMemoUnsubPrivate: (() => void) | undefined = undefined
+  private shareMemoUnsubPublic: (() => void) | undefined = undefined
 
   @Monitor('settingManager.autoPlayInterval')
   onChangeOfRollInterval(){
@@ -114,7 +123,47 @@ export struct WordCardsView {
       SettingManager.shared.restoreSettingsForNonMember()
     }
 
+    if (this.shareMemoUnsubPrivate === undefined) {
+
+      this.shareMemoUnsubPrivate = SimpleEventBus.on<ShareMemoNotificationPayload>(
+        ShareMemoManager2Notification.Name.PrivateChanged,
+        (p?: ShareMemoNotificationPayload) => {
+          this.handleShareMemoNotification(p)
+        })
+
+      this.shareMemoUnsubPublic = SimpleEventBus.on<ShareMemoNotificationPayload>(
+        ShareMemoManager2Notification.Name.PublicChanged,
+        (p?: ShareMemoNotificationPayload) => {
+          this.handleShareMemoNotification(p)
+        })
+    }
+
     logEvent("CardsView_showed") //日志
+  }
+
+  aboutToDisappear(): void {
+
+    this.shareMemoUnsubPrivate?.()
+    this.shareMemoUnsubPrivate = undefined
+    this.shareMemoUnsubPublic?.()
+    this.shareMemoUnsubPublic = undefined
+  }
+
+  private handleShareMemoNotification(p?: ShareMemoNotificationPayload): void {
+
+    if (!p) {
+      return
+    }
+
+    const en = p.word.titleEn
+
+    if (!en) {
+      return
+    }
+
+    if (this.words.some((w: WordUser) => w.titleEn === en)) {
+      this.shareMemoUiTick++
+    }
   }
 
   @Monitor("pageIndex")
@@ -267,8 +316,10 @@ export struct WordCardsView {
       Swiper(this.swiperController) {
         ForEach(this.words, (word: WordUser, index: number) => {
 
-          WordCardOne({word: word,
+          WordCardOne({
+            word: word,
             pageInfo: `${index + 1}/${this.words.length}`,
+            wordIndexOnPage: index,
             onClickedBtnWordPron:(wd: WordUser)=>{
               // this.playSound(wd.wordEnSoundText)
               this.actionPlayWordSound(wd.wordEnSoundText)
@@ -290,7 +341,7 @@ export struct WordCardsView {
                DetailCardsViewConfig.open({words: this.words, initIndex: index})
             }
           })
-        })
+        }, (word: WordUser, index: number) => `${word.titleEn}_${index}_${this.shareMemoUiTick}`)
       }
       .width('100%')
       .layoutWeight(1)

@@ -225,6 +225,8 @@
     { "name": "data_no_more_datas"                , "value": "沒有更多數據" },
 
     { "name": "memo_compose_btn_save"             , "value": "保存" },
+    { "name": "memo_compose_menu_edit"            , "value": "編輯" },
+    { "name": "memo_compose_menu_done"            , "value": "完成" },
     { "name": "memo_compose_btn_save_share"       , "value": "分享" },
     { "name": "memo_author_txt"                   , "value": "作者" },
     { "name": "memo_author_self"                  , "value": "我" },
@@ -254,6 +256,7 @@
 
     { "name": "set_cell_txt_share_info"           , "value": "分享應用，可立即獲贈單詞發音" },
     { "name": "set_msg_share_done"                , "value": "分享成功，獲贈單詞發音 %d次 \n [今日剩餘%d次]" },
+    { "name": "instruction_nav_title"             , "value": "使用說明" },
 
     { "name": "plan_create_nav_title"             , "value": "設置學習計劃" },
     { "name": "plan_create_txt_name"              , "value": "計劃名稱" },

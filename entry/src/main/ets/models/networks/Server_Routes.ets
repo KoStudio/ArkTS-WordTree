@@ -27,16 +27,19 @@ export enum Route {
   user_data_ebook  = 'user_data_ebook',
   user_data        = 'user_data',
   login            = 'login',
-
   reclaimWord      = 'reclaim_word',
   memo             = 'memo',
-  subscription     = 'subscription',　//Android
-
-  instruction      = 'instruction', //Harmony
+  subscription     = 'subscription',
+  instruction      = 'instruction',
   servercfg        = 'servercfg',
   book_download    = 'book_download',
+  /**
+   * Dcs Amazon Polly 中转。完整路径：`{Address_dcs}/polly/`（POST，Controller.generate）。
+   * 与其它接口相同返回 JSON：code / msg / data[]；data[0].audioBase64 为 MP3 的 Base64，客户端解码为 Uint8Array。
+   */
+  polly            = 'polly',
   giftcode         = 'giftcode',
-  product_member   = 'product_member',//会员订阅
+  product_member   = 'product_member',
   order            = 'order',
 
   // —— dict ——

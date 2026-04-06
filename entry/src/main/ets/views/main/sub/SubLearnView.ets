@@ -1,6 +1,8 @@
 import { IconTintButton } from "../../../app/views/buttons/IconTintButton"
 import { TextButton } from "../../../app/views/buttons/TextButton"
 import { SimpleEventBus } from "../../../common/components/eventbus/SimpleEventBus"
+import { AppCfgManager, AppCfgNotification } from "../../../models/managers/servercfg/AppCfgManager"
+import { MarqueeManager } from "../../../models/managers/marquee/MarqueeManager"
 import { DateUtils } from "../../../common/utils/DateUtils"
 import { getStringF } from "../../../common/utils/ResourceUtils"
 import { Book } from "../../../models/datas/book/Book"
@@ -42,12 +44,30 @@ export struct SubLearnView {
   @Local planBtnText : ResourceStr  = $r('app.string.main_curve_btn_create_plam')
   @Local planInfoText : ResourceStr = $r('app.string.main_curve_txt_info_create')
 
+  @Local marqueeTitle: string = ''
+  @Local marqueeLink: string = ''
+  @Local marqueeVisible: boolean = false
+
+  private marqueeBusBound: boolean = false
+
   aboutToAppear(): void {
     if (BookManager.shared.books.length === 0) {//BookManager.shared.currentBook
       BookListViewConfig.open({ isShowAllOnly: true }) //首次进入，需要下载单词本
     }else{
       this.loadData()
     }
+
+    if (!this.marqueeBusBound) {
+      this.marqueeBusBound = true
+      SimpleEventBus.on(MarqueeManager.NOTICE_UPDATED, () => {
+        this.syncMarqueeFromManager()
+      })
+      SimpleEventBus.on(AppCfgNotification.Name.AppCfgUpdated, () => {
+        MarqueeManager.shared.loadNoticeIfNeeds()
+      })
+    }
+
+    this.showBannerNoticeIfNeeds()
 
     ///监听plan变化，有可能在DayOfWords页面修改过每日学习个数
     SimpleEventBus.on<number>(PlanManagerNotification.namePlanUpdated, async (planId)=>{
@@ -66,6 +86,8 @@ export struct SubLearnView {
   onChangeOfShowing(){
     if (this.isShowing){
       this.loadData()
+      this.showBannerNoticeIfNeeds()
+      MarqueeManager.shared.sharedAppDoEncourageIfNeeds()
     }
   }
 
@@ -123,8 +145,26 @@ export struct SubLearnView {
     }
   }
 
+  syncMarqueeFromManager(): void {
+
+    const m = MarqueeManager.shared
+    this.marqueeTitle = m.title ?? ''
+    this.marqueeLink = m.link ?? ''
+    this.marqueeVisible = m.shouldShowBanner()
+  }
+
+  showBannerNoticeIfNeeds(): void {
+
+    AppCfgManager.shared.loadConfigsIfNeeds()
+    MarqueeManager.shared.loadNoticeIfNeeds()
+    this.syncMarqueeFromManager()
+  }
+
   build() {
     Column() {
+      if (this.marqueeVisible) {
+        this.homeNoticeBanner()
+      }
       Scroll() {
         Column({ space: 12 }) {
           this.InfoPanel()
@@ -144,6 +184,41 @@ export struct SubLearnView {
     .height('100%')
     .backgroundColor($r('app.color.color_background'))
     .border({width: {bottom: 1}, color: $r('app.color.color_gray_light')})
+  }
+
+  @Builder
+  homeNoticeBanner() {
+    Row() {
+      Text(this.marqueeTitle)
+        .layoutWeight(1)
+        .height(30)
+        .fontColor(Color.Red)
+        .fontSize(14)
+        .maxLines(1)
+        .textOverflow({ overflow: TextOverflow.MARQUEE })
+        .textAlign(TextAlign.Center)
+        .onClick(() => {
+          const link = MarqueeManager.shared.link
+
+          if (link != null && link.length > 0) {
+            MarqueeManager.shared.openLink(link)
+          }
+        })
+
+      Text('×')
+        .width(30)
+        .height(30)
+        .fontSize(22)
+        .fontColor(Color.Red)
+        .textAlign(TextAlign.Center)
+        .onClick(() => {
+          MarqueeManager.shared.closedByUser = true
+          this.syncMarqueeFromManager()
+        })
+    }
+    .width('100%')
+    .padding({ left: 4, right: 0 })
+    .backgroundColor('#E0FFFF00')
   }
 
 

@@ -1,6 +1,11 @@
+//
+// CSoundManager —— 云端英语发音：优先从 COS 拉取缓存文件；失败再走 Dcs Polly 合成。
+// 流程对齐 iOS：COS → Polly；Polly 请求体中的词形与 DB 中的 key 可能不同（见 textForGenerateFromCloudKey）。
+//
 import { DebugLog } from '../../../../../app/debug/DebugLog';
 import { SimpleEventBus } from '../../../eventbus/SimpleEventBus';
 import { CosDownloader } from '../Download/Downloader/CosDownloader';
+import { DcsPollyGenerator } from '../Download/Downloader/DcsPollyGenerator';
 import { CSoundDbAccessor } from '../CSoundDbAccessor/CSoundDbAccessor';
 import { CDBSound, lang_en_us } from '../CSoundDbAccessor/CDBSound';
 
@@ -19,9 +24,9 @@ export class CSoundManager {
   // 单例实例
   private static instance: CSoundManager | null = null;
 
-  // 下载器和生成器
-  private downloader: CosDownloader = CosDownloader.shared
-  // private generator: IDownloader = new AmazonDownloader();
+  private downloader: CosDownloader = CosDownloader.shared;
+  /** COS 未命中时的 Polly 兜底（Dcs POST /polly/，通用 JSON，data[] 内含音频 Base64） */
+  private dcsPollyGenerator: DcsPollyGenerator = DcsPollyGenerator.shared;
 
   ///用于缓存已经查询过的且存在的声音
   private existedSoundCacheSet: Set<string> = new Set<string>() // 如: [字 : true]
@@ -59,7 +64,7 @@ export class CSoundManager {
    * 获取声音，如果不存在会自动启动下载流程
    * @param text 文本内容
    * @param downloadIfNotExists 如果不存在是否下载
-   * @param alsoGenerate 如果下载失败是否生成
+   * @param alsoGenerate COS 失败时是否请求服务端 Polly 合成
    * @returns 返回声音数据或null
    */
   async getSound(text: string, downloadIfNotExists: boolean = true, alsoGenerate: boolean = true): Promise<CDBSound | null> {
@@ -86,11 +91,24 @@ export class CSoundManager {
     return null;
   }
 
-  // 生成声音
-  private async  generateSound(text: string) {
-    // this.generator.startDownloadIfNeeded(text, (data, msg) => {
-    //   this.processReceivedData(text, data, msg);
-    // });
+  /**
+   * 仅用于发往 Polly 的文本：title 键常带 `_ti_u` 后缀（与 COS 对象键一致），朗读时应去掉。
+   * 与 iOS CSoundManager.textForGenerateFromCloudKey 行为一致。
+   */
+  private textForGenerateFromCloudKey(title: string): string {
+    const suffix = '_ti_u';
+    if (title.endsWith(suffix) && title.length > suffix.length) {
+      return title.substring(0, title.length - suffix.length);
+    }
+    return title;
+  }
+
+  /** COS 失败后的兜底：服务端合成，但 DB 仍用 cacheKey（含 `_ti_u`）以便与查词 key 一致 */
+  private async generateSound(cacheKey: string): Promise<void> {
+    const pollyText = this.textForGenerateFromCloudKey(cacheKey);
+    await this.dcsPollyGenerator.startDownloadSoundIfNeeds(pollyText, async (data: Uint8Array | null, msg: string | null) => {
+      await this.processReceivedData(cacheKey, data, msg);
+    });
   }
 
   // 处理接收到的数据
