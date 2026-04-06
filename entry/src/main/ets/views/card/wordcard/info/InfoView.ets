@@ -38,7 +38,7 @@ export struct InfoView {
             SettingManager.shared.hideTranslation = isOn
 
             /// 会员检查
-            if (!MemberManager.shared.checkHideTransUsable(true)) {
+            if (!MemberManager.shared.checkHideTransUsable(true, true)) {
               //0.5秒后 关闭
               setTimeout(() => { this.hideTranslation = false; SettingManager.shared.hideTranslation = false; }, 500)
             }
@@ -50,7 +50,7 @@ export struct InfoView {
             SettingManager.shared.autoPlaySound = isOn
 
             /// 会员检查
-            if (!MemberManager.shared.checkAutoPronUsable(true)) {
+            if (!MemberManager.shared.checkAutoPronUsable(true, true)) {
               //0.5秒后 关闭
               setTimeout(() => { this.autoPlaySound = false; SettingManager.shared.autoPlaySound = false; }, 500)
             }
@@ -72,7 +72,7 @@ export struct InfoView {
             SettingManager.shared.autoPlaySoundEx = isOn
 
             /// 会员检查
-            if (!MemberManager.shared.checkAutoPronUsable(true)) {
+            if (!MemberManager.shared.checkAutoPronUsable(true, true)) {
               //0.5秒后 关闭
               setTimeout(() => { this.autoPlaySoundEx = false; SettingManager.shared.autoPlaySoundEx = false; }, 500)
             }

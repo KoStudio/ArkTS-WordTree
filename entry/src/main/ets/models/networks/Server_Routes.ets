@@ -16,22 +16,32 @@ class Address_dict {
   //static readonly local: string = "http://192.168.1.118:3006";//暂无Dev环境
 }
 
-// 定义路由枚举
+/**
+ * 与 Android `com.ou.android.network.Server.Route` 的 `value` 一一对应（路径片段）。
+ * 命名采用 ArkTS camelCase；字符串值必须与 Android / Dcs 路由一致。
+ * Android 中已注释、未启用的示例：book/status、delivery、独立 Product(usergold) 等，此处不声明。
+ */
 export enum Route {
+  // —— dcs ——（与 Server.kt 顺序一致）
+  advice           = 'advice',
+  user_data_ebook  = 'user_data_ebook',
+  user_data        = 'user_data',
+  login            = 'login',
 
-  advice                = "advice",
-  user_data             = "user_data",
-  login                 = "login",
+  reclaimWord      = 'reclaim_word',
+  memo             = 'memo',
+  subscription     = 'subscription',　//Android
 
-  reclaimWord           = "reclaim_word",
-  subscription          = "subscription",
-  servercfg             = "servercfg",//TODO
+  instruction      = 'instruction', //Harmony
+  servercfg        = 'servercfg',
+  book_download    = 'book_download',
+  giftcode         = 'giftcode',
+  product_member   = 'product_member',//会员订阅
+  order            = 'order',
 
-
-
-  //dict
-  word                  = "w",
-  search                = "search",
+  // —— dict ——
+  word             = 'w',
+  search           = 'search',
 }
 
 

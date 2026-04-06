@@ -111,6 +111,17 @@ export class BookDbAccess implements DBPrepareProtocol {
     return await this.db.getData(sql, [bookId], rs => this.createOneBookFromRs(rs));
   }
 
+  /** 在 BookCns / BookCnt 两表各查一次（与 iOS `getBookInAllLanguages` 一致，迁移旧课本时用） */
+  async getBookInAllLanguages(bookId: number): Promise<Book | null> {
+    const sqlCns = `SELECT * FROM ${Table.Book.nameCns} WHERE ${Table.Book.Col.bookId} = ?`
+    const cns = await this.db.getData(sqlCns, [bookId], rs => this.createOneBookFromRs(rs))
+    if (cns) {
+      return cns
+    }
+    const sqlCnt = `SELECT * FROM ${Table.Book.nameCnt} WHERE ${Table.Book.Col.bookId} = ?`
+    return await this.db.getData(sqlCnt, [bookId], rs => this.createOneBookFromRs(rs))
+  }
+
   async getBooks(categoryName: string): Promise<Book[] | null> {
     const encodedCategory =  StringEncoder.encodedToBase64(categoryName)
     const sql = `SELECT * FROM ${this.TableBookName}

@@ -43,6 +43,7 @@ export class CategoryManager {
 
   /**
    * 初始化分类数据
+   * - Note: 与 iOS `CategoryManager2.loadCategories` 一致：按 books 顺序遍历，保持分类首次出现顺序
    */
   async loadCategories(): Promise<Category[]> {
     // 已有缓存直接返回

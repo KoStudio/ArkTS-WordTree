@@ -302,7 +302,7 @@ export struct QuizStartView {
         if (this.questionPronounce) {
 
           ///会员检查
-          if(!MemberManager.shared.checkAutoPronUsable(true)) {
+          if(!MemberManager.shared.checkAutoPronUsable(true, true)) {
             setTimeout(()=> {
               this.questionPronounce = false
               this.refreshControlState();
@@ -473,7 +473,7 @@ export struct QuizStartView {
       SpellRunningViewConfig.open()
     }else if(this.questionMode === QuestionMode.Challenge) {
       ///会员检查
-      if (!MemberManager.shared.checkChallengeDictUsable()) {
+      if (!MemberManager.shared.checkChallengeDictUsable(true, true)) {
         return
       }
       //记录次数

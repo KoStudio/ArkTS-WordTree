@@ -179,6 +179,36 @@ export class SearchManager {
 
     this.allWords = merged;
 
+    // EWordOverride：与 iOS SearchManager._allWords 中 applyEWordOverrideMap(forWord:) 一致
+
+    // 动态加载 EWord 模块，避免 SearchManager 与 EWordManager 静态循环依赖
+    const ewm = await import('../../managers/eword/EWordManager');
+
+    // 读取 learnDb 中全部覆盖（内部带缓存）
+    const overrides = await ewm.EWordManager.shared.allOverridesCached();
+
+    const titleKeys = Object.keys(overrides);
+
+    // 无任何覆盖记录则跳过合并
+    if (titleKeys.length > 0) {
+      for (let i = 0; i < this.allWords.length; i++) {
+        const w = this.allWords[i];
+        const en = w.titleEn;
+
+        // 列表项缺少英文词则无法与覆盖表 key 对应
+        if (en) {
+          const om = overrides[en];
+
+          // 该词无覆盖行则保持词库原值
+          if (om) {
+
+            // 列表层合并（与 iOS Word 一致，当前仅 titleCn1 等列表字段）
+            w.applyEWordOverrideMap(om);
+          }
+        }
+      }
+    }
+
     // 构建分类和单元的数据结构
     this.preparePartsAndUnits();
   }

@@ -3,6 +3,7 @@ import { AppUtility } from "../../../common/utils/AppUtility";
 import { NumberUtility } from "../../../common/utils/NumberUtility";
 import { StringDealUtility } from "../../../common/utils/strings/StringDealUtility";
 import { MapTransform, StringMapUtility } from "../../../common/utils/strings/StringMapUtility";
+import { EWordEditableField } from "../../managers/eword/EWordEditManager";
 import { Word } from "./Word";
 
 /**
@@ -17,27 +18,131 @@ export class WordDetail extends Word {
 
   // titleCn2         : string | null = null;
   // titleCn3         : string | null = null;
-  wordImage        : string | null = null;
-  wordChange       : string | null = null;
-  synWords         : string | null = null;
-  asynWords        : string | null = null;
+  wordImage         : string | null = null;
+  wordChange        : string | null = null;
+  synWords          : string | null = null;
+  asynWords         : string | null = null;
 
   // exampleEn1       : string | null = null;
   // exampleCn1       : string | null = null;
-  exampleEn2       : string | null = null;
-  exampleCn2       : string | null = null;
-  exampleEn3       : string | null = null;
-  exampleCn3       : string | null = null;
+  exampleEn2        : string | null = null;
+  exampleCn2        : string | null = null;
+  exampleEn3        : string | null = null;
+  exampleCn3        : string | null = null;
 
-  usedPhrase       : string | null = null;
-  en2En            : string | null = null;
+  usedPhrase        : string | null = null;
+  en2En             : string | null = null;
 
-  discriminate     : string | null = null;
+  discriminate      : string | null = null;
   private discriminate2 : string | null = null; // 去除重复后的缓存结果
+
+  /** EWord 扩展：词根、同根词（与 iOS WordDetail 一致；仅存 Override / 展示用） */
+  root              : string | null = null;
+  cognates          : string | null = null;
 
 
   override async getWordDetail(): Promise<WordDetail | null> {
     return this
+  }
+
+  /**
+   * 详情层合并 EWordOverride（与 iOS `WordDetail.applyEWordOverrideMap(forDetail:)` 一致）。
+   * @param map fieldKey（item* / root / cognates）到覆盖展示值的映射
+   */
+  override applyEWordOverrideMap(map: Record<string, string>): void {
+    const fk = (f: EWordEditableField): string => f as string;
+    const keys = Object.keys(map);
+
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      const value = map[key];
+
+      // 未定义的值不覆盖模型字段
+      if (value === undefined) {
+        continue;
+      }
+
+      switch (key) {
+        // item8 美音
+        case fk(EWordEditableField.pronUs):
+          this.pronUs = value;
+          break;
+
+        // item9～11 中文释义
+        case fk(EWordEditableField.titleCn1):
+          this.titleCn1 = value;
+          break;
+        case fk(EWordEditableField.titleCn2):
+          this.titleCn2 = value;
+          break;
+        case fk(EWordEditableField.titleCn3):
+          this.titleCn3 = value;
+          break;
+
+        // item13 单词变形
+        case fk(EWordEditableField.wordChange):
+          this.wordChange = value;
+          break;
+
+        // item14～15 近义 / 反义
+        case fk(EWordEditableField.synWords):
+          this.synWords = value;
+          break;
+        case fk(EWordEditableField.asynWords):
+          this.asynWords = value;
+          break;
+
+        // item16～21 例句
+        case fk(EWordEditableField.exampleEn1):
+          this.exampleEn1 = value;
+          break;
+        case fk(EWordEditableField.exampleCn1):
+          this.exampleCn1 = value;
+          break;
+        case fk(EWordEditableField.exampleEn2):
+          this.exampleEn2 = value;
+          break;
+        case fk(EWordEditableField.exampleCn2):
+          this.exampleCn2 = value;
+          break;
+        case fk(EWordEditableField.exampleEn3):
+          this.exampleEn3 = value;
+          break;
+        case fk(EWordEditableField.exampleCn3):
+          this.exampleCn3 = value;
+          break;
+
+        // item22 常用短语
+        case fk(EWordEditableField.usedPhrase):
+          this.usedPhrase = value;
+          break;
+
+        // item23 英英释义
+        case fk(EWordEditableField.en2En):
+          this.en2En = value;
+          break;
+
+        // item24 详细说明（需清空辨析缓存）
+        case fk(EWordEditableField.discriminate):
+          this.discriminate = value;
+          this.discriminate2 = null;
+          break;
+
+        // 扩展：词根
+        case fk(EWordEditableField.root):
+          this.root = value;
+          break;
+
+        // 扩展：同根词
+        case fk(EWordEditableField.cognates):
+          this.cognates = value;
+          break;
+
+        // 未知键忽略，兼容未来字段
+        default:
+          break;
+      }
+    }
   }
   //
   // /**

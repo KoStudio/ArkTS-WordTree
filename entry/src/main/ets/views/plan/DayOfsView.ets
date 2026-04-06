@@ -326,7 +326,7 @@ export struct DayOfsView {
     if (!dayOf) return;
 
     ///会员检查， 当前Dayof是否可用
-    if(!MemberManager.shared.checkDayOfUsable(dayOf.num ?? 0, true)) { return }
+    if(!MemberManager.shared.checkDayOfUsable(dayOf.num ?? 0, true, true)) { return }
 
     let words: WordUser[] = []
 

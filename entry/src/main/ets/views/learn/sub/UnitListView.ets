@@ -170,7 +170,7 @@ export struct UnitListView {
     //   goto card
     // WordCardsViewConfig.open({words: unit.aliveWords, initIndex: unit.indexOfNextLearnWord})
 
-    if (!MemberManager.shared.checkUnitUsable(unit.unitId)) {
+    if (!MemberManager.shared.checkUnitUsable(unit.unitId, true, true)) {
       return
     }
 

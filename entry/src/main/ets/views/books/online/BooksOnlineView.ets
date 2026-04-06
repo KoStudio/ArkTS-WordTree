@@ -10,6 +10,7 @@ import { Category } from "../../../models/datas/book/CategoryManager"
 import { NavPopTop, NavTo } from "../../../pages/NavPathManager"
 import { LoadingDialog } from "@kit.ArkUI"
 import { BookManager } from "../../../models/datas/book/BookManager"
+import { BooksDownloadsManager } from "../../../models/datas/book/BooksDownloads/BooksDownloadsManager"
 import { MemberManager } from "../../../models/managers/member/MemberManager"
 
 
@@ -155,7 +156,7 @@ export struct BooksOnlineView {
     }
 
     //会员检查
-    if (!MemberManager.shared.checkBooksDownloadable()) {
+    if (!MemberManager.shared.checkBooksDownloadable(true, true)) {
       return
     }
     Toast.showCustomDialog(()=> { this.buildLoadingDialog($r('app.string.books_msg_download_start_word'))}, false)
@@ -168,6 +169,7 @@ export struct BooksOnlineView {
         Toast.showMessage($r('app.string.books_msg_download_succeed'))
         BookManager.shared.saveBook(book)
         BookManager.shared.setCurrentBook(book)
+        BooksDownloadsManager.recordDownload(book)
         NavPopTop()
       }else{
         Toast.showMessage($r('app.string.books_msg_download_failed'))

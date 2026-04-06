@@ -1,466 +1,646 @@
-// AppCfgManager.ets
-import preferences from '@ohos.data.preferences';
-import common from '@ohos.app.ability.common';
-import { ServerCfg, ServerCfgManager } from './ServerCfgManager';
-import { Toast } from '../../../common/utils/Toast';
-import { NetWorkTool } from '../../../common/utils/NetworkUtils';
-import { TimeToManager, TimeToType } from '../timeto/TimeToManager';
+//
+//  AppCfgManager.ets
+//  WordTree (HarmonyOS)
+//
+//  与 Android `com.ou.wordtree.managers.servercfg.AppCfgManager` 对齐：
+//  本地缓存 + 定时拉取 ServerCfg，key 与 Kotlin `AppCfg.name` 一致（服务端 Book_AppCfg 表）。
+//
 
-// 配置键名常量类
+import preferences from '@ohos.data.preferences'
+import { getAppContext } from '../../../app/constants/AppContext'
+import { LanguageManager } from '../../../common/components/Language/LanguageManager'
+import { SimpleEventBus } from '../../../common/components/eventbus/SimpleEventBus'
+import { NetWorkTool } from '../../../common/utils/NetworkUtils'
+import { Toast } from '../../../common/utils/Toast'
+import { MemberManager } from '../member/MemberManager'
+import { TimeToManager, TimeToType } from '../timeto/TimeToManager'
+import { ServerCfg, ServerCfgManager } from './ServerCfgManager'
+
+// MARK: - Pref（与 Android `Pref` object 一致）
 class Pref {
-  static readonly Name: string = "DailyCount_Setting"; // 偏好存储名称
+  static readonly Name: string = 'S_AppCfg_Manager_pref'
+  static readonly ValueKeyPrefix: string = 'v:'
+  static readonly NameKeyPrefix: string = 'n:'
 }
 
-// 通知相关常量类
-export class AppCfgNotification {
-  static readonly AppCfgUpdated: string = "app_cfg_updated_from_server"; // 配置更新通知名称
-}
-
-// 应用配置枚举 - 所有配置项定义
-export enum AppCfg {
-  // 通用配置
-  Dictation_Detect_Merged_Api_GeneralOrHandwriting = "Dictation_Detect_Merged_Api_GeneralOrHandwriting", // [通用] 听写合并检测Api使用通用还是手写
-
-  InAppBooks_Show_In_SaveToBooks                    = "InAppBooks_Show_In_SaveToBooks",                   // [通用] 内置课本 在SaveToBooks（CopyTo，ImportCsv）时是否显示
-  InAppBooks_Can_ShareOnline                        = "InAppBooks_Can_ShareOnline",                       // [通用] 内置课本 可否分享到 在线课本
-  CreatedUserCards_Can_ShareOnline                  = "CreatedUserCards_Can_ShareOnline",                 // [通用] 用户卡片 可否分享到 在线课本
-  BookOnline_Download_is_ON                         = "BookOnline_Download_is_ON",                        // [通用] 在线课本是否可查看或下载
-  BookOnline_Publish_is_ON                          = "BookOnline_Publish_is_ON",                         // [通用] 在线课本是否可以发布
-  Android_HowTo_CreateCSV_idx_in_Instruction        = "Android_HowTo_CreateCSV_idx_in_Instruction",       // [通用] 如何制作csv并发布到手机 在Instruction中对应的idx
-  Android_HowTo_Imort_SharedData_idx_in_Instruction = "Android_HowTo_Imort_SharedData_idx_in_Instruction",// [通用] 如何导入他人分享的数据? 在Instruction中对应的idx
-  Android_ShareAppLink_idx_in_Instruction           = "Android_ShareAppLink_idx_in_Instruction",          // [通用] 分享应用link 在Instruction中对应的idx
-
-  Android_Home_Notice_idx_in_Instruction           = "Android_Home_Notice_idx_in_Instruction",          // [通用] 首页滚动公告在Instruction中对应的idx
-
-  AutoRefreshSubscriptionInfo_is_ON                = "AutoRefreshSubscriptionInfo_is_ON",               // [通用] 是否启用 自动刷新会员订阅时间
-  AutoRefreshSubscriptionInfo_Interval_Minutes     = "AutoRefreshSubscriptionInfo_Interval_Minutes",    // [通用] 自动刷新 服务器上的会员订阅的 时间间隔
-
-  CosAuditCheckForSignup_is_ON                     = "CosAuditCheckForSignup_is_ON",                    // [通用] 是否启用 注册审核
-  CosAuditCheckForLogin_is_ON                      = "CosAuditCheckForLogin_is_ON",                     // [通用] 是否启用 登录审核
-
-  CBook_Useable_is_ON                              = "CBook_Useable_is_ON",                             // [通用] 是否启用 CBook[总开关]
-  CBook_AutoUpdateCheck_is_ON                      = "CBook_AutoUpdateCheck_is_ON",                     // [通用] 是否启用 CBook自动更新检查
-  CBook_AutoUpdateCheck_Interval_Minutes           = "CBook_AutoUpdateCheck_Interval_Minutes",          // [通用] CBook自动更新检查 时间间隔
-  CBookList_AutoUpdateCheck_is_ON                  = "CBookList_AutoUpdateCheck_is_ON",                 // [通用] 是否启用 CBookList自动更新检查
-  CBookIcon_AutoUpdateCheck_is_ON                  = "CBookIcon_AutoUpdateCheck_is_ON",                 // [通用] 是否启用 CBookIcon自动更新检查
-
-  // 会员配置
-  M_Dictation_Detect_OneByOne_Total_Cnt           = "M_Dictation_Detect_OneByOne_Total_Cnt",          // [会员]听写检测使用oneByone的总行数
-
-  // 非会员配置
-  N_Dictation_ScanTimes_Total_Cnt                 = "N_Dictation_ScanTimes_Total_Cnt",                 // [非会员]可以执行文字识别的次数(总共)
-
-  // 非会员(订阅描述)配置
-  N_P_maxBookCount            = "N_P_maxBookCount",           // 非会员(订阅) 最大学习集个数
-  N_P_maxGroupCountPerBook    = "N_P_maxGroupCountPerBook",   // 非会员(订阅) 每个学习集中的最大组数
-  N_P_maxUnitCountInAppBook   = "N_P_maxUnitCountInAppBook",  // 非会员(订阅) 内置课本中可使用的最大单元数
-  N_P_maxWordPronCountDaily   = "N_P_maxWordPronCountDaily",  // 非会员(订阅) 每日 查看汉字发音 个数
-  N_P_maxWordStrokeCountDaily = "N_P_maxWordStrokeCountDaily",// 非会员(订阅) 每日 查看汉字笔画 个数
-  N_P_maxPhrasePronCountDaily = "N_P_maxPhrasePronCountDaily",// 非会员(订阅) 每日 查看词语/成语发音 个数
-  N_P_maxDictationTimesDaily  = "N_P_maxDictationTimesDaily", // 非会员(订阅) 每日 可以使用听写 次数
-  N_P_maxPlanCount            = "N_P_maxPlanCount",           // 非会员(订阅) 可以创建的计划个数
-  N_P_maxPlanDayOfsCount      = "N_P_maxPlanDayOfsCount",     // 非会员(订阅) 可以使用的DayOf数
-
-  N_P_maxEBookCount          = "N_P_maxEBookCount",          // 非会员(订阅) 可以创建的"我的课本"最大个数
-  N_P_maxEPartCountPerBook   = "N_P_maxEPartCountPerBook",   // 非会员(订阅) 每个课本中可以新增的"字表"最大个数
-  N_P_maxELessonCountPerPart = "N_P_maxELessonCountPerPart", // 非会员(订阅) 每个字表中可以添加的"汉字组"最大个数
-}
-
-// 应用配置管理器类
-export class AppCfgManager {
-  // 配置字典
-  private dict: Map<string, number> = new Map<string, number>();
-
-  // 单例实例
-  private static instance: AppCfgManager | null = null;
-
-  // 私有构造函数
-  private constructor() {
-    // 从本地加载配置
-    this.loadPreference();
-
-    // 从服务器加载配置（如果需要）
-    // this.loadConfigsIfNeeds();
+/** 与 Android `AppCfgManager.Notification` 嵌套对象一致（ArkTS 用 `export namespace`） */
+export namespace AppCfgNotification {
+  export namespace Name {
+    export const AppCfgUpdated: string = 'app_cfg_updated_from_server'
   }
+}
 
-  // 获取单例实例
+/**
+ * 与 Android `enum class AppCfg` 逐项对应；字符串值须等于 Kotlin `.name`（服务端 key）。
+ * 行尾注释与 `AppCfgManager.kt` 中 enum 条目一致。
+ */
+export enum AppCfg {
+  ///通用
+  Android_WTS_Home_Notice_idx_in_Instruction             = 'Android_WTS_Home_Notice_idx_in_Instruction',             // [通用] [WordTree_CNS]首页滚动公告在Instruction_Harmony中对应的idx。 idx == 0: 不会查询Server端, idx > 0 : 会查询Server端的Instruction_Harmony表 [鸿蒙]
+  Android_WTT_Home_Notice_idx_in_Instruction             = 'Android_WTT_Home_Notice_idx_in_Instruction',             // [通用] [WordTree_CNT]首页滚动公告在Instruction_Harmony中对应的idx。 idx == 0: 不会查询Server端, idx > 0 : 会查询Server端的Instruction_Harmony表 [鸿蒙]
+  Android_TT_Home_Notice_idx_in_Instruction              = 'Android_TT_Home_Notice_idx_in_Instruction',              // [通用] [TangoTree]首页滚动公告在Instruction_Harmony中对应的idx。 idx == 0: 不会查询Server端, idx > 0 : 会查询Server端的Instruction_Harmony表 [鸿蒙]
+
+  Android_WTS_ShareAppLink_idx_in_Instruction            = 'Android_WTS_ShareAppLink_idx_in_Instruction',            // [通用] [WordTree_CNS]分享应用link 在Instruction_Harmony中对应的idx。(idx <= 0：不会查询Server端(使用本地链接)，idx > 0：才会从Instruction_Harmony中查询链接)]
+  Android_WTT_ShareAppLink_idx_in_Instruction            = 'Android_WTT_ShareAppLink_idx_in_Instruction',            // [通用] [WordTree_CNT]分享应用link 在Instruction_Harmony中对应的idx。(idx <= 0：不会查询Server端(使用本地链接)，idx > 0：才会从Instruction_Harmony中查询链接)]
+  Android_TT_ShareAppLink_idx_in_Instruction             = 'Android_TT_ShareAppLink_idx_in_Instruction',             // [通用] [TangoTree]分享应用link 在Instruction_Harmony中对应的idx。(idx <= 0：不会查询Server端(使用本地链接)，idx > 0：才会从Instruction_Harmony中查询链接)]
+
+  IOS_SubscribePriceShowIntroductoryFirst                = 'IOS_SubscribePriceShowIntroductoryFirst',                // [通用] 订阅价格是否优先显示推介促销价格［iOS］
+  Android_SubscribePrice_is_Show_PriceTip                = 'Android_SubscribePrice_is_Show_PriceTip',                // [通用] 订阅价格是否显示价格提示［iOS］
+  Android_HwMember_Show_ConsumablePriceButtons_is_ON     = 'Android_HwMember_Show_ConsumablePriceButtons_is_ON',     // [Android] 华为会员页是否显示后三个单次购买价格按钮
+  Android_WxMember_Show_PriceButtons_MoreThan1Year_is_ON = 'Android_WxMember_Show_PriceButtons_MoreThan1Year_is_ON', // [Android] 微信会员页是否显示大于1年的价格按钮
+  IOS_Show_Wx_QRLogin_When_Weixin_Not_installed          = 'IOS_Show_Wx_QRLogin_When_Weixin_Not_installed',          // [通用] 未安装微信时，是否显示微信QR登录。0:不显示，1:显示QR登录  [iOS]
+
+  AutoRefreshSubscriptionInfo_is_ON                      = 'AutoRefreshSubscriptionInfo_is_ON',                      // [通用] 是否启用 自动刷新会员订阅时间
+  AutoRefreshSubscriptionInfo_Interval_Minutes           = 'AutoRefreshSubscriptionInfo_Interval_Minutes',           // [通用] 自动刷新 服务器上的会员订阅的 时间间隔（只读）单位：分钟 [AutoRefreshSubscriptionInfo_is_ON启用了才有效]
+
+  CosAuditCheckForSignup_is_ON                           = 'CosAuditCheckForSignup_is_ON',                           // [通用] 是否启用 注册审核(0：未启用，1：已启用）
+  CosAuditCheckForLogin_is_ON                            = 'CosAuditCheckForLogin_is_ON',                            // [通用] 是否启用 登录审核(0：未启用，1：已启用）
+  CosAuditCheckForMemo_is_ON                             = 'CosAuditCheckForMemo_is_ON',                             // [通用] 是否启用 笔记审核(0：未启用，1：已启用）
+
+  CBook_Useable_is_ON                                    = 'CBook_Useable_is_ON',                                    // [通用] 是否启用 CBook[总开关]（Cos下载的Book）(0：未启用〈使用App bundle内的Book〉，1：已启用）
+  CBook_AutoUpdateCheck_is_ON                            = 'CBook_AutoUpdateCheck_is_ON',                            // [通用] 是否启用 CBook自动更新检查
+  CBook_AutoUpdateCheck_Interval_Minutes                 = 'CBook_AutoUpdateCheck_Interval_Minutes',                 // [通用]  CBook自动更新检查 时间间隔 单位：分钟 [CBook_AutoUpdateCheck_is_ON启用了才有效]
+  CBookList_AutoUpdateCheck_is_ON                        = 'CBookList_AutoUpdateCheck_is_ON',                        // [通用] 是否启用 CBookList自动更新检查(更新检查 时间间隔也使用CBook_AutoUpdateCheck_Interval_Minutes)
+
+  ///会员 M
+  M_MemberUseCloudSound                                  = 'M_MemberUseCloudSound',                                  // [会员] 是否使用云声音(0：未启用，1：已启用）
+
+  ///非会员 N
+  N_NonMemberUseCloudSound                               = 'N_NonMemberUseCloudSound',                               // [非会员] 是否使用云声音(0：未启用，1：已启用）
+
+  /// 非会员策略 Id（由服务器下发，原 ObjC 宏）
+  N_WordPron_Times                                       = 'N_WordPron_Times',                                       // 单词发音 每日免费次数 _Free_Times_Per_Day
+  N_ExamplePron_Times                                    = 'N_ExamplePron_Times',                                    // 例句发音 每日免费次数
+  N_DictShow_Times                                       = 'N_DictShow_Times',                                       // 内置词典 每日免费次数
+  N_Free_Units_Count                                     = 'N_Free_Units_Count',                                     // 免费单元个数
+  N_Lock_AutoPron                                        = 'N_Lock_AutoPron',                                        // [锁定]自动发音
+  N_Lock_NightMode                                       = 'N_Lock_NightMode',                                       // [锁定]夜晚模式
+  N_Lock_HideTrans                                       = 'N_Lock_HideTrans',                                       // [锁定]隐藏翻译
+  N_Lock_RetestMistake                                   = 'N_Lock_RetestMistake',                                   // [锁定]再测一次(仅错误单词)
+  N_Free_Plan_DayOfs_Count                               = 'N_Free_Plan_DayOfs_Count',                               // 记忆曲线 免费天数
+  N_Lock_Cigen                                           = 'N_Lock_Cigen',                                           // [锁定]词根助记
+  N_Lock_SameRoot                                        = 'N_Lock_SameRoot',                                        // [锁定]同根词
+  N_OnlineDict_Times                                     = 'N_OnlineDict_Times',                                     // 在线字典 每日免费次数
+  N_Challenge_Times                                      = 'N_Challenge_Times',                                      // 挑战模式 每日免费次数
+  N_EBook_MaxCount                                       = 'N_EBook_MaxCount',                                       // 非会员可创建的 EBook 最大个数（自建词汇本数量上限）
+
+  G_WTS_FirstInstall                                     = 'G_WTS_FirstInstall',                                     // 首次安装赠送金币数量
+  G_WTS_EveryDayStudy                                    = 'G_WTS_EveryDayStudy',                                    // 每日学习赠送金币数量
+  G_WTS_EveryDayTest                                     = 'G_WTS_EveryDayTest',                                     // 每日测试赠送金币数量
+  G_WTS_ShareApp                                         = 'G_WTS_ShareApp',                                         // 首次分享应用赠送金币数量
+  G_WTS_WatchAd                                          = 'G_WTS_WatchAd',                                          // 每次观看激励广告赠送金币数量
+
+  G_WTT_FirstInstall                                     = 'G_WTT_FirstInstall',                                     // 首次安装赠送金币数量
+  G_WTT_EveryDayStudy                                    = 'G_WTT_EveryDayStudy',                                    // 每日学习赠送金币数量
+  G_WTT_EveryDayTest                                     = 'G_WTT_EveryDayTest',                                     // 每日测试赠送金币数量
+  G_WTT_ShareApp                                         = 'G_WTT_ShareApp',                                         // 首次分享应用赠送金币数量
+  G_WTT_WatchAd                                          = 'G_WTT_WatchAd',                                          // 每次观看激励广告赠送金币数量
+
+  G_TT_FirstInstall                                      = 'G_TT_FirstInstall',                                      // 首次安装赠送金币数量
+  G_TT_EveryDayStudy                                     = 'G_TT_EveryDayStudy',                                     // 每日学习赠送金币数量
+  G_TT_EveryDayTest                                      = 'G_TT_EveryDayTest',                                      // 每日测试赠送金币数量
+  G_TT_ShareApp                                          = 'G_TT_ShareApp',                                          // 首次分享应用赠送金币数量
+  G_TT_WatchAd                                           = 'G_TT_WatchAd',                                           // 每次观看激励广告赠送金币数量
+}
+
+/** 与 Android `AppCfg.all` 顺序一致，供遍历 / 服务端合并 */
+export const APP_CFG_ALL: AppCfg[] = [
+  AppCfg.Android_WTS_Home_Notice_idx_in_Instruction,
+  AppCfg.Android_WTT_Home_Notice_idx_in_Instruction,
+  AppCfg.Android_TT_Home_Notice_idx_in_Instruction,
+  AppCfg.Android_WTS_ShareAppLink_idx_in_Instruction,
+  AppCfg.Android_WTT_ShareAppLink_idx_in_Instruction,
+  AppCfg.Android_TT_ShareAppLink_idx_in_Instruction,
+  AppCfg.IOS_SubscribePriceShowIntroductoryFirst,
+  AppCfg.Android_SubscribePrice_is_Show_PriceTip,
+  AppCfg.Android_HwMember_Show_ConsumablePriceButtons_is_ON,
+  AppCfg.Android_WxMember_Show_PriceButtons_MoreThan1Year_is_ON,
+  AppCfg.IOS_Show_Wx_QRLogin_When_Weixin_Not_installed,
+  AppCfg.AutoRefreshSubscriptionInfo_is_ON,
+  AppCfg.AutoRefreshSubscriptionInfo_Interval_Minutes,
+  AppCfg.CosAuditCheckForSignup_is_ON,
+  AppCfg.CosAuditCheckForLogin_is_ON,
+  AppCfg.CosAuditCheckForMemo_is_ON,
+  AppCfg.CBook_Useable_is_ON,
+  AppCfg.CBook_AutoUpdateCheck_is_ON,
+  AppCfg.CBook_AutoUpdateCheck_Interval_Minutes,
+  AppCfg.CBookList_AutoUpdateCheck_is_ON,
+  AppCfg.M_MemberUseCloudSound,
+  AppCfg.N_NonMemberUseCloudSound,
+  AppCfg.N_WordPron_Times,
+  AppCfg.N_ExamplePron_Times,
+  AppCfg.N_DictShow_Times,
+  AppCfg.N_Free_Units_Count,
+  AppCfg.N_Lock_AutoPron,
+  AppCfg.N_Lock_NightMode,
+  AppCfg.N_Lock_HideTrans,
+  AppCfg.N_Lock_RetestMistake,
+  AppCfg.N_Free_Plan_DayOfs_Count,
+  AppCfg.N_Lock_Cigen,
+  AppCfg.N_Lock_SameRoot,
+  AppCfg.N_OnlineDict_Times,
+  AppCfg.N_Challenge_Times,
+  AppCfg.N_EBook_MaxCount,
+  AppCfg.G_WTS_FirstInstall,
+  AppCfg.G_WTS_EveryDayStudy,
+  AppCfg.G_WTS_EveryDayTest,
+  AppCfg.G_WTS_ShareApp,
+  AppCfg.G_WTS_WatchAd,
+  AppCfg.G_WTT_FirstInstall,
+  AppCfg.G_WTT_EveryDayStudy,
+  AppCfg.G_WTT_EveryDayTest,
+  AppCfg.G_WTT_ShareApp,
+  AppCfg.G_WTT_WatchAd,
+  AppCfg.G_TT_FirstInstall,
+  AppCfg.G_TT_EveryDayStudy,
+  AppCfg.G_TT_EveryDayTest,
+  AppCfg.G_TT_ShareApp,
+  AppCfg.G_TT_WatchAd,
+]
+
+export interface GoldPolicyRow {
+  key: string
+  value: number
+  name: string | null
+}
+
+export class AppCfgManager {
+  //MARK: -
+  ///缓存dict（key -> value）
+  private dict: Map<string, number> = new Map()
+  ///缓存name（key -> name）
+  private nameDict: Map<string, string> = new Map()
+
+  private static instance: AppCfgManager | null = null
+
   static get shared(): AppCfgManager {
     if (!AppCfgManager.instance) {
-      AppCfgManager.instance = new AppCfgManager();
+      AppCfgManager.instance = new AppCfgManager()
     }
-    return AppCfgManager.instance;
+    return AppCfgManager.instance
   }
 
-  // 获取配置项的默认值
+  private constructor() {
+    this.init()
+  }
+
+  private init(): void {
+    //从本地加载
+    this.loadPreference()
+    ///从服务器加载 configs
+    this.loadConfigsIfNeeds()
+  }
+
+  private isCurLanguageCNT(): boolean {
+    // 统一使用 LanguageManager 的当前语言索引，避免冷启动时 Context Locale 不一致
+    return LanguageManager.isTraditionalChinese()
+  }
+
+  ///默认值
   private static getDefaultValue(cfg: AppCfg): number {
-    let defaultValue: number = 0;
     switch (cfg) {
-      // 通用配置默认值
-      case AppCfg.Dictation_Detect_Merged_Api_GeneralOrHandwriting:        defaultValue = 1;      break; // [通用]听写合并检测Api使用(0:通用[正确率低], 1:手写)
-      case AppCfg.InAppBooks_Show_In_SaveToBooks:                          defaultValue = 0;      break; // [通用] 内置课本 在SaveToBooks时是否显示(0：不显示，1：显示）
-      case AppCfg.InAppBooks_Can_ShareOnline:                              defaultValue = 0;      break; // [通用] 内置课本 在分享到在线课本中 是否显示 (0：不显示，1：显示）
-      case AppCfg.CreatedUserCards_Can_ShareOnline:                        defaultValue = 0;      break; // [通用] 用户卡片 可否分享到 在线课本 (0：不可以，1：可以）
-      case AppCfg.BookOnline_Download_is_ON:                               defaultValue = 0;      break; // [通用] 在线课本是否可查看或下载(0: 不能查看或下载, 1: 可以下载)
-      case AppCfg.BookOnline_Publish_is_ON:                                defaultValue = 0;      break; // [通用] 在线课本是否可以发布(0: 不能发布, 1: ON 可以发布)
-      case AppCfg.Android_HowTo_CreateCSV_idx_in_Instruction:              defaultValue = 13;     break; // [通用] 如何制作csv并发布到手机 在Instruction中对应的idx
-      case AppCfg.Android_HowTo_Imort_SharedData_idx_in_Instruction:       defaultValue = 14;     break; // [通用] 如何导入他人分享的数据? 在Instruction中对应的idx
-      case AppCfg.Android_ShareAppLink_idx_in_Instruction:                 defaultValue = 15;     break; // [通用] 分享应用link 在Instruction中对应的idx
-      case AppCfg.Android_Home_Notice_idx_in_Instruction:                  defaultValue = 1;      break; // [通用] 首页滚动公告在Instruction中对应的idx。只有idx > 0时，才会查询Server端的Instruction
-      case AppCfg.AutoRefreshSubscriptionInfo_is_ON:                       defaultValue = 1;      break; // [通用] 是否启用 自动刷新会员订阅时间(0：未启用，1：已启用）
-      case AppCfg.AutoRefreshSubscriptionInfo_Interval_Minutes:            defaultValue = 60*12;  break; // [通用] 自动刷新 服务器上的会员订阅的 时间间隔（只读） 单位：分钟
-      case AppCfg.CosAuditCheckForSignup_is_ON:                            defaultValue = 1;      break; // [通用] 是否启用 注册审核(0：未启用，1：已启用）
-      case AppCfg.CosAuditCheckForLogin_is_ON:                             defaultValue = 1;      break; // [通用] 是否启用 登录审核(0：未启用，1：已启用）
-      case AppCfg.CBook_Useable_is_ON:                                     defaultValue = 1;      break; // [通用] 是否启用 CBook[总开关]（Cos下载的Book）(0：未启用〈使用App bundle内的Book〉，1：已启用）
-      case AppCfg.CBook_AutoUpdateCheck_is_ON:                             defaultValue = 1;      break; // [通用] 是否启用 CBook自动更新检查
-      case AppCfg.CBook_AutoUpdateCheck_Interval_Minutes:                  defaultValue = 60*48;  break; // [通用] CBook自动更新检查 时间间隔 单位：分钟
-      case AppCfg.CBookList_AutoUpdateCheck_is_ON:                         defaultValue = 1;      break; // [通用] 是否启用 CBookList自动更新检查
-      case AppCfg.CBookIcon_AutoUpdateCheck_is_ON:                         defaultValue = 1;      break; // [通用] 是否启用 CBookIcon自动更新检查
-
-    // 会员配置默认值
-      case AppCfg.M_Dictation_Detect_OneByOne_Total_Cnt:                   defaultValue = 100;    break; // [会员]听写检测使用oneByone的总行数
-
-    // 非会员配置默认值
-      case AppCfg.N_Dictation_ScanTimes_Total_Cnt:                         defaultValue = 2;      break; // [非会员]可以执行文字识别的次数(总共)
-
-    // 非会员(订阅描述)配置默认值
-      case AppCfg.N_P_maxBookCount:                                        defaultValue = 3;      break; // 非会员(订阅) 最大学习集个数
-      case AppCfg.N_P_maxGroupCountPerBook:                                defaultValue = 3;      break; // 非会员(订阅) 每个学习集中的最大组数
-      case AppCfg.N_P_maxUnitCountInAppBook:                               defaultValue = 10;     break; // 非会员(订阅) 内置课本中可使用的最大单元数
-      case AppCfg.N_P_maxWordPronCountDaily:                               defaultValue = 10;     break; // 非会员(订阅) 每日 查看汉字发音 个数
-      case AppCfg.N_P_maxWordStrokeCountDaily:                             defaultValue = 5;      break; // 非会员(订阅) 每日 查看汉字笔画 个数
-      case AppCfg.N_P_maxPhrasePronCountDaily:                             defaultValue = 5;      break; // 非会员(订阅) 每日 查看词语/成语发音 个数
-      case AppCfg.N_P_maxDictationTimesDaily:                              defaultValue = 1;      break; // 非会员(订阅) 每日 可以使用听写 次数
-      case AppCfg.N_P_maxPlanCount:                                        defaultValue = 1;      break; // 非会员(订阅) 可以创建的计划个数
-      case AppCfg.N_P_maxPlanDayOfsCount:                                  defaultValue = 7;      break; // 非会员(订阅) 可以使用的DayOf数
-      case AppCfg.N_P_maxEBookCount:                                       defaultValue = 1;      break; // 非会员(订阅) 可以创建的"我的课本"最大个数
-      case AppCfg.N_P_maxEPartCountPerBook:                                defaultValue = 1;      break; // 非会员(订阅) 每个课本中可以新增的"字表"最大个数
-      case AppCfg.N_P_maxELessonCountPerPart:                              defaultValue = 10;     break; // 非会员(订阅) 每个字表中可以添加的"汉字组"最大个数
+      case AppCfg.Android_WTS_Home_Notice_idx_in_Instruction:              return 1  // [WordTree_CNS]首页滚动公告在Instruction_Harmony中对应的idx。 idx == 0: 不会查询Server端, idx > 0 : 会查询Server端的Instruction_Harmony表 [鸿蒙]
+      case AppCfg.Android_WTT_Home_Notice_idx_in_Instruction:              return 2  // [WordTree_CNT]首页滚动公告在Instruction_Harmony中对应的idx。 idx == 0: 不会查询Server端, idx > 0 : 会查询Server端的Instruction_Harmony表 [鸿蒙]
+      case AppCfg.Android_TT_Home_Notice_idx_in_Instruction:               return 3  // [TangoTree]首页滚动公告在Instruction_Harmony中对应的idx。 idx == 0: 不会查询Server端, idx > 0 : 会查询Server端的Instruction_Harmony表 [鸿蒙]
+      case AppCfg.Android_WTS_ShareAppLink_idx_in_Instruction:             return 11  // [WordTree_CNS]分享应用link 在Instruction_Harmony中对应的idx。(idx <= 0：不会查询Server端(使用本地链接)，idx > 0：才会从Instruction_Harmony中查询链接)]
+      case AppCfg.Android_WTT_ShareAppLink_idx_in_Instruction:             return 12  // [WordTree_CNT]分享应用link 在Instruction_Harmony中对应的idx。(idx <= 0：不会查询Server端(使用本地链接)，idx > 0：才会从Instruction_Harmony中查询链接)]
+      case AppCfg.Android_TT_ShareAppLink_idx_in_Instruction:              return 13  // [TangoTree]分享应用link 在Instruction_Harmony中对应的idx。(idx <= 0：不会查询Server端(使用本地链接)，idx > 0：才会从Instruction_Harmony中查询链接)]
+      case AppCfg.IOS_SubscribePriceShowIntroductoryFirst:                 return 1  // [通用]iOS订阅价格是否优先显示推介促销价格 (0: 不显示促销价格，1：显示促销价格)
+      case AppCfg.Android_SubscribePrice_is_Show_PriceTip:                 return 1  // [通用] 订阅价格是否显示价格提示［Android］
+      case AppCfg.Android_HwMember_Show_ConsumablePriceButtons_is_ON:      return 1  // [Android] 华为会员页默认显示后三个单次购买价格按钮(0:不显示，1:显示)
+      case AppCfg.Android_WxMember_Show_PriceButtons_MoreThan1Year_is_ON:  return 1  // [Android] 微信会员页默认显示大于1年的价格按钮(0:不显示，1:显示)
+      case AppCfg.IOS_Show_Wx_QRLogin_When_Weixin_Not_installed:           return 1  // [通用] 未安装微信时，是否显示微信QR登录。0:不显示，1:显示QR登录  [iOS]
+      case AppCfg.AutoRefreshSubscriptionInfo_is_ON:                       return 1  // [通用] 是否启用 自动刷新会员订阅时间(0：未启用，1：已启用）
+      case AppCfg.AutoRefreshSubscriptionInfo_Interval_Minutes:            return 60 * 12  // [通用] 自动刷新 服务器上的会员订阅的 时间间隔（只读） 单位：分钟 [AutoRefreshSubscriptionInfo_is_ON启用了才有效]
+      case AppCfg.CosAuditCheckForSignup_is_ON:                            return 1  // [通用] 是否启用 注册审核(0：未启用，1：已启用）
+      case AppCfg.CosAuditCheckForLogin_is_ON:                             return 1  // [通用] 是否启用 登录审核(0：未启用，1：已启用）
+      case AppCfg.CosAuditCheckForMemo_is_ON:                              return 1  // [通用] 是否启用 笔记审核(0：未启用，1：已启用）
+      case AppCfg.CBook_Useable_is_ON:                                     return 1  // [通用] 是否启用 CBook[总开关]（Cos下载的Book）(0：未启用〈使用App bundle内的Book〉，1：已启用）
+      case AppCfg.CBook_AutoUpdateCheck_is_ON:                             return 1  // [通用] 是否启用 CBook自动更新检查
+      case AppCfg.CBook_AutoUpdateCheck_Interval_Minutes:                  return 60 * 48  // [通用] CBook自动更新检查 时间间隔 单位：分钟 [CBook_AutoUpdateCheck_is_ON启用了才有效]
+      case AppCfg.CBookList_AutoUpdateCheck_is_ON:                         return 1  // [通用] 是否启用 CBookList自动更新检查(更新检查 时间间隔也使用CBook_AutoUpdateCheck_Interval_Minutes)
+      case AppCfg.M_MemberUseCloudSound:                                   return 1  // [会员] 是否使用云声音(0：未启用，1：已启用）
+      case AppCfg.N_NonMemberUseCloudSound:                                return 1  // [非会员] 是否使用云声音(0：未启用，1：已启用）
+      case AppCfg.N_WordPron_Times:                                        return 80  // 单词发音 每日免费次数 _Free_Times_Per_Day
+      case AppCfg.N_ExamplePron_Times:                                     return 10  // 例句发音 每日免费次数
+      case AppCfg.N_DictShow_Times:                                        return 10  // 内置词典 每日免费次数
+      case AppCfg.N_Free_Units_Count:                                      return 100  // 免费单元个数
+      case AppCfg.N_Lock_AutoPron:                                         return 1  // [锁定]自动发音   [0： off，1：lock]
+      case AppCfg.N_Lock_NightMode:                                        return 1  // [锁定]夜晚模式   [0： off，1：lock]
+      case AppCfg.N_Lock_HideTrans:                                        return 1  // [锁定]隐藏翻译   [0： off，1：lock]
+      case AppCfg.N_Lock_RetestMistake:                                    return 1  // [锁定]再测一次(仅错误单词)  [0： off，1：lock]
+      case AppCfg.N_Free_Plan_DayOfs_Count:                                return 5  // 记忆曲线 免费天数
+      case AppCfg.N_Lock_Cigen:                                            return 1  // [锁定]词根助记 [0： off，1：lock]
+      case AppCfg.N_Lock_SameRoot:                                         return 1  // [锁定]同根词   [0： off，1：lock]
+      case AppCfg.N_OnlineDict_Times:                                      return 100  // 在线字典 每日免费次数
+      case AppCfg.N_Challenge_Times:                                       return 10  // 挑战模式 每日免费次数
+      case AppCfg.N_EBook_MaxCount:                                        return 1  // 非会员默认最多可创建 1 个 EBook（自建词汇本）
+      case AppCfg.G_WTS_FirstInstall:                                      return 100  // 首次安装赠送100个金币
+      case AppCfg.G_WTS_EveryDayStudy:                                     return 10  // 每日学习赠送10个金币
+      case AppCfg.G_WTS_EveryDayTest:                                      return 10  // 每日测试赠送10个金币
+      case AppCfg.G_WTS_ShareApp:                                          return 300  // 首次分享应用赠送300个金币
+      case AppCfg.G_WTS_WatchAd:                                           return 10  // 每次观看激励广告赠送10个金币
+      case AppCfg.G_WTT_FirstInstall:                                      return 100  // 首次安裝贈送100個金幣
+      case AppCfg.G_WTT_EveryDayStudy:                                     return 10  // 每日學習贈送10個金幣
+      case AppCfg.G_WTT_EveryDayTest:                                      return 10  // 每日測試贈送10個金幣
+      case AppCfg.G_WTT_ShareApp:                                          return 300  // 首次分享應用贈送300個金幣
+      case AppCfg.G_WTT_WatchAd:                                           return 10  // 每次觀看激勵廣告贈送10個金幣
+      case AppCfg.G_TT_FirstInstall:                                       return 100  // 初インストール時に100ゴールドをゲット。
+      case AppCfg.G_TT_EveryDayStudy:                                      return 10  // 毎日学習すると10ゴールドをゲット。
+      case AppCfg.G_TT_EveryDayTest:                                       return 10  // 毎日テストすると10ゴールドをゲット。
+      case AppCfg.G_TT_ShareApp:                                           return 300  // 🎉アプリを共有すると300ゴールドをゲット。
+      case AppCfg.G_TT_WatchAd:                                            return 10  // 🎉広告を見ると、💰ゴールド10個ゲット❗️
+      default:                                                             return 0
     }
-    return defaultValue;
   }
 
-  // 保存偏好设置到本地
-  // 保存偏好设置到本地
-  private async savePreference(): Promise<void> {
+  //MARK: - save & load local prefs
+
+  private savePreference(): void {
     try {
-      // 获取 preferences 实例
-      let context: common.Context = getContext(this) as common.Context;
-      let prefs = await preferences.getPreferences(context, Pref.Name);
-
-      // 将配置字典保存到 preferences
-      for (let key of this.dict.keys()) {
-        let value = this.dict.get(key);
-        await prefs.put(key, value);
-      }
-
-      // 刷新到磁盘
-      await prefs.flush();
-    } catch (err) {
-      console.error(`保存偏好设置失败: ${err.message}`);
+      const pref = preferences.getPreferencesSync(getAppContext(), { name: Pref.Name })
+      this.dict.forEach((value: number, key: string) => {
+        pref.putSync(Pref.ValueKeyPrefix + key, value)
+      })
+      this.nameDict.forEach((value: string, key: string) => {
+        pref.putSync(Pref.NameKeyPrefix + key, value)
+      })
+      pref.flushSync()
+    } catch (e) {
+      console.error(`AppCfgManager.savePreference failed: ${(e as Error).message}`)
     }
   }
 
-  // 从本地加载偏好设置
-  private async loadPreference(): Promise<void> {
+  private loadPreference(): void {
     try {
-      // 先设置本地默认值
-      for (let cfgValue of Object.values(AppCfg)) {
-        this.dict.set(cfgValue, AppCfgManager.getDefaultValue(cfgValue));
-      }
+      ///先设置本地默认值
+      APP_CFG_ALL.forEach((cfg: AppCfg) => {
+        this.dict.set(cfg, AppCfgManager.getDefaultValue(cfg))
+      })
 
-      // 获取 preferences 实例
-      let context: common.Context = getContext(this) as common.Context;
-      let prefs = await preferences.getPreferences(context, Pref.Name);
+      const pref = preferences.getPreferencesSync(getAppContext(), { name: Pref.Name })
+      APP_CFG_ALL.forEach((cfg: AppCfg) => {
+        ///更新已经保存的值
+        const def = AppCfgManager.getDefaultValue(cfg)
+        const valueKey = Pref.ValueKeyPrefix + cfg
+        let savedValue: number
+        if (pref.hasSync(valueKey)) {
+          savedValue = pref.getSync(valueKey, def) as number
+        } else {
+          savedValue = pref.getSync(cfg, def) as number
+        }
+        this.dict.set(cfg, savedValue)
 
-      // 更新已经保存的值
-      for (let cfgValue of Object.values(AppCfg)) {
-        let savedValue = await prefs.get(cfgValue, AppCfgManager.getDefaultValue(cfgValue));
-        this.dict.set(cfgValue, savedValue as number);
-      }
-    } catch (err) {
-      console.error(`加载偏好设置失败: ${err.message}`);
+        const nameKey = Pref.NameKeyPrefix + cfg
+        if (pref.hasSync(nameKey)) {
+          const n = pref.getSync(nameKey, '') as string
+          if (n && n.length > 0) {
+            this.nameDict.set(cfg, n)
+          }
+        }
+      })
+    } catch (e) {
+      console.error(`AppCfgManager.loadPreference failed: ${(e as Error).message}`)
     }
   }
 
-  // 判断时间间隔，一次获取所有ServerConfigs
+  //MARK: -
+
+  ///[判断时间间隔]一次获取所有ServerConfigs
   loadConfigsIfNeeds(): void {
-    // 检查网络连接
+    ///检查网络连接
     if (!NetWorkTool.checkInternetConnection(false)) {
-      return;
+      return
     }
 
-    ///7天检查是否到时间需要，从服务器更新Configs
+    //7天
+    //检查是否到时间需要，从服务器更新Configs
     if (TimeToManager.isTimeTo(TimeToType.updateServerConfigs)) {
-      this.refreshServerCfgs();
-      TimeToManager.saveTime(TimeToType.updateServerConfigs, true);
+      //执行一次ServerCfg查询
+      this.refreshServerCfgs()
+      //保存本次更新时间
+      TimeToManager.saveTime(TimeToType.updateServerConfigs, true)
     }
-
-    // 在 ArkTS 中，网络检查和定时器功能需要根据具体API实现
-    console.log("loadConfigsIfNeeds - 需要实现网络检查和定时逻辑");
   }
 
-  // 立即执行一次ServerCfg查询
-  public refreshServerCfgs(): void {
-    // 从服务器或缓存中加载 configs
-    ServerCfgManager.loadServerCfgs( (success: boolean, msg: string | null, serverCfgs: ServerCfg[] | null) => {
-
-      if (success) {
-        if (serverCfgs) {
-
-          // 遍历所有 AppCfg 枚举
-          Object.keys(AppCfg).forEach((appCfg) => {
-
-            // 找到 server 返回的对应 key
-            const serverCfg = serverCfgs.find(sc => sc.key === appCfg.valueOf());
-
-            if (serverCfg) {
-              // 如果 server 上有 key，但无 value 返回，则默认为 0
-              // ［这是 server 上的 bug，暂时未改 by ko 2022.09.10］
-              //this.dict[appCfg.valueOf()] = serverCfg.value ?? 0; // 更新 server 上的值
-              this.dict.set(appCfg.valueOf(), serverCfg.value ?? 0);// 更新 server 上的值
+  ///立即执行一次ServerCfg查询
+  refreshServerCfgs(): void {
+    ///从服务器 或缓存中 加载 configs
+    ServerCfgManager.loadServerCfgs((succeed: boolean, msg: string | null, serverCfgs: ServerCfg[] | null) => {
+      if (succeed && serverCfgs) {
+        APP_CFG_ALL.forEach((appCfg: AppCfg) => {
+          const serverCfg = serverCfgs.find((sc: ServerCfg) => sc.key === appCfg)
+          if (serverCfg) {
+            // 与 iOS 保持一致：只有服务端明确返回 value 时才覆盖本地值，
+            // 避免把有效缓存误写成 0。
+            if (serverCfg.value !== null && serverCfg.value !== undefined) {
+              this.dict.set(appCfg, serverCfg.value)
             }
-          });
-        }
+            //保存name
+            if (serverCfg.name !== null && serverCfg.name !== undefined && serverCfg.name.length > 0) {
+              this.nameDict.set(appCfg, serverCfg.name)
+            }
+          }
+        })
 
-        // 保存到本地 Preferences
-        this.savePreference();
+        //保存到本地
+        this.savePreference()
 
-        /// 发送配置更新通知，有需要的地方（如：Marquee Notice）可以即时获得通知
-        //NotificationCenter.post(AppCfgManager.Notification.Name.AppCfgUpdated, this);
-
-        Toast.showDebugMessage("刷新ServerCfg成功");
-        //LogEvent.log(LogEvent.Id.appCfgResfeshSucceed);
-
+        ///发送配置更新通知，有需要的地方（如：Marquee Notice）可以即时获得通知
+        SimpleEventBus.emit(AppCfgNotification.Name.AppCfgUpdated)
+        Toast.showDebugMessage('刷新ServerCfg成功')
       } else {
-        if (msg) {
-          Toast.showDebugMessage(msg);
-        }
-
-        //LogEvent.log(LogEvent.Id.appCfgResfeshFailed);
+        Toast.showDebugMessage(msg ?? '')
       }
-    });
-
-    // 在 ArkTS 中，网络请求需要使用 @ohos.net.http 模块
-    console.log("refreshServerCfgs - 需要实现服务器配置获取逻辑");
+    })
   }
 
-  // MARK: - 获取函数
-
-  /// 获取 [通用]听写Merged检测Api是否使用Handwriting
-  isDictationDetectMergedApiUseHandwriting(): boolean {
-    let value = this.dict.get(AppCfg.Dictation_Detect_Merged_Api_GeneralOrHandwriting) ??
-    AppCfgManager.getDefaultValue(AppCfg.Dictation_Detect_Merged_Api_GeneralOrHandwriting);
-    return value === 1;
+  //MARK: - get functions
+  /// 获取　[通用]鸿蒙首页滚动公告idx(Instruction_Harmony表)
+  getHomeNoticeIdx_In_Instruction_ForAndroid(): number {
+    if (this.isCurLanguageCNT()) {
+      return this.dict.get(AppCfg.Android_WTT_Home_Notice_idx_in_Instruction) ??
+        AppCfgManager.getDefaultValue(AppCfg.Android_WTT_Home_Notice_idx_in_Instruction)
+    }
+    return this.dict.get(AppCfg.Android_WTS_Home_Notice_idx_in_Instruction) ??
+      AppCfgManager.getDefaultValue(AppCfg.Android_WTS_Home_Notice_idx_in_Instruction)
   }
 
-  /// 获取 [通用] 内置课本 在SaveToBooks（CopyTo，ImportCsv）时是否显示
-  isInAppBooks_Show_In_SaveToBooks(): boolean {
-    let value = this.dict.get(AppCfg.InAppBooks_Show_In_SaveToBooks) ??
-    AppCfgManager.getDefaultValue(AppCfg.InAppBooks_Show_In_SaveToBooks);
-    return value === 1;
-  }
-
-  /// 获取 [通用] 内置课本 可否分享到 在线课本
-  isInAppBooks_Can_ShareOnline(): boolean {
-    let value = this.dict.get(AppCfg.InAppBooks_Can_ShareOnline) ??
-    AppCfgManager.getDefaultValue(AppCfg.InAppBooks_Can_ShareOnline);
-    return value === 1;
-  }
-
-  /// 获取 [通用] 用户卡片 可否分享到 在线课本
-  isCreatedUserCard_Can_ShareOnline(): boolean {
-    let value = this.dict.get(AppCfg.CreatedUserCards_Can_ShareOnline) ??
-    AppCfgManager.getDefaultValue(AppCfg.CreatedUserCards_Can_ShareOnline);
-    return value === 1;
-  }
-
-  /// 获取 [通用] 在线课本是否可查看或下载
-  isBookOnline_Download_ON(): boolean {
-    let value = this.dict.get(AppCfg.BookOnline_Download_is_ON) ??
-    AppCfgManager.getDefaultValue(AppCfg.BookOnline_Download_is_ON);
-    return value === 1;
-  }
-
-  /// 获取 [通用]在线课本是否可以发布
-  isBookOnline_Publish_ON(): boolean {
-    let value = this.dict.get(AppCfg.BookOnline_Publish_is_ON) ??
-    AppCfgManager.getDefaultValue(AppCfg.BookOnline_Publish_is_ON);
-    return value === 1;
-  }
-
-  /// 获取 [通用]如何制作csv并发布到手机 在Instruction中对应的idx
-  getHowTo_CreateCSV_idx_in_Instruction(): number {
-    return this.dict.get(AppCfg.Android_HowTo_CreateCSV_idx_in_Instruction) ??
-    AppCfgManager.getDefaultValue(AppCfg.Android_HowTo_CreateCSV_idx_in_Instruction);
-  }
-
-  /// 获取 [通用]如何导入他人分享的数据? 在Instruction中对应的idx
-  getHowTo_Imort_SharedData_idx_in_Instruction(): number {
-    return this.dict.get(AppCfg.Android_HowTo_Imort_SharedData_idx_in_Instruction) ??
-    AppCfgManager.getDefaultValue(AppCfg.Android_HowTo_Imort_SharedData_idx_in_Instruction);
-  }
-
-  /// 获取 [通用] 分享应用link 在Instruction中对应的idx
+  /// 获取　[通用] 分享应用link 在Instruction_Harmony中对应的idx
   getAndroid_ShareAppLink_idx_in_Instruction(): number {
-    return this.dict.get(AppCfg.Android_ShareAppLink_idx_in_Instruction) ??
-    AppCfgManager.getDefaultValue(AppCfg.Android_ShareAppLink_idx_in_Instruction);
+    if (this.isCurLanguageCNT()) {
+      return this.dict.get(AppCfg.Android_WTT_ShareAppLink_idx_in_Instruction) ??
+        AppCfgManager.getDefaultValue(AppCfg.Android_WTT_ShareAppLink_idx_in_Instruction)
+    }
+    return this.dict.get(AppCfg.Android_WTS_ShareAppLink_idx_in_Instruction) ??
+      AppCfgManager.getDefaultValue(AppCfg.Android_WTS_ShareAppLink_idx_in_Instruction)
   }
 
-  /// 获取 [通用]Android首页滚动公告idx(Instruction表)
-  getHomeNoticeIdx_In_Instruction(): number {
-    return this.dict.get(AppCfg.Android_Home_Notice_idx_in_Instruction) ??
-    AppCfgManager.getDefaultValue(AppCfg.Android_Home_Notice_idx_in_Instruction);
+  /// 获取　[通用]订阅价格是否优先显示　推介促销价格
+  isSubscribePriceShowIntroductoryFirst(): boolean {
+    return (this.dict.get(AppCfg.IOS_SubscribePriceShowIntroductoryFirst) ??
+      AppCfgManager.getDefaultValue(AppCfg.IOS_SubscribePriceShowIntroductoryFirst)) === 1
   }
 
-  /// 获取 [通用] 是否启用 自动刷新会员订阅时间
+  /// 获取　[通用]订阅价格是否显示价格提示
+  isSubscribePrice_Show_PriceTip(): boolean {
+    return (this.dict.get(AppCfg.Android_SubscribePrice_is_Show_PriceTip) ??
+      AppCfgManager.getDefaultValue(AppCfg.Android_SubscribePrice_is_Show_PriceTip)) === 1
+  }
+
+  /// 获取 [Android] 华为会员页是否显示后三个单次购买价格按钮
+  isHwMember_Show_ConsumablePriceButtons_is_ON(): boolean {
+    return (this.dict.get(AppCfg.Android_HwMember_Show_ConsumablePriceButtons_is_ON) ??
+      AppCfgManager.getDefaultValue(AppCfg.Android_HwMember_Show_ConsumablePriceButtons_is_ON)) === 1
+  }
+
+  /// 获取 [Android] 微信会员页是否显示大于1年的价格按钮
+  isWxMember_Show_PriceButtons_MoreThan1Year_is_ON(): boolean {
+    return (this.dict.get(AppCfg.Android_WxMember_Show_PriceButtons_MoreThan1Year_is_ON) ??
+      AppCfgManager.getDefaultValue(AppCfg.Android_WxMember_Show_PriceButtons_MoreThan1Year_is_ON)) === 1
+  }
+
+  /// 获取　[通用] 未安装微信时，是否显示微信QR登录。0:不显示，1:显示QR登录  [iOS]
+  isShowWxQRLogin_When_Weixin_Not_installed_ForIOS(): boolean {
+    return (this.dict.get(AppCfg.IOS_Show_Wx_QRLogin_When_Weixin_Not_installed) ??
+      AppCfgManager.getDefaultValue(AppCfg.IOS_Show_Wx_QRLogin_When_Weixin_Not_installed)) === 1
+  }
+
+  /// 获取　[通用] 是否启用 自动刷新会员订阅时间
   isAutoRefreshSubscriptionInfo_is_ON(): boolean {
-    let value = this.dict.get(AppCfg.AutoRefreshSubscriptionInfo_is_ON) ??
-    AppCfgManager.getDefaultValue(AppCfg.AutoRefreshSubscriptionInfo_is_ON);
-    return value === 1;
+    return (this.dict.get(AppCfg.AutoRefreshSubscriptionInfo_is_ON) ??
+      AppCfgManager.getDefaultValue(AppCfg.AutoRefreshSubscriptionInfo_is_ON)) === 1
   }
 
-  /// 获取 [通用]自动刷新 服务器上的会员订阅的 时间间隔（只读） 单位：分钟
+  /// 获取　[通用]自动刷新 服务器上的会员订阅的 时间间隔（只读） 单位：分钟
   getAutoRefreshSubscriptionInfo_Interval_Minutes(): number {
     return this.dict.get(AppCfg.AutoRefreshSubscriptionInfo_Interval_Minutes) ??
-    AppCfgManager.getDefaultValue(AppCfg.AutoRefreshSubscriptionInfo_Interval_Minutes);
+      AppCfgManager.getDefaultValue(AppCfg.AutoRefreshSubscriptionInfo_Interval_Minutes)
   }
 
-  /// 获取 [通用] 是否启用 审核检查for注册 (用户名)
+  /// 获取　[通用] 是否启用 审核检查for注册 (用户名)
   isCosAuditCheckForSignup_is_ON(): boolean {
-    let value = this.dict.get(AppCfg.CosAuditCheckForSignup_is_ON) ??
-    AppCfgManager.getDefaultValue(AppCfg.CosAuditCheckForSignup_is_ON);
-    return value === 1;
+    return (this.dict.get(AppCfg.CosAuditCheckForSignup_is_ON) ??
+      AppCfgManager.getDefaultValue(AppCfg.CosAuditCheckForSignup_is_ON)) === 1
   }
 
-  /// 获取 [通用] 是否启用 审核检查for登录 (用户名和头像)
+  /// 获取　[通用] 是否启用 审核检查for登录 (用户名和头像)
   isCosAuditCheckForLogin_is_ON(): boolean {
-    let value = this.dict.get(AppCfg.CosAuditCheckForLogin_is_ON) ??
-    AppCfgManager.getDefaultValue(AppCfg.CosAuditCheckForLogin_is_ON);
-    return value === 1;
+    return (this.dict.get(AppCfg.CosAuditCheckForLogin_is_ON) ??
+      AppCfgManager.getDefaultValue(AppCfg.CosAuditCheckForLogin_is_ON)) === 1
   }
 
-  /// [通用] 是否启用 CBook[总开关]（Cos下载的Book）
+  /// 获取　[通用] 是否启用 审核检查for笔记
+  isCosAuditCheckForMemo_is_ON(): boolean {
+    return (this.dict.get(AppCfg.CosAuditCheckForMemo_is_ON) ??
+      AppCfgManager.getDefaultValue(AppCfg.CosAuditCheckForMemo_is_ON)) === 1
+  }
+
+  /// [通用] 是否启用 CBook[总开关]（Cos下载的Book）(0：未启用〈使用App bundle内的Book〉，1：已启用）
   isCBook_Useable_is_ON(): boolean {
-    let value = this.dict.get(AppCfg.CBook_Useable_is_ON) ??
-    AppCfgManager.getDefaultValue(AppCfg.CBook_Useable_is_ON);
-    return value === 1;
+    return (this.dict.get(AppCfg.CBook_Useable_is_ON) ??
+      AppCfgManager.getDefaultValue(AppCfg.CBook_Useable_is_ON)) === 1
   }
 
   /// [通用] 是否启用 CBook自动更新检查
   isCBook_AutoUpdateCheck_is_ON(): boolean {
-    let value = this.dict.get(AppCfg.CBook_AutoUpdateCheck_is_ON) ??
-    AppCfgManager.getDefaultValue(AppCfg.CBook_AutoUpdateCheck_is_ON);
-    return value === 1;
+    return (this.dict.get(AppCfg.CBook_AutoUpdateCheck_is_ON) ??
+      AppCfgManager.getDefaultValue(AppCfg.CBook_AutoUpdateCheck_is_ON)) === 1
   }
 
-  /// [通用] CBook自动更新检查 时间间隔 单位：分钟
+  /// [通用] CBook自动更新检查 时间间隔 单位：分钟 [CBook_AutoUpdateCheck_is_ON启用了才有效]
   getCBook_AutoUpdateCheck_Interval_Minutes(): number {
     return this.dict.get(AppCfg.CBook_AutoUpdateCheck_Interval_Minutes) ??
-    AppCfgManager.getDefaultValue(AppCfg.CBook_AutoUpdateCheck_Interval_Minutes);
+      AppCfgManager.getDefaultValue(AppCfg.CBook_AutoUpdateCheck_Interval_Minutes)
   }
 
-  /// [通用] 是否启用 CBookList自动更新检查
+  /// [通用] 是否启用 CBookList自动更新检查(更新检查 时间间隔也使用CBook_AutoUpdateCheck_Interval_Minutes)
   isCBookList_AutoUpdateCheck_is_ON(): boolean {
-    let value = this.dict.get(AppCfg.CBookList_AutoUpdateCheck_is_ON) ??
-    AppCfgManager.getDefaultValue(AppCfg.CBookList_AutoUpdateCheck_is_ON);
-    return value === 1;
+    return (this.dict.get(AppCfg.CBookList_AutoUpdateCheck_is_ON) ??
+      AppCfgManager.getDefaultValue(AppCfg.CBookList_AutoUpdateCheck_is_ON)) === 1
   }
 
-  /// [通用] 是否启用 CBookIcon自动更新检查
+  /// [通用] 是否启用 CBookIcon自动更新检查(更新检查 时间间隔也使用CBook_AutoUpdateCheck_Interval_Minutes) [Android]
   isCBookIcon_AutoUpdateCheck_is_ON(): boolean {
-    let value = this.dict.get(AppCfg.CBookIcon_AutoUpdateCheck_is_ON) ??
-    AppCfgManager.getDefaultValue(AppCfg.CBookIcon_AutoUpdateCheck_is_ON);
-    return value === 1;
+    return (this.dict.get(AppCfg.CBookList_AutoUpdateCheck_is_ON) ??
+      AppCfgManager.getDefaultValue(AppCfg.CBookList_AutoUpdateCheck_is_ON)) === 1
   }
 
-  // MARK: - 获取函数 - 会员相关
+  //MARK: - get funcs - for Member & Non Member
 
-  /// 获取 会员 可使用的听写OneByOne检测总次数
-  getMember_DictationDetectOneByOne_TotalCnt(): number {
-    return this.dict.get(AppCfg.M_Dictation_Detect_OneByOne_Total_Cnt) ??
-    AppCfgManager.getDefaultValue(AppCfg.M_Dictation_Detect_OneByOne_Total_Cnt);
+  // MARK: - Non Member Policies (ServerCfg2)
+  /// 获取　非会员　单词发音 每日免费次数 _Free_Times_Per_Day
+  getNonMember_WordPron_Times(): number {
+    return this.dict.get(AppCfg.N_WordPron_Times) ?? AppCfgManager.getDefaultValue(AppCfg.N_WordPron_Times)
   }
 
-  // MARK: - 获取函数 - 非会员相关
-
-  /// 获取 非会员 总共可执行的听写识别 检测总次数
-  getNonMember_DictationScanTimes_TotalCnt(): number {
-    return this.dict.get(AppCfg.N_Dictation_ScanTimes_Total_Cnt) ??
-    AppCfgManager.getDefaultValue(AppCfg.N_Dictation_ScanTimes_Total_Cnt);
+  /// 获取　非会员　例句发音 每日免费次数
+  getNonMember_ExamplePron_Times(): number {
+    return this.dict.get(AppCfg.N_ExamplePron_Times) ?? AppCfgManager.getDefaultValue(AppCfg.N_ExamplePron_Times)
   }
 
-  // MARK: - 获取函数 - 非会员购买相关
-
-  /// 获取 非会员(订阅) 总最大学习集个数
-  getNonMember_Purchase_MaxBookCount(): number {
-    return this.dict.get(AppCfg.N_P_maxBookCount) ??
-    AppCfgManager.getDefaultValue(AppCfg.N_P_maxBookCount);
+  /// 获取　非会员　内置词典 每日免费次数
+  getNonMember_DictShow_Times(): number {
+    return this.dict.get(AppCfg.N_DictShow_Times) ?? AppCfgManager.getDefaultValue(AppCfg.N_DictShow_Times)
   }
 
-  /// 获取 非会员(订阅) 每个学习集中的最大组数
-  getNonMember_Purchase_MaxGroupCountPerBook(): number {
-    return this.dict.get(AppCfg.N_P_maxGroupCountPerBook) ??
-    AppCfgManager.getDefaultValue(AppCfg.N_P_maxGroupCountPerBook);
+  /// 获取　非会员　免费单元个数
+  getNonMember_Free_Units_Count(): number {
+    return this.dict.get(AppCfg.N_Free_Units_Count) ?? AppCfgManager.getDefaultValue(AppCfg.N_Free_Units_Count)
   }
 
-  /// 获取 非会员(订阅) 内置课本中可使用的最大单元数
-  getNonMember_Purchase_MaxUnitCountInAppBook(): number {
-    return this.dict.get(AppCfg.N_P_maxUnitCountInAppBook) ??
-    AppCfgManager.getDefaultValue(AppCfg.N_P_maxUnitCountInAppBook);
+  /// 获取　非会员　记忆曲线 免费天数
+  getNonMember_Free_Plan_DayOfs_Count(): number {
+    return this.dict.get(AppCfg.N_Free_Plan_DayOfs_Count) ?? AppCfgManager.getDefaultValue(AppCfg.N_Free_Plan_DayOfs_Count)
   }
 
-  /// 非会员(订阅) 每日 查看汉字发音 个数
-  getNonMember_Purchase_MaxWordPronCountDaily(): number {
-    return this.dict.get(AppCfg.N_P_maxWordPronCountDaily) ??
-    AppCfgManager.getDefaultValue(AppCfg.N_P_maxWordPronCountDaily);
+  /// 获取　非会员　在线字典 每日免费次数
+  getNonMember_OnlineDict_Times(): number {
+    return this.dict.get(AppCfg.N_OnlineDict_Times) ?? AppCfgManager.getDefaultValue(AppCfg.N_OnlineDict_Times)
   }
 
-  /// 非会员(订阅) 每日 查看汉字笔画 个数
-  getNonMember_Purchase_MaxWordStrokeCountDaily(): number {
-    return this.dict.get(AppCfg.N_P_maxWordStrokeCountDaily) ??
-    AppCfgManager.getDefaultValue(AppCfg.N_P_maxWordStrokeCountDaily);
+  /// 获取　非会员　挑战模式 每日免费次数
+  getNonMember_Challenge_Times(): number {
+    return this.dict.get(AppCfg.N_Challenge_Times) ?? AppCfgManager.getDefaultValue(AppCfg.N_Challenge_Times)
   }
 
-  /// 非会员(订阅) 每日 查看词语/成语发音 个数
-  getNonMember_Purchase_MaxPhrasePronCountDaily(): number {
-    return this.dict.get(AppCfg.N_P_maxPhrasePronCountDaily) ??
-    AppCfgManager.getDefaultValue(AppCfg.N_P_maxPhrasePronCountDaily);
+  /// 获取　非会员　可创建 EBook 最大个数（自建词汇本数量上限）
+  getNonMember_EBook_MaxCount(): number {
+    return this.dict.get(AppCfg.N_EBook_MaxCount) ?? AppCfgManager.getDefaultValue(AppCfg.N_EBook_MaxCount)
   }
 
-  /// 非会员(订阅) 每日 可使用的听写次数
-  getNonMember_Purchase_MaxDictationTimesDaily(): number {
-    return this.dict.get(AppCfg.N_P_maxDictationTimesDaily) ??
-    AppCfgManager.getDefaultValue(AppCfg.N_P_maxDictationTimesDaily);
+  /// 获取　非会员 [锁定]自动发音 状态 (0：off，1：lock)
+  isNonMember_Lock_AutoPron(): boolean {
+    return (this.dict.get(AppCfg.N_Lock_AutoPron) ?? AppCfgManager.getDefaultValue(AppCfg.N_Lock_AutoPron)) === 1
   }
 
-  /// 非会员(订阅) 可以创建的计划个数
-  getNonMember_Purchase_MaxPlanCount(): number {
-    return this.dict.get(AppCfg.N_P_maxPlanCount) ??
-    AppCfgManager.getDefaultValue(AppCfg.N_P_maxPlanCount);
+  /// 获取　非会员 [锁定]夜晚模式 状态 (0：off，1：lock)
+  isNonMember_Lock_NightMode(): boolean {
+    return (this.dict.get(AppCfg.N_Lock_NightMode) ?? AppCfgManager.getDefaultValue(AppCfg.N_Lock_NightMode)) === 1
   }
 
-  /// 非会员(订阅) 可以使用的DayOf数
-  getNonMember_Purchase_MaxPlanDayOfsCount(): number {
-    return this.dict.get(AppCfg.N_P_maxPlanDayOfsCount) ??
-    AppCfgManager.getDefaultValue(AppCfg.N_P_maxPlanDayOfsCount);
+  /// 获取　非会员 [锁定]隐藏翻译 状态 (0：off，1：lock)
+  isNonMember_Lock_HideTrans(): boolean {
+    return (this.dict.get(AppCfg.N_Lock_HideTrans) ?? AppCfgManager.getDefaultValue(AppCfg.N_Lock_HideTrans)) === 1
   }
 
-  /// 非会员(订阅) 可以创建的"我的课本"最大个数
-  getNonMember_Purchase_MaxEBookCount(): number {
-    return this.dict.get(AppCfg.N_P_maxEBookCount) ??
-    AppCfgManager.getDefaultValue(AppCfg.N_P_maxEBookCount);
+  /// 获取　非会员 [锁定]再测一次(仅错误单词) 状态 (0：off，1：lock)
+  isNonMember_Lock_RetestMistake(): boolean {
+    return (this.dict.get(AppCfg.N_Lock_RetestMistake) ?? AppCfgManager.getDefaultValue(AppCfg.N_Lock_RetestMistake)) === 1
   }
 
-  /// 非会员(订阅) 每个课本中可以新增的"字表"最大个数
-  getNonMember_Purchase_MaxEPartCountPerBook(): number {
-    return this.dict.get(AppCfg.N_P_maxEPartCountPerBook) ??
-    AppCfgManager.getDefaultValue(AppCfg.N_P_maxEPartCountPerBook);
+  /// 获取　非会员 [锁定]词根助记 状态 (0：off，1：lock)
+  isNonMember_Lock_Cigen(): boolean {
+    return (this.dict.get(AppCfg.N_Lock_Cigen) ?? AppCfgManager.getDefaultValue(AppCfg.N_Lock_Cigen)) === 1
   }
 
-  /// 非会员(订阅) 每个字表中可以添加的"汉字组"最大个数
-  getNonMember_Purchase_MaxELessonCountPerPart(): number {
-    return this.dict.get(AppCfg.N_P_maxELessonCountPerPart) ??
-    AppCfgManager.getDefaultValue(AppCfg.N_P_maxELessonCountPerPart);
+  /// 获取　非会员 [锁定]同根词 状态 (0：off，1：lock)
+  isNonMember_Lock_SameRoot(): boolean {
+    return (this.dict.get(AppCfg.N_Lock_SameRoot) ?? AppCfgManager.getDefaultValue(AppCfg.N_Lock_SameRoot)) === 1
+  }
+
+  //MARK: - Cloud Sound functions
+
+  /// 获取　[会员] 是否使用云声音
+  isMemberUseCloudSound(): boolean {
+    return (this.dict.get(AppCfg.M_MemberUseCloudSound) ?? AppCfgManager.getDefaultValue(AppCfg.M_MemberUseCloudSound)) === 1
+  }
+
+  /// 获取　[非会员] 是否使用云声音
+  isNonMemberUseCloudSound(): boolean {
+    return (this.dict.get(AppCfg.N_NonMemberUseCloudSound) ?? AppCfgManager.getDefaultValue(AppCfg.N_NonMemberUseCloudSound)) === 1
+  }
+
+  /// 检查云声音是否可用（根据会员状态返回对应的开关值）
+  checkCloudSoundUsable(): boolean {
+    return MemberManager.shared.isActive ? this.isMemberUseCloudSound() : this.isNonMemberUseCloudSound()
+  }
+
+  // MARK: - Gold Policies (from GoldPolicyManager)
+
+  /// 首次安装赠送金币
+  getGold_FirstInstall(): number {
+    if (this.isCurLanguageCNT()) {
+      return this.dict.get(AppCfg.G_WTT_FirstInstall) ?? AppCfgManager.getDefaultValue(AppCfg.G_WTT_FirstInstall)
+    }
+    return this.dict.get(AppCfg.G_WTS_FirstInstall) ?? AppCfgManager.getDefaultValue(AppCfg.G_WTS_FirstInstall)
+  }
+
+  /// 每日学习赠送金币
+  getGold_EveryDayStudy(): number {
+    if (this.isCurLanguageCNT()) {
+      return this.dict.get(AppCfg.G_WTT_EveryDayStudy) ?? AppCfgManager.getDefaultValue(AppCfg.G_WTT_EveryDayStudy)
+    }
+    return this.dict.get(AppCfg.G_WTS_EveryDayStudy) ?? AppCfgManager.getDefaultValue(AppCfg.G_WTS_EveryDayStudy)
+  }
+
+  /// 每日测试赠送金币
+  getGold_EveryDayTest(): number {
+    if (this.isCurLanguageCNT()) {
+      return this.dict.get(AppCfg.G_WTT_EveryDayTest) ?? AppCfgManager.getDefaultValue(AppCfg.G_WTT_EveryDayTest)
+    }
+    return this.dict.get(AppCfg.G_WTS_EveryDayTest) ?? AppCfgManager.getDefaultValue(AppCfg.G_WTS_EveryDayTest)
+  }
+
+  /// 首次分享应用赠送金币
+  getGold_ShareApp(): number {
+    if (this.isCurLanguageCNT()) {
+      return this.dict.get(AppCfg.G_WTT_ShareApp) ?? AppCfgManager.getDefaultValue(AppCfg.G_WTT_ShareApp)
+    }
+    return this.dict.get(AppCfg.G_WTS_ShareApp) ?? AppCfgManager.getDefaultValue(AppCfg.G_WTS_ShareApp)
+  }
+
+  /// 每次观看激励广告赠送金币
+  getGold_WatchAd(): number {
+    if (this.isCurLanguageCNT()) {
+      return this.dict.get(AppCfg.G_WTT_WatchAd) ?? AppCfgManager.getDefaultValue(AppCfg.G_WTT_WatchAd)
+    }
+    return this.dict.get(AppCfg.G_WTS_WatchAd) ?? AppCfgManager.getDefaultValue(AppCfg.G_WTS_WatchAd)
+  }
+
+  /// 获取所有 G_ 开头的金币策略配置项（用于替代 GoldPolicyManager）
+  /// 返回可配置的数组，包含 key, value, name
+  getAllGoldPolicies(): GoldPolicyRow[] {
+    const ps: AppCfg[] = this.isCurLanguageCNT() ? [
+      AppCfg.G_WTT_FirstInstall,
+      AppCfg.G_WTT_EveryDayStudy,
+      AppCfg.G_WTT_EveryDayTest,
+      AppCfg.G_WTT_ShareApp,
+    ] : [
+      AppCfg.G_WTS_FirstInstall,
+      AppCfg.G_WTS_EveryDayStudy,
+      AppCfg.G_WTS_EveryDayTest,
+      AppCfg.G_WTS_ShareApp,
+    ]
+
+    const out: GoldPolicyRow[] = []
+    ps.forEach((appCfg: AppCfg) => {
+      const key = appCfg
+      const value = this.dict.get(key) ?? AppCfgManager.getDefaultValue(appCfg)
+      // 仅展示金币数量大于 0 的策略文案。
+      if (value <= 0) {
+        return
+      }
+      const name = this.nameDict.get(key) ?? null
+      out.push({ key: key, value: value, name: name })
+    })
+    return out
+  }
+
+  /// 根据 AppCfg 获取对应的 name
+  getName(appCfg: AppCfg): string | null {
+    return this.nameDict.get(appCfg) ?? null
+  }
+
+  /// 根据 AppCfg 获取对应的 value
+  getValue(appCfg: AppCfg): number {
+    return this.dict.get(appCfg) ?? AppCfgManager.getDefaultValue(appCfg)
+  }
+
+  // MARK: - 兼容旧鸿蒙调用名（映射到 Android 对齐后的 API）
+
+  /** @deprecated 请改用 `getHomeNoticeIdx_In_Instruction_ForAndroid` */
+  getHomeNoticeIdx_In_Instruction(): number {
+    return this.getHomeNoticeIdx_In_Instruction_ForAndroid()
   }
 }
-

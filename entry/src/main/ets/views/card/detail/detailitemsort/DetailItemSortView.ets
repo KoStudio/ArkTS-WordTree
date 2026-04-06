@@ -137,7 +137,7 @@ export struct DetailItemSortView {
 
     if (isOn) {
       /////词根助记　要开启时
-      if (item === DetailItem.Cigens && !MemberManager.shared.checkCigenUsable()) {
+      if (item === DetailItem.Cigens && !MemberManager.shared.checkCigenUsable(true, true)) {
         setTimeout(() => {
           DetailItemManager.shared.changeVisible(item, false)
           this.itemOrders = DetailItemManager.shared.getItemOrders()
@@ -147,7 +147,7 @@ export struct DetailItemSortView {
 
 
       /////同根词　要开启时
-      if (item === DetailItem.SameRootDesc && !MemberManager.shared.checkSameRootUsable()) {
+      if (item === DetailItem.SameRootDesc && !MemberManager.shared.checkSameRootUsable(true, true)) {
         setTimeout(() => {
           DetailItemManager.shared.changeVisible(item, false)
           this.itemOrders = DetailItemManager.shared.getItemOrders()

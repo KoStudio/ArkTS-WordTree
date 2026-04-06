@@ -283,7 +283,7 @@ export struct DetailCardsView {
               this.actionPlayExampleSound(text)
             },
             onClickedText:(text: string)=>{
-              if (!MemberManager.shared.checkDictShowable(true)) {
+              if (!MemberManager.shared.checkDictShowable(true, true)) {
                 return
               }
 
@@ -636,7 +636,7 @@ export struct DetailCardsView {
 
   actionPlayExampleSound(text: string | null){
     ///会员检查
-    if(!MemberManager.shared.checkExamplePronUsable(true)){
+    if(!MemberManager.shared.checkExamplePronUsable(true, true)){
       this.isShowMemberView = true
       return;
     }

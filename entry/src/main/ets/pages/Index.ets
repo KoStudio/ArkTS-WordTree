@@ -15,6 +15,8 @@ import { SubListView } from '../views/main/sub/list/SubListView';
 import { TintImage } from '../app/views/TintImage';
 import { NavBarView } from '../app/views/NavBarView';
 import { SetViewConfig } from '../views/main/under/SetView';
+import { SimpleEventBus } from '../common/components/eventbus/SimpleEventBus';
+import { MemberManager } from '../models/managers/member/MemberManager';
 import { MemberView } from '../views/setting/member/MemberView';
 import { BookListViewConfig } from '../views/books/BookListView';
 import { StatusBarUtil } from '../common/utils/StatusBarUtils';
@@ -34,7 +36,18 @@ struct Index {
 
   @Local refreshByNavBack           : boolean       = false;
 
+  private memberSheetUnsub: (() => void) | undefined = undefined;
+
   async aboutToAppear(): Promise<void> {
+
+    // 全局只订阅一次：MemberManager 超限且要求弹窗时打开会员 Sheet
+    if (this.memberSheetUnsub === undefined) {
+
+      this.memberSheetUnsub = SimpleEventBus.on(MemberManager.NOTIFY_OPEN_MEMBER_SHEET, () => {
+
+        this.isShowMemberView = true;
+      });
+    }
 
     //设置状栏颜色
     StatusBarUtil.setStatusBarContentColor('#ffffff')
@@ -46,6 +59,16 @@ struct Index {
     this.onChangeOfIsPrivacyAgreed()
 
 
+  }
+
+  aboutToDisappear(): void {
+
+    // 取消会员 Sheet 事件订阅，避免重复注册或泄漏
+    if (this.memberSheetUnsub !== undefined) {
+
+      this.memberSheetUnsub();
+      this.memberSheetUnsub = undefined;
+    }
   }
 
   @Monitor('isPrivacyAgreed')

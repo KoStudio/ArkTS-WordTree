@@ -2,6 +2,7 @@ import preferences from '@ohos.data.preferences'
 import { getAppContext } from '../../../app/constants/AppContext'
 import { dMemberFlag } from '../../../app/constants/AppDefines'
 import { getString } from '../../../common/utils/ResourceUtils'
+import { AppCfgManager } from '../servercfg/AppCfgManager'
 import { MemberManager } from '../member/MemberManager'
 
 // ============================================================
@@ -123,7 +124,7 @@ export class DetailItemManager {
     this.itemOrders.push(this.createItemOrder(DetailItem.Discriminate , 9, true))
   }
 
-  /// 获取一个排好序的副本
+  // 获取一个排好序的副本（可见性会按会员/策略重算）
   getItemOrders(): ItemOrder[] {
 
     return this.itemOrders.map(it => {
@@ -136,8 +137,8 @@ export class DetailItemManager {
 
       } else if (it.item === DetailItem.SameRootDesc &&
         !MemberManager.shared.checkSameRootUsable(false)) {
+        // 同根词在当前会员/策略下不可用，副本中隐藏
 
-        // 同根词
         return new ItemOrder(it.item, it.order, false)
 
       } else {
@@ -176,10 +177,7 @@ export class DetailItemManager {
     this.savePreference()
   }
 
-  /**
-   * 根据新数组顺序和可见性批量更新
-   * @param newOrders 新的 ItemOrder 数组，已经按拖拽或用户修改顺序排序好
-   */
+  // 根据新数组顺序和可见性批量更新；newOrders：已按拖拽或用户操作排好序的列表
   updateOrders(newOrders: ItemOrder[]): void {
     // 遍历 newOrders，按顺序更新内部 itemOrders
     newOrders.forEach((itemOrder, index) => {
@@ -240,11 +238,11 @@ export class DetailItemManager {
 
       case DetailItem.Cigens :
         return getString($r("app.string.learn_detail_txt_mnemonic"))
-          + (MemberManager.shared.nonMember.isLockedCigen ? dMemberFlag : "") // 词根助记
+          + (AppCfgManager.shared.isNonMember_Lock_Cigen() ? dMemberFlag : "") // 词根助记
 
       case DetailItem.SameRootDesc :
         return getString($r("app.string.learn_detail_txt_samerootdesc"))
-          + (MemberManager.shared.nonMember.isLockedSameRoot ? dMemberFlag : "") // 同根词
+          + (AppCfgManager.shared.isNonMember_Lock_SameRoot() ? dMemberFlag : "") // 同根词
 
       case DetailItem.Examples :
         return getString($r("app.string.learn_detail_txt_example"))                        // 例句

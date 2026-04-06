@@ -137,6 +137,8 @@ export default class EntryAbility extends UIAbility {
     import('../models/datas/myData/WordUserDbAccess')             .then((it) => { it.WordUserDbAccess.shared })
     import('../models/datas/model/SearchManager')                 .then((it) => { it.SearchManager.shared })
     import('../models/datas/book/BookManager')                    .then((it) => { it.BookManager.shared })
+    /// 与 Android `MainActivity` 一致：延迟初始化后尝试首次安装金币（依赖 AppCfgManager 默认值 / 已缓存配置）
+    import('../models/managers/gold/GoldManager')                .then((it) => { it.GoldManager.shared.provideGoldsForFirstInstallIfNeeds(null) })
     import('../models/datas/basedict/BaseWordDbAccess')           .then((it) => { it.BaseWordDbAccess.shared })
     import('../models/datas/cigen/CigenWordDbAccess')             .then((it) => { it.CigenWordDbAccess.shared })
 

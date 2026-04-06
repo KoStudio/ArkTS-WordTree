@@ -1,5 +1,6 @@
 import { TintImage } from "../../../app/views/TintImage"
 import { CBookManager } from "../../../common/components/Sounds/Cloud/Download/CBook/CBookManager"
+import { EBookManager } from "../../../models/managers/ebook/EBookManager"
 import { getStringF } from "../../../common/utils/ResourceUtils"
 import { Toast } from "../../../common/utils/Toast"
 import { Book } from "../../../models/datas/book/Book"
@@ -175,7 +176,12 @@ export struct BooksLocalView {
       primaryButton: {value: $r('app.string.confirm_btn_yes'), action: async () => {
         //删除
         BookManager.shared.removeBook(book)
-        CBookManager.shared.removeBookDb(book.textDb || '')
+        // EBook 的 sqlite 在 EBookDatas；官方课本在 CBookDatas（与 Android 一致）
+        if (book.isEBook) {
+          EBookManager.removeLocalTextDbIfExists(book.textDb || '')
+        } else {
+          CBookManager.shared.removeBookDb(book.textDb || '')
+        }
         this.loadData()
 
       }}//确认

@@ -279,7 +279,7 @@ export struct WordCardsView {
               this.actionPlayExampleSound(wd.exampleEn1)
             },
             onClickedText:(text: string)=>{
-              if (!MemberManager.shared.checkDictShowable(true)) {
+              if (!MemberManager.shared.checkDictShowable(true, true)) {
                 return
               }
 
@@ -603,7 +603,7 @@ export struct WordCardsView {
 
   actionPlayExampleSound(text: string | null){
     ///会员检查
-    if(!MemberManager.shared.checkExamplePronUsable(true)){
+    if(!MemberManager.shared.checkExamplePronUsable(true, true)){
       this.isShowMemberView = true
       return;
     }

@@ -307,7 +307,7 @@ export struct QuizResultView {
  actionMistake(){
 
    ///会员检查
-   if(!MemberManager.shared.checkRetestMistakeUsable(true)) {
+   if(!MemberManager.shared.checkRetestMistakeUsable(true, true)) {
      this.isShowMemberView = true
      return
    }

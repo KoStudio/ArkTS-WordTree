@@ -1,10 +1,12 @@
 // WordDbAccess.ets
 import relationalStore from '@ohos.data.relationalStore';
+import { dAppEBookFolderPath } from '../../../app/constants/AppDefines';
 import { ResName, ResPath } from '../../../app/constants/ResPath';
 import { DebugLog } from '../../../app/debug/DebugLog';
 import { AppLanguage } from '../../../common/components/Language/AppLanguage';
 import { LanguageManager } from '../../../common/components/Language/LanguageManager';
 import { CBookManager } from '../../../common/components/Sounds/Cloud/Download/CBook/CBookManager';
+import { FileUtility } from '../../../common/utils/FileUtility';
 import { StringEncoder } from '../../../common/utils/strings/StringEncrypt';
 import { DBAccessor } from '../../dbUtils/DBAccessor';
 import { DB } from '../../dbUtils/DBConstants';
@@ -70,6 +72,12 @@ export class WordDbAccess implements DBPrepareProtocol {
     if (AppCfgManager.shared.isCBook_Useable_is_ON()
       && CBookManager.shared.isExistBookDb(this.textDb)){
       return CBookManager.shared.cbookDbPath(this.textDb)
+    }
+
+    // 本地 EBook：`textDb` 为 baseName（如 ebook_1001），路径与 iOS `EBookManager.textDb(for:)` / Android `EBookManager.textDbPath` 一致（仅用 AppDefines，避免与 EBookManager 循环引用）
+    const ebookSqlitePath = `${dAppEBookFolderPath}${this.textDb}.sqlite`
+    if (FileUtility.isFileExistAt(ebookSqlitePath)) {
+      return ebookSqlitePath
     }
 
     return this.resDb?.filePath ?? null
@@ -215,6 +223,48 @@ export class WordDbAccess implements DBPrepareProtocol {
     return word;
   }
 
+  /**
+   * 在指定路径创建一个仅包含 Word 表的空数据库（供 EBook 使用）。
+   * 与 iOS `WordManager.createEBookDbIfNeeded(at:)`、Android `WordManager.createEBookDbIfNeeded` 一致；
+   * 表结构与本文 `WordTable` 及本类其它查询所用列名完全一致（item0 ~ item24）。
+   * 访问方式：使用 `DBAccessor` + `updateDb`，与本类实例方法通过 `this.db` 访问的风格一致（此处为指定路径的可写连接）。
+   *
+   * @param path sqlite 文件完整路径（如 …/EBookDatas/ebook_1001.sqlite）
+   * @returns 执行建表 DDL 成功为 true（与 iOS 在 `updateDb` 后不额外校验即返回 true 的策略对齐；失败时 `updateDb` 返回 false）
+   */
+  static async createEBookDbIfNeeded(path: string): Promise<boolean> {
+    const access = new DBAccessor(path, null, false)
+    const sql =
+      `CREATE TABLE IF NOT EXISTS "${WordTable.Table_Name}"(` +
+        `"${WordTable.Col.IDX}" INTEGER,` +
+        `"${WordTable.Col.PARTID}" INTEGER,` +
+        `"${WordTable.Col.PARTNAME}" TEXT,` +
+        `"${WordTable.Col.UNITID}" INTEGER,` +
+        `"${WordTable.Col.UNITNAME}" TEXT,` +
+        `"${WordTable.Col.UNITNO}" INTEGER,` +
+        `"${WordTable.Col.TITLEEN}" TEXT,` +
+        `"${WordTable.Col.PRONEN}" TEXT,` +
+        `"${WordTable.Col.PRONUS}" TEXT,` +
+        `"${WordTable.Col.TITLECN1}" TEXT,` +
+        `"${WordTable.Col.TITLECN2}" TEXT,` +
+        `"${WordTable.Col.TITLECN3}" TEXT,` +
+        `"${WordTable.Col.WORDIMAGE}" TEXT,` +
+        `"${WordTable.Col.WORDCHANGE}" TEXT,` +
+        `"${WordTable.Col.SYNWORDS}" TEXT,` +
+        `"${WordTable.Col.ASYNWORDS}" TEXT,` +
+        `"${WordTable.Col.EXAMPLEEN1}" TEXT,` +
+        `"${WordTable.Col.EXAMPLECN1}" TEXT,` +
+        `"${WordTable.Col.EXAMPLEEN2}" TEXT,` +
+        `"${WordTable.Col.EXAMPLECN2}" TEXT,` +
+        `"${WordTable.Col.EXAMPLEEN3}" TEXT,` +
+        `"${WordTable.Col.EXAMPLECN3}" TEXT,` +
+        `"${WordTable.Col.USEDPHRASE}" TEXT,` +
+        `"${WordTable.Col.EN2EN}" TEXT,` +
+        `"${WordTable.Col.DISCRIMINATE}" TEXT` +
+        `)`
+    return await access.updateDb(sql)
+  }
+
   private createWordDetailFromResultSet(rs: relationalStore.ResultSet): WordDetail {
     const wordDetail = new WordDetail();
 
@@ -254,5 +304,19 @@ export class WordDbAccess implements DBPrepareProtocol {
     }
 
     return wordDetail;
+  }
+
+  /** 与 iOS `WordManager.getWordsCount(inTextDbAt:)` 一致：`path` 为 textDb.sqlite 完整路径 */
+  static async getWordsCountInTextDbAt(path: string): Promise<number> {
+    const accessor = new DBAccessor(path, null)
+    const sql = `SELECT COUNT(*) FROM ${WordTable.Table_Name}`
+    return await accessor.getCount(sql, [])
+  }
+
+  /** 与 iOS `WordManager.getUnitsCount(inTextDbAt:)` 一致 */
+  static async getUnitsCountInTextDbAt(path: string): Promise<number> {
+    const accessor = new DBAccessor(path, null)
+    const sql = `SELECT COUNT(DISTINCT ${WordTable.Col.UNITID}) FROM ${WordTable.Table_Name}`
+    return await accessor.getCount(sql, [])
   }
 }

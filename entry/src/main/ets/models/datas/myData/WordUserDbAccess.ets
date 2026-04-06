@@ -14,6 +14,7 @@ import { WordTable } from "../word/WordDbAccess";
 import { Word } from "../word/Word";
 import { BookManager } from "../book/BookManager";
 import { UserDbSuperAccess } from "./UserDbSuperAccess";
+import { EWordOverrideTable } from "../../managers/eword/EWordOverrideTable";
 
 export namespace Tables {
 
@@ -91,6 +92,7 @@ export class WordUserDbAccess extends UserDbSuperAccess {
 
   // MARK: - 创建表（完全等价 Java createLearnDbIfNeeded）
   createDbIfNeeds(): void {
+    // 尚未打开 learnDb 时无法建表
     if (!this.db) return
 
     const sqlLearn = `
@@ -147,9 +149,17 @@ export class WordUserDbAccess extends UserDbSuperAccess {
     `
 
     try {
+      // 学习记录表 Learn
       this.db.updateDb(sqlLearn)
+
+      // 用户删除标记表 DeleteWord
       this.db.updateDb(sqlDeleteWord)
+
+      // 在线词临时表 WordOnlineTemp
       this.db.updateDb(sqlWordTable)
+
+      // 用户字段覆盖表 EWordOverride（与 iOS WordManager.createLearnDbIfNeeded 一致）
+      this.db.updateDb(EWordOverrideTable.createTableSQL)
     } catch (e) {
       DebugLog.e(`LearnDbAccess >>> createDbIfNeeds: ${e}`)
     }

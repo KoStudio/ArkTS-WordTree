@@ -231,7 +231,7 @@ export struct OnlineSearchWordsView {
     }
 
     ///会员检查
-    if (!MemberManager.shared.checkOnlineDictUsable()) {
+    if (!MemberManager.shared.checkOnlineDictUsable(true, true)) {
       return
     }
     //记录次数

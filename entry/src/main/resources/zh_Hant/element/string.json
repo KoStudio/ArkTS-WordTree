@@ -88,6 +88,8 @@
     { "name": "books_msg_golds_shotage"           , "value": "金幣不足" },
     { "name": "books_msg_golds_needs"             , "value": "需要金幣%d個， 剩餘金幣%d個。" },
     { "name": "books_msg_golds_costed"            , "value": "用去金幣%d個， 剩餘金幣%d個。" },
+    { "name": "gain_gold_for_install"             , "value": "初次安裝成功，獲得%d個金幣!" },
+    { "name": "set_txt_got_gold"                  , "value": "獲得%d個金幣，已經有金幣%d個" },
     { "name": "books_msg_updated_book_txt"       , "value": "更新:%s 詞彙成功！" },
     { "name": "books_msg_updated_book_sound"     , "value": "更新:%s 聲音成功！" },
     { "name": "books_msg_need_disk_space"        , "value": "磁盤空間不足！" },
@@ -699,6 +701,7 @@
 
 
     { "name": "member_manager_msg_limit_download_books"       , "value": "加入會員可以任意下載詞彙" },
+    { "name": "member_manager_msg_limit_add_ebook"            , "value": "加入會員可以創建更多詞彙本" },
     { "name": "member_manager_msg_limit_word_pron"            , "value": "加入會員可以任意查看單詞發音, \n今日免費次數已用完(每日%d次)" },
     { "name": "member_manager_msg_limit_example_pron"         , "value": "加入會員可以任意查看例句發音, \n今日免費次數已用完(每日%d次)" },
     { "name": "member_manager_msg_limit_auto_pron"            , "value": "加入會員可以任意使用自動發音" },
@@ -961,7 +964,26 @@
     {"name": "sys_msg_volume_small"                   , "value": "手機音量太小，可能無法聽到聲音！\n請按手機側邊音量鍵調整。"},
     {"name": "sys_msg_disk_space_not_enough"          , "value": "手機容量不足，可能會影響應用運行.."                    },
 
-    {"name": "photo_picker_nav_title"                 , "value": "照片選擇"                        }
+    {"name": "photo_picker_nav_title"                 , "value": "照片選擇"                        },
+
+    {"name": "eword_field_pron_us"                    , "value": "音標"},
+    {"name": "eword_field_title_cn1"                  , "value": "單詞釋義1"},
+    {"name": "eword_field_title_cn2"                  , "value": "單詞釋義2"},
+    {"name": "eword_field_title_cn3"                  , "value": "單詞釋義3"},
+    {"name": "eword_field_word_change"              , "value": "單詞變形"},
+    {"name": "eword_field_syn_words"                , "value": "近義詞"},
+    {"name": "eword_field_asyn_words"               , "value": "反義詞"},
+    {"name": "eword_field_example_en1"              , "value": "例句1(英)"},
+    {"name": "eword_field_example_cn1"              , "value": "例句1(中)"},
+    {"name": "eword_field_example_en2"              , "value": "例句2(英)"},
+    {"name": "eword_field_example_cn2"              , "value": "例句2(中)"},
+    {"name": "eword_field_example_en3"              , "value": "例句3(英)"},
+    {"name": "eword_field_example_cn3"              , "value": "例句3(中)"},
+    {"name": "eword_field_used_phrase"              , "value": "常用短語"},
+    {"name": "eword_field_en2en"                    , "value": "英英釋義"},
+    {"name": "eword_field_discriminate"             , "value": "詳細說明"},
+    {"name": "eword_field_root"                     , "value": "詞根助記"},
+    {"name": "eword_field_cognates"                 , "value": "同根詞"}
 
   ]
 }

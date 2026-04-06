@@ -30,6 +30,12 @@ export const dAppCloudSoundFolderPath = AppConstants.dataBasePath + 'CloudSoundD
 /** 本应用的 云BookDb数据sqlite 下载后的 根目录~/app_Database/CBookDatas/ */
 export const dAppCBookDbFolderPath = AppConstants.dataBasePath + 'CBookDatas/'
 
+/**
+ * 本地 EBook（用户自建词汇本）textDb 根目录，与 Android `AppDefines.kt` 的 `dAppEBookFolderPath`、
+ * iOS `dAppEBookFolderURL` 一致（~/app_Database/EBookDatas/）。
+ */
+export const dAppEBookFolderPath = AppConstants.dataBasePath + 'EBookDatas/'
+
 /** 本应用的 云BookIcon image 下载后的 根目录~/app_Document/CBookIcons/ */
 export const dAppCBookIconFolderPath = AppConstants.docBasePath + 'CBookIcons/'
 
