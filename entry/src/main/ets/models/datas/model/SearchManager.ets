@@ -187,10 +187,8 @@ export class SearchManager {
     // 读取 learnDb 中全部覆盖（内部带缓存）
     const overrides = await ewm.EWordManager.shared.allOverridesCached();
 
-    const titleKeys = Object.keys(overrides);
-
-    // 无任何覆盖记录则跳过合并
-    if (titleKeys.length > 0) {
+    // 无任何覆盖记录则跳过合并（与 iOS `if !overrides.isEmpty`）
+    if (Object.keys(overrides).length > 0) {
       for (let i = 0; i < this.allWords.length; i++) {
         const w = this.allWords[i];
         const en = w.titleEn;

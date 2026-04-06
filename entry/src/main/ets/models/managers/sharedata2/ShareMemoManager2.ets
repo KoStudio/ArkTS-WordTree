@@ -16,29 +16,29 @@ import { BookManager } from '../../datas/book/BookManager'
 import { WordUser } from '../../datas/myData/WordUser'
 import { WordUserDbAccess } from '../../datas/myData/WordUserDbAccess'
 import { UserManager } from '../user/UserManager'
-import { Memo2 } from './Memo2'
+import { Memo2, Memo2ParamKey } from './Memo2'
 
 // Notification.Name / UserInfoKey（与 iOS `ShareMemoManager2.Notification` 字符串一致）
 export namespace ShareMemoManager2Notification {
 
   export namespace Name {
 
-    export const PrivateChanged: string = 'ShareMemoManager2_Notification_Private_Changed'
-    export const PublicChanged: string = 'ShareMemoManager2_Notification_Public_Changed'
+    export const PrivateChanged : string = 'ShareMemoManager2_Notification_Private_Changed'
+    export const PublicChanged  : string = 'ShareMemoManager2_Notification_Public_Changed'
   }
 
   export namespace UserInfoKey {
 
-    export const Word: string = 'Notification_userInfo_key_word'
-    export const WordIndexOnPage: string = 'Notification_userInfo_key_wordIndexOnPage'
+    export const Word             : string = 'Notification_userInfo_key_word'
+    export const WordIndexOnPage  : string = 'Notification_userInfo_key_wordIndexOnPage'
   }
 }
 
 // SimpleEventBus 负载（对应 Notification userInfo）
 export interface ShareMemoNotificationPayload {
 
-  word           : WordUser
-  wordIndexOnPage: number
+  word             : WordUser
+  wordIndexOnPage  : number
 }
 
 export class ShareMemoManager2 {
@@ -81,10 +81,12 @@ export class ShareMemoManager2 {
       ShareMemoManager2Notification.Name.PrivateChanged
 
     const payload: ShareMemoNotificationPayload = {
-      word: word,
-      wordIndexOnPage: wordIndexOnPage
+
+      word             : word,
+      wordIndexOnPage  : wordIndexOnPage
     }
 
+    // 发送笔记变更事件
     SimpleEventBus.emit(name, payload)
   }
 
@@ -97,6 +99,7 @@ export class ShareMemoManager2 {
 
     try {
 
+      // 持久化词条
       await WordUserDbAccess.shared.saveWordUser(word)
 
       this.runOnMain(() => {
@@ -158,17 +161,18 @@ export class ShareMemoManager2 {
     const url = Servers.getRouteUrl(Route.memo)
 
     const params: HttpUtils.HttpParams = {}
-
-    params['book_id'] = bookId
-    params['book_name'] = bookName
-    params['word_en'] = wordEn
-    params['memo_text'] = memoText
-    params['user_id'] = String(userId)
-    params['user_name'] = userName
-    params['device_idfv'] = DeviceUtil.getStableUUID()
-    params['device_type'] = AppSettings.App.deviceType
-    params['sns_type'] = UserManager.shared.loginType !== null ?
+    const snsType = UserManager.shared.loginType !== null ?
       String(UserManager.shared.loginType) : ''
+
+    params[Memo2ParamKey.bookId]      = bookId
+    params[Memo2ParamKey.bookName]    = bookName
+    params[Memo2ParamKey.wordEn]      = wordEn
+    params[Memo2ParamKey.memoText]    = memoText
+    params[Memo2ParamKey.userId]      = String(userId)
+    params[Memo2ParamKey.userName]    = userName
+    params[Memo2ParamKey.deviceIdfv]  = DeviceUtil.getStableUUID()
+    params[Memo2ParamKey.deviceType]  = AppSettings.App.deviceType
+    params[Memo2ParamKey.snsType]     = snsType
 
     // POST 提交分享
     Http.send(url, HttpUtils.Method.POST, params, (succeed: boolean, _msg: string | null) => {
@@ -203,9 +207,10 @@ export class ShareMemoManager2 {
 
     const params: HttpUtils.HttpParams = {}
 
-    params['word_en'] = wordEn
-    params['page'] = page
+    params[Memo2ParamKey.wordEn]  = wordEn
+    params[Memo2ParamKey.page]    = page
 
+    // GET 拉取一页公开笔记
     Http.request(url, HttpUtils.Method.GET, params,
       (succeed: boolean, _msg: string | null, data: Object[] | null) => {
 
@@ -266,9 +271,9 @@ export class ShareMemoManager2 {
 
       const selfMemo: Record<string, string> = {}
 
-      selfMemo[WordUser.KShareMemo_MemoText] = memo
-      selfMemo[WordUser.KShareMemo_AuthorName] = 'Self'
-      selfMemo[WordUser.KShareMemo_MemoId] = ShareMemoManager2.PrivateMemoId
+      selfMemo[WordUser.KShareMemo_MemoText]    = memo
+      selfMemo[WordUser.KShareMemo_AuthorName]  = 'Self'
+      selfMemo[WordUser.KShareMemo_MemoId]      = ShareMemoManager2.PrivateMemoId
 
       localMemos.splice(0, 0, selfMemo)
     }
@@ -307,12 +312,13 @@ export class ShareMemoManager2 {
 
     const newMemo: Record<string, string> = {}
 
-    newMemo[WordUser.KShareMemo_MemoText] = memo.memoText ?? ''
-    newMemo[WordUser.KShareMemo_AuthorName] = memo.userName ?? '-'
-    newMemo[WordUser.KShareMemo_MemoId] = String(memoId)
+    newMemo[WordUser.KShareMemo_MemoText]    = memo.memoText ?? ''
+    newMemo[WordUser.KShareMemo_AuthorName]  = memo.userName ?? '-'
+    newMemo[WordUser.KShareMemo_MemoId]      = String(memoId)
 
     word.shareMemos = [...word.shareMemos, newMemo]
 
+    // 写入数据库后再调收藏数接口
     void WordUserDbAccess.shared.saveWordUser(word).then(() => {
 
       // 收藏数 +1
@@ -459,6 +465,7 @@ export class ShareMemoManager2 {
 
     const url = `${Servers.getRouteUrl(Route.memo)}/${memoId}`
 
+    // DELETE 移除公开笔记
     Http.send(url, HttpUtils.Method.DELETE, null, (succeed: boolean, _msg: string | null) => {
 
       this.runOnMain(() => {
@@ -476,9 +483,10 @@ export class ShareMemoManager2 {
 
     const params: HttpUtils.HttpParams = {}
 
-    params['memo_id'] = memoId
-    params['fav_count'] = amount
+    params[Memo2ParamKey.memoId]    = memoId
+    params[Memo2ParamKey.favCount]  = amount
 
+    // POST 更新收藏计数
     Http.send(url, HttpUtils.Method.POST, params, (succeed: boolean, _msg: string | null) => {
 
       this.runOnMain(() => {
