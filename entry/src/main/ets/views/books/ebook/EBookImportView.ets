@@ -156,7 +156,34 @@ export struct EBookImportView {
     }
 
     const last = s.lastIndexOf('/')
-    return last >= 0 ? s.substring(last + 1) : s
+    const rawName = last >= 0 ? s.substring(last + 1) : s
+
+    // 调用：将 URI 百分号编码（如中文名）解码为可读文件名，失败时回退原值
+    return this.decodeUriFileNameIfNeeds(rawName)
+  }
+
+  // 将 URI 末段文件名做百分号解码（如 `%E8%AF%8D%E6%B1%87.wte` -> `词汇.wte`）
+  private decodeUriFileNameIfNeeds(rawName: string): string {
+
+    // 分支：空串直接返回
+    if (rawName.length < 1) {
+      return rawName
+    }
+
+    try {
+
+      // 分支：无百分号编码时直接返回，避免不必要转换
+      if (rawName.indexOf('%') < 0) {
+        return rawName
+      }
+
+      // 调用：执行 URI 组件解码
+      return decodeURIComponent(rawName)
+    } catch (_e) {
+
+      // 分支：解码失败时保留原值，避免阻断流程
+      return rawName
+    }
   }
 
   private async onPick(): Promise<void> {
@@ -217,7 +244,11 @@ export struct EBookImportView {
     if (tempPath !== null && tempPath.length > 0 && !tempPath.toLowerCase().endsWith(`.${EBookExportImportManager.fileExtension}`)) {
 
       const parent = FileUtility.deleteLastPathComponent(tempPath)
-      const fixed  = FileUtility.appendPathComponent(parent, `ebook_import_${Date.now()}.${EBookExportImportManager.fileExtension}`)
+      const rawPickedName = this.pickedFileName.trim()
+      const safeBaseName  = rawPickedName.length > 0 ?
+        rawPickedName.replace(new RegExp(`\\.${EBookExportImportManager.fileExtension}$`, 'i'), '') :
+        `ebook_import_${Date.now()}`
+      const fixed  = FileUtility.appendPathComponent(parent, `${safeBaseName}.${EBookExportImportManager.fileExtension}`)
 
       // 分支：重命名式复制成功则替换路径并删旧临时文件
       if (FileUtility.copyFile(tempPath, fixed)) {

@@ -29,6 +29,30 @@ export class EBookExportImportManager {
 
   static readonly fileExtension: string = 'wte'
 
+  // 将路径末段文件名做百分号解码（用于中文文件名导入，防止出现乱码）
+  private static decodeUriFileNameIfNeeds(rawName: string): string {
+
+    // 分支：空串直接返回
+    if (rawName.length < 1) {
+      return rawName
+    }
+
+    try {
+
+      // 分支：无百分号编码时直接返回
+      if (rawName.indexOf('%') < 0) {
+        return rawName
+      }
+
+      // 调用：执行 URI 组件解码
+      return decodeURIComponent(rawName)
+    } catch (_e) {
+
+      // 分支：解码失败时保留原值，避免中断导入流程
+      return rawName
+    }
+  }
+
   /**
    * EntryAbility 收到 Want 时调用：路径为 .wte 且文件存在则记入待导入队列。
    * @param want 启动或 onNewWant 传入的 Want
@@ -373,7 +397,9 @@ export class EBookExportImportManager {
     }
 
     const defName    = getString($r('app.string.ebook_default_book_name'))
-    const rawTitle   = PathUtility.getLastComponentName(filePath).replace(/\.wte$/i, '').trim()
+    const rawFileName = PathUtility.getLastComponentName(filePath)
+    const decodedFileName = EBookExportImportManager.decodeUriFileNameIfNeeds(rawFileName)
+    const rawTitle   = decodedFileName.replace(new RegExp(`\\.${EBookExportImportManager.fileExtension}$`, 'i'), '').trim()
     const bookName   = rawTitle.length < 1 ? defName : rawTitle
     const newBook    = await EBookManager.shared.createLocalEBook(bookName, null)
 
