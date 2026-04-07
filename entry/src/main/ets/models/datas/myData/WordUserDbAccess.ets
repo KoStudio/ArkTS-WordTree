@@ -353,6 +353,7 @@ export class WordUserDbAccess extends UserDbSuperAccess {
     }
   }
 
+  // 清空当前 learnDb 中 WordOnline 缓存（保留收藏项）。用于设置页「清空缓存」等显式清理；切换书目不应调用（每书独立 learnDb）。
   public async resetWordTables(): Promise<void> {
     if (!this.db) return;
     // ------------------------------------------------------------

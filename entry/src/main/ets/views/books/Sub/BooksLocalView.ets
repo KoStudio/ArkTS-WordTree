@@ -8,7 +8,7 @@ import { SimpleEventBus } from '../../../common/components/eventbus/SimpleEventB
 import { EBookManager } from '../../../models/managers/ebook/EBookManager'
 import { EBookExportImportManager } from '../../../models/managers/ebook/EBookExportImportManager'
 import { getString, getStringF } from '../../../common/utils/ResourceUtils'
-import { Toast } from '../../../common/utils/Toast'
+import { ItemOption, Toast } from '../../../common/utils/Toast'
 import { ShareUtils } from '../../../common/utils/ShareUtils'
 import { Book } from '../../../models/datas/book/Book'
 import { BookManager, BookManagerNotification } from '../../../models/datas/book/BookManager'
@@ -19,32 +19,26 @@ import { UserManager } from '../../../models/managers/user/UserManager'
 import { EWordSearchAddViewConfig } from '../ebook/EWordSearchAddView'
 import { MyBackedUpEBooksViewConfig } from '../ebook/MyBackedUpEBooksView'
 import { EBookImportViewConfig } from '../ebook/EBookImportView'
+import { TextButton } from '../../../app/views/buttons/TextButton'
 
 @ComponentV2
 export struct BooksLocalView {
 
-  @Local books                  : Book[]  = []
-  @Local listVersion            : number  = 0
-  /** 底部表单是否展示 */
-  @Local ebookSheetVisible       : boolean = false
-  /** 1 菜单，2 新建，3 改名 */
-  @Local ebookSheetKind         : number  = 0
-  @Local newBookNameInput       : string  = ''
-  @Local renameBookNameInput    : string  = ''
-  @Local renameTargetBookId     : number  = 0
+  @Local books                  : Book[]                    = []         // 从 BookManager 同步，供列表与分组展示
+  @Local listVersion            : number                    = 0          // 变更时递增，驱动 ForEach 列表键刷新
+  @Local newBookNameInput       : string                    = ''         // 新建词汇本弹窗输入，与 createEbookDialogView 双向绑定
+  @Local renameBookNameInput    : string                    = ''         // 重命名弹窗输入，与 renameEbookDialogView 双向绑定
+  @Local renameTargetBookId     : number                    = 0          // 重命名目标 bookId，打开重命名弹窗时写入
+  private unsubBookList         : (() => void) | undefined  = undefined  // 取消书单更新事件的 SimpleEventBus 订阅
+  private unsubCurrentBook      : (() => void) | undefined  = undefined  // 取消当前书更新事件的 SimpleEventBus 订阅
 
-  private unsubBookList      : (() => void) | undefined = undefined
-  private unsubCurrentBook   : (() => void) | undefined = undefined
-
-  /**
-   * 页面出现时：加载数据并注册列表/当前书刷新监听
-   */
+  // 页面出现时：拉取本地书单并注册全局书单/当前书变更，便于列表与 iOS 一致实时刷新
   aboutToAppear(): void {
 
     // 调用：首次进入时加载列表
     this.loadData()
 
-    // 调用：订阅书单更新事件
+    // 调用：订阅书单更新事件（其它页改书库后会 broadcast）
     this.unsubBookList = SimpleEventBus.on(BookManagerNotification.bookListUpdated, () => {
 
       // 调用：书单更新后重载列表
@@ -59,9 +53,7 @@ export struct BooksLocalView {
     })
   }
 
-  /**
-   * 页面消失时：注销页面内注册的事件监听
-   */
+  // 页面消失时：注销本页注册的 SimpleEventBus 监听，避免泄漏与重复回调
   aboutToDisappear(): void {
 
     if (this.unsubBookList !== undefined) {
@@ -79,9 +71,7 @@ export struct BooksLocalView {
     }
   }
 
-  /**
-   * 读取并刷新本地书单
-   */
+  // 从 BookManager.shared 同步 books 到 @Local，并 bump listVersion 以刷新 ForEach 键
   private loadData(): void {
 
     // 调用：同步全局书单到页面状态
@@ -89,24 +79,18 @@ export struct BooksLocalView {
     this.listVersion++
   }
 
-  /**
-   * 获取非 EBook 列表（CBook）
-   */
+  // 过滤出内置教材（非用户词汇本）
   private cBooks(): Book[] {
     return this.books.filter((b: Book) => !b.isEBook)
   }
 
-  /**
-   * 获取 EBook 列表
-   */
+  // 过滤出用户词汇本（EBook）
   private eBooks(): Book[] {
     return this.books.filter((b: Book) => b.isEBook)
   }
 
-  /**
-   * 构建页面主视图
-   */
   build() {
+
     Column() {
 
       Column() {
@@ -141,8 +125,9 @@ export struct BooksLocalView {
             .type(ButtonType.Normal)
             .stateEffect(true)
             .onClick(() => {
-              this.ebookSheetKind    = 1
-              this.ebookSheetVisible = true
+
+              // 调用：与 Zhika DayOfsView.actionPopMenu 相同，使用系统选项对话框
+              this.actionPopEbookMenu()
             })
         }
           .width('100%')
@@ -157,211 +142,223 @@ export struct BooksLocalView {
       .height('100%')
       .backgroundColor($r('app.color.color_obscure'))
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
-      .bindSheet($$this.ebookSheetVisible, this.buildEbookSheetContent(), {
-        detents     : [SheetSize.FIT_CONTENT],
-        dragBar     : true,
-        showClose   : true,
-        title       : { title: this.ebookSheetTitle() },
-        onDisappear : () => {
-          this.ebookSheetVisible  = false
-          this.ebookSheetKind     = 0
-          this.renameTargetBookId = 0
+  }
+
+  // 底部「+」：`ItemOption` 列表 + `Toast.showSelectOptions`（对齐 Zhika DayOfsView.actionPopMenu）
+  private actionPopEbookMenu(): void {
+
+    let options: ItemOption[] = []
+
+    options.push({
+      text   : $r('app.string.ebook_new_book'),
+      action : () => {
+
+        this.openCreateEbookDialog()
+      }
+    })
+
+    options.push({
+      text   : $r('app.string.ebook_import_btn'),
+      action : () => {
+
+        EBookImportViewConfig.open()
+      }
+    })
+
+    if (UserManager.shared.isLogin()) {
+
+      options.push({
+        text   : $r('app.string.ebook_my_backed_up_btn'),
+        action : () => {
+
+          MyBackedUpEBooksViewConfig.open()
         }
       })
-  }
-
-  /**
-   * 返回底部 Sheet 的标题文案
-   */
-  private ebookSheetTitle(): ResourceStr {
-
-    if (this.ebookSheetKind === 2) {
-      return $r('app.string.ebook_create_title')
     }
 
-    if (this.ebookSheetKind === 3) {
-      return $r('app.string.ebook_rename_title')
-    }
-
-    return $r('app.string.ebook_choose_action')
+    // 调用：第四参省略时使用默认「取消」按钮（见 Toast.showSelectOptions 实现）
+    Toast.showSelectOptions('', undefined, options)
   }
 
+  // 打开新建词汇本弹窗：清空输入后 `Toast.showCustomDialog`（对齐 Zhika BookListView.addOrEditBook）
+  private openCreateEbookDialog(): void {
+
+    this.newBookNameInput = ''
+
+    Toast.showCustomDialog(() => {
+      this.createEbookDialogView()
+    })
+  }
+
+  // 新建词汇本 UI：`Toast.openCustomDialog` 的 builder；标题 + 边框输入框 + 取消/保存（与 Zhika createBookDialogView 同构，仅无描述栏）
   @Builder
-  /**
-   * 构建底部 Sheet 内容
-   */
-  buildEbookSheetContent() {
+  createEbookDialogView() {
 
-    if (this.ebookSheetKind === 1) {
+    Column({ space: 10 }) {
 
-      // 调用：构建操作菜单
-      this.buildEbookMenuContent()
-    } else if (this.ebookSheetKind === 2) {
+      // 标题区：居中说明当前为「新建词汇本」
+      Column() {
 
-      // 调用：构建新建 EBook 面板
-      this.buildCreateSheetContent()
-    } else if (this.ebookSheetKind === 3) {
-
-      // 调用：构建重命名面板
-      this.buildRenameSheetContent()
-    }
-  }
-
-  @Builder
-  /**
-   * 构建「新建/导入/我的备份」菜单面板
-   */
-  buildEbookMenuContent() {
-
-    // 与 iOS `confirmationDialog`：蓝色操作项、细分割线、「取消」独立一块
-    Column({ space: 0 }) {
-
-      Button() {
-
-        Text($r('app.string.ebook_new_book'))
-          .fontSize(17)
-          .fontColor($r('app.color.color_link'))
-      }
-        .width('100%')
-        .height(50)
-        .backgroundColor($r('app.color.color_background'))
-        .type(ButtonType.Normal)
-        .onClick(() => {
-          this.newBookNameInput   = ''
-          this.ebookSheetKind     = 2
-          this.ebookSheetVisible  = true
-        })
-
-      Divider().color($r('app.color.color_line')).strokeWidth(1)
-
-      Button() {
-
-        Text($r('app.string.ebook_import_btn'))
-          .fontSize(17)
-          .fontColor($r('app.color.color_link'))
-      }
-        .width('100%')
-        .height(50)
-        .backgroundColor($r('app.color.color_background'))
-        .type(ButtonType.Normal)
-        .onClick(() => {
-          this.ebookSheetVisible = false
-
-          // 调用：打开导入 EBook 页面
-          EBookImportViewConfig.open()
-        })
-
-      if (UserManager.shared.isLogin()) {
-
-        Divider().color($r('app.color.color_line')).strokeWidth(1)
-
-        Button() {
-
-          Text($r('app.string.ebook_my_backed_up_btn'))
-            .fontSize(17)
-            .fontColor($r('app.color.color_link'))
-        }
-          .width('100%')
-          .height(50)
-          .backgroundColor($r('app.color.color_background'))
-          .type(ButtonType.Normal)
-          .onClick(() => {
-            this.ebookSheetVisible = false
-
-            // 调用：打开我的备份 EBook 页面
-            MyBackedUpEBooksViewConfig.open()
-          })
-      }
-
-      Divider().color($r('app.color.color_line')).strokeWidth(1)
-
-      Button() {
-
-        Text($r('app.string.confirm_btn_cancel'))
-          .fontSize(17)
+        Text($r('app.string.ebook_create_title'))
+          .fontSize(18)
           .fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.color_link'))
+          .fontColor($r('app.color.color_text'))
+          .width('100%')
+          .textAlign(TextAlign.Center)
       }
-        .width('100%')
-        .height(50)
-        .backgroundColor($r('app.color.color_background'))
-        .type(ButtonType.Normal)
-        .onClick(() => {
-          this.ebookSheetVisible = false
+
+      Divider()
+
+      // 输入区：双边绑定 newBookNameInput，聚焦 id 供 requestFocus 拉起键盘
+      Column({ space: 5 }) {
+
+        TextInput({ placeholder: $r('app.string.ebook_name_hint'), text: $$this.newBookNameInput })
+          .width('100%')
+          .id('createEbookTitleInput')
+          .border({ width: 1, color: $r('app.color.color_obscure'), radius: 5 })
+          .backgroundColor(Color.White)
+      }
+
+      // 底部操作：灰底取消 + 导航色保存（与 renameEbookDialogView 一致）
+      Row({ space: 20 }) {
+
+        TextButton({
+          text             : $r('app.string.confirm_btn_cancel'),
+          bgColor          : $r('app.color.color_gray'),
+          onClickCallBack  : () => {
+
+            Toast.closeCustomDialog()
+          }
         })
+
+        TextButton({
+          text             : $r('app.string.memo_compose_btn_save'),
+          bgColor          : $r('app.color.color_nav_bg'),
+          fontColor        : $r('app.color.color_nav_text'),
+          onClickCallBack  : async () => {
+
+            await this.confirmCreateEbook()
+          }
+        })
+      }
+      .justifyContent(FlexAlign.Center)
     }
-      .width('100%')
-      .padding({ bottom: 8 })
+    .justifyContent(FlexAlign.Center)
+    .width('100%')
+    .height('auto')
+    .padding(20)
+    .onAppear(() => {
+
+      // 延迟聚焦：避免与弹窗首帧布局竞争导致焦点失败
+      setTimeout(() => {
+
+        try {
+
+          this.getUIContext().getFocusController().requestFocus('createEbookTitleInput')
+        } catch (_e) {
+
+          // 忽略：部分环境无 FocusController 或 id 未就绪
+        }
+      }, 120)
+    })
   }
 
+  // 打开重命名弹窗：写入 renameTargetBookId / 预填 renameBookNameInput，再 `Toast.showCustomDialog`
+  // book：被重命名的词汇本行对应数据
+  private openRenameSheet(book: Book): void {
+
+    this.renameTargetBookId  = book.bookId ?? 0
+    this.renameBookNameInput = book.bookName ?? ''
+
+    Toast.showCustomDialog(() => {
+      this.renameEbookDialogView()
+    })
+  }
+
+  // 重命名词汇本 UI：与 createEbookDialogView 同布局风格（标题 / Divider / 边框输入 / 取消+保存）
   @Builder
-  /**
-   * 构建新建 EBook 面板
-   */
-  buildCreateSheetContent() {
+  renameEbookDialogView() {
 
-    Column({ space: 16 }) {
+    Column({ space: 10 }) {
 
-      TextInput({ text: $$this.newBookNameInput, placeholder: $r('app.string.ebook_name_hint') })
-        .width('100%')
-        .margin({ left: 16, right: 16 })
+      Column() {
 
-      Button() {
-
-        Text($r('app.string.confirm_btn_yes'))
-          .fontColor(Color.White)
+        Text($r('app.string.ebook_rename_title'))
+          .fontSize(18)
+          .fontWeight(FontWeight.Medium)
+          .fontColor($r('app.color.color_text'))
+          .width('100%')
+          .textAlign(TextAlign.Center)
       }
-        .width('90%')
-        .backgroundColor($r('app.color.color_btn_bg2'))
-        .onClick(() => {
 
-          // 调用：确认新建 EBook
-          void this.confirmCreateEbook()
+      Divider()
+
+      Column({ space: 5 }) {
+
+        TextInput({ placeholder: $r('app.string.ebook_name_hint'), text: $$this.renameBookNameInput })
+          .width('100%')
+          .id('renameEbookTitleInput')
+          .border({ width: 1, color: $r('app.color.color_obscure'), radius: 5 })
+          .backgroundColor(Color.White)
+      }
+
+      Row({ space: 20 }) {
+
+        TextButton({
+          text             : $r('app.string.confirm_btn_cancel'),
+          bgColor          : $r('app.color.color_gray'),
+          onClickCallBack  : () => {
+
+            Toast.closeCustomDialog()
+          }
         })
+
+        TextButton({
+          text             : $r('app.string.memo_compose_btn_save'),
+          bgColor          : $r('app.color.color_nav_bg'),
+          fontColor        : $r('app.color.color_nav_text'),
+          onClickCallBack  : () => {
+
+            this.confirmRenameEbook()
+          }
+        })
+      }
+      .justifyContent(FlexAlign.Center)
     }
-      .padding(16)
+    .justifyContent(FlexAlign.Center)
+    .width('100%')
+    .height('auto')
+    .padding(20)
+    .onAppear(() => {
+
+      // 延迟聚焦：与 createEbookDialogView 相同，避免首帧抢焦点失败
+      setTimeout(() => {
+
+        try {
+
+          this.getUIContext().getFocusController().requestFocus('renameEbookTitleInput')
+        } catch (_e) {
+
+          // 忽略：同 createEbookDialogView
+        }
+      }, 120)
+    })
   }
 
-  @Builder
-  /**
-   * 构建重命名 EBook 面板
-   */
-  buildRenameSheetContent() {
-
-    Column({ space: 16 }) {
-
-      TextInput({ text: $$this.renameBookNameInput, placeholder: $r('app.string.ebook_name_hint') })
-        .width('100%')
-        .margin({ left: 16, right: 16 })
-
-      Button() {
-
-        Text($r('app.string.confirm_btn_yes'))
-          .fontColor(Color.White)
-      }
-        .width('90%')
-        .backgroundColor($r('app.color.color_btn_bg2'))
-        .onClick(() => {
-
-          // 调用：确认重命名 EBook
-          this.confirmRenameEbook()
-        })
-    }
-      .padding(16)
-  }
-
-  /**
-   * 确认新建 EBook：校验输入、会员限制、创建后刷新并进入加词页
-   */
+  // 确认新建：校验非空与会员、写库、关弹窗、刷新并进入加词页
   private async confirmCreateEbook(): Promise<void> {
 
     const trimmed = this.newBookNameInput.trim()
 
     if (trimmed.length < 1) {
+
+      // 空名：保持弹窗，不打扰用户（亦可后续改为 Toast 提示）
       return
     }
 
     if (!MemberManager.shared.checkEBookCreatable(true, true)) {
+
+      // 会员/配额不足：MemberManager 内已提示
       return
     }
 
@@ -378,15 +375,14 @@ export struct BooksLocalView {
     // 调用：切换当前书
     BookManager.shared.setCurrentBook(book)
 
-    // 调用：重置用户词表
-    WordUserDbAccess.shared.resetWordTables()
-
-    // 调用：刷新用户词表连接
+    // 调用：每书独立 learnDb，仅需重连；勿 resetWordTables（Online 已在该书库内，切换书不必清）
     WordUserDbAccess.shared.refreshDb()
 
     // 调用：刷新搜索索引
     void SearchManager.shared.refreshData()
-    this.ebookSheetVisible = false
+
+    // 调用：关闭自定义弹窗后再跳转，避免层叠遮挡
+    Toast.closeCustomDialog()
 
     // 调用：刷新页面列表
     this.loadData()
@@ -398,14 +394,13 @@ export struct BooksLocalView {
     EWordSearchAddViewConfig.open()
   }
 
-  /**
-   * 确认重命名 EBook
-   */
+  // 确认重命名：trim 后非空则按 renameTargetBookId 查找并 renameBook，关弹窗并刷新列表
   private confirmRenameEbook(): void {
 
     const trimmed = this.renameBookNameInput.trim()
 
     if (trimmed.length < 1) {
+
       return
     }
 
@@ -413,13 +408,17 @@ export struct BooksLocalView {
     const book = BookManager.shared.books.find((b: Book) => b.bookId === this.renameTargetBookId)
 
     if (book === undefined) {
-      this.ebookSheetVisible = false
+
+      // 列表已变或 id 无效：关闭弹窗并结束
+      Toast.closeCustomDialog()
       return
     }
 
     // 调用：执行重命名
     BookManager.shared.renameBook(book, trimmed)
-    this.ebookSheetVisible = false
+
+    // 调用：关闭自定义弹窗
+    Toast.closeCustomDialog()
 
     // 调用：刷新页面列表
     this.loadData()
@@ -428,31 +427,14 @@ export struct BooksLocalView {
     SimpleEventBus.emit(BookManagerNotification.bookListUpdated)
   }
 
-  /**
-   * 打开重命名面板并预填当前书名
-   * @param book 目标 EBook
-   */
-  private openRenameSheet(book: Book): void {
-
-    this.renameTargetBookId   = book.bookId ?? 0
-    this.renameBookNameInput  = book.bookName ?? ''
-    this.ebookSheetKind      = 3
-    this.ebookSheetVisible   = true
-  }
-
-  /**
-   * 切换当前书并进入加词页
-   * @param book 目标 EBook
-   */
+  // 切换当前书并进入词汇本「加词」页
+  // book：要设为当前书的词汇本
   private actionAddWord(book: Book): void {
 
     // 调用：切换当前书
     BookManager.shared.setCurrentBook(book)
 
-    // 调用：重置用户词表
-    WordUserDbAccess.shared.resetWordTables()
-
-    // 调用：刷新用户词表连接
+    // 调用：每书独立 learnDb，仅需重连
     WordUserDbAccess.shared.refreshDb()
 
     // 调用：刷新搜索索引
@@ -753,10 +735,7 @@ export struct BooksLocalView {
     // 调用：切换当前书
     BookManager.shared.setCurrentBook(book)
 
-    // 调用：重置用户词表
-    WordUserDbAccess.shared.resetWordTables()
-
-    // 调用：刷新用户词表连接
+    // 调用：每书独立 learnDb，仅需重连
     WordUserDbAccess.shared.refreshDb()
 
     // 调用：刷新搜索索引

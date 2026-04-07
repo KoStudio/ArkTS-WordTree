@@ -109,10 +109,7 @@ export class EBookExportImportManager {
     // 调用：切换当前教材
     BookManager.shared.setCurrentBook(newBook)
 
-    // 调用：重置用户学习表
-    WordUserDbAccess.shared.resetWordTables()
-
-    // 调用：刷新用户学习库连接
+    // 调用：每书独立 learnDb，切换后仅重连
     WordUserDbAccess.shared.refreshDb()
 
     // 调用：刷新全局搜索索引

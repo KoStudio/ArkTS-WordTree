@@ -54,10 +54,9 @@ export struct MyBackedUpEBooksView {
     return BookManager.shared.books.some((b: Book) => b.serverEBookId === serverBookId)
   }
 
-  // 备份恢复成功后刷新 learn 缓存与首页数据
+  // 备份恢复成功后重连 learnDb 并刷新首页数据（每书独立库，无须 resetWordTables）
   private finishAfterRestoreSuccess(): void {
 
-    WordUserDbAccess.shared.resetWordTables()
     WordUserDbAccess.shared.refreshDb()
     void SearchManager.shared.refreshData()
     SimpleEventBus.emit(BookManagerNotification.currentBookUpdated)

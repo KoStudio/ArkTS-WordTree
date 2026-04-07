@@ -308,7 +308,8 @@ export struct PartUnitPickerView {
     const titleEnShown = detail.titleEn ?? ''
     Toast.showMessage(getStringF($r('app.string.ebook_added'), titleEnShown))
     await BookManager.shared.refreshBookCounts(this.textDbPath)
-    WordUserDbAccess.shared.resetWordTables()
+
+    // 每书独立 learnDb；加词后不须清空 Online 表
     WordUserDbAccess.shared.refreshDb()
     void SearchManager.shared.refreshData()
     SimpleEventBus.emit(BookManagerNotification.currentBookUpdated)
