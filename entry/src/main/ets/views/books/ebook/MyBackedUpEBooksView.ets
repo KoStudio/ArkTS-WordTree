@@ -1,10 +1,9 @@
 //
 // MyBackedUpEBooksView.ets
-// 与 iOS `MyBackedUpEBooksView.swift` 对齐：拉取云端 EBook 备份列表并下载到本地。
+// 与 iOS `MyBackedUpEBooksView.swift` 对齐：云端备份列表、下载、空态与导航样式一致。
 //
 
-import { buildNavTitle } from '../../../app/constants/AppBuilders'
-import { dNavBackIcon } from '../../../app/constants/AppDefines'
+import { NavBarView } from '../../../app/views/NavBarView'
 import { Toast } from '../../../common/utils/Toast'
 import { getString, getStringF } from '../../../common/utils/ResourceUtils'
 import { NetWorkTool } from '../../../common/utils/NetworkUtils'
@@ -33,18 +32,17 @@ export namespace MyBackedUpEBooksViewConfig {
 @ComponentV2
 export struct MyBackedUpEBooksView {
 
-  @Local items           : UserDataEBook[] = []
-  @Local loading          : boolean         = true
-  @Local errorMessage     : string          = ''
-  @Local downloadingId    : number          = 0
-  @Local hasShownEmptyToast: boolean        = false
+  @Local items            : UserDataEBook[]   = []
+  @Local loading          : boolean           = true
+  @Local errorMessage      : string            = ''
+  @Local downloadingId     : number | null     = null
+  @Local hasShownEmptyToast: boolean          = false
 
   aboutToAppear(): void {
 
     this.loadList()
   }
 
-  // 与 iOS `isAlreadyDownloaded`
   private isAlreadyDownloaded(serverBookId: number | null): boolean {
 
     if (serverBookId === null) {
@@ -54,7 +52,6 @@ export struct MyBackedUpEBooksView {
     return BookManager.shared.books.some((b: Book) => b.serverEBookId === serverBookId)
   }
 
-  // 备份恢复成功后重连 learnDb 并刷新首页数据（每书独立库，无须 resetWordTables）
   private finishAfterRestoreSuccess(): void {
 
     WordUserDbAccess.shared.refreshDb()
@@ -67,24 +64,24 @@ export struct MyBackedUpEBooksView {
   private loadList(): void {
 
     if (!NetWorkTool.checkInternetConnection(true)) {
-      this.loading       = false
-      this.errorMessage  = getString($r('app.string.network_not_available'))
+      this.loading      = false
+      this.errorMessage = getString($r('app.string.network_not_available'))
       return
     }
 
-    this.loading         = true
-    this.errorMessage    = ''
+    this.loading       = true
+    this.errorMessage  = ''
 
     UserDataManager.loadUserDataEBookList((succeed: boolean, msg: string | null, list: UserDataEBook[] | null) => {
 
       this.loading = false
 
       if (succeed && list !== null) {
-        this.items          = list
-        this.errorMessage   = ''
+        this.items         = list
+        this.errorMessage  = ''
       } else {
-        this.items          = []
-        this.errorMessage   = msg ?? getString($r('app.string.ebook_my_backed_up_empty_hint'))
+        this.items         = []
+        this.errorMessage  = msg ?? getString($r('app.string.ebook_my_backed_up_empty_hint'))
       }
 
       if (this.items.length < 1 && !this.hasShownEmptyToast) {
@@ -114,13 +111,13 @@ export struct MyBackedUpEBooksView {
 
     this.downloadingId = serverEBookId
 
-    let rawName      = (serverItem.bookName ?? '').trim()
-    const bookName   = rawName.length < 1 ? `EBook ${serverEBookId}` : rawName
+    let rawName     = (serverItem.bookName ?? '').trim()
+    const bookName  = rawName.length < 1 ? `EBook ${serverEBookId}` : rawName
 
     void EBookManager.shared.createLocalEBook(bookName, null).then((book: Book | null) => {
 
       if (book === null) {
-        this.downloadingId = 0
+        this.downloadingId = null
         Toast.showMessage(getString($r('app.string.ebook_save_failed')))
         return
       }
@@ -136,7 +133,7 @@ export struct MyBackedUpEBooksView {
       const onContentDone = (succeed: boolean, msg: string | null) => {
 
         if (!succeed) {
-          this.downloadingId = 0
+          this.downloadingId = null
           Toast.showMessage(msg ?? getString($r('app.string.books_msg_download_failed')))
           return
         }
@@ -146,7 +143,7 @@ export struct MyBackedUpEBooksView {
         UserDataManager.loadUserData((succeed2: boolean, _msg: string | null, userDatas: UserDataJson[] | null) => {
 
           if (!succeed2 || userDatas === null || userDatas.length < 1) {
-            this.downloadingId = 0
+            this.downloadingId = null
             this.finishAfterRestoreSuccess()
             return
           }
@@ -166,7 +163,7 @@ export struct MyBackedUpEBooksView {
           UserDataManager.download(latest, (_p: number) => {
           }, (succeed3: boolean, msg3: string | null) => {
 
-            this.downloadingId = 0
+            this.downloadingId = null
 
             if (succeed3) {
               this.finishAfterRestoreSuccess()
@@ -188,53 +185,82 @@ export struct MyBackedUpEBooksView {
   build() {
     NavDestination() {
 
-      if (this.loading) {
-        Column() {
-          LoadingProgress()
-        }
-          .width('100%')
-          .height('100%')
-          .justifyContent(FlexAlign.Center)
-          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
-      } else if (this.items.length < 1) {
+      Column() {
 
         Column() {
-          Text(this.errorMessage.length > 0
-            ? this.errorMessage
-            : getString($r('app.string.ebook_my_backed_up_empty_hint')))
-            .fontSize(16)
-            .fontColor($r('app.color.color_list_item_subtitle'))
-            .textAlign(TextAlign.Center)
-            .padding(24)
+
+          NavBarView({
+            title      : $r('app.string.ebook_my_backed_up_title'),
+            leftButtons: [{
+              text   : $r('app.string.online_search_btn_cancel'),
+              onClick: () => {
+                NavPop()
+              }
+            }],
+            rightButtons: []
+          })
         }
           .width('100%')
-          .height('100%')
-          .justifyContent(FlexAlign.Center)
-          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
-      } else {
+          .backgroundColor($r('app.color.colorPrimary'))
 
-        List({ space: 0 }) {
+        Column() {
 
-          ForEach(this.items, (item: UserDataEBook, idx: number) => {
-
-            ListItem() {
-              this.buildRow(item, idx)
+          // 分支：首屏拉取列表中
+          if (this.loading) {
+            Column() {
+              LoadingProgress()
             }
-          }, (item: UserDataEBook, idx: number) => `${item.bookId}_${idx}`)
+              .width('100%')
+              .layoutWeight(1)
+              .justifyContent(FlexAlign.Center)
+          } else if (this.items.length < 1) {
+
+            // 分支：无备份或接口失败提示
+            Column({ space: 12 }) {
+              Text(this.errorMessage.length > 0
+                ? this.errorMessage
+                : getString($r('app.string.ebook_my_backed_up_empty_hint')))
+                .fontSize(16)
+                .fontColor($r('app.color.color_list_item_subtitle'))
+                .textAlign(TextAlign.Center)
+                .padding(16)
+            }
+              .width('100%')
+              .layoutWeight(1)
+              .justifyContent(FlexAlign.Center)
+          } else {
+
+            // 分支：有云端备份条目，列表展示
+            List({ space: 0 }) {
+
+              ForEach(this.items, (item: UserDataEBook, idx: number) => {
+
+                ListItem() {
+                  this.buildRow(item)
+                }
+                  .backgroundColor($r('app.color.color_list_item_bg'))
+              }, (item: UserDataEBook, idx: number) => `${item.bookId}_${idx}`)
+            }
+              .width('100%')
+              .layoutWeight(1)
+              .scrollBar(BarState.Auto)
+              .divider({ strokeWidth: 1, color: $r('app.color.color_line') })
+          }
         }
           .width('100%')
-          .height('100%')
-          .scrollBar(BarState.Auto)
+          .layoutWeight(1)
+          .backgroundColor($r('app.color.color_background'))
           .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       }
+        .width('100%')
+        .height('100%')
     }
-      .title(buildNavTitle($r('app.string.ebook_my_backed_up_title')))
+      .hideTitleBar(true)
       .backgroundColor($r('app.color.colorPrimary'))
-      .backButtonIcon(dNavBackIcon)
   }
 
   @Builder
-  buildRow(item: UserDataEBook, _idx: number) {
+  buildRow(item: UserDataEBook) {
 
     Row() {
 
@@ -252,40 +278,57 @@ export struct MyBackedUpEBooksView {
         .alignItems(HorizontalAlign.Start)
         .layoutWeight(1)
 
+      // 分支：本地已有同 serverEBookId 的词汇本
       if (this.isAlreadyDownloaded(item.bookId ?? null)) {
 
         Text($r('app.string.ebook_already_downloaded'))
           .fontSize(14)
           .fontColor($r('app.color.color_list_item_subtitle'))
-      } else if (this.downloadingId === (item.bookId ?? 0) && (item.bookId ?? 0) > 0) {
+      } else if (this.downloadingId !== null && this.downloadingId === item.bookId) {
 
+        // 分支：当前行正在下载内容 / learnDb
         LoadingProgress()
           .width(28)
           .height(28)
       } else {
 
+        // 分支：可点击下载按钮
         Button() {
 
           Text($r('app.string.ebook_download_btn'))
             .fontSize(14)
             .fontColor(Color.White)
         }
+          .type(ButtonType.Normal)
           .padding({ left: 12, right: 12, top: 6, bottom: 6 })
-          .backgroundColor($r('app.color.colorPrimary'))
+          .backgroundColor($r('app.color.color_btn_bg'))
+          .borderRadius(6)
           .onClick(() => {
-
             this.download(item)
           })
       }
     }
       .width('100%')
-      .padding(16)
+      .padding({ top: 8, bottom: 8, left: 16, right: 16 })
       .onClick(() => {
 
-        if (!this.isAlreadyDownloaded(item.bookId ?? null)
-          && !(this.downloadingId === (item.bookId ?? 0) && (item.bookId ?? 0) > 0)) {
-          this.download(item)
+        const sid = item.bookId
+
+        // 分支：无有效服务端 id
+        if (sid === null || sid === undefined) {
+          return
         }
+
+        // 分支：已下载或下载中则整行不重复触发（与 iOS onTapGesture 一致）
+        if (this.isAlreadyDownloaded(sid)) {
+          return
+        }
+
+        if (this.downloadingId !== null && this.downloadingId === sid) {
+          return
+        }
+
+        this.download(item)
       })
   }
 }
