@@ -12,13 +12,14 @@ import { getString, getStringF } from '../../../common/utils/ResourceUtils'
 import { Toast } from '../../../common/utils/Toast'
 import { Book } from '../../../models/datas/book/Book'
 import { BookManager, BookManagerNotification } from '../../../models/datas/book/BookManager'
+import { Part, Unit } from '../../../models/datas/model/Part_Unit'
 import { SearchManager } from '../../../models/datas/model/SearchManager'
 import { WordUserDbAccess } from '../../../models/datas/myData/WordUserDbAccess'
 import { WordDetail } from '../../../models/datas/word/WordDetail'
+import { WordDbAccess } from '../../../models/datas/word/WordDbAccess'
 import { EBookManager } from '../../../models/managers/ebook/EBookManager'
 import { NavPop, NavTo } from '../../../pages/NavPathManager'
 import { SimpleEventBus } from '../../../common/components/eventbus/SimpleEventBus'
-import { EBookPartItem, EBookPartUnitDbHelper, EBookUnitItem } from './EBookPartUnitDbHelper'
 
 export namespace PartUnitPickerViewConfig {
 
@@ -40,8 +41,8 @@ export struct PartUnitPickerView {
   @Param @Require detail: WordDetail
   @Param @Require bookId: number
 
-  @Local private parts             : EBookPartItem[] = []
-  @Local private units             : EBookUnitItem[] = []
+  @Local private parts             : Part[] = []
+  @Local private units             : Unit[] = []
   @Local private selectedPartIndex : number          = 0
   @Local private selectedUnitIndex : number          = 0
   @Local private newPartName       : string          = ''
@@ -103,22 +104,22 @@ export struct PartUnitPickerView {
           // List space：两个 ListItemGroup（Part / Unit）之间的垂直间距
           List({ space: 12 }) {
             ListItemGroup({ header: this.sectionHeader($r('app.string.ebook_part_header')) }) {
-              ForEach(this.parts, (part: EBookPartItem, index: number) => {
+              ForEach(this.parts, (part: Part, index: number) => {
                 ListItem() {
                   this.partRow(part, index)
                 }
-              }, (part: EBookPartItem) => `p_${part.partId}`)
+              }, (part: Part) => `p_${part.partId}`)
               ListItem() {
                 this.newPartRow()
               }
             }
 
             ListItemGroup({ header: this.sectionHeader($r('app.string.ebook_unit_header')) }) {
-              ForEach(this.unitsForDisplay(), (unit: EBookUnitItem, index: number) => {
+              ForEach(this.unitsForDisplay(), (unit: Unit, index: number) => {
                 ListItem() {
                   this.unitRow(unit, index)
                 }
-              }, (unit: EBookUnitItem) => `u_${unit.unitId}`)
+              }, (unit: Unit) => `u_${unit.unitId}`)
               ListItem() {
                 this.newUnitRow()
               }
@@ -149,7 +150,7 @@ export struct PartUnitPickerView {
   }
 
   @Builder
-  private partRow(part: EBookPartItem, index: number) {
+  private partRow(part: Part, index: number) {
     Row() {
       // 与 iOS `part.partName ?? "Part\(id)"` 一致：名为空时显示占位
       Text(part.partName.length > 0 ? part.partName : `Part${part.partId}`)
@@ -181,7 +182,7 @@ export struct PartUnitPickerView {
   }
 
   @Builder
-  private unitRow(unit: EBookUnitItem, index: number) {
+  private unitRow(unit: Unit, index: number) {
     Row() {
       // 与 iOS `unit.unitName ?? "Unit\(id)"` 一致：名为空时显示占位
       Text(unit.unitName.length > 0 ? unit.unitName : `Unit${unit.unitId}`)
@@ -302,7 +303,7 @@ export struct PartUnitPickerView {
   }
 
   // 与 iOS 一致：`isUsingNewPart` 为 true 时不展示已有 Unit 行，仅保留新建 Unit 行
-  private unitsForDisplay(): EBookUnitItem[] {
+  private unitsForDisplay(): Unit[] {
     if (this.isUsingNewPart()) {
       return []
     }
@@ -326,9 +327,11 @@ export struct PartUnitPickerView {
   private async loadInitialData(): Promise<void> {
 
     this.loading   = true
-    this.maxPartId = await EBookPartUnitDbHelper.getMaxPartId(this.textDbPath)
-    this.maxUnitId = await EBookPartUnitDbHelper.getMaxUnitId(this.textDbPath)
-    this.parts     = await EBookPartUnitDbHelper.getAllParts(this.textDbPath)
+
+    // 访问 WordDbAccess：与 iOS `WordManager` 指定 textDb 路径 API 一致
+    this.maxPartId = await WordDbAccess.getMaxPartId(this.textDbPath)
+    this.maxUnitId = await WordDbAccess.getMaxUnitId(this.textDbPath)
+    this.parts     = await WordDbAccess.getAllParts(this.textDbPath)
 
     if (this.parts.length < 1) {
       this.selectedPartIndex = 0
@@ -355,7 +358,9 @@ export struct PartUnitPickerView {
     }
 
     const part = this.parts[this.selectedPartIndex]
-    this.units = await EBookPartUnitDbHelper.getUnitsByPartId(this.textDbPath, part.partId)
+
+    // 访问 WordDbAccess
+    this.units = await WordDbAccess.getUnitsByPartId(part.partId, this.textDbPath)
 
     if (this.units.length < 1) {
       this.selectedUnitIndex = 0
@@ -381,7 +386,8 @@ export struct PartUnitPickerView {
     }
 
     // 先查重，再保存，避免重复覆盖提示和实际写入目标不一致。
-    const existing = await EBookPartUnitDbHelper.getWordPartUnitIfExists(this.textDbPath, titleEn)
+    // 访问 WordDbAccess
+    const existing = await WordDbAccess.getWordPartUnitIfExists(titleEn, this.textDbPath)
 
     if (existing !== null) {
       const overwriteMessage = getStringF($r('app.string.ebook_overwrite_msg'), existing.partName, existing.unitName)
@@ -406,7 +412,8 @@ export struct PartUnitPickerView {
    */
   private async performSave(detail: WordDetail): Promise<void> {
 
-    const ok = await EBookPartUnitDbHelper.insertWordDetail(this.textDbPath, detail)
+    // 访问 WordDbAccess（内部成功后会 `refreshBookCounts`，与 iOS `WordManager.insertWordDetail(_:intoTextDbAt:)` 一致）
+    const ok = await WordDbAccess.insertWordDetail(detail, this.textDbPath)
 
     if (!ok) {
       Toast.showMessage(getString($r('app.string.ebook_add_failed')))
@@ -415,7 +422,6 @@ export struct PartUnitPickerView {
 
     const titleEnShown = detail.titleEn ?? ''
     Toast.showMessage(getStringF($r('app.string.ebook_added'), titleEnShown))
-    await BookManager.shared.refreshBookCounts(this.textDbPath)
 
     // 每书独立 learnDb；加词后不须清空 Online 表
     WordUserDbAccess.shared.refreshDb()
@@ -439,7 +445,8 @@ export struct PartUnitPickerView {
     const unitNameRaw        = this.newUnitName.trim()
     const partName           = partIsNew ? (partNameRaw.length > 0 ? partNameRaw : `Part${partId}`) : (this.parts[this.selectedPartIndex]?.partName ?? `Part${partId}`)
     const unitName           = unitIsNew ? (unitNameRaw.length > 0 ? unitNameRaw : `Unit${unitId}`) : (this.units[this.selectedUnitIndex]?.unitName ?? `Unit${unitId}`)
-    const unitNo             = (await EBookPartUnitDbHelper.getWordsCountByUnitId(this.textDbPath, unitId)) + 1
+    // 访问 WordDbAccess
+    const unitNo             = (await WordDbAccess.getWordsCountByUnitId(unitId, this.textDbPath)) + 1
 
     detail.partId            = partId
     detail.partName          = partName

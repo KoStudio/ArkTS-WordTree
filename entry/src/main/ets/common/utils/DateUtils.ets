@@ -294,29 +294,42 @@ export class DateUtils {
         ));
       }
 
-      // 处理GMT时间格式 (EEE, dd MMM yyyy HH:mm:ss 'GMT') [4](@ref)
+      // 处理GMT时间格式，如 `Tue, 24 Mar 2026 01:34:12 GMT`（与 iOS `FORMART_GMT` + TimeZone GMT 一致）
       if (format === "EEE, dd MMM yyyy HH:mm:ss 'GMT'") {
-        const parts = dateStr.split(' ');
-        if (parts.length < 6) return null;
+        const parts = dateStr.trim().split(/\s+/);
+        if (parts.length < 6) {
+          return null;
+        }
 
-        // 月份名称映射
         const monthsMap: Record<string, number> = {
           'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
           'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
         };
 
-        // 分割时间组件
         const timeComponents = parts[4].split(':');
-        if (timeComponents.length < 3) return null;
+        if (timeComponents.length < 3) {
+          return null;
+        }
 
-        return new Date(
-          Number(parts[3]), // 年
-          monthsMap[parts[2]], // 月（0-11）
-          Number(parts[1]), // 日
-          Number(timeComponents[0]), // 时
-          Number(timeComponents[1]), // 分
-          Number(timeComponents[2]) // 秒
-        );
+        const mon = monthsMap[parts[2]];
+        if (mon === undefined) {
+          return null;
+        }
+
+        const day = Number(parts[1]);
+        const year = Number(parts[3]);
+        if (isNaN(day) || isNaN(year)) {
+          return null;
+        }
+
+        return new Date(Date.UTC(
+          year,
+          mon,
+          day,
+          Number(timeComponents[0]),
+          Number(timeComponents[1]),
+          Number(timeComponents[2])
+        ));
       }
 
       // 默认尝试内置解析 [1,4](@ref)

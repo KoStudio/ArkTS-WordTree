@@ -8,14 +8,14 @@ import { LanguageManager } from '../../../common/components/Language/LanguageMan
 import { CBookManager } from '../../../common/components/Sounds/Cloud/Download/CBook/CBookManager';
 import { FileUtility } from '../../../common/utils/FileUtility';
 import { StringEncoder } from '../../../common/utils/strings/StringEncrypt';
-import { DBAccessor } from '../../dbUtils/DBAccessor';
+import { DBAccessor, ParamType } from '../../dbUtils/DBAccessor';
 import { DB } from '../../dbUtils/DBConstants';
 import { DBPrepareProtocol, DbPrepareUtils } from '../../dbUtils/DBPrepare';
 import { ResultSetTool } from '../../dbUtils/ResultSetTool';
 import { AppCfgManager } from '../../managers/servercfg/AppCfgManager';
+import { Part, Unit } from '../model/Part_Unit';
 import { Word } from './Word';
 import { WordDetail } from './WordDetail';
-import { ParamType } from '../../dbUtils/DBAccessor';
 
 export namespace WordTable {
   export const Table_Name         = "Word";
@@ -48,6 +48,15 @@ export namespace WordTable {
     export const EN2EN        = "item23";
     export const DISCRIMINATE = "item24";
   }
+}
+
+// 与 Android `WordManager.WordPartUnitInfo` 字段一致；iOS 侧同名 API 仅返回 partName/unitName 用于弹窗，鸿蒙与 Android 一并带出 id 便于扩展
+
+export interface WordPartUnitInfo {
+  partId   : number
+  partName : string
+  unitId   : number
+  unitName : string
 }
 
 export class WordDbAccess implements DBPrepareProtocol {
@@ -429,5 +438,255 @@ export class WordDbAccess implements DBPrepareProtocol {
     const ok2 = await accessor.updateDb(sqlInsert, paramsInsert)
 
     return ok1 && ok2
+  }
+
+  /// 指定 textDb 下全部 Part（与 iOS `WordManager.getAllParts(inTextDbAt:)` 一致）
+  static async getAllParts(inTextDbAt: string): Promise<Part[]> {
+
+    const accessor = new DBAccessor(inTextDbAt, null)
+    const sql      = `
+      SELECT DISTINCT
+        ${WordTable.Col.PARTID},
+        ${WordTable.Col.PARTNAME}
+      FROM ${WordTable.Table_Name}
+      ORDER BY ${WordTable.Col.PARTID} ASC
+    `
+
+    const list = await accessor.getDatas(sql, [], (rs: relationalStore.ResultSet): Part => {
+
+      const part       = new Part()
+      part.partId      = rs.getLong(rs.getColumnIndex(WordTable.Col.PARTID))
+      part.partName    = ResultSetTool.decodeString(rs, WordTable.Col.PARTNAME) ?? `Part${part.partId}`
+
+      return part
+    }) ?? []
+
+    const seen   = new Set<number>()
+    const result : Part[] = []
+
+    for (const p of list) {
+
+      if (!seen.has(p.partId)) {
+        seen.add(p.partId)
+        result.push(p)
+      }
+    }
+
+    return result
+  }
+
+  /// 指定 textDb 下某 Part 的全部 Unit（与 iOS `WordManager.getUnitsByPartId(_:inTextDbAt:)` 一致）
+  static async getUnitsByPartId(partId: number, inTextDbAt: string): Promise<Unit[]> {
+
+    const accessor = new DBAccessor(inTextDbAt, null)
+    const sql      = `
+      SELECT DISTINCT
+        ${WordTable.Col.UNITID},
+        ${WordTable.Col.UNITNAME},
+        ${WordTable.Col.PARTID}
+      FROM ${WordTable.Table_Name}
+      WHERE ${WordTable.Col.PARTID} = ?
+      ORDER BY ${WordTable.Col.UNITID} ASC
+    `
+
+    const list = await accessor.getDatas(sql, [partId], (rs: relationalStore.ResultSet): Unit => {
+
+      const unit       = new Unit()
+      unit.unitId      = rs.getLong(rs.getColumnIndex(WordTable.Col.UNITID))
+      unit.unitName    = ResultSetTool.decodeString(rs, WordTable.Col.UNITNAME) ?? `Unit${unit.unitId}`
+      unit.partId      = rs.getLong(rs.getColumnIndex(WordTable.Col.PARTID))
+
+      return unit
+    }) ?? []
+
+    const seen   = new Set<number>()
+    const result : Unit[] = []
+
+    for (const u of list) {
+
+      if (!seen.has(u.unitId)) {
+        seen.add(u.unitId)
+        result.push(u)
+      }
+    }
+
+    return result
+  }
+
+  /// 指定 textDb 下最大 PartId（与 iOS `WordManager.getMaxPartId(inTextDbAt:)` 一致）
+  static async getMaxPartId(inTextDbAt: string): Promise<number> {
+
+    const accessor = new DBAccessor(inTextDbAt, null)
+
+    return await accessor.getMax(WordTable.Col.PARTID, WordTable.Table_Name)
+  }
+
+  /// 指定 textDb 下最大 UnitId（与 iOS `WordManager.getMaxUnitId(inTextDbAt:)` 一致）
+  static async getMaxUnitId(inTextDbAt: string): Promise<number> {
+
+    const accessor = new DBAccessor(inTextDbAt, null)
+
+    return await accessor.getMax(WordTable.Col.UNITID, WordTable.Table_Name)
+  }
+
+  /// 某 Unit 单词数（与 iOS `WordManager.getWordsCountByUnitId(_:inTextDbAt:)` 一致）
+  static async getWordsCountByUnitId(unitId: number, inTextDbAt: string): Promise<number> {
+
+    const accessor = new DBAccessor(inTextDbAt, null)
+    const sql      = `SELECT COUNT(*) FROM ${WordTable.Table_Name} WHERE ${WordTable.Col.UNITID} = ?`
+
+    return await accessor.getCount(sql, [unitId])
+  }
+
+  /// 按英文查重（与 Android `WordManager.getWordPartUnitIfExists` / iOS `getWordPartUnitIfExists` 一致；`WHERE` 与 iOS 相同 SUBSTR+Base64，`SELECT` 四列与 Android 一致）
+  static async getWordPartUnitIfExists(titleEn: string, inTextDbAt: string): Promise<WordPartUnitInfo | null> {
+
+    const trimmed = titleEn.trim()
+
+    if (trimmed.length < 1) {
+      return null
+    }
+
+    const titleEnBase64 = StringEncoder.encodedToBase64(trimmed)
+
+    if (titleEnBase64 === null) {
+      return null
+    }
+
+    const accessor = new DBAccessor(inTextDbAt, null)
+    const sql      = `
+      SELECT
+        ${WordTable.Col.PARTID},
+        ${WordTable.Col.PARTNAME},
+        ${WordTable.Col.UNITID},
+        ${WordTable.Col.UNITNAME}
+      FROM ${WordTable.Table_Name}
+      WHERE SUBSTR(
+        ${WordTable.Col.TITLEEN},
+        ${DB.salt} + 1,
+        LENGTH(${WordTable.Col.TITLEEN}) - ${DB.salt}
+      ) = ?
+      LIMIT 1
+    `
+
+    return await accessor.getData(sql, [titleEnBase64], (rs: relationalStore.ResultSet): WordPartUnitInfo => {
+
+      const partId   = rs.getLong(rs.getColumnIndex(WordTable.Col.PARTID))
+      const unitId   = rs.getLong(rs.getColumnIndex(WordTable.Col.UNITID))
+      const partName = ResultSetTool.decodeString(rs, WordTable.Col.PARTNAME) ?? ''
+      const unitName = ResultSetTool.decodeString(rs, WordTable.Col.UNITNAME) ?? ''
+
+      return {
+        partId   : partId,
+        partName : partName,
+        unitId   : unitId,
+        unitName : unitName
+      }
+    })
+  }
+
+  /// 写入指定 textDb 的 Word 表（与 iOS `WordManager.insertWordDetail(_:intoTextDbAt:)` 一致；成功后刷新书本统计）
+  static async insertWordDetail(detail: WordDetail, intoTextDbAt: string): Promise<boolean> {
+
+    const titleEn = detail.titleEn
+
+    if (titleEn === null || titleEn === undefined || titleEn.length < 1) {
+      return false
+    }
+
+    const titleEnBase64: string | null = detail.titleEnEncodeToBase64
+
+    if (titleEnBase64 === null) {
+      return false
+    }
+
+    const titleRow: string | null = detail.titleEnEncodeAndAddSalt
+
+    if (titleRow === null) {
+      return false
+    }
+
+    const accessor = new DBAccessor(intoTextDbAt, null, false)
+    const nextIdx  = (await accessor.getMax(WordTable.Col.IDX, WordTable.Table_Name)) + 1
+
+    const sqlDelete = `
+      DELETE FROM ${WordTable.Table_Name}
+      WHERE SUBSTR(
+        ${WordTable.Col.TITLEEN},
+        ${DB.salt} + 1,
+        LENGTH(${WordTable.Col.TITLEEN}) - ${DB.salt}
+      ) = ?
+    `
+
+    const sqlInsert = `
+      INSERT INTO ${WordTable.Table_Name} (
+        ${WordTable.Col.IDX},
+        ${WordTable.Col.PARTID},
+        ${WordTable.Col.PARTNAME},
+        ${WordTable.Col.UNITID},
+        ${WordTable.Col.UNITNAME},
+        ${WordTable.Col.UNITNO},
+        ${WordTable.Col.TITLEEN},
+        ${WordTable.Col.PRONEN},
+        ${WordTable.Col.PRONUS},
+        ${WordTable.Col.TITLECN1},
+        ${WordTable.Col.TITLECN2},
+        ${WordTable.Col.TITLECN3},
+        ${WordTable.Col.WORDIMAGE},
+        ${WordTable.Col.WORDCHANGE},
+        ${WordTable.Col.SYNWORDS},
+        ${WordTable.Col.ASYNWORDS},
+        ${WordTable.Col.EXAMPLEEN1},
+        ${WordTable.Col.EXAMPLECN1},
+        ${WordTable.Col.EXAMPLEEN2},
+        ${WordTable.Col.EXAMPLECN2},
+        ${WordTable.Col.EXAMPLEEN3},
+        ${WordTable.Col.EXAMPLECN3},
+        ${WordTable.Col.USEDPHRASE},
+        ${WordTable.Col.EN2EN},
+        ${WordTable.Col.DISCRIMINATE}
+      ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    `
+
+    const params = [
+      nextIdx,
+      detail.partId ?? 1,
+      StringEncoder.encodeAndAddSalt(detail.partName),
+      detail.unitId ?? 1,
+      StringEncoder.encodeAndAddSalt(detail.unitName),
+      detail.unitNo ?? 1,
+      titleRow,
+      StringEncoder.encodeAndAddSalt(detail.pronEn),
+      StringEncoder.encodeAndAddSalt(detail.pronUs),
+      StringEncoder.encodeAndAddSalt(detail.titleCn1),
+      StringEncoder.encodeAndAddSalt(detail.titleCn2),
+      StringEncoder.encodeAndAddSalt(detail.titleCn3),
+      StringEncoder.encodeAndAddSalt(detail.wordImage),
+      StringEncoder.encodeAndAddSalt(detail.wordChange),
+      StringEncoder.encodeAndAddSalt(detail.synWords),
+      StringEncoder.encodeAndAddSalt(detail.asynWords),
+      StringEncoder.encodeAndAddSalt(detail.exampleEn1),
+      StringEncoder.encodeAndAddSalt(detail.exampleCn1),
+      StringEncoder.encodeAndAddSalt(detail.exampleEn2),
+      StringEncoder.encodeAndAddSalt(detail.exampleCn2),
+      StringEncoder.encodeAndAddSalt(detail.exampleEn3),
+      StringEncoder.encodeAndAddSalt(detail.exampleCn3),
+      StringEncoder.encodeAndAddSalt(detail.usedPhrase),
+      StringEncoder.encodeAndAddSalt(detail.en2En),
+      StringEncoder.encodeAndAddSalt(detail.discriminate)
+    ]
+
+    const okDelete = await accessor.updateDb(sqlDelete, [titleEnBase64])
+    const okInsert = await accessor.updateDb(sqlInsert, params)
+
+    if (!okDelete || !okInsert) {
+      return false
+    }
+
+    // 动态 import，避免 `WordDbAccess` ↔ `BookManager` 静态循环依赖（与 `Word.ets` 引 EWordManager 一致）
+    const bm = await import('../book/BookManager')
+    await bm.BookManager.shared.refreshBookCounts(intoTextDbAt)
+
+    return true
   }
 }

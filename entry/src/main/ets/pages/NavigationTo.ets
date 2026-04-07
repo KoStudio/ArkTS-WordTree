@@ -37,7 +37,6 @@ import { MyBackedUpEBooksView, MyBackedUpEBooksViewConfig } from '../views/books
 import { EWordSearchAddView, EWordSearchAddViewConfig } from '../views/books/ebook/EWordSearchAddView';
 import { EBookImportView, EBookImportViewConfig } from '../views/books/ebook/EBookImportView';
 import { CreateEBookView, CreateEBookViewConfig } from '../views/books/ebook/CreateEBookView';
-import { RenameEBookView, RenameEBookViewConfig } from '../views/books/ebook/RenameEBookView';
 import { EBookSelectView, EBookSelectViewConfig } from '../views/books/ebook/EBookSelectView';
 import { PartUnitPickerView, PartUnitPickerViewConfig } from '../views/books/ebook/PartUnitPickerView';
 import { ManualAddWordView, ManualAddWordViewConfig } from '../views/books/ebook/ManualAddWordView';
@@ -95,7 +94,6 @@ export function navigationTo<T>(name: string, param: T){
   }else if (name === EWordSearchAddViewConfig.NavKey)      { EWordSearchAddView()
   }else if (name === EBookImportViewConfig.NavKey)         { EBookImportView()
   }else if (name === CreateEBookViewConfig.NavKey)         { CreateEBookView()
-  }else if (name === RenameEBookViewConfig.NavKey)         { RenameEBookView({bookId: (param as RenameEBookViewConfig.Param).bookId})
   }else if (name === EBookSelectViewConfig.NavKey)         { EBookSelectView({originalDetail: (param as EBookSelectViewConfig.Param).originalDetail})
   }else if (name === PartUnitPickerViewConfig.NavKey)      { PartUnitPickerView({detail: (param as PartUnitPickerViewConfig.Param).detail, bookId: (param as PartUnitPickerViewConfig.Param).bookId})
   }else if (name === ManualAddWordViewConfig.NavKey)       { ManualAddWordView({initialTitleEn: (param as ManualAddWordViewConfig.Param).initialTitleEn})

@@ -23,14 +23,16 @@ export class CMetaInfoManager {
 
   /// 比较本地保存的更新时间和服务器上的更新时间，判断是否需要更新
   public async isNeedUpdateForMeta(info: CMetaInfo): Promise<boolean> {
-    const savedStr    = await this.getUpdateDateFromSavedMeta(info);
+    const savedStr      = await this.getUpdateDateFromSavedMeta(info);
     const updateDateStr = info.updateDate;
 
-    if (savedStr && updateDateStr) {
-      const savedDate   = DateUtils.toDateFromUTC(savedStr);
-      const updateDate  = DateUtils.toDateFromUTC(updateDateStr);
+    // 与 iOS `if let savedStr = ..., let updateDateStr = info.updateDate` 一致：只判断是否为 nil，勿用 `&&`（会把 `""` 当无值，与 Swift Optional 解包语义不一致）
+    if (savedStr !== null && updateDateStr !== null) {
+      // COS / HTTP `last-modified` 为 GMT 串；`toGMTDate` 与 iOS `getDateFromGMTString` 一致，再兜底 ISO
+      const savedDate  = DateUtils.toGMTDate(savedStr) ?? DateUtils.toDateFromUTC(savedStr);
+      const updateDate = DateUtils.toGMTDate(updateDateStr) ?? DateUtils.toDateFromUTC(updateDateStr);
 
-      if (savedDate && updateDate) {
+      if (savedDate !== null && updateDate !== null) {
         // 腾讯服务器很奇怪，通过 Get 获取到的日期是 GMT+0000，这里需要 +8 小时才能和 Download 时的时间一样，应该是 Bug. by ko 20.12.20
         const fixedUpdateDate = updateDate;
         // 目前，Get 获取的日期与 Download 时的时间一样，都是 GMT+0000, 所以这里可以不用 +8:00 小时了 (Cos 上需要重新上传一次) by ko 2024.09.
