@@ -97,13 +97,16 @@ export class SubscribeManager {
       SimpleEventBus.emit(SubscribeManagerNotification.expireDateUpdated)
     }
 
+    if (!this.currentItem) return;
+
     const pref = this.getPrefs();
     if (!pref || !this.currentItem) return;
 
-    pref.putSync(SubscribeManagerPref.kSku,               this.currentItem!.sku);
-    pref.putSync(SubscribeManagerPref.kExpiresDate,       this.currentItem!.expiresDateMs ?? 0);
-    pref.putSync(SubscribeManagerPref.kPurchaseToken,     this.currentItem!.purchaseToken ?? "");
-    pref.putSync(SubscribeManagerPref.kPurchasedPlatform, this.currentItem!.purchasedPlatform ?? "");
+    // preferences.putSync 不支持 null；服务器 refresh 常无 sku，写 null 会导致整次落盘失败、设备上看不到该 pref 文件
+    pref.putSync(SubscribeManagerPref.kSku,               this.currentItem.sku ?? "");
+    pref.putSync(SubscribeManagerPref.kExpiresDate,       this.currentItem.expiresDateMs ?? 0);
+    pref.putSync(SubscribeManagerPref.kPurchaseToken,     this.currentItem.purchaseToken ?? "");
+    pref.putSync(SubscribeManagerPref.kPurchasedPlatform, this.currentItem.purchasedPlatform ?? "");
     pref.flushSync();
   }
 
