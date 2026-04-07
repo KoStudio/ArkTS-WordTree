@@ -4,11 +4,10 @@
 //
 // 选择 Part/Unit 后，直接把结果保存到目标 EBook。
 // 这个页面不再依赖外部 dataSource，而是根据传入的 book 自己读取目标 textDb。
+// 导航与列表视觉、勾选与输入框逻辑对齐 iOS `PartUnitPickerView.swift`（分组列表、绿勾、新 Part 时隐藏已有 Unit 行等）。
 //
 
-import { buildNavTitle } from '../../../app/constants/AppBuilders'
-import { dNavBackIcon } from '../../../app/constants/AppDefines'
-import { buildStandardMenu } from '../../../app/constants/AppFunctions'
+import { NavBarView } from '../../../app/views/NavBarView'
 import { getString, getStringF } from '../../../common/utils/ResourceUtils'
 import { Toast } from '../../../common/utils/Toast'
 import { Book } from '../../../models/datas/book/Book'
@@ -50,6 +49,8 @@ export struct PartUnitPickerView {
   @Local private maxPartId         : number          = 0
   @Local private maxUnitId         : number          = 0
   @Local private loading           : boolean         = true
+  @Local private isNewPartFieldFocused: boolean      = false
+  @Local private isNewUnitFieldFocused: boolean      = false
 
   private readonly maxPartNameLength: number = 10
   private readonly maxUnitNameLength: number = 20
@@ -69,62 +70,112 @@ export struct PartUnitPickerView {
 
   build() {
     NavDestination() {
-      if (this.loading) {
-        Column() { LoadingProgress() }
-          .width('100%')
-          .height('100%')
-          .justifyContent(FlexAlign.Center)
-          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
-      } else {
-        List() {
-          ListItemGroup({ header: this.sectionHeader($r('app.string.ebook_part_header')) }) {
-            ForEach(this.parts, (part: EBookPartItem, index: number) => {
-              ListItem() { this.partRow(part, index) }
-            }, (part: EBookPartItem) => `p_${part.partId}`)
-            ListItem() { this.newPartRow() }
-          }
 
-          ListItemGroup({ header: this.sectionHeader($r('app.string.ebook_unit_header')) }) {
-            ForEach(this.units, (unit: EBookUnitItem, index: number) => {
-              ListItem() { this.unitRow(unit, index) }
-            }, (unit: EBookUnitItem) => `u_${unit.unitId}`)
-            ListItem() { this.newUnitRow() }
+      Column() {
+
+        NavBarView({
+          title       : $r('app.string.ebook_save_to_nav_title'),
+          leftButtons : [{
+            text   : $r('app.string.online_search_btn_cancel'),
+            onClick: () => {
+              NavPop()
+            }
+          }],
+          rightButtons: [{
+            text   : $r('app.string.ebook_add'),
+            onClick: () => {
+              void this.saveSelectedDetail()
+            }
+          }]
+        })
+
+        // 分支：加载中仅显示进度（白底与 iOS List 区域一致）
+        if (this.loading) {
+          Column() {
+            LoadingProgress()
           }
+            .width('100%')
+            .layoutWeight(1)
+            .justifyContent(FlexAlign.Center)
+            .backgroundColor($r('app.color.color_background'))
+            .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+        } else {
+          // List space：两个 ListItemGroup（Part / Unit）之间的垂直间距
+          List({ space: 12 }) {
+            ListItemGroup({ header: this.sectionHeader($r('app.string.ebook_part_header')) }) {
+              ForEach(this.parts, (part: EBookPartItem, index: number) => {
+                ListItem() {
+                  this.partRow(part, index)
+                }
+              }, (part: EBookPartItem) => `p_${part.partId}`)
+              ListItem() {
+                this.newPartRow()
+              }
+            }
+
+            ListItemGroup({ header: this.sectionHeader($r('app.string.ebook_unit_header')) }) {
+              ForEach(this.unitsForDisplay(), (unit: EBookUnitItem, index: number) => {
+                ListItem() {
+                  this.unitRow(unit, index)
+                }
+              }, (unit: EBookUnitItem) => `u_${unit.unitId}`)
+              ListItem() {
+                this.newUnitRow()
+              }
+            }
+          }
+            .width('100%')
+            .layoutWeight(1)
+            .backgroundColor($r('app.color.color_background'))
+            .scrollBar(BarState.Auto)
+            .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
         }
-          .width('100%')
-          .height('100%')
-          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       }
+        .width('100%')
+        .height('100%')
     }
-      .title(buildNavTitle($r('app.string.ebook_save_to_nav_title')))
-      .backButtonIcon(dNavBackIcon)
+      .hideTitleBar(true)
       .backgroundColor($r('app.color.colorPrimary'))
-      .menus(buildStandardMenu(this.buildMenuItems()))
   }
 
   @Builder
   private sectionHeader(title: ResourceStr) {
     Text(title)
-      .fontSize(13)
+      .fontSize(15)
       .fontColor($r('app.color.color_list_item_subtitle'))
-      .padding({ left: 16, top: 8, bottom: 8 })
+      .width('100%')
+      .padding({ left: 16, top: 8, right: 16, bottom: 8 })
+      .backgroundColor($r('app.color.color_background'))
   }
 
   @Builder
   private partRow(part: EBookPartItem, index: number) {
     Row() {
-      Text(part.partName).fontSize(16)
-      Blank().layoutWeight(1)
-      if (this.newPartName.trim().length < 1 && this.selectedPartIndex === index) {
-        Text('✓').fontSize(16).fontColor($r('app.color.colorPrimary'))
+      // 与 iOS `part.partName ?? "Part\(id)"` 一致：名为空时显示占位
+      Text(part.partName.length > 0 ? part.partName : `Part${part.partId}`)
+        .fontSize(17)
+        .fontColor($r('app.color.color_list_item_title'))
+      Blank()
+        .layoutWeight(1)
+      // 分支：与 iOS 一致，仅在不处于「新 Part」模式且本行选中时显示绿色勾
+      if (!this.isUsingNewPart() && this.selectedPartIndex === index) {
+        Text('✓')
+          .fontSize(16)
+          .fontColor($r('app.color.color_btn_bg2'))
       }
     }
       .width('100%')
-      .padding(12)
+      .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+      .backgroundColor($r('app.color.color_list_item_bg'))
+      .border({ width: { bottom: 1 }, color: $r('app.color.color_obscure') })
       .onClick(() => {
-        // 分支：选择已有 Part 时清空新 Part 输入
-        this.newPartName = ''
-        this.selectedPartIndex = index
+        // 分支：选中已有 Part 时收起新 Part 输入、清空新 Unit，并重载 Unit 列表（对齐 iOS onTapGesture）
+        this.getUIContext().getFocusController().clearFocus()
+        this.isNewPartFieldFocused = false
+        this.newPartName           = ''
+        this.selectedPartIndex     = index
+        this.isNewUnitFieldFocused = false
+        this.newUnitName           = ''
         void this.reloadUnitsForSelectedPart()
       })
   }
@@ -132,18 +183,29 @@ export struct PartUnitPickerView {
   @Builder
   private unitRow(unit: EBookUnitItem, index: number) {
     Row() {
-      Text(unit.unitName).fontSize(16)
-      Blank().layoutWeight(1)
-      if (this.newUnitName.trim().length < 1 && this.selectedUnitIndex === index) {
-        Text('✓').fontSize(16).fontColor($r('app.color.colorPrimary'))
+      // 与 iOS `unit.unitName ?? "Unit\(id)"` 一致：名为空时显示占位
+      Text(unit.unitName.length > 0 ? unit.unitName : `Unit${unit.unitId}`)
+        .fontSize(17)
+        .fontColor($r('app.color.color_list_item_title'))
+      Blank()
+        .layoutWeight(1)
+      // 分支：与 iOS 一致，仅在不处于「新 Unit」模式且本行选中时显示绿色勾
+      if (!this.isUsingNewUnit() && this.selectedUnitIndex === index) {
+        Text('✓')
+          .fontSize(16)
+          .fontColor($r('app.color.color_btn_bg2'))
       }
     }
       .width('100%')
-      .padding(12)
+      .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+      .backgroundColor($r('app.color.color_list_item_bg'))
+      .border({ width: { bottom: 1 }, color: $r('app.color.color_obscure') })
       .onClick(() => {
-        // 分支：选择已有 Unit 时清空新 Unit 输入
-        this.newUnitName = ''
-        this.selectedUnitIndex = index
+        // 分支：选中已有 Unit 时收起新 Unit 输入（对齐 iOS）
+        this.getUIContext().getFocusController().clearFocus()
+        this.isNewUnitFieldFocused = false
+        this.newUnitName           = ''
+        this.selectedUnitIndex     = index
       })
   }
 
@@ -151,65 +213,111 @@ export struct PartUnitPickerView {
   private newPartRow() {
     Row() {
       TextInput({
-        text: $$this.newPartName,
-        placeholder: `Part${this.maxPartId + 1}`
+        text        : $$this.newPartName,
+        placeholder : `Part${this.maxPartId + 1}`
       })
+        .id('ebookNewPartInput')
+        .width(200)
         .height(36)
+        .padding({ left: 8, right: 8, top: 6, bottom: 6 })
         .backgroundColor($r('app.color.color_obscure'))
+        .borderRadius(6)
+        .border({ width: 1, color: $r('app.color.colorPrimary') })
+        .fontColor($r('app.color.color_text'))
+        .fontSize(16)
         .onChange((value: string) => {
           if (value.length > this.maxPartNameLength) {
             this.newPartName = value.substring(0, this.maxPartNameLength)
           }
         })
-      Blank().layoutWeight(1)
-      if (this.newPartName.trim().length > 0 || this.parts.length < 1) {
-        Text('✓').fontSize(16).fontColor($r('app.color.colorPrimary'))
+        .onFocus(() => {
+          this.isNewPartFieldFocused = true
+        })
+        .onBlur(() => {
+          this.isNewPartFieldFocused = false
+        })
+      Blank()
+        .layoutWeight(1)
+      // 分支：与 iOS `isUsingNewPart` 时显示绿色勾
+      if (this.isUsingNewPart()) {
+        Text('✓')
+          .fontSize(16)
+          .fontColor($r('app.color.color_btn_bg2'))
       }
     }
       .width('100%')
-      .padding(12)
+      .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+      .backgroundColor($r('app.color.color_list_item_bg'))
+      .border({ width: { bottom: 1 }, color: $r('app.color.color_obscure') })
+      .onClick(() => {
+        // 分支：点击行聚焦新 Part 输入框（对齐 iOS contentShape + onTapGesture）
+        this.getUIContext().getFocusController().requestFocus('ebookNewPartInput')
+      })
   }
 
   @Builder
   private newUnitRow() {
     Row() {
       TextInput({
-        text: $$this.newUnitName,
-        placeholder: `Unit${this.maxUnitId + 1}`
+        text        : $$this.newUnitName,
+        placeholder : `Unit${this.maxUnitId + 1}`
       })
+        .id('ebookNewUnitInput')
+        .width(200)
         .height(36)
+        .padding({ left: 8, right: 8, top: 6, bottom: 6 })
         .backgroundColor($r('app.color.color_obscure'))
+        .borderRadius(6)
+        .border({ width: 1, color: $r('app.color.colorPrimary') })
+        .fontColor($r('app.color.color_text'))
+        .fontSize(16)
         .onChange((value: string) => {
           if (value.length > this.maxUnitNameLength) {
             this.newUnitName = value.substring(0, this.maxUnitNameLength)
           }
         })
-      Blank().layoutWeight(1)
-      if (this.newUnitName.trim().length > 0 || this.units.length < 1 || this.isUsingNewPart()) {
-        Text('✓').fontSize(16).fontColor($r('app.color.colorPrimary'))
+        .onFocus(() => {
+          this.isNewUnitFieldFocused = true
+        })
+        .onBlur(() => {
+          this.isNewUnitFieldFocused = false
+        })
+      Blank()
+        .layoutWeight(1)
+      // 分支：与 iOS `isUsingNewUnit` 时显示绿色勾
+      if (this.isUsingNewUnit()) {
+        Text('✓')
+          .fontSize(16)
+          .fontColor($r('app.color.color_btn_bg2'))
       }
     }
       .width('100%')
-      .padding(12)
+      .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+      .backgroundColor($r('app.color.color_list_item_bg'))
+      .border({ width: { bottom: 1 }, color: $r('app.color.color_obscure') })
+      .onClick(() => {
+        // 分支：点击行聚焦新 Unit 输入框（对齐 iOS）
+        this.getUIContext().getFocusController().requestFocus('ebookNewUnitInput')
+      })
   }
 
-  private buildMenuItems(): NavigationMenuItem[] {
-    return [
-      {
-        value  : getString($r('app.string.ebook_add')),
-        action : () => {
-          void this.saveSelectedDetail()
-        }
-      }
-    ]
+  // 与 iOS 一致：`isUsingNewPart` 为 true 时不展示已有 Unit 行，仅保留新建 Unit 行
+  private unitsForDisplay(): EBookUnitItem[] {
+    if (this.isUsingNewPart()) {
+      return []
+    }
+    return this.units
   }
 
+  // 对齐 iOS `isUsingNewPart`：焦点在非空新 Part 名、或书本尚无 Part
   private isUsingNewPart(): boolean {
-    return this.newPartName.trim().length > 0 || this.parts.length < 1
+    return this.isNewPartFieldFocused || this.newPartName.trim().length > 0 || this.parts.length < 1
   }
 
+  // 对齐 iOS `isUsingNewUnit`：新 Part 模式下视为使用新 Unit，或焦点/空列表等
   private isUsingNewUnit(): boolean {
-    return this.newUnitName.trim().length > 0 || this.units.length < 1 || this.isUsingNewPart()
+    return this.isNewUnitFieldFocused || this.newUnitName.trim().length > 0 || this.units.length < 1 ||
+      this.isUsingNewPart()
   }
 
   /**
