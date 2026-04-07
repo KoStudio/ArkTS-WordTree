@@ -80,7 +80,7 @@ export struct BooksOnlineView {
       }
         .width('100%')
         .height('100%')
-        .backgroundColor(Color.White)
+        .backgroundColor($r('app.color.color_obscure'))
 
         // 与 iOS `.disabled(isLoading)`：下载过程中禁止列表交互
         .enabled(!this.isLoading)
@@ -101,7 +101,12 @@ export struct BooksOnlineView {
       List({ space: 0 }) {
         ForEach(this.books, (book: Book, rowIndex: number) => {
           ListItem() {
-            this.buildRowContent(rowIndex, book)
+
+            // 与 BooksLocalView / iOS：每行独立卡片外留白
+            Column() {
+              this.buildRowContent(rowIndex, book)
+            }
+              .margin({ left: 16, right: 16, top: 8, bottom: 8 })
           }
             .onClick(() => {
               this.handleRowClick(rowIndex, book)
@@ -112,8 +117,9 @@ export struct BooksOnlineView {
         .height('100%')
         .scrollBar(BarState.Auto)
         .sticky(StickyStyle.Header)
+        .divider({ strokeWidth: 0 })
     }
-      .backgroundColor($r('app.color.color_background'))
+      .backgroundColor($r('app.color.color_obscure'))
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       .width('100%')
       .height('100%')
@@ -127,18 +133,18 @@ export struct BooksOnlineView {
       Column({ space: 5 }) {
 
         Text(book.bookName ?? '')
-          .fontSize(22)
+          .fontSize(18)
           .fontColor($r('app.color.color_list_item_title'))
 
         Text(getStringF($r('app.string.books_txt_info_counts'), book.unitsCount || 0, book.wordsCount || 0))
-          .fontSize(16)
+          .fontSize(14)
           .fontColor($r('app.color.color_list_item_subtitle'))
 
         // 与 iOS：首次安装尚无 currentBook 时不展示金币；非会员且已选书才展示
         if ((!MemberManager.shared.isActive) && (BookManager.shared.currentBook !== null)) {
 
           Text(getStringF($r('app.string.books_txt_info_golds'), book.golds || 0))
-            .fontSize(15)
+            .fontSize(13)
             .fontColor($r('app.color.color_gold'))
         }
       }
@@ -148,14 +154,14 @@ export struct BooksOnlineView {
 
       Column() {
 
-        // 已下载：仅文案；未下载：主色按钮（与 iOS 右侧区域一致）
+        // 已下载：仅文案；未下载：主色按钮（与 iOS 右侧区域一致；靠右对齐）
         if (this.isDownloaded(book)) {
 
           Text($r('app.string.books_btn_title_downloaded'))
-            .fontSize(16)
+            .fontSize(14)
             .fontColor($r('app.color.color_list_item_subtitle'))
-            .textAlign(TextAlign.Center)
-            .constraintSize({ minWidth: 110 })
+            .textAlign(TextAlign.End)
+            .constraintSize({ minWidth: 96 })
         } else {
 
           TextButton({
@@ -165,16 +171,19 @@ export struct BooksOnlineView {
               this.handleRowClick(rowIndex, book)
             }
           })
-            .constraintSize({ minWidth: 110 })
+            .constraintSize({ minWidth: 96 })
         }
       }
+        .alignItems(HorizontalAlign.End)
+        .margin({ left: 12 })
     }
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
-      .padding(10)
-      .border({ width: { bottom: 1 }, color: $r('app.color.color_obscure') })
+      .padding(16)
+      .borderRadius(8)
+      .clip(true)
       .backgroundColor(
-        this.isDownloaded(book) ? $r('app.color.color_gray_light') : $r('app.color.color_background'))
+        this.isDownloaded(book) ? $r('app.color.color_gray_light') : $r('app.color.color_list_item_bg'))
   }
 
   handleRowClick(rowIndex: number, book: Book): void {

@@ -107,7 +107,7 @@ export class CBookManager {
         if (succeed) {
           // 只有当 CBook 已经下载过一次后，再次更新才显示消息
           if (isExistedCBook) {
-            Toast.showMessage(`${title ?? ''} ${$r('app.string.main_words_cbook_msg_update_succeed')}`)
+            Toast.showMessage(`${title ?? ''} ${getString($r('app.string.main_words_cbook_msg_update_succeed'))}`)
           } else {
             // 首次下载 CBook 不显示消息，只显示 DebugMessage
             Toast.showDebugMessage(`${title ?? ''} ${getString($r('app.string.main_words_cbook_msg_update_succeed'))}`)

@@ -94,8 +94,13 @@ export struct CategoriesView {
         ForEach(this.categories, (category: Category, rowIndex: number) => {
           ListItem() {
 
-            // 调用：构建分类行内容
-            this.buildRowContent(rowIndex, category)
+            // 与 BooksLocalView / iOS：卡片外留白，避免贴边
+            Column() {
+
+              // 调用：构建分类行内容
+              this.buildRowContent(rowIndex, category)
+            }
+              .margin({ left: 16, right: 16, top: 8, bottom: 8 })
           }
             .onClick(() => {
 
@@ -108,8 +113,9 @@ export struct CategoriesView {
         .height('100%')
         .scrollBar(BarState.Auto)
         .sticky(StickyStyle.Header)
+        .divider({ strokeWidth: 0 })
     }
-      .backgroundColor($r('app.color.color_background'))
+      .backgroundColor($r('app.color.color_obscure'))
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       .width('100%')
       .height('100%')
@@ -126,14 +132,15 @@ export struct CategoriesView {
     Row() {
 
       Text(category.categoryName ?? '')
-        .fontSize(16)
-        .fontColor($r('app.color.color_text'))
-        .margin({ left: 5 })
+        .fontSize(17)
+        .fontColor($r('app.color.color_list_item_title'))
+        .textAlign(TextAlign.Start)
     }
       .width('100%')
       .padding(16)
-      .border({ width: { bottom: 1 }, color: $r('app.color.color_obscure') })
-      .backgroundColor($r('app.color.color_background'))
+      .borderRadius(8)
+      .backgroundColor($r('app.color.color_list_item_bg'))
+      .clip(true)
   }
 
   /**
