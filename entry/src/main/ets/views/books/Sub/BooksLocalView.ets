@@ -37,50 +37,82 @@ export struct BooksLocalView {
   private unsubBookList      : (() => void) | undefined = undefined
   private unsubCurrentBook   : (() => void) | undefined = undefined
 
+  /**
+   * 页面出现时：加载数据并注册列表/当前书刷新监听
+   */
   aboutToAppear(): void {
 
+    // 调用：首次进入时加载列表
     this.loadData()
 
+    // 调用：订阅书单更新事件
     this.unsubBookList = SimpleEventBus.on(BookManagerNotification.bookListUpdated, () => {
+
+      // 调用：书单更新后重载列表
       this.loadData()
     })
 
+    // 调用：订阅当前书更新事件
     this.unsubCurrentBook = SimpleEventBus.on(BookManagerNotification.currentBookUpdated, () => {
+
+      // 调用：当前书更新后重载列表
       this.loadData()
     })
   }
 
+  /**
+   * 页面消失时：注销页面内注册的事件监听
+   */
   aboutToDisappear(): void {
 
     if (this.unsubBookList !== undefined) {
+
+      // 调用：取消书单更新监听
       this.unsubBookList()
       this.unsubBookList = undefined
     }
 
     if (this.unsubCurrentBook !== undefined) {
+
+      // 调用：取消当前书更新监听
       this.unsubCurrentBook()
       this.unsubCurrentBook = undefined
     }
   }
 
+  /**
+   * 读取并刷新本地书单
+   */
   private loadData(): void {
 
+    // 调用：同步全局书单到页面状态
     this.books = [...BookManager.shared.books]
     this.listVersion++
   }
 
+  /**
+   * 获取非 EBook 列表（CBook）
+   */
   private cBooks(): Book[] {
     return this.books.filter((b: Book) => !b.isEBook)
   }
 
+  /**
+   * 获取 EBook 列表
+   */
   private eBooks(): Book[] {
     return this.books.filter((b: Book) => b.isEBook)
   }
 
+  /**
+   * 构建页面主视图
+   */
   build() {
     Column() {
 
       Column() {
+
+        // 调用：构建书单列表区域
         this.buildList()
       }
         .width('100%')
@@ -127,6 +159,9 @@ export struct BooksLocalView {
       })
   }
 
+  /**
+   * 返回底部 Sheet 的标题文案
+   */
   private ebookSheetTitle(): ResourceStr {
 
     if (this.ebookSheetKind === 2) {
@@ -141,18 +176,30 @@ export struct BooksLocalView {
   }
 
   @Builder
+  /**
+   * 构建底部 Sheet 内容
+   */
   buildEbookSheetContent() {
 
     if (this.ebookSheetKind === 1) {
+
+      // 调用：构建操作菜单
       this.buildEbookMenuContent()
     } else if (this.ebookSheetKind === 2) {
+
+      // 调用：构建新建 EBook 面板
       this.buildCreateSheetContent()
     } else if (this.ebookSheetKind === 3) {
+
+      // 调用：构建重命名面板
       this.buildRenameSheetContent()
     }
   }
 
   @Builder
+  /**
+   * 构建「新建/导入/我的备份」菜单面板
+   */
   buildEbookMenuContent() {
 
     Column({ space: 0 }) {
@@ -185,6 +232,8 @@ export struct BooksLocalView {
         .backgroundColor($r('app.color.color_background'))
         .onClick(() => {
           this.ebookSheetVisible = false
+
+          // 调用：打开导入 EBook 页面
           EBookImportViewConfig.open()
         })
 
@@ -203,6 +252,8 @@ export struct BooksLocalView {
           .backgroundColor($r('app.color.color_background'))
           .onClick(() => {
             this.ebookSheetVisible = false
+
+            // 调用：打开我的备份 EBook 页面
             MyBackedUpEBooksViewConfig.open()
           })
       }
@@ -212,6 +263,9 @@ export struct BooksLocalView {
   }
 
   @Builder
+  /**
+   * 构建新建 EBook 面板
+   */
   buildCreateSheetContent() {
 
     Column({ space: 16 }) {
@@ -228,6 +282,8 @@ export struct BooksLocalView {
         .width('90%')
         .backgroundColor($r('app.color.colorPrimary'))
         .onClick(() => {
+
+          // 调用：确认新建 EBook
           void this.confirmCreateEbook()
         })
     }
@@ -235,6 +291,9 @@ export struct BooksLocalView {
   }
 
   @Builder
+  /**
+   * 构建重命名 EBook 面板
+   */
   buildRenameSheetContent() {
 
     Column({ space: 16 }) {
@@ -251,12 +310,17 @@ export struct BooksLocalView {
         .width('90%')
         .backgroundColor($r('app.color.colorPrimary'))
         .onClick(() => {
+
+          // 调用：确认重命名 EBook
           this.confirmRenameEbook()
         })
     }
       .padding(16)
   }
 
+  /**
+   * 确认新建 EBook：校验输入、会员限制、创建后刷新并进入加词页
+   */
   private async confirmCreateEbook(): Promise<void> {
 
     const trimmed = this.newBookNameInput.trim()
@@ -269,23 +333,42 @@ export struct BooksLocalView {
       return
     }
 
+    // 调用：创建本地 EBook
     const book = await EBookManager.shared.createLocalEBook(trimmed, null)
 
     if (book === null) {
+
+      // 调用：提示创建失败
       Toast.showMessage(getString($r('app.string.ebook_save_failed')))
       return
     }
 
+    // 调用：切换当前书
     BookManager.shared.setCurrentBook(book)
+
+    // 调用：重置用户词表
     WordUserDbAccess.shared.resetWordTables()
+
+    // 调用：刷新用户词表连接
     WordUserDbAccess.shared.refreshDb()
+
+    // 调用：刷新搜索索引
     void SearchManager.shared.refreshData()
     this.ebookSheetVisible = false
+
+    // 调用：刷新页面列表
     this.loadData()
+
+    // 调用：广播书单更新
     SimpleEventBus.emit(BookManagerNotification.bookListUpdated)
+
+    // 调用：打开 EBook 加词页面
     EWordSearchAddViewConfig.open()
   }
 
+  /**
+   * 确认重命名 EBook
+   */
   private confirmRenameEbook(): void {
 
     const trimmed = this.renameBookNameInput.trim()
@@ -294,6 +377,7 @@ export struct BooksLocalView {
       return
     }
 
+    // 调用：按目标 bookId 查找书本
     const book = BookManager.shared.books.find((b: Book) => b.bookId === this.renameTargetBookId)
 
     if (book === undefined) {
@@ -301,12 +385,21 @@ export struct BooksLocalView {
       return
     }
 
+    // 调用：执行重命名
     BookManager.shared.renameBook(book, trimmed)
     this.ebookSheetVisible = false
+
+    // 调用：刷新页面列表
     this.loadData()
+
+    // 调用：广播书单更新
     SimpleEventBus.emit(BookManagerNotification.bookListUpdated)
   }
 
+  /**
+   * 打开重命名面板并预填当前书名
+   * @param book 目标 EBook
+   */
   private openRenameSheet(book: Book): void {
 
     this.renameTargetBookId   = book.bookId ?? 0
@@ -315,30 +408,56 @@ export struct BooksLocalView {
     this.ebookSheetVisible   = true
   }
 
+  /**
+   * 切换当前书并进入加词页
+   * @param book 目标 EBook
+   */
   private actionAddWord(book: Book): void {
 
+    // 调用：切换当前书
     BookManager.shared.setCurrentBook(book)
+
+    // 调用：重置用户词表
     WordUserDbAccess.shared.resetWordTables()
+
+    // 调用：刷新用户词表连接
     WordUserDbAccess.shared.refreshDb()
+
+    // 调用：刷新搜索索引
     void SearchManager.shared.refreshData()
+
+    // 调用：刷新页面列表
     this.loadData()
+
+    // 调用：打开 EBook 加词页
     EWordSearchAddViewConfig.open()
   }
 
+  /**
+   * 导出并分享指定 EBook
+   * @param book 目标 EBook
+   */
   private actionExportEbook(book: Book): void {
 
+    // 调用：导出 EBook
     EBookExportImportManager.shared.exportEBook(book, (ok: boolean, _err: string | null, exportPath: string | null) => {
 
       if (!ok || exportPath === null) {
+
+        // 调用：提示导出失败
         Toast.showMessage(getString($r('app.string.ebook_export_failed_msg')))
         return
       }
 
+      // 调用：弹出系统分享
       ShareUtils.shareFile(exportPath, book.bookName ?? '词汇本', '')
     })
   }
 
   @Builder
+  /**
+   * 构建 CBook/EBook 分组列表
+   */
   buildList() {
     Column() {
       List({ space: 0 }) {
@@ -351,6 +470,8 @@ export struct BooksLocalView {
           }) {
             ForEach(this.cBooks(), (book: Book, rowIndex: number) => {
               ListItem() {
+
+                // 调用：构建列表行内容（CBook）
                 this.buildRowContent(book, false)
               }
                 .gesture(
@@ -358,6 +479,8 @@ export struct BooksLocalView {
                     .onAction(() => {
 
                       if (!book.isCurrentBook) {
+
+                        // 调用：弹出删除确认
                         this.confirmRemove(book)
                       }
                     })
@@ -365,9 +488,13 @@ export struct BooksLocalView {
                 .swipeAction({
                   end: book.isCurrentBook ? undefined : {
                     builder: () => {
+
+                      // 调用：构建 CBook 右滑按钮
                       this.buildSwipeButtons(book)
                     },
                     onAction: () => {
+
+                      // 调用：右滑动作删除
                       this.confirmRemove(book)
                     }
                   }
@@ -384,6 +511,8 @@ export struct BooksLocalView {
           }) {
             ForEach(this.eBooks(), (book: Book, rowIndex: number) => {
               ListItem() {
+
+                // 调用：构建列表行内容（EBook）
                 this.buildRowContent(book, true)
               }
                 .gesture(
@@ -391,6 +520,8 @@ export struct BooksLocalView {
                     .onAction(() => {
 
                       if (!book.isCurrentBook) {
+
+                        // 调用：弹出删除确认
                         this.confirmRemove(book)
                       }
                     })
@@ -398,9 +529,13 @@ export struct BooksLocalView {
                 .swipeAction({
                   end: book.isCurrentBook ? undefined : {
                     builder: () => {
+
+                      // 调用：构建 EBook 右滑按钮
                       this.buildSwipeButtonsEbook(book)
                     },
                     onAction: () => {
+
+                      // 调用：右滑动作删除
                       this.confirmRemove(book)
                     }
                   }
@@ -421,6 +556,10 @@ export struct BooksLocalView {
   }
 
   @Builder
+  /**
+   * 构建分组头部
+   * @param title 分组标题
+   */
   buildSectionHeader(title: ResourceStr) {
     Row() {
 
@@ -439,6 +578,11 @@ export struct BooksLocalView {
   }
 
   @Builder
+  /**
+   * 构建书本行内容
+   * @param book 当前书本
+   * @param showEBookActions 是否显示 EBook 操作按钮
+   */
   buildRowContent(book: Book, showEBookActions: boolean) {
 
     Column({ space: 8 }) {
@@ -470,6 +614,8 @@ export struct BooksLocalView {
         .width('100%')
         .justifyContent(FlexAlign.SpaceBetween)
         .onClick(() => {
+
+          // 调用：处理行点击切换当前书
           this.handleRowClick(book)
         })
 
@@ -488,6 +634,8 @@ export struct BooksLocalView {
               .padding({ left: 8, right: 8 })
               .backgroundColor($r('app.color.color_obscure'))
               .onClick(() => {
+
+                // 调用：进入加词流程
                 this.actionAddWord(book)
               })
 
@@ -498,6 +646,8 @@ export struct BooksLocalView {
               .padding({ left: 8, right: 8 })
               .backgroundColor($r('app.color.color_obscure'))
               .onClick(() => {
+
+                // 调用：打开重命名面板
                 this.openRenameSheet(book)
               })
 
@@ -508,6 +658,8 @@ export struct BooksLocalView {
               .padding({ left: 8, right: 8 })
               .backgroundColor($r('app.color.color_obscure'))
               .onClick(() => {
+
+                // 调用：导出并分享 EBook
                 this.actionExportEbook(book)
               })
 
@@ -521,6 +673,8 @@ export struct BooksLocalView {
               .onClick(() => {
 
                 if (!book.isCurrentBook) {
+
+                  // 调用：弹出删除确认
                   this.confirmRemove(book)
                 }
               })
@@ -536,30 +690,45 @@ export struct BooksLocalView {
       .backgroundColor($r('app.color.color_background'))
   }
 
+  /**
+   * 处理书本行点击：切换当前书并刷新相关缓存
+   * @param book 目标书本
+   */
   handleRowClick(book: Book): void {
 
     if (book.isCurrentBook) {
       return
     }
 
+    // 调用：切换当前书
     BookManager.shared.setCurrentBook(book)
 
+    // 调用：重置用户词表
     WordUserDbAccess.shared.resetWordTables()
 
+    // 调用：刷新用户词表连接
     WordUserDbAccess.shared.refreshDb()
 
+    // 调用：刷新搜索索引
     void SearchManager.shared.refreshData()
 
+    // 调用：刷新页面列表
     this.loadData()
   }
 
   @Builder
+  /**
+   * 构建 CBook 右滑按钮区
+   * @param book 当前书本
+   */
   buildSwipeButtons(book: Book) {
 
     Row() {
 
+      // 调用：构建删除按钮
       this.buildSwipeButton($r('app.string.confirm_btn_remove'), $r('app.color.colorAccent'), () => {
 
+        // 调用：执行删除确认
         this.confirmRemove(book)
       })
     }
@@ -568,17 +737,25 @@ export struct BooksLocalView {
   }
 
   @Builder
+  /**
+   * 构建 EBook 右滑按钮区
+   * @param book 当前书本
+   */
   buildSwipeButtonsEbook(book: Book) {
 
     Row() {
 
+      // 调用：构建重命名按钮
       this.buildSwipeButton($r('app.string.ebook_rename_label'), $r('app.color.colorPrimary'), () => {
 
+        // 调用：执行打开重命名
         this.openRenameSheet(book)
       })
 
+      // 调用：构建删除按钮
       this.buildSwipeButton($r('app.string.confirm_btn_remove'), $r('app.color.colorAccent'), () => {
 
+        // 调用：执行删除确认
         this.confirmRemove(book)
       })
     }
@@ -587,6 +764,12 @@ export struct BooksLocalView {
   }
 
   @Builder
+  /**
+   * 构建单个右滑按钮
+   * @param text 按钮文本
+   * @param bgColor 按钮背景色
+   * @param onCallback 点击回调
+   */
   buildSwipeButton(text: ResourceStr, bgColor: Resource = $r('app.color.colorPrimary'),
     onCallback: () => void) {
     Button() {
@@ -605,12 +788,17 @@ export struct BooksLocalView {
       .onClick(onCallback)
   }
 
+  /**
+   * 删除确认弹窗与实际删除流程
+   * @param book 待删除书本
+   */
   private confirmRemove(book: Book): void {
 
     if (book.isCurrentBook) {
       return
     }
 
+    // 调用：弹出确认框
     Toast.showAlert({
       title           : $r('app.string.alert_title_confirm'),
       message         : getStringF($r('app.string.alert_msg_confirm_remove'), book.bookName || ''),
@@ -624,16 +812,20 @@ export struct BooksLocalView {
         value  : $r('app.string.confirm_btn_yes'),
         action : async () => {
 
+          // 调用：从书单移除
           BookManager.shared.removeBook(book)
 
           if (book.isEBook) {
 
+            // 调用：删除本地 EBook 数据库
             EBookManager.removeLocalTextDbIfExists(book.textDb || '')
           } else {
 
+            // 调用：删除 CBook 数据库
             CBookManager.shared.removeBookDb(book.textDb || '')
           }
 
+          // 调用：刷新页面列表
           this.loadData()
         }
       }
