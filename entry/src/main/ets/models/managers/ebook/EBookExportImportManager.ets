@@ -185,13 +185,16 @@ export class EBookExportImportManager {
    * @param srcPath 教材 sqlite 绝对路径
    * @returns zip 沙箱路径；失败则 null
    */
-  private static async createZipForSingleSqliteAtPath(srcPath: string): Promise<string | null> {
+  private static async createWteForSingleSqliteAtPath(srcPath: string): Promise<string | null> {
 
-    const base     = PathUtility.getLastComponentName(srcPath)
-    const parent   = FileUtility.deleteLastPathComponent(srcPath)
-    const jobId    = `${Date.now()}`
-    const wrapDir  = FileUtility.appendPathComponent(parent, `_ebook_exp_${jobId}`)
-    const innerDir = FileUtility.appendPathComponent(wrapDir, 'inner')
+    const base       = PathUtility.getLastComponentName(srcPath)
+    const jobId      = `${Date.now()}`
+    const exportRoot = FileUtility.appendPathComponent(dAppCachefolder, 'EBookExport')
+    const wrapDir    = FileUtility.appendPathComponent(exportRoot, `_ebook_exp_${jobId}`)
+    const innerDir   = FileUtility.appendPathComponent(wrapDir, 'inner')
+
+    // 调用：确保导出根目录存在（与 iOS temporaryDirectory/EBookExport 对齐）
+    createFolderIfNeeds(exportRoot)
 
     // 调用：确保中间目录存在
     createFolderIfNeeds(innerDir)
@@ -206,13 +209,35 @@ export class EBookExportImportManager {
       return null
     }
 
-    // 调用：打包 inner 目录为 zip
-    const zipPath = await ZipTool.createOneZip(innerDir)
+    // 调用：打包 inner 目录为压缩包（ZipTool 当前输出为 .zip）
+    const zipPathInWrapDir = await ZipTool.createOneZip(innerDir)
 
-    // 调用：打包后清理临时目录
+    // 分支：打包失败时清理并返回
+    if (zipPathInWrapDir === null || !FileUtility.isFileExistAt(zipPathInWrapDir)) {
+
+      // 调用：清理临时目录
+      FileUtility.deleteDirectoryAt(wrapDir)
+      return null
+    }
+
+    // 目标：在清理 wrapDir 前先把压缩包移动并统一改名为 .wte，避免被一并删除导致导出失败
+    const exportedWtePath = FileUtility.appendPathComponent(exportRoot, `_ebook_exp_${jobId}.${EBookExportImportManager.fileExtension}`)
+
+    // 调用：同名旧文件先删，避免 move 失败
+    FileUtility.deleteFileAt(exportedWtePath)
+
+    // 分支：移动压缩包并改名为 .wte 失败时清理并返回
+    if (!FileUtility.moveFile(zipPathInWrapDir, exportedWtePath)) {
+
+      // 调用：清理临时目录
+      FileUtility.deleteDirectoryAt(wrapDir)
+      return null
+    }
+
+    // 调用：打包完成后清理临时目录（此时 zip 已移出，不会被删除）
     FileUtility.deleteDirectoryAt(wrapDir)
 
-    return zipPath
+    return exportedWtePath
   }
 
   /**
@@ -237,11 +262,11 @@ export class EBookExportImportManager {
       return
     }
 
-    // 调用：创建单文件 zip，再重命名为 .wte
-    void EBookExportImportManager.createZipForSingleSqliteAtPath(textDbPath).then((zipPath: string | null) => {
+    // 调用：创建单文件 .wte（内部仍为 zip 内容）
+    void EBookExportImportManager.createWteForSingleSqliteAtPath(textDbPath).then((wtePath: string | null) => {
 
       // 分支：打包失败时返回错误
-      if (zipPath === null || !FileUtility.isFileExistAt(zipPath)) {
+      if (wtePath === null || !FileUtility.isFileExistAt(wtePath)) {
         completion(false, getString($r('app.string.ebook_export_failed_msg')), null)
         return
       }
@@ -259,11 +284,11 @@ export class EBookExportImportManager {
       // 调用：清理同名旧导出文件
       FileUtility.deleteFileAt(exportPath)
 
-      // 分支：移动导出文件失败时清理 zip 并返回
-      if (!FileUtility.moveFile(zipPath, exportPath)) {
+      // 分支：移动导出文件失败时清理临时 .wte 并返回
+      if (!FileUtility.moveFile(wtePath, exportPath)) {
 
-        // 调用：删除未移动成功的 zip
-        FileUtility.deleteFileAt(zipPath)
+        // 调用：删除未移动成功的临时 .wte
+        FileUtility.deleteFileAt(wtePath)
 
         completion(false, getString($r('app.string.ebook_export_failed_msg')), null)
         return
@@ -308,10 +333,10 @@ export class EBookExportImportManager {
     // 调用：创建导入工作目录
     createFolderIfNeeds(tempRoot)
 
-    const tempZip    = FileUtility.appendPathComponent(tempRoot, `pack.zip`)
+    const tempWte    = FileUtility.appendPathComponent(tempRoot, `pack.${EBookExportImportManager.fileExtension}`)
 
-    // 分支：复制 .wte 到临时 zip 失败时清理并返回
-    if (!FileUtility.copyFile(filePath, tempZip)) {
+    // 分支：复制 .wte 到临时 .wte 失败时清理并返回
+    if (!FileUtility.copyFile(filePath, tempWte)) {
 
       // 调用：清理导入工作目录
       FileUtility.deleteDirectoryAt(tempRoot)
@@ -321,11 +346,11 @@ export class EBookExportImportManager {
 
     const unzipDir   = FileUtility.appendPathComponent(tempRoot, 'unz')
 
-    // 调用：解压临时 zip
-    const unzipped   = await ZipTool.unzipTo(tempZip, unzipDir)
+    // 调用：解压临时 .wte（内容为 zip）
+    const unzipped   = await ZipTool.unzipTo(tempWte, unzipDir)
 
-    // 调用：解压后删除临时 zip
-    FileUtility.deleteFileAt(tempZip)
+    // 调用：解压后删除临时 .wte
+    FileUtility.deleteFileAt(tempWte)
 
     // 分支：解压失败时清理并返回
     if (unzipped === null) {
