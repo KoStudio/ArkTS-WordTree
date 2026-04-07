@@ -122,6 +122,9 @@
     { "name": "ebook_import_title"                           , "value": "導入詞彙本" },
     { "name": "ebook_import_pick_btn"                        , "value": "選擇 .wte 檔" },
     { "name": "ebook_import_help_link"                       , "value": "如何導入導出詞彙本" },
+    { "name": "ebook_import_nav_title"                       , "value": "導入詞彙本" },
+    { "name": "ebook_import_hint"                            , "value": "請選擇要導入的 .wte 檔案。" },
+    { "name": "ebook_import_choose_btn"                      , "value": "選擇導入 .wte" },
     { "name": "ebook_export_failed_msg"                      , "value": "導出失敗" },
     { "name": "ebook_export_btn"                             , "value": "導出" },
     { "name": "ebook_default_book_name"                      , "value": "詞彙本" },
@@ -131,6 +134,7 @@
 
     { "name": "ebook_import_success_fmt"                     , "value": "已成功導入「%s」。" },
     { "name": "ebook_import_failed_msg"                      , "value": "導入失敗，請稍後重試。" },
+    { "name": "ebook_import_success_msg"                     , "value": "已成功導入「%s」。" },
     { "name": "ebook_select_title"                           , "value": "選擇要保存到的詞彙本" },
     { "name": "ebook_no_other"                               , "value": "暫無其它可用詞彙本" },
     { "name": "ebook_part_header"                            , "value": "分冊 Part" },

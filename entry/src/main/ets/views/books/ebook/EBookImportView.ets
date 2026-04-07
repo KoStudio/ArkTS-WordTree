@@ -5,15 +5,13 @@
 
 import { common } from '@kit.AbilityKit'
 import { picker } from '@kit.CoreFileKit'
-import { buildNavTitle } from '../../../app/constants/AppBuilders'
-import { dNavBackIcon } from '../../../app/constants/AppDefines'
 import { NavPop, NavTo } from '../../../pages/NavPathManager'
 import { EBookExportImportManager } from '../../../models/managers/ebook/EBookExportImportManager'
-import { BookManager } from '../../../models/datas/book/BookManager'
 import { Book } from '../../../models/datas/book/Book'
 import { Toast } from '../../../common/utils/Toast'
 import { getString, getStringF } from '../../../common/utils/ResourceUtils'
 import { EBookHelpViewConfig } from './EBookHelpView'
+import { NavBarView } from '../../../app/views/NavBarView'
 
 export namespace EBookImportViewConfig {
 
@@ -29,48 +27,96 @@ export namespace EBookImportViewConfig {
 export struct EBookImportView {
 
   @Local busy: boolean = false
+  @Local pickedPath: string = ''
+  @Local pickedFileName: string = ''
+  @Local message: string = ''
 
   build() {
     NavDestination() {
 
-      Column({ space: 24 }) {
+      Column() {
+        NavBarView({
+          title: $r('app.string.ebook_import_nav_title'),
+          leftButtons: [{
+            text: $r('app.string.online_search_btn_cancel'),
+            onClick: () => {
+              NavPop()
+            }
+          }],
+          rightButtons: [{
+            text: $r('app.string.confirm_btn_import'),
+            onClick: () => {
+              void this.startImport()
+            }
+          }]
+        })
 
-        Text($r('app.string.ebook_import_title'))
-          .fontSize(18)
-          .fontColor($r('app.color.color_text'))
-          .margin({ top: 32 })
+        Column({ space: 16 }) {
+          Text($r('app.string.ebook_import_hint'))
+            .fontSize(15)
+            .fontColor($r('app.color.color_detail'))
+            .textAlign(TextAlign.Center)
 
-        Button() {
+          Button() {
+            Text($r('app.string.ebook_import_choose_btn'))
+              .fontSize(16)
+              .fontColor(Color.White)
+          }
+            .width('100%')
+            .height(44)
+            .enabled(!this.busy)
+            .backgroundColor($r('app.color.color_btn_bg'))
+            .borderRadius(8)
+            .onClick(() => {
+              void this.onPick()
+            })
 
-          Text(this.busy ? '…' : $r('app.string.ebook_import_pick_btn'))
-            .fontColor(Color.White)
+          Text(this.pickedFileName.length > 0 ? this.pickedFileName : '')
+            .fontSize(13)
+            .fontColor($r('app.color.color_detail'))
+            .textAlign(TextAlign.Center)
+            .maxLines(2)
+
+          Divider()
+            .color($r('app.color.color_obscure'))
+            .margin({ top: 4, bottom: 4 })
+
+          Button() {
+            Text($r('app.string.ebook_import_help_link'))
+              .fontSize(14)
+              .fontColor($r('app.color.color_nav_bg'))
+              .decoration({ type: TextDecorationType.Underline })
+          }
+            .backgroundColor(Color.Transparent)
+            .onClick(() => {
+              EBookHelpViewConfig.open()
+            })
         }
-          .width('80%')
-          .padding(12)
-          .enabled(!this.busy)
-          .backgroundColor($r('app.color.colorPrimary'))
-          .onClick(() => {
-            void this.onPick()
-          })
+          .width('88%')
+          .constraintSize({ maxWidth: 420 })
+          .padding({ top: 20, bottom: 20, left: 16, right: 16 })
+          .margin({ top: 40 })
+          .backgroundColor($r('app.color.color_white'))
+          .borderRadius(12)
+          .shadow({ radius: 8, color: '#26000000', offsetX: 0, offsetY: 4 })
 
-        Button() {
-          Text($r('app.string.ebook_import_help_link'))
-            .fontColor($r('app.color.colorPrimary'))
+        if (this.message.length > 0) {
+          Text(this.message)
+            .fontSize(13)
+            .fontColor(Color.Red)
+            .textAlign(TextAlign.Center)
+            .margin({ top: 12, left: 24, right: 24 })
         }
-          .backgroundColor(Color.Transparent)
-          .onClick(() => {
-            EBookHelpViewConfig.open()
-          })
+
+        Blank()
       }
         .width('100%')
         .height('100%')
-        .justifyContent(FlexAlign.Start)
         .alignItems(HorizontalAlign.Center)
         .backgroundColor($r('app.color.color_background'))
         .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     }
-      .title(buildNavTitle($r('app.string.ebook_import_title')))
-      .backButtonIcon(dNavBackIcon)
+      .hideTitleBar(true)
       .backgroundColor($r('app.color.colorPrimary'))
   }
 
@@ -94,14 +140,34 @@ export struct EBookImportView {
       if (uri.indexOf('file://') === 0) {
         path = uri.substring('file://'.length)
       }
+      const pathNodes = path.split('/')
+      const name = pathNodes.length > 0 ? pathNodes[pathNodes.length - 1] : path
+      this.pickedPath = path
+      this.pickedFileName = name
+      this.message = ''
+      this.busy = false
+    } catch (e) {
+      this.busy = false
+      this.message = `${e}`
+    }
+  }
 
-      await EBookExportImportManager.shared.importEBookAtPath(path,
+  private async startImport(): Promise<void> {
+    if (this.pickedPath.length < 1 || this.busy) {
+      return
+    }
+
+    this.busy = true
+    this.message = ''
+
+    try {
+      await EBookExportImportManager.shared.importEBookAtPath(this.pickedPath,
         (ok: boolean, errMsg: string | null, newBook: Book | null) => {
 
           this.busy = false
 
           if (!ok) {
-            Toast.showMessage(errMsg ?? getString($r('app.string.ebook_import_failed_msg')))
+            this.message = errMsg ?? getString($r('app.string.ebook_import_failed_msg'))
             return
           }
 
@@ -109,16 +175,16 @@ export struct EBookImportView {
             EBookExportImportManager.applyImportSuccess(newBook)
 
             const raw     = (newBook.bookName ?? '').trim()
-            const display = raw.length < 1 ? getString($r('app.string.ebook_default_book_name')) : raw
+            const display = raw.length < 1 ? '词汇本' : raw
 
-            Toast.showMessage(getStringF($r('app.string.ebook_import_success_fmt'), display))
+            Toast.showMessage(getStringF($r('app.string.ebook_import_success_msg'), display))
           }
 
           NavPop()
         })
     } catch (e) {
       this.busy = false
-      Toast.showMessage(`${e}`)
+      this.message = `${e}`
     }
   }
 }
