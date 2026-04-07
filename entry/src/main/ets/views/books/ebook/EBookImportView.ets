@@ -11,7 +11,7 @@ import { Book } from '../../../models/datas/book/Book'
 import { Toast } from '../../../common/utils/Toast'
 import { FileUtility } from '../../../common/utils/FileUtility'
 import { getString, getStringF } from '../../../common/utils/ResourceUtils'
-import { EBookHelpViewConfig } from './EBookHelpView'
+import { EBookHelpView } from './EBookHelpView'
 import { NavBarView } from '../../../app/views/NavBarView'
 
 @ComponentV2
@@ -23,6 +23,7 @@ export struct EBookImportView {
   @Local pickedUri          : string    = ''             // 文档选择器返回的 URI（须用 fileIo 打开；不可当本地 path 直接 fs.access）
   @Local pickedFileName     : string    = ''             // 已选择文件名
   @Local message            : string    = ''             // 页内消息文本
+  @Local isShowHelpSheet    : boolean   = false          // 帮助页 sheet 显示开关
 
   // 构建导入页：选择文件、查看帮助、执行导入。
   build() {
@@ -84,7 +85,7 @@ export struct EBookImportView {
           }
             .backgroundColor(Color.Transparent)
             .onClick(() => {
-              EBookHelpViewConfig.open()
+              this.isShowHelpSheet = true
             })
         }
           .width('88%')
@@ -113,6 +114,21 @@ export struct EBookImportView {
     }
       .hideTitleBar(true)
       .backgroundColor($r('app.color.colorPrimary'))
+      .bindSheet($$this.isShowHelpSheet, this.buildHelpSheet(), {
+        detents: [SheetSize.LARGE],
+        preferType: SheetType.CENTER,
+        backgroundColor: $r('app.color.colorPrimary'),
+        showClose: true,
+        onDisappear: () => {
+          this.isShowHelpSheet = false
+        }
+      })
+  }
+
+  // 构建帮助页 Sheet。
+  @Builder
+  private buildHelpSheet() {
+    EBookHelpView()
   }
 
   // 从 URI 解析展示用文件名（去 query/fragment，与系统路径最后一段对齐）

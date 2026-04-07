@@ -10,16 +10,6 @@ import { buildNavTitle } from '../../../app/constants/AppBuilders'
 import { dNavBackIcon } from '../../../app/constants/AppDefines'
 import { LanguageManager } from '../../../common/components/Language/LanguageManager'
 import { AppLanguage } from '../../../common/components/Language/AppLanguage'
-import { NavTo } from '../../../pages/NavPathManager'
-
-export namespace EBookHelpViewConfig {
-
-  export const NavKey: string = 'EBookHelpView_show'
-
-  export function open(): void {
-    NavTo(EBookHelpViewConfig.NavKey, undefined, true, true)
-  }
-}
 
 @ComponentV2
 export struct EBookHelpView {

@@ -40,7 +40,7 @@ import { CreateEBookView, CreateEBookViewConfig } from '../views/books/ebook/Cre
 import { EBookSelectView, EBookSelectViewConfig } from '../views/books/ebook/EBookSelectView';
 import { PartUnitPickerView } from '../views/books/ebook/PartUnitPickerView';
 import { ManualAddWordView } from '../views/books/ebook/ManualAddWordView';
-import { EBookHelpView, EBookHelpViewConfig } from '../views/books/ebook/EBookHelpView';
+import { EBookHelpView } from '../views/books/ebook/EBookHelpView';
 import { MyMemosView, MyMemosViewConfig } from '../views/setting/mine/MyMemosView';
 import { MyRecordsView, MyRecordsViewConfig } from '../views/setting/mine/MyRecordsView';
 import { ReclaimWordView, ReclaimWordViewConfig } from '../views/reclaimword/ReclaimWordView';
@@ -92,7 +92,6 @@ export function navigationTo<T>(name: string, param: T){
   }else if (name === OnlineSearchWordsViewConfig.NavKey)  { OnlineSearchWordsView()
   }else if (name === CreateEBookViewConfig.NavKey)         { CreateEBookView()
   }else if (name === EBookSelectViewConfig.NavKey)         { EBookSelectView({originalDetail: (param as EBookSelectViewConfig.Param).originalDetail})
-  }else if (name === EBookHelpViewConfig.NavKey)           { EBookHelpView()
   }else if (name === InstructionsViewConfig.NavKey)       { InstructionsView()
   }else{ NavDestination(){Text(`<Index.ets>未配置navigationTo: ${name}`)}
   }
