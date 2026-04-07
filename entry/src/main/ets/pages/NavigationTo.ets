@@ -33,13 +33,13 @@ import { DayOfsView, DayOfsViewConfig } from '../views/plan/DayOfsView';
 import { DayOfWordsView, DayOfWordsViewConfig } from '../views/plan/DayOfWordsView';
 import { PlanDetailView, PlanDetailViewConfig } from '../views/plan/PlanDetailView';
 import { OnlineSearchWordsView, OnlineSearchWordsViewConfig } from '../views/onlinesearch/OnlineSearchWordsView';
-import { MyBackedUpEBooksView, MyBackedUpEBooksViewConfig } from '../views/books/ebook/MyBackedUpEBooksView';
-import { EWordSearchAddView, EWordSearchAddViewConfig } from '../views/books/ebook/EWordSearchAddView';
-import { EBookImportView, EBookImportViewConfig } from '../views/books/ebook/EBookImportView';
+import { MyBackedUpEBooksView } from '../views/books/ebook/MyBackedUpEBooksView';
+import { EWordSearchAddView } from '../views/books/ebook/EWordSearchAddView';
+import { EBookImportView } from '../views/books/ebook/EBookImportView';
 import { CreateEBookView, CreateEBookViewConfig } from '../views/books/ebook/CreateEBookView';
 import { EBookSelectView, EBookSelectViewConfig } from '../views/books/ebook/EBookSelectView';
-import { PartUnitPickerView, PartUnitPickerViewConfig } from '../views/books/ebook/PartUnitPickerView';
-import { ManualAddWordView, ManualAddWordViewConfig } from '../views/books/ebook/ManualAddWordView';
+import { PartUnitPickerView } from '../views/books/ebook/PartUnitPickerView';
+import { ManualAddWordView } from '../views/books/ebook/ManualAddWordView';
 import { EBookHelpView, EBookHelpViewConfig } from '../views/books/ebook/EBookHelpView';
 import { MyMemosView, MyMemosViewConfig } from '../views/setting/mine/MyMemosView';
 import { MyRecordsView, MyRecordsViewConfig } from '../views/setting/mine/MyRecordsView';
@@ -90,13 +90,8 @@ export function navigationTo<T>(name: string, param: T){
   }else if (name === MyRecordsViewConfig.NavKey)          { MyRecordsView()
   }else if (name === AboutViewConfig.NavKey)              { AboutView()
   }else if (name === OnlineSearchWordsViewConfig.NavKey)  { OnlineSearchWordsView()
-  }else if (name === MyBackedUpEBooksViewConfig.NavKey)    { MyBackedUpEBooksView()
-  }else if (name === EWordSearchAddViewConfig.NavKey)      { EWordSearchAddView()
-  }else if (name === EBookImportViewConfig.NavKey)         { EBookImportView()
   }else if (name === CreateEBookViewConfig.NavKey)         { CreateEBookView()
   }else if (name === EBookSelectViewConfig.NavKey)         { EBookSelectView({originalDetail: (param as EBookSelectViewConfig.Param).originalDetail})
-  }else if (name === PartUnitPickerViewConfig.NavKey)      { PartUnitPickerView({detail: (param as PartUnitPickerViewConfig.Param).detail, bookId: (param as PartUnitPickerViewConfig.Param).bookId})
-  }else if (name === ManualAddWordViewConfig.NavKey)       { ManualAddWordView({initialTitleEn: (param as ManualAddWordViewConfig.Param).initialTitleEn})
   }else if (name === EBookHelpViewConfig.NavKey)           { EBookHelpView()
   }else if (name === InstructionsViewConfig.NavKey)       { InstructionsView()
   }else{ NavDestination(){Text(`<Index.ets>未配置navigationTo: ${name}`)}

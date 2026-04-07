@@ -9,7 +9,7 @@ import { HighlightText } from '../../../app/views/HighlightText'
 import { NavBarView } from '../../../app/views/NavBarView'
 import { OnlineWord } from '../../../models/managers/onlinesearch/OnlineWord'
 import { OnlineWordManager } from '../../../models/managers/onlinesearch/OnlineWordManager'
-import { NavPop, NavTo } from '../../../pages/NavPathManager'
+import { NavPop } from '../../../pages/NavPathManager'
 import { NoDataPanel } from '../../../app/views/NoDataView'
 import { LoadingDialog } from '@kit.ArkUI'
 import { Toast } from '../../../common/utils/Toast'
@@ -19,27 +19,30 @@ import { BookManager } from '../../../models/datas/book/BookManager'
 import { getString } from '../../../common/utils/ResourceUtils'
 import { NetWorkTool } from '../../../common/utils/NetworkUtils'
 import { WordDetail } from '../../../models/datas/word/WordDetail'
-import { PartUnitPickerViewConfig } from './PartUnitPickerView'
-import { ManualAddWordViewConfig } from './ManualAddWordView'
+import { PartUnitPickerView } from './PartUnitPickerView'
+import { ManualAddWordView } from './ManualAddWordView'
 
-export namespace EWordSearchAddViewConfig {
-
-  export const NavKey: string = 'EWordSearchAddView_show'
-
-  // 打开添加单词查询页
-  export function open(): void {
-
-    NavTo(EWordSearchAddViewConfig.NavKey, undefined, true, true)
-  }
+// 统一管理 EWordSearchAddView 中单一 bindSheet 的内容类型，避免多个 bindSheet 同层互相抢占。
+enum EWordSearchSubSheetType {
+  None       = 0, // 不显示子 Sheet
+  ManualAdd  = 1, // 手动添加页（ManualAddWordView）
+  PartUnit   = 2  // Part/Unit 选择页（PartUnitPickerView）
 }
 
 @ComponentV2
 export struct EWordSearchAddView {
 
-  @Local searchResults : WordDetail[] = []
-  @Local searchText    : string       = ''
-  @Local addingTitleEn : string       = ''
-  @Local hintMessage   : string       = ''
+  @Param closeBySheet        : boolean                  = false                          // 是否由 sheet 承载
+  @Event onDismiss           : () => void               = () => {}                       // 关闭回调
+  @Local searchResults       : WordDetail[]             = []                             // 搜索结果
+  @Local searchText          : string                   = ''                             // 搜索输入文本
+  @Local addingTitleEn       : string                   = ''                             // 添加中的英文标题
+  @Local hintMessage         : string                   = ''                             // 空态提示文本
+  @Local isShowSubSheet      : boolean                  = false                          // 子 sheet 显示开关
+  @Local subSheetType        : EWordSearchSubSheetType  = EWordSearchSubSheetType.None   // 子 sheet 类型
+  @Local sheetInitialTitleEn : string                   = ''                             // 手动添加初始英文
+  @Local sheetDetail         : WordDetail               = new WordDetail()               // 传给 Part/Unit 的词条
+  @Local sheetBookId         : number                   = 0                              // 传给 Part/Unit 的 bookId
 
   // 页面即将显示：校验当前词汇本并聚焦搜索框
   aboutToAppear(): void {
@@ -66,7 +69,7 @@ export struct EWordSearchAddView {
             leftButtons : [{
               text   : $r('app.string.online_search_btn_cancel'),
               onClick: () => {
-                NavPop()
+                this.closeSelf()
               }
             }],
             rightButtons: []
@@ -96,6 +99,16 @@ export struct EWordSearchAddView {
     }
       .hideTitleBar(true)
       .backgroundColor($r('app.color.colorPrimary'))
+      .bindSheet($$this.isShowSubSheet, this.buildSubSheet(), {
+        detents: [SheetSize.LARGE],
+        preferType: SheetType.CENTER,
+        backgroundColor: $r('app.color.colorPrimary'),
+        showClose: false,
+        onDisappear: () => {
+          this.isShowSubSheet = false
+          this.subSheetType = EWordSearchSubSheetType.None
+        }
+      })
   }
 
   // 顶栏下方：圆角灰底输入框 + 描边「搜索」按钮
@@ -237,7 +250,9 @@ export struct EWordSearchAddView {
           .textAlign(TextAlign.Center)
           .margin({ top: 20 })
           .onClick(() => {
-            ManualAddWordViewConfig.open({ initialTitleEn: this.searchText })
+            this.sheetInitialTitleEn = this.searchText
+            this.subSheetType = EWordSearchSubSheetType.ManualAdd
+            this.isShowSubSheet = true
           })
       }
     }
@@ -326,10 +341,43 @@ export struct EWordSearchAddView {
 
       const detail = ow.asWordDetail()
 
-      PartUnitPickerViewConfig.open({
-        detail : detail,
-        bookId : book.bookId ?? 0
-      })
+      this.sheetDetail = detail
+      this.sheetBookId = book.bookId ?? 0
+      this.subSheetType = EWordSearchSubSheetType.PartUnit
+      this.isShowSubSheet = true
     })
+  }
+
+  @Builder
+  private buildSubSheet() {
+    if (this.subSheetType === EWordSearchSubSheetType.ManualAdd) {
+      ManualAddWordView({
+        initialTitleEn: this.sheetInitialTitleEn,
+        closeBySheet: true,
+        onDismiss: () => {
+          this.isShowSubSheet = false
+          this.subSheetType = EWordSearchSubSheetType.None
+        }
+      })
+    } else {
+      PartUnitPickerView({
+        detail: this.sheetDetail,
+        bookId: this.sheetBookId,
+        closeBySheet: true,
+        onDismiss: () => {
+          this.isShowSubSheet = false
+          this.subSheetType = EWordSearchSubSheetType.None
+        }
+      })
+    }
+  }
+
+  private closeSelf(): void {
+    // 分支：Sheet 模式回调关闭；导航模式执行 NavPop
+    if (this.closeBySheet) {
+      this.onDismiss()
+    } else {
+      NavPop()
+    }
   }
 }

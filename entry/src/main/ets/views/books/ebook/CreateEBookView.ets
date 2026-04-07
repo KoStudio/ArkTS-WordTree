@@ -27,10 +27,11 @@ export namespace CreateEBookViewConfig {
 @ComponentV2
 export struct CreateEBookView {
 
-  @Local private bookName       : string  = ''
-  @Local private isSaving       : boolean = false
-  @Local private maxNameLength  : number  = 20
+  @Local private bookName       : string   = ''     // 输入的书名
+  @Local private isSaving       : boolean  = false  // 保存中状态
+  @Local private maxNameLength  : number   = 20     // 书名最大长度
 
+  // 构建新建词汇本页面：名称输入与保存按钮。
   build() {
     NavDestination() {
       Stack() {
@@ -87,11 +88,10 @@ export struct CreateEBookView {
       .backgroundColor($r('app.color.colorPrimary'))
   }
 
-  /**
-   * 执行保存逻辑：校验输入、会员权限、创建本地 EBook
-   */
+  // 执行保存逻辑：校验输入、会员权限、创建本地 EBook
   private async save(): Promise<void> {
 
+    // 调用：输入去空白
     const trimmed = this.bookName.trim()
 
     // 分支：空名称不处理
@@ -106,6 +106,7 @@ export struct CreateEBookView {
 
     this.isSaving = true
 
+    // 调用：创建本地 EBook
     // 调用：创建本地 EBook
     const book = await EBookManager.shared.createLocalEBook(trimmed, null)
 

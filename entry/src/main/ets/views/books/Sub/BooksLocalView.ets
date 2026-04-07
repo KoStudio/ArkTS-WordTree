@@ -16,10 +16,18 @@ import { SearchManager } from '../../../models/datas/model/SearchManager'
 import { WordUserDbAccess } from '../../../models/datas/myData/WordUserDbAccess'
 import { MemberManager } from '../../../models/managers/member/MemberManager'
 import { UserManager } from '../../../models/managers/user/UserManager'
-import { EWordSearchAddViewConfig } from '../ebook/EWordSearchAddView'
-import { MyBackedUpEBooksViewConfig } from '../ebook/MyBackedUpEBooksView'
-import { EBookImportViewConfig } from '../ebook/EBookImportView'
+import { EWordSearchAddView } from '../ebook/EWordSearchAddView'
+import { MyBackedUpEBooksView } from '../ebook/MyBackedUpEBooksView'
+import { EBookImportView } from '../ebook/EBookImportView'
 import { TextButton } from '../../../app/views/buttons/TextButton'
+
+// 统一管理 BooksLocalView 中单一 bindSheet 的内容类型，避免多个 bindSheet 同层互相抢占。
+enum EBookSheetType {
+  None         = 0, // 不显示任何词汇本相关 Sheet
+  Import       = 1, // 导入词汇本页（EBookImportView）
+  MyBackedUp   = 2, // 我备份的词汇本页（MyBackedUpEBooksView）
+  AddWord      = 3  // 添加单词页（EWordSearchAddView）
+}
 
 @ComponentV2
 export struct BooksLocalView {
@@ -29,6 +37,8 @@ export struct BooksLocalView {
   @Local newBookNameInput       : string                    = ''         // 新建词汇本弹窗输入，与 createEbookDialogView 双向绑定
   @Local renameBookNameInput    : string                    = ''         // 重命名弹窗输入，与 renameEbookDialogView 双向绑定
   @Local renameTargetBookId     : number                    = 0          // 重命名目标 bookId，打开重命名弹窗时写入
+  @Local isShowEBookSheet       : boolean                   = false
+  @Local eBookSheetType         : EBookSheetType            = EBookSheetType.None
   private unsubBookList         : (() => void) | undefined  = undefined  // 取消书单更新事件的 SimpleEventBus 订阅
   private unsubCurrentBook      : (() => void) | undefined  = undefined  // 取消当前书更新事件的 SimpleEventBus 订阅
 
@@ -142,6 +152,16 @@ export struct BooksLocalView {
       .height('100%')
       .backgroundColor($r('app.color.color_obscure'))
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+      .bindSheet($$this.isShowEBookSheet, this.buildEBookSheet(), {
+        detents: [SheetSize.LARGE],
+        preferType: SheetType.CENTER,
+        backgroundColor: $r('app.color.colorPrimary'),
+        showClose: false,
+        onDisappear: () => {
+          this.isShowEBookSheet = false
+          this.eBookSheetType = EBookSheetType.None
+        }
+      })
   }
 
   // 底部「+」：`ItemOption` 列表 + `Toast.showSelectOptions`（对齐 Zhika DayOfsView.actionPopMenu）
@@ -161,7 +181,8 @@ export struct BooksLocalView {
       text   : $r('app.string.ebook_import_btn'),
       action : () => {
 
-        EBookImportViewConfig.open()
+        this.eBookSheetType = EBookSheetType.Import
+        this.isShowEBookSheet = true
       }
     })
 
@@ -171,7 +192,8 @@ export struct BooksLocalView {
         text   : $r('app.string.ebook_my_backed_up_btn'),
         action : () => {
 
-          MyBackedUpEBooksViewConfig.open()
+          this.eBookSheetType = EBookSheetType.MyBackedUp
+          this.isShowEBookSheet = true
         }
       })
     }
@@ -391,7 +413,8 @@ export struct BooksLocalView {
     SimpleEventBus.emit(BookManagerNotification.bookListUpdated)
 
     // 调用：打开 EBook 加词页面
-    EWordSearchAddViewConfig.open()
+    this.eBookSheetType = EBookSheetType.AddWord
+    this.isShowEBookSheet = true
   }
 
   // 确认重命名：trim 后非空则按 renameTargetBookId 查找并 renameBook，关弹窗并刷新列表
@@ -444,7 +467,37 @@ export struct BooksLocalView {
     this.loadData()
 
     // 调用：打开 EBook 加词页
-    EWordSearchAddViewConfig.open()
+    this.eBookSheetType = EBookSheetType.AddWord
+    this.isShowEBookSheet = true
+  }
+
+  @Builder
+  private buildEBookSheet() {
+    if (this.eBookSheetType === EBookSheetType.Import) {
+      EBookImportView({
+        closeBySheet: true,
+        onDismiss: () => {
+          this.isShowEBookSheet = false
+          this.eBookSheetType = EBookSheetType.None
+        }
+      })
+    } else if (this.eBookSheetType === EBookSheetType.MyBackedUp) {
+      MyBackedUpEBooksView({
+        closeBySheet: true,
+        onDismiss: () => {
+          this.isShowEBookSheet = false
+          this.eBookSheetType = EBookSheetType.None
+        }
+      })
+    } else {
+      EWordSearchAddView({
+        closeBySheet: true,
+        onDismiss: () => {
+          this.isShowEBookSheet = false
+          this.eBookSheetType = EBookSheetType.None
+        }
+      })
+    }
   }
 
   /**

@@ -24,19 +24,24 @@ export namespace EBookHelpViewConfig {
 @ComponentV2
 export struct EBookHelpView {
 
-  @Local private webController: webview.WebviewController = new webview.WebviewController()
+  @Local private webController : webview.WebviewController = new webview.WebviewController()  // Web 控制器
 
+  // 根据当前语言返回帮助页本地 HTML 地址。
   private helpUrl(): string {
     const lang = LanguageManager.getCurrentLanguage()
+    // 分支：繁体中文使用 zh-Hant 资源
     if (lang === AppLanguage.Traditional) {
       return 'resource://rawfile/html/EBookImportExportHelp_zh-Hant.html'
     }
+    // 分支：其余语言回退简体资源
     return 'resource://rawfile/html/EBookImportExportHelp.html'
   }
 
+  // 构建帮助页：顶栏 + Web 内容。
   build() {
     NavDestination() {
       Column() {
+        // 调用：加载本地帮助 html
         Web({
           src        : this.helpUrl(),
           controller : this.webController

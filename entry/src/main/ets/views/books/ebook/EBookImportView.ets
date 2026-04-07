@@ -5,7 +5,7 @@
 
 import { common } from '@kit.AbilityKit'
 import { picker } from '@kit.CoreFileKit'
-import { NavPop, NavTo } from '../../../pages/NavPathManager'
+import { NavPop } from '../../../pages/NavPathManager'
 import { EBookExportImportManager } from '../../../models/managers/ebook/EBookExportImportManager'
 import { Book } from '../../../models/datas/book/Book'
 import { Toast } from '../../../common/utils/Toast'
@@ -14,25 +14,17 @@ import { getString, getStringF } from '../../../common/utils/ResourceUtils'
 import { EBookHelpViewConfig } from './EBookHelpView'
 import { NavBarView } from '../../../app/views/NavBarView'
 
-export namespace EBookImportViewConfig {
-
-  export const NavKey: string = 'EBookImportView_show'
-
-  export function open(): void {
-
-    NavTo(EBookImportViewConfig.NavKey, undefined, true, true)
-  }
-}
-
 @ComponentV2
 export struct EBookImportView {
 
-  @Local busy: boolean = false
-  /** 文档选择器返回的 URI（须用 fileIo 打开；不可当本地 path 直接 fs.access） */
-  @Local pickedUri: string = ''
-  @Local pickedFileName: string = ''
-  @Local message: string = ''
+  @Param closeBySheet       : boolean   = false          // 是否由 sheet 承载
+  @Event onDismiss          : () => void = () => {}      // 关闭回调
+  @Local busy               : boolean   = false          // 导入执行中
+  @Local pickedUri          : string    = ''             // 文档选择器返回的 URI（须用 fileIo 打开；不可当本地 path 直接 fs.access）
+  @Local pickedFileName     : string    = ''             // 已选择文件名
+  @Local message            : string    = ''             // 页内消息文本
 
+  // 构建导入页：选择文件、查看帮助、执行导入。
   build() {
     NavDestination() {
 
@@ -42,7 +34,7 @@ export struct EBookImportView {
           leftButtons: [{
             text: $r('app.string.online_search_btn_cancel'),
             onClick: () => {
-              NavPop()
+              this.closeSelf()
             }
           }],
           rightButtons: [{
@@ -126,6 +118,7 @@ export struct EBookImportView {
   // 从 URI 解析展示用文件名（去 query/fragment，与系统路径最后一段对齐）
   private fileNameHintFromUri(uri: string): string {
 
+    // 调用：拷贝入参
     let s = uri
     const qi = s.indexOf('?')
 
@@ -152,6 +145,7 @@ export struct EBookImportView {
 
   private async onPick(): Promise<void> {
 
+    // 调用：切入 busy 态
     this.busy = true
 
     try {
@@ -191,6 +185,7 @@ export struct EBookImportView {
 
   private async startImport(): Promise<void> {
 
+    // 分支：未选择文件或已在执行
     if (this.pickedUri.length < 1 || this.busy) {
       return
     }
@@ -199,6 +194,7 @@ export struct EBookImportView {
     this.message = ''
 
     // 调用：将用户所选文件从 URI 复制到应用沙箱可读路径（与 iOS asCopy 一致），再执行 zip/sqlite 导入
+    // 调用：复制到沙箱临时路径
     let tempPath = await FileUtility.copyToTempDir(this.pickedUri)
 
     // 分支：部分 URI 末段无 .wte 后缀时，复制为固定扩展名以满足 importEBookAtPath 校验
@@ -243,13 +239,22 @@ export struct EBookImportView {
             Toast.showMessage(getStringF($r('app.string.ebook_import_success_fmt'), display))
           }
 
-          NavPop()
+          this.closeSelf()
         })
     } catch (e) {
 
       FileUtility.deleteFileAt(tempPath)
       this.busy = false
       this.message = `${e}`
+    }
+  }
+
+  private closeSelf(): void {
+    // 分支：Sheet 模式回调关闭；导航模式执行 NavPop
+    if (this.closeBySheet) {
+      this.onDismiss()
+    } else {
+      NavPop()
     }
   }
 }

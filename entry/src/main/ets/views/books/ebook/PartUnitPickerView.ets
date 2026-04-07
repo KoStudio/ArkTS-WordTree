@@ -18,53 +18,43 @@ import { WordUserDbAccess } from '../../../models/datas/myData/WordUserDbAccess'
 import { WordDetail } from '../../../models/datas/word/WordDetail'
 import { WordDbAccess } from '../../../models/datas/word/WordDbAccess'
 import { EBookManager } from '../../../models/managers/ebook/EBookManager'
-import { NavPop, NavTo } from '../../../pages/NavPathManager'
+import { NavPop } from '../../../pages/NavPathManager'
 import { SimpleEventBus } from '../../../common/components/eventbus/SimpleEventBus'
-
-export namespace PartUnitPickerViewConfig {
-
-  export const NavKey: string = 'PartUnitPickerView_show'
-
-  export interface Param {
-    detail: WordDetail
-    bookId: number
-  }
-
-  export function open(param: Param): void {
-    NavTo(PartUnitPickerViewConfig.NavKey, param, true, true)
-  }
-}
 
 @ComponentV2
 export struct PartUnitPickerView {
 
-  @Param @Require detail: WordDetail
-  @Param @Require bookId: number
+  @Param closeBySheet                : boolean    = false     // 是否由 sheet 承载
+  @Event onDismiss                   : () => void = () => {}  // 关闭回调
+  @Event onAddSucceed                : () => void = () => {}  // 添加成功回调（用于联动关闭上一层）
+  @Param @Require detail             : WordDetail             // 待保存词条
+  @Param @Require bookId             : number                 // 目标书 id
+  @Local private parts               : Part[]     = []        // Part 列表
+  @Local private units               : Unit[]     = []        // Unit 列表
+  @Local private selectedPartIndex   : number     = 0         // 选中的 Part 索引
+  @Local private selectedUnitIndex   : number     = 0         // 选中的 Unit 索引
+  @Local private newPartName         : string     = ''        // 新建 Part 名称输入
+  @Local private newUnitName         : string     = ''        // 新建 Unit 名称输入
+  @Local private maxPartId           : number     = 0         // 当前最大 PartId
+  @Local private maxUnitId           : number     = 0         // 当前最大 UnitId
+  @Local private loading             : boolean    = true      // 加载状态
+  @Local private isNewPartFieldFocused: boolean   = false     // 新 Part 输入焦点态
+  @Local private isNewUnitFieldFocused: boolean   = false     // 新 Unit 输入焦点态
+  private readonly maxPartNameLength : number     = 10        // 新 Part 名最大长度
+  private readonly maxUnitNameLength : number     = 20        // 新 Unit 名最大长度
 
-  @Local private parts             : Part[] = []
-  @Local private units             : Unit[] = []
-  @Local private selectedPartIndex : number          = 0
-  @Local private selectedUnitIndex : number          = 0
-  @Local private newPartName       : string          = ''
-  @Local private newUnitName       : string          = ''
-  @Local private maxPartId         : number          = 0
-  @Local private maxUnitId         : number          = 0
-  @Local private loading           : boolean         = true
-  @Local private isNewPartFieldFocused: boolean      = false
-  @Local private isNewUnitFieldFocused: boolean      = false
-
-  private readonly maxPartNameLength: number = 10
-  private readonly maxUnitNameLength: number = 20
-
+  // 目标书对象
   private get targetBook(): Book | null {
     return BookManager.shared.books.find((it: Book) => it.bookId === this.bookId) ?? null
   }
 
+  // 目标 textDb 完整路径
   private get textDbPath(): string {
     const textDb = this.targetBook?.textDb ?? ''
     return EBookManager.textDbPath(textDb)
   }
 
+  // 页面出现时加载初始化数据
   aboutToAppear(): void {
     void this.loadInitialData()
   }
@@ -79,7 +69,7 @@ export struct PartUnitPickerView {
           leftButtons : [{
             text   : $r('app.string.online_search_btn_cancel'),
             onClick: () => {
-              NavPop()
+              this.closeSelf()
             }
           }],
           rightButtons: [{
@@ -321,9 +311,7 @@ export struct PartUnitPickerView {
       this.isUsingNewPart()
   }
 
-  /**
-   * 初始加载目标书的 Part/Unit 列表，并设置默认选中项。
-   */
+  // 初始加载目标书的 Part/Unit 列表，并设置默认选中项。
   private async loadInitialData(): Promise<void> {
 
     this.loading   = true
@@ -346,9 +334,7 @@ export struct PartUnitPickerView {
     this.loading = false
   }
 
-  /**
-   * 根据当前 Part 选择刷新 Unit 列表。
-   */
+  // 根据当前 Part 选择刷新 Unit 列表。
   private async reloadUnitsForSelectedPart(): Promise<void> {
 
     if (this.selectedPartIndex < 0 || this.selectedPartIndex >= this.parts.length) {
@@ -372,9 +358,7 @@ export struct PartUnitPickerView {
     }
   }
 
-  /**
-   * 执行保存前的查重确认，并决定是弹窗还是直接保存。
-   */
+  // 执行保存前的查重确认，并决定是弹窗还是直接保存。
   private async saveSelectedDetail(): Promise<void> {
 
     const finalDetail = await this.buildFinalDetail()
@@ -407,9 +391,7 @@ export struct PartUnitPickerView {
     await this.performSave(finalDetail)
   }
 
-  /**
-   * 真正把词条写入目标 EBook。
-   */
+  // 真正把词条写入目标 EBook。
   private async performSave(detail: WordDetail): Promise<void> {
 
     // 访问 WordDbAccess（内部成功后会 `refreshBookCounts`，与 iOS `WordManager.insertWordDetail(_:intoTextDbAt:)` 一致）
@@ -428,12 +410,20 @@ export struct PartUnitPickerView {
     void SearchManager.shared.refreshData()
     SimpleEventBus.emit(BookManagerNotification.currentBookUpdated)
     SimpleEventBus.emit(BookManagerNotification.bookListUpdated)
-    NavPop()
+    this.onAddSucceed()
+    this.closeSelf()
   }
 
-  /**
-   * 组合原始词条与当前选择，生成最终待保存的 WordDetail。
-   */
+  private closeSelf(): void {
+    // 分支：Sheet 模式回调关闭；导航模式执行 NavPop
+    if (this.closeBySheet) {
+      this.onDismiss()
+    } else {
+      NavPop()
+    }
+  }
+
+  // 组合原始词条与当前选择，生成最终待保存的 WordDetail。
   private async buildFinalDetail(): Promise<WordDetail> {
 
     const detail: WordDetail = this.copyWordDetail(this.detail)
@@ -457,11 +447,9 @@ export struct PartUnitPickerView {
     return detail
   }
 
-  /**
-   * 复制词条对象（避免使用受限标准库 `Object.assign`）
-   * @param src 源词条
-   * @returns 新词条副本
-   */
+  // 复制词条对象（避免使用受限标准库 `Object.assign`）
+  // 参数 src：源词条
+  // 返回值：新词条副本
   private copyWordDetail(src: WordDetail): WordDetail {
 
     const detail = new WordDetail()

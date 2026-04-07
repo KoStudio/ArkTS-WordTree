@@ -11,30 +11,22 @@ import { getString } from '../../../common/utils/ResourceUtils'
 import { Toast } from '../../../common/utils/Toast'
 import { BookManager } from '../../../models/datas/book/BookManager'
 import { WordDetail } from '../../../models/datas/word/WordDetail'
-import { NavTo } from '../../../pages/NavPathManager'
-import { PartUnitPickerViewConfig } from './PartUnitPickerView'
-
-export namespace ManualAddWordViewConfig {
-
-  export const NavKey: string = 'ManualAddWordView_show'
-
-  export interface Param {
-    initialTitleEn: string
-  }
-
-  export function open(param: Param): void {
-    NavTo(ManualAddWordViewConfig.NavKey, param, true, true)
-  }
-}
+import { NavPop } from '../../../pages/NavPathManager'
+import { PartUnitPickerView } from './PartUnitPickerView'
 
 @ComponentV2
 export struct ManualAddWordView {
 
-  @Param initialTitleEn: string = ''
+  @Param closeBySheet               : boolean    = false             // 是否由 sheet 承载
+  @Event onDismiss                  : () => void = () => {}          // 关闭回调
+  @Param initialTitleEn             : string     = ''                // 初始英文（来自上一页）
+  @Local private titleEnInput       : string     = ''                // 英文输入
+  @Local private titleCn1Input      : string     = ''                // 中文输入
+  @Local private isShowPartUnitSheet: boolean    = false             // Part/Unit sheet 显示开关
+  @Local private sheetDetail        : WordDetail = new WordDetail()  // 传给 Part/Unit 的词条
+  @Local private sheetBookId        : number     = 0                 // 传给 Part/Unit 的 bookId
 
-  @Local private titleEnInput  : string = ''
-  @Local private titleCn1Input : string = ''
-
+  // 页面出现时预填英文
   aboutToAppear(): void {
     const trimmed = this.initialTitleEn.trim()
     if (trimmed.length > 0 && this.titleEnInput.length < 1) {
@@ -95,15 +87,22 @@ export struct ManualAddWordView {
       .title(buildNavTitle($r('app.string.ebook_manual_add_nav_title')))
       .backButtonIcon(dNavBackIcon)
       .backgroundColor($r('app.color.colorPrimary'))
+      .bindSheet($$this.isShowPartUnitSheet, this.buildPartUnitSheet(), {
+        detents: [SheetSize.LARGE],
+        preferType: SheetType.CENTER,
+        backgroundColor: $r('app.color.colorPrimary'),
+        showClose: false,
+        onDisappear: () => {
+          this.isShowPartUnitSheet = false
+        }
+      })
   }
 
   private canGoNext(): boolean {
     return this.titleEnInput.trim().length > 0
   }
 
-  /**
-   * 下一步：构造仅含 titleEn 与可选 titleCn1 的 WordDetail，跳转 Part/Unit 选择
-   */
+  // 下一步：构造仅含 titleEn 与可选 titleCn1 的 WordDetail，跳转 Part/Unit 选择
   private goNext(): void {
 
     const trimmed = this.titleEnInput.trim()
@@ -121,13 +120,38 @@ export struct ManualAddWordView {
       return
     }
 
+    // 调用：构造最小词条对象
     const minimal      = new WordDetail()
     minimal.titleEn    = trimmed
     minimal.titleCn1   = this.titleCn1Input.trim()
 
-    PartUnitPickerViewConfig.open({
-      detail : minimal,
-      bookId : book.bookId ?? 0
+    this.sheetDetail = minimal
+    this.sheetBookId = book.bookId ?? 0
+    this.isShowPartUnitSheet = true
+  }
+
+  @Builder
+  // 构建 Part/Unit 选择 Sheet。
+  private buildPartUnitSheet() {
+    PartUnitPickerView({
+      detail: this.sheetDetail,
+      bookId: this.sheetBookId,
+      closeBySheet: true,
+      onAddSucceed: () => {
+        this.closeSelf()
+      },
+      onDismiss: () => {
+        this.isShowPartUnitSheet = false
+      }
     })
+  }
+
+  private closeSelf(): void {
+    // 分支：Sheet 模式回调关闭；导航模式执行 NavPop
+    if (this.closeBySheet) {
+      this.onDismiss()
+    } else {
+      NavPop()
+    }
   }
 }

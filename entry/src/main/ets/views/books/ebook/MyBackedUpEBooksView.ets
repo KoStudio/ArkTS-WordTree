@@ -17,27 +17,20 @@ import { CUserDataManager } from '../../../models/managers/userdata/CUserData/CU
 import { WordUserDbAccess } from '../../../models/datas/myData/WordUserDbAccess'
 import { SearchManager } from '../../../models/datas/model/SearchManager'
 import { SimpleEventBus } from '../../../common/components/eventbus/SimpleEventBus'
-import { NavPop, NavTo } from '../../../pages/NavPathManager'
-
-export namespace MyBackedUpEBooksViewConfig {
-
-  export const NavKey: string = 'MyBackedUpEBooksView_show'
-
-  export function open(): void {
-
-    NavTo(MyBackedUpEBooksViewConfig.NavKey, undefined, true, true)
-  }
-}
+import { NavPop } from '../../../pages/NavPathManager'
 
 @ComponentV2
 export struct MyBackedUpEBooksView {
 
-  @Local items            : UserDataEBook[]   = []
-  @Local loading          : boolean           = true
-  @Local errorMessage      : string            = ''
-  @Local downloadingId     : number | null     = null
-  @Local hasShownEmptyToast: boolean          = false
+  @Param closeBySheet       : boolean         = false        // 是否由 sheet 承载
+  @Event onDismiss          : () => void      = () => {}     // 关闭回调
+  @Local items              : UserDataEBook[] = []           // 云端备份列表
+  @Local loading            : boolean         = true         // 加载中
+  @Local errorMessage       : string          = ''           // 错误信息
+  @Local downloadingId      : number | null   = null         // 当前下载中的服务器书 id
+  @Local hasShownEmptyToast : boolean         = false        // 空态 toast 是否已提示
 
+  // 页面出现加载列表
   aboutToAppear(): void {
 
     this.loadList()
@@ -58,7 +51,7 @@ export struct MyBackedUpEBooksView {
     void SearchManager.shared.refreshData()
     SimpleEventBus.emit(BookManagerNotification.currentBookUpdated)
     SimpleEventBus.emit(BookManagerNotification.bookListUpdated)
-    NavPop()
+    this.closeSelf()
   }
 
   private loadList(): void {
@@ -99,6 +92,7 @@ export struct MyBackedUpEBooksView {
       return
     }
 
+    // 调用：提取 server book id
     const serverEBookId = serverItem.bookId
 
     if (serverEBookId === null || serverEBookId === undefined) {
@@ -127,6 +121,7 @@ export struct MyBackedUpEBooksView {
       book.wordsCount    = serverItem.wordsCount
       BookManager.shared.saveBook(book)
 
+      // 调用：计算本地 textDb 目标路径
       const textDbPath = EBookManager.textDbPath(book.textDb ?? '')
       const ebookAddr  = serverItem.textDbAddr ?? ''
 
@@ -194,7 +189,7 @@ export struct MyBackedUpEBooksView {
             leftButtons: [{
               text   : $r('app.string.online_search_btn_cancel'),
               onClick: () => {
-                NavPop()
+                this.closeSelf()
               }
             }],
             rightButtons: []
@@ -330,5 +325,14 @@ export struct MyBackedUpEBooksView {
 
         this.download(item)
       })
+  }
+
+  private closeSelf(): void {
+    // 分支：Sheet 模式回调关闭；导航模式执行 NavPop
+    if (this.closeBySheet) {
+      this.onDismiss()
+    } else {
+      NavPop()
+    }
   }
 }
