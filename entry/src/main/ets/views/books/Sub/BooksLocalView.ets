@@ -3,7 +3,6 @@
 // 与 iOS `Root/Book2/Sub/BooksLocalView.swift` 对齐（不含 LegacyBookMigrator）。
 //
 
-import { TintImage } from '../../../app/views/TintImage'
 import { CBookManager } from '../../../common/components/Sounds/Cloud/Download/CBook/CBookManager'
 import { SimpleEventBus } from '../../../common/components/eventbus/SimpleEventBus'
 import { EBookManager } from '../../../models/managers/ebook/EBookManager'
@@ -112,7 +111,7 @@ export struct BooksLocalView {
 
       Column() {
 
-        // 调用：构建书单列表区域
+        // 调用：构建书单列表区域（与 iOS `.background(Color(theme.color.obscure))` + grouped 卡片一致）
         this.buildList()
       }
         .width('100%')
@@ -120,32 +119,44 @@ export struct BooksLocalView {
 
       Column() {
 
-        Divider().color($r('app.color.color_obscure'))
+        // 与 iOS `Rectangle().fill(Color(theme.color.line)).frame(height: 1)` 一致
+        Divider()
+          .strokeWidth(1)
+          .color($r('app.color.color_line'))
 
-        Button() {
+        Row() {
 
-          Text($r('app.string.ebook_plus_btn'))
-            .fontSize(17)
-            .fontWeight(FontWeight.Medium)
-            .fontColor(Color.White)
+          Button() {
+
+            // 与 iOS 导航栏主色一致：`color_nav_bg` / `theme` 主色底 + 白字
+            Text($r('app.string.ebook_plus_btn'))
+              .fontSize(17)
+              .fontWeight(FontWeight.Medium)
+              .fontColor($r('app.color.color_nav_text'))
+          }
+            .width(200)
+            .height(36)
+            .backgroundColor($r('app.color.color_nav_bg'))
+            .borderRadius(18)
+            .type(ButtonType.Normal)
+            .stateEffect(true)
+            .onClick(() => {
+              this.ebookSheetKind    = 1
+              this.ebookSheetVisible = true
+            })
         }
-          .width(200)
-          .height(36)
-          .backgroundColor($r('app.color.colorAccent'))
-          .borderRadius(18)
-          .margin({ top: 6, bottom: 6 })
-          .onClick(() => {
-            this.ebookSheetKind   = 1
-            this.ebookSheetVisible = true
-          })
+          .width('100%')
+          .height(44)
+          .justifyContent(FlexAlign.Center)
       }
         .width('100%')
-        .backgroundColor($r('app.color.color_background'))
-        .justifyContent(FlexAlign.Center)
+        .backgroundColor($r('app.color.color_detail_footer_bg'))
 
     }
       .width('100%')
       .height('100%')
+      .backgroundColor($r('app.color.color_obscure'))
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       .bindSheet($$this.ebookSheetVisible, this.buildEbookSheetContent(), {
         detents     : [SheetSize.FIT_CONTENT],
         dragBar     : true,
@@ -202,34 +213,37 @@ export struct BooksLocalView {
    */
   buildEbookMenuContent() {
 
+    // 与 iOS `confirmationDialog`：蓝色操作项、细分割线、「取消」独立一块
     Column({ space: 0 }) {
 
       Button() {
 
         Text($r('app.string.ebook_new_book'))
           .fontSize(17)
-          .fontColor($r('app.color.color_text'))
+          .fontColor($r('app.color.color_link'))
       }
         .width('100%')
-        .height(48)
+        .height(50)
         .backgroundColor($r('app.color.color_background'))
+        .type(ButtonType.Normal)
         .onClick(() => {
-          this.newBookNameInput = ''
-          this.ebookSheetKind   = 2
-          this.ebookSheetVisible = true
+          this.newBookNameInput   = ''
+          this.ebookSheetKind     = 2
+          this.ebookSheetVisible  = true
         })
 
-      Divider()
+      Divider().color($r('app.color.color_line')).strokeWidth(1)
 
       Button() {
 
         Text($r('app.string.ebook_import_btn'))
           .fontSize(17)
-          .fontColor($r('app.color.color_text'))
+          .fontColor($r('app.color.color_link'))
       }
         .width('100%')
-        .height(48)
+        .height(50)
         .backgroundColor($r('app.color.color_background'))
+        .type(ButtonType.Normal)
         .onClick(() => {
           this.ebookSheetVisible = false
 
@@ -239,17 +253,18 @@ export struct BooksLocalView {
 
       if (UserManager.shared.isLogin()) {
 
-        Divider()
+        Divider().color($r('app.color.color_line')).strokeWidth(1)
 
         Button() {
 
           Text($r('app.string.ebook_my_backed_up_btn'))
             .fontSize(17)
-            .fontColor($r('app.color.color_text'))
+            .fontColor($r('app.color.color_link'))
         }
           .width('100%')
-          .height(48)
+          .height(50)
           .backgroundColor($r('app.color.color_background'))
+          .type(ButtonType.Normal)
           .onClick(() => {
             this.ebookSheetVisible = false
 
@@ -257,6 +272,23 @@ export struct BooksLocalView {
             MyBackedUpEBooksViewConfig.open()
           })
       }
+
+      Divider().color($r('app.color.color_line')).strokeWidth(1)
+
+      Button() {
+
+        Text($r('app.string.confirm_btn_cancel'))
+          .fontSize(17)
+          .fontWeight(FontWeight.Medium)
+          .fontColor($r('app.color.color_link'))
+      }
+        .width('100%')
+        .height(50)
+        .backgroundColor($r('app.color.color_background'))
+        .type(ButtonType.Normal)
+        .onClick(() => {
+          this.ebookSheetVisible = false
+        })
     }
       .width('100%')
       .padding({ bottom: 8 })
@@ -280,7 +312,7 @@ export struct BooksLocalView {
           .fontColor(Color.White)
       }
         .width('90%')
-        .backgroundColor($r('app.color.colorPrimary'))
+        .backgroundColor($r('app.color.color_btn_bg2'))
         .onClick(() => {
 
           // 调用：确认新建 EBook
@@ -308,7 +340,7 @@ export struct BooksLocalView {
           .fontColor(Color.White)
       }
         .width('90%')
-        .backgroundColor($r('app.color.colorPrimary'))
+        .backgroundColor($r('app.color.color_btn_bg2'))
         .onClick(() => {
 
           // 调用：确认重命名 EBook
@@ -471,8 +503,12 @@ export struct BooksLocalView {
             ForEach(this.cBooks(), (book: Book, rowIndex: number) => {
               ListItem() {
 
-                // 调用：构建列表行内容（CBook）
-                this.buildRowContent(book, false)
+                Column() {
+
+                  // 调用：构建列表行内容（CBook）
+                  this.buildRowContent(book, false)
+                }
+                  .margin({ left: 16, right: 16, top: 8, bottom: 8 })
               }
                 .gesture(
                   LongPressGesture()
@@ -512,8 +548,12 @@ export struct BooksLocalView {
             ForEach(this.eBooks(), (book: Book, rowIndex: number) => {
               ListItem() {
 
-                // 调用：构建列表行内容（EBook）
-                this.buildRowContent(book, true)
+                Column() {
+
+                  // 调用：构建列表行内容（EBook）
+                  this.buildRowContent(book, true)
+                }
+                  .margin({ left: 16, right: 16, top: 8, bottom: 8 })
               }
                 .gesture(
                   LongPressGesture()
@@ -548,9 +588,9 @@ export struct BooksLocalView {
         .layoutWeight(1)
         .scrollBar(BarState.Auto)
         .sticky(StickyStyle.Header)
+        .divider({ strokeWidth: 0 })
     }
-      .backgroundColor($r('app.color.color_background'))
-      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+      .backgroundColor($r('app.color.color_obscure'))
       .width('100%')
       .height('100%')
   }
@@ -572,7 +612,7 @@ export struct BooksLocalView {
       .padding({
         left   : 16,
         right  : 16,
-        top    : 8,
+        top    : 4,
         bottom : 4
       })
   }
@@ -605,9 +645,13 @@ export struct BooksLocalView {
 
         Column() {
 
+          // 与 iOS `Image(systemName: "checkmark").foregroundColor(.green)` 一致
           if (BookManager.shared.currentBook?.bookId === book.bookId) {
 
-            TintImage({ src: $r('app.media.done') })
+            Text('\u2713')
+              .fontSize(20)
+              .fontWeight(FontWeight.Medium)
+              .fontColor('#34C759')
           }
         }
       }
@@ -625,56 +669,40 @@ export struct BooksLocalView {
 
           Blank().layoutWeight(1)
 
-          Row({ space: 12 }) {
+          // 与 iOS：行内图标着 Navigation 主色（与 `color_nav_bg` 一致）
+          Row({ space: 16 }) {
+
+            this.buildEbookToolbarIcon($r('app.media.plus'), () => {
+
+              this.actionAddWord(book)
+            })
+
+            this.buildEbookToolbarIcon($r('app.media.pencil'), () => {
+
+              this.openRenameSheet(book)
+            })
+
+            this.buildEbookToolbarIcon($r('app.media.share'), () => {
+
+              this.actionExportEbook(book)
+            })
 
             Button() {
-              Text($r('app.string.ebook_nav_add_word')).fontSize(13)
+
+              Image($r('app.media.trash'))
+                .width(18)
+                .height(18)
+                .fillColor(book.isCurrentBook ?
+                  $r('app.color.color_list_tint') : $r('app.color.color_nav_bg'))
             }
-              .height(32)
-              .padding({ left: 8, right: 8 })
-              .backgroundColor($r('app.color.color_obscure'))
-              .onClick(() => {
-
-                // 调用：进入加词流程
-                this.actionAddWord(book)
-              })
-
-            Button() {
-              Text($r('app.string.ebook_rename_label')).fontSize(13)
-            }
-              .height(32)
-              .padding({ left: 8, right: 8 })
-              .backgroundColor($r('app.color.color_obscure'))
-              .onClick(() => {
-
-                // 调用：打开重命名面板
-                this.openRenameSheet(book)
-              })
-
-            Button() {
-              Text($r('app.string.ebook_export_btn')).fontSize(13)
-            }
-              .height(32)
-              .padding({ left: 8, right: 8 })
-              .backgroundColor($r('app.color.color_obscure'))
-              .onClick(() => {
-
-                // 调用：导出并分享 EBook
-                this.actionExportEbook(book)
-              })
-
-            Button() {
-              Text($r('app.string.books_btn_title_delete')).fontSize(13)
-            }
-              .height(32)
-              .padding({ left: 8, right: 8 })
-              .backgroundColor(book.isCurrentBook ? $r('app.color.color_obscure') : $r('app.color.colorAccent'))
+              .type(ButtonType.Normal)
+              .backgroundColor(Color.Transparent)
+              .stateEffect(!book.isCurrentBook)
               .enabled(!book.isCurrentBook)
               .onClick(() => {
 
                 if (!book.isCurrentBook) {
 
-                  // 调用：弹出删除确认
                   this.confirmRemove(book)
                 }
               })
@@ -686,8 +714,30 @@ export struct BooksLocalView {
     }
       .width('100%')
       .padding(16)
-      .border({ width: { bottom: 1 }, color: $r('app.color.color_obscure') })
-      .backgroundColor($r('app.color.color_background'))
+      .borderRadius(8)
+      .backgroundColor($r('app.color.color_list_item_bg'))
+      .clip(true)
+  }
+
+  @Builder
+  /**
+   * 自建词汇本工具栏图标（与 iOS 一致：着导航主色 `color_nav_bg`）
+   * @param src  矢量图标资源
+   * @param act  点击回调
+   */
+  buildEbookToolbarIcon(src: Resource, act: () => void) {
+
+    Button() {
+
+      Image(src)
+        .width(18)
+        .height(18)
+        .fillColor($r('app.color.color_nav_bg'))
+    }
+      .type(ButtonType.Normal)
+      .backgroundColor(Color.Transparent)
+      .stateEffect(true)
+      .onClick(act)
   }
 
   /**

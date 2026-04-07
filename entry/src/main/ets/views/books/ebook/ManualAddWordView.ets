@@ -90,6 +90,7 @@ export struct ManualAddWordView {
         .height('100%')
         .padding(20)
         .backgroundColor($r('app.color.color_background'))
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     }
       .title(buildNavTitle($r('app.string.ebook_manual_add_nav_title')))
       .backButtonIcon(dNavBackIcon)

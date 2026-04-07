@@ -83,6 +83,7 @@ export struct EBookSelectView {
       }
         .width('100%')
         .height('100%')
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     }
       .title(buildNavTitle(this.originalDetail.titleEn ?? ''))
       .backButtonIcon(dNavBackIcon)

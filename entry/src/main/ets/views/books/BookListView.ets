@@ -109,6 +109,7 @@ export struct BookListView {
         .width('100%')
         .height('100%')
         .backgroundColor(Color.White)
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     }
       .title(buildNavTitle(this.getNavTitle()))
       .backButtonIcon(dNavBackIcon)

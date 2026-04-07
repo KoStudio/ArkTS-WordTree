@@ -67,6 +67,7 @@ export struct EBookImportView {
         .justifyContent(FlexAlign.Start)
         .alignItems(HorizontalAlign.Center)
         .backgroundColor($r('app.color.color_background'))
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     }
       .title(buildNavTitle($r('app.string.ebook_import_title')))
       .backButtonIcon(dNavBackIcon)

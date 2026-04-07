@@ -71,7 +71,10 @@ export struct PartUnitPickerView {
     NavDestination() {
       if (this.loading) {
         Column() { LoadingProgress() }
-          .width('100%').height('100%').justifyContent(FlexAlign.Center)
+          .width('100%')
+          .height('100%')
+          .justifyContent(FlexAlign.Center)
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       } else {
         List() {
           ListItemGroup({ header: this.sectionHeader($r('app.string.ebook_part_header')) }) {
@@ -90,6 +93,7 @@ export struct PartUnitPickerView {
         }
           .width('100%')
           .height('100%')
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       }
     }
       .title(buildNavTitle($r('app.string.ebook_save_to_nav_title')))

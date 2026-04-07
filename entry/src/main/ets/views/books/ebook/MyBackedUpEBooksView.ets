@@ -196,6 +196,7 @@ export struct MyBackedUpEBooksView {
           .width('100%')
           .height('100%')
           .justifyContent(FlexAlign.Center)
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       } else if (this.items.length < 1) {
 
         Column() {
@@ -210,6 +211,7 @@ export struct MyBackedUpEBooksView {
           .width('100%')
           .height('100%')
           .justifyContent(FlexAlign.Center)
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       } else {
 
         List({ space: 0 }) {
@@ -224,6 +226,7 @@ export struct MyBackedUpEBooksView {
           .width('100%')
           .height('100%')
           .scrollBar(BarState.Auto)
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       }
     }
       .title(buildNavTitle($r('app.string.ebook_my_backed_up_title')))

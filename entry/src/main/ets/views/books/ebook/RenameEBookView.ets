@@ -86,6 +86,7 @@ export struct RenameEBookView {
         .width('100%')
         .height('100%')
         .backgroundColor($r('app.color.color_background'))
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     }
       .title(buildNavTitle($r('app.string.ebook_rename_nav_title')))
       .backButtonIcon(dNavBackIcon)
