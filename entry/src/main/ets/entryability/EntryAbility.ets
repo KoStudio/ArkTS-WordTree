@@ -6,7 +6,6 @@ import { SystemSizeManager as SystemSizeManager } from '../common/managers/Syste
 
 import { BundleUtils } from '../common/utils/BundleUtils';
 import { DebugFlg } from '../app/debug/DebugFlg';
-import { EBookExportImportManager } from '../models/managers/ebook/EBookExportImportManager';
 import { PrivacyManager } from '../common/components/Privacy/PrivacyManager';
 
 
@@ -14,15 +13,18 @@ const DOMAIN = 0x0000;
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    /// 须最先执行：其它能力或动态 import 的模块可能通过 AppConstants / getString 使用 getAppContext()
+    initAppContext(this.context)
+
     // 强制应用使用浅色模式，不跟随系统变化
     this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT);
 
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
 
-    ///初始化全局context
-    initAppContext(this.context)
-
-    EBookExportImportManager.offerWantForWteOpenIfNeed(want)
+    // 静态 import EBookExportImportManager 会链式加载 AppDefines / AppSettings，在 initAppContext 之前触发 getAppContext
+    import('../models/managers/ebook/EBookExportImportManager').then((m) => {
+      m.EBookExportImportManager.offerWantForWteOpenIfNeed(want)
+    })
 
     ///初始化ShareUtils
     import('../common/utils/ShareUtils').then((it)=>{it.ShareUtils.init(this.context)})
@@ -60,11 +62,13 @@ export default class EntryAbility extends UIAbility {
     ///配置微信登录回调
     // import('../models/managers/sns/wx/WxLoginManager').then((it)=>{it.WXLoginManager.shared.handleWeChatCallIfNeed(want)})
 
-    EBookExportImportManager.offerWantForWteOpenIfNeed(want)
+    import('../models/managers/ebook/EBookExportImportManager').then((m) => {
+      m.EBookExportImportManager.offerWantForWteOpenIfNeed(want)
 
-    if (PrivacyManager.shared.checkAgreement()) {
-      EBookExportImportManager.tryPresentPendingWteImportIfReady()
-    }
+      if (PrivacyManager.shared.checkAgreement()) {
+        m.EBookExportImportManager.tryPresentPendingWteImportIfReady()
+      }
+    })
 
     //QQ登录配置
     import('../models/managers/sns/qq/QQLoginManager').then((it)=> {it.QQLoginManager.shared.handleResult(want)})

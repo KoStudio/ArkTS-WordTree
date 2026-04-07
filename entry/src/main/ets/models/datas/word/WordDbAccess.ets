@@ -15,8 +15,6 @@ import { ResultSetTool } from '../../dbUtils/ResultSetTool';
 import { AppCfgManager } from '../../managers/servercfg/AppCfgManager';
 import { Word } from './Word';
 import { WordDetail } from './WordDetail';
-import { StringEncoder } from '../../../common/utils/strings/StringEncrypt';
-import { DB } from '../../dbUtils/DBConstants';
 import { ParamType } from '../../dbUtils/DBAccessor';
 
 export namespace WordTable {

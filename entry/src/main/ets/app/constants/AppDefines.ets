@@ -1,7 +1,6 @@
 // ==== 文件路径相关 ====
 import { BundleUtils } from '../../common/utils/BundleUtils';
 import { DisplayUtils } from '../../common/utils/DisplayUtils';
-import { getString } from '../../common/utils/ResourceUtils';
 import { DebugFlg } from '../debug/DebugFlg';
 import { AppConstants } from './AppConstants';
 import { getAppContext } from './AppContext';

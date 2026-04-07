@@ -122,8 +122,6 @@ export struct BooksOnlineView {
   @Builder
   buildRowContent(rowIndex: number, book: Book) {
 
-    const downloaded: boolean = this.isDownloaded(book)
-
     Row({ space: 8 }) {
 
       Column({ space: 5 }) {
@@ -151,7 +149,7 @@ export struct BooksOnlineView {
       Column() {
 
         // 已下载：仅文案；未下载：主色按钮（与 iOS 右侧区域一致）
-        if (downloaded) {
+        if (this.isDownloaded(book)) {
 
           Text($r('app.string.books_btn_title_downloaded'))
             .fontSize(16)
@@ -176,7 +174,7 @@ export struct BooksOnlineView {
       .padding(10)
       .border({ width: { bottom: 1 }, color: $r('app.color.color_obscure') })
       .backgroundColor(
-        downloaded ? $r('app.color.color_gray_light') : $r('app.color.color_background'))
+        this.isDownloaded(book) ? $r('app.color.color_gray_light') : $r('app.color.color_background'))
   }
 
   handleRowClick(rowIndex: number, book: Book): void {

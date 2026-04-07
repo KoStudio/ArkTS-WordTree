@@ -13,7 +13,7 @@ import { HttpUtils } from '../../networks/HttpUtils';
 import { HwLoginManager } from '../sns/hw/HWLoginManager';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { DeviceUtil } from '../../../common/utils/DeviceUtils';
-import { dAppFilefolder, dMyDataFolderPath } from '../../../app/constants/AppDefines';
+import { dAppFilefolder } from '../../../app/constants/AppDefines';
 import { createFolderIfNeeds } from '../../../app/constants/AppFunctions';
 import { SimpleDownloader } from '../../../common/components/SimpleDownloader/SimpleDownloader';
 import { FileUtility } from '../../../common/utils/FileUtility';
