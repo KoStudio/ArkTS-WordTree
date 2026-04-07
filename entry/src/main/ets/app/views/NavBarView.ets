@@ -7,6 +7,7 @@ export interface NavButtonItem {
   icon?: Resource           // 图标（可选）
   isSvg?: boolean           // 默认是png
   color?: ResourceColor     // 颜色
+  enabled?: boolean         // 是否可点（默认 true，与 iOS toolbar 禁用态对齐）
   onClick?: () => void      // 点击回调（可选）
 }
 
@@ -52,8 +53,13 @@ export struct NavBarView {
             TextButton({
               text: btn.text,
               fontColor: btn.color ?? this.navBarTitleColor,
+              fontColorPressed: btn.color ?? this.navBarTitleColor,
               bgColor: Color.Transparent,
+              bgColorPressed: Color.Transparent,
+              fontColorDisable: $r('app.color.color_main_tab_tint'),
+              bgColorDisable: Color.Transparent,
               minWidth: 44,
+              isEnabled: btn.enabled !== false,
               onClickCallBack: () => { btn.onClick?.() }
             })
           }
@@ -78,8 +84,13 @@ export struct NavBarView {
             TextButton({
               text: btn.text,
               fontColor: btn.color ?? this.navBarTitleColor,
+              fontColorPressed: btn.color ?? this.navBarTitleColor,
               bgColor: Color.Transparent,
+              bgColorPressed: Color.Transparent,
+              fontColorDisable: $r('app.color.color_main_tab_tint'),
+              bgColorDisable: Color.Transparent,
               minWidth: 44,
+              isEnabled: btn.enabled !== false,
               onClickCallBack: () => { btn.onClick?.() }
             })
           }
