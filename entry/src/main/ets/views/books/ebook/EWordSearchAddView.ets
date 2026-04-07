@@ -269,8 +269,8 @@ export struct EWordSearchAddView {
       return
     }
 
-    // 调用：会员在线词典可用性
-    if (!MemberManager.shared.checkOnlineDictUsable(true, true)) {
+    // 调用：会员在线词典可用性（与 iOS `checkOnlineDictUsable(showMemberPurchasePage: false)` 一致：此处不直接拉起购买页）
+    if (!MemberManager.shared.checkOnlineDictUsable(true, false)) {
       return
     }
 

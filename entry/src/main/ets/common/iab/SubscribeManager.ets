@@ -83,7 +83,7 @@ export class SubscribeManager {
     const token      = pref.getSync(SubscribeManagerPref.kPurchaseToken, null) as string | null;
     const platform   = pref.getSync(SubscribeManagerPref.kPurchasedPlatform, null) as string | null;
 
-    if (sku) {
+    if (expDate　!= 0 ) {
       this.currentItem = new SubscribeItem(sku, expDate, token, platform);
     }
   }
