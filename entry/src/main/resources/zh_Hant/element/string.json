@@ -1,3536 +1,981 @@
 {
   "string": [
-    {
-      "name": "module_desc",
-      "value": "module description"
-    },
-    {
-      "name": "EntryAbility_desc",
-      "value": "description"
-    },
-    {
-      "name": "EntryAbility_label",
-      "value": "label"
-    },
-    {
-      "name": "app_share_title",
-      "value": "高效的英文單詞學習工具"
-    },
-    {
-      "name": "main_words_cbook_msg_update_succeed",
-      "value": "更新成功"
-    },
-    {
-      "name": "nav_title_home",
-      "value": "單詞樹"
-    },
-    {
-      "name": "nav_title_books",
-      "value": "詞彙管理"
-    },
-    {
-      "name": "nav_title_quick_learn_unit",
-      "value": "快速記憶"
-    },
-    {
-      "name": "nav_title_learn_unit",
-      "value": "單元列表"
-    },
-    {
-      "name": "nav_title_test",
-      "value": "測驗選擇"
-    },
-    {
-      "name": "nav_title_challenge",
-      "value": "挑戰選擇"
-    },
-    {
-      "name": "nav_title_advice",
-      "value": "反饋建議"
-    },
-    {
-      "name": "nav_title_reclaim",
-      "value": "單詞糾錯"
-    },
-    {
-      "name": "nav_title_books_all",
-      "value": "單詞下載"
-    },
-    {
-      "name": "nav_title_iap",
-      "value": "應用內購買"
-    },
-    {
-      "name": "nav_title_login",
-      "value": "登錄"
-    },
-    {
-      "name": "nav_title_set_more",
-      "value": "設置"
-    },
-    {
-      "name": "nav_title_mine_memo",
-      "value": "我的筆記"
-    },
-    {
-      "name": "nav_title_mine_record",
-      "value": "我的錄音"
-    },
-    {
-      "name": "nav_title_mine_deletes",
-      "value": "我刪除的單詞"
-    },
-    {
-      "name": "nav_title_set_terms",
-      "value": "服務條款"
-    },
-    {
-      "name": "nav_title_set_privacy",
-      "value": "隱私協議"
-    },
-    {
-      "name": "nav_title_set_contact",
-      "value": "聯繫客服"
-    },
-    {
-      "name": "nav_title_test_scope_unit",
-      "value": "單元選擇"
-    },
-    {
-      "name": "nav_title_test_scope_all",
-      "value": "全部單詞"
-    },
-    {
-      "name": "nav_title_test_scope_favorite",
-      "value": "收藏單詞"
-    },
-    {
-      "name": "nav_title_test_scope_part",
-      "value": "part別"
-    },
-    {
-      "name": "nav_title_test_scope_mistake",
-      "value": "常錯單詞"
-    },
-    {
-      "name": "nav_title_test_start",
-      "value": "測試設定"
-    },
-    {
-      "name": "nav_title_test_result",
-      "value": "測試結果"
-    },
-    {
-      "name": "main_tab_title_home",
-      "value": "學習"
-    },
-    {
-      "name": "main_tab_title_list",
-      "value": "一覽"
-    },
-    {
-      "name": "main_tab_title_review",
-      "value": "復習"
-    },
-    {
-      "name": "main_tab_title_report",
-      "value": "報告"
-    },
-    {
-      "name": "main_tab_title_social",
-      "value": "社區"
-    },
-    {
-      "name": "main_msg_no_books",
-      "value": "請先下載單詞！"
-    },
-    {
-      "name": "no_books_exit_cfm_title",
-      "value": "退出應用"
-    },
-    {
-      "name": "no_books_exit_cfm_msg",
-      "value": "您確定要退出應用嗎？"
-    },
-    {
-      "name": "no_books_exit_cfm_yes",
-      "value": "退出應用"
-    },
-    {
-      "name": "no_books_exit_cfm_no",
-      "value": "取消"
-    },
-    {
-      "name": "main_study_txt_info_units",
-      "value": "%d個單元"
-    },
-    {
-      "name": "main_study_txt_info_words",
-      "value": "%d個單詞"
-    },
-    {
-      "name": "main_study_txt_info_learned",
-      "value": "已學習:"
-    },
-    {
-      "name": "main_study_txt_info_tested",
-      "value": "已測驗:"
-    },
-    {
-      "name": "main_study_txt_no_books",
-      "value": "請選擇要學習的詞彙！"
-    },
-    {
-      "name": "main_study_btn_quickremember",
-      "value": "快速記憶"
-    },
-    {
-      "name": "main_study_btn_study",
-      "value": "學習"
-    },
-    {
-      "name": "main_study_btn_test",
-      "value": "測驗"
-    },
-    {
-      "name": "main_study_btn_challenge",
-      "value": "挑戰"
-    },
-    {
-      "name": "main_curve_txt_curve",
-      "value": "記憶曲線"
-    },
-    {
-      "name": "main_curve_btn_study_start",
-      "value": "開始學習"
-    },
-    {
-      "name": "main_curve_btn_create_plam",
-      "value": "+創建學習計劃"
-    },
-    {
-      "name": "main_curve_btn_no_words_today",
-      "value": "今天沒有學習"
-    },
-    {
-      "name": "main_curve_txt_info_create",
-      "value": "使用記憶曲線創建學習計劃"
-    },
-    {
-      "name": "main_curve_txt_info_days",
-      "value": "第%d天，%d個單詞"
-    },
-    {
-      "name": "main_curve_txt_info_days2",
-      "value": "需要%d天， 共%d個單詞"
-    },
-    {
-      "name": "main_other_link_txt",
-      "value": "使用「速詞」創建單詞集"
-    },
-    {
-      "name": "main_other_link_title",
-      "value": "更多應用"
-    },
-    {
-      "name": "books_tab_title_mybooks",
-      "value": "我的詞彙"
-    },
-    {
-      "name": "books_tab_title_allbooks",
-      "value": "所有詞彙"
-    },
-    {
-      "name": "books_txt_info_counts",
-      "value": "%d個單元，共%d個單詞"
-    },
-    {
-      "name": "books_txt_info_downloads",
-      "value": "下載%d次"
-    },
-    {
-      "name": "books_txt_info_size",
-      "value": "單詞:%s 發音:%s"
-    },
-    {
-      "name": "books_txt_info_golds",
-      "value": "金幣:%d個"
-    },
-    {
-      "name": "books_btn_title_to_download",
-      "value": "點擊下載"
-    },
-    {
-      "name": "books_btn_title_downloaded",
-      "value": "已下載"
-    },
-    {
-      "name": "books_msg_download_start_word",
-      "value": "詞彙下載中.."
-    },
-    {
-      "name": "books_msg_download_start_sound",
-      "value": "發音下載中.."
-    },
-    {
-      "name": "books_btn_title_edit",
-      "value": "編輯"
-    },
-    {
-      "name": "books_btn_title_buygolds",
-      "value": "購買金幣"
-    },
-    {
-      "name": "books_btn_title_reject_buy",
-      "value": "就不買"
-    },
-    {
-      "name": "books_msg_download_succeed",
-      "value": "下載成功！"
-    },
-    {
-      "name": "books_msg_download_failed",
-      "value": "下載失敗,請稍後再試！"
-    },
-    {
-      "name": "books_msg_golds_shotage",
-      "value": "金幣不足"
-    },
-    {
-      "name": "books_msg_golds_needs",
-      "value": "需要金幣%d個， 剩餘金幣%d個。"
-    },
-    {
-      "name": "books_msg_golds_costed",
-      "value": "用去金幣%d個， 剩餘金幣%d個。"
-    },
-    {
-      "name": "gain_gold_for_install",
-      "value": "初次安裝成功，獲得%d個金幣!"
-    },
-    {
-      "name": "set_txt_got_gold",
-      "value": "獲得%d個金幣，已經有金幣%d個"
-    },
-    {
-      "name": "books_msg_updated_book_txt",
-      "value": "更新:%s 詞彙成功！"
-    },
-    {
-      "name": "books_msg_updated_book_sound",
-      "value": "更新:%s 聲音成功！"
-    },
-    {
-      "name": "books_msg_need_disk_space",
-      "value": "磁盤空間不足！"
-    },
-    {
-      "name": "books_msg_change_book",
-      "value": "切換詞彙到： %s"
-    },
-    {
-      "name": "books_btn_title_delete",
-      "value": "刪除"
-    },
-    {
-      "name": "books_txt_selected",
-      "value": "選中"
-    },
-    {
-      "name": "books_section_cbook_header",
-      "value": ""
-    },
-    {
-      "name": "books_section_ebook_header",
-      "value": "自建詞彙本"
-    },
-    {
-      "name": "ebook_plus_btn",
-      "value": "+建立詞彙本"
-    },
-    {
-      "name": "ebook_choose_action",
-      "value": "請選擇操作"
-    },
-    {
-      "name": "ebook_new_book",
-      "value": "新建詞彙本"
-    },
-    {
-      "name": "ebook_import_btn",
-      "value": "導入 .wte 檔"
-    },
-    {
-      "name": "ebook_my_backed_up_btn",
-      "value": "下載我備份的詞彙本"
-    },
-    {
-      "name": "ebook_my_backed_up_title",
-      "value": "我備份的詞彙本"
-    },
-    {
-      "name": "ebook_my_backed_up_empty_hint",
-      "value": "暫無雲端備份記錄"
-    },
-    {
-      "name": "ebook_download_btn",
-      "value": "下載"
-    },
-    {
-      "name": "ebook_already_downloaded",
-      "value": "已下載"
-    },
-    {
-      "name": "ebook_save_failed",
-      "value": "儲存失敗"
-    },
-    {
-      "name": "ebook_nav_add_word",
-      "value": "添加單詞"
-    },
-    {
-      "name": "ebook_add",
-      "value": "添加"
-    },
-    {
-      "name": "ebook_add_word_ok",
-      "value": "已添加到詞彙本"
-    },
-    {
-      "name": "ebook_msg_select_ebook_first",
-      "value": "請先選擇自建詞彙本"
-    },
-    {
-      "name": "ebook_msg_input_query",
-      "value": "請輸入查詢內容"
-    },
-    {
-      "name": "ebook_get_detail_failed",
-      "value": "取得詞條詳情失敗"
-    },
-    {
-      "name": "ebook_rename_label",
-      "value": "改名"
-    },
-    {
-      "name": "ebook_rename_title",
-      "value": "修改名稱"
-    },
-    {
-      "name": "ebook_create_title",
-      "value": "新建詞彙本"
-    },
-    {
-      "name": "ebook_name_hint",
-      "value": "請輸入書名"
-    },
-    {
-      "name": "ebook_import_title",
-      "value": "導入詞彙本"
-    },
-    {
-      "name": "ebook_import_pick_btn",
-      "value": "選擇 .wte 檔"
-    },
-    {
-      "name": "ebook_import_help_link",
-      "value": "如何導入導出詞彙本"
-    },
-    {
-      "name": "ebook_export_failed_msg",
-      "value": "導出失敗"
-    },
-    {
-      "name": "ebook_export_btn",
-      "value": "導出"
-    },
-    {
-      "name": "ebook_default_book_name",
-      "value": "詞彙本"
-    },
-    {
-      "name": "ebook_import_detect_title",
-      "value": "檢測到詞彙本檔案，是否導入？"
-    },
-    {
-      "name": "confirm_btn_import",
-      "value": "導入"
-    },
-    {
-      "name": "ebook_import_success_fmt",
-      "value": "已成功導入「%s」。"
-    },
-    {
-      "name": "ebook_import_failed_msg",
-      "value": "導入失敗，請稍後重試。"
-    },
-    {
-      "name": "ebook_select_title",
-      "value": "選擇要保存到的詞彙本"
-    },
-    {
-      "name": "ebook_no_other",
-      "value": "暫無其它可用詞彙本"
-    },
-    {
-      "name": "ebook_part_header",
-      "value": "選擇 Part"
-    },
-    {
-      "name": "ebook_unit_header",
-      "value": "選擇 Unit"
-    },
-    {
-      "name": "ebook_save_to_nav_title",
-      "value": "保存到詞彙本"
-    },
-    {
-      "name": "ebook_overwrite_confirm_title",
-      "value": "已存在相同單詞"
-    },
-    {
-      "name": "ebook_overwrite_btn",
-      "value": "覆蓋"
-    },
-    {
-      "name": "ebook_overwrite_msg",
-      "value": "該單詞已存在於 %s / %s，是否覆蓋？"
-    },
-    {
-      "name": "ebook_added",
-      "value": "已添加「%s」"
-    },
-    {
-      "name": "ebook_add_failed",
-      "value": "添加失敗"
-    },
-    {
-      "name": "ebook_not_found_manual_add",
-      "value": "找不到結果？手動輸入單詞"
-    },
-    {
-      "name": "ebook_manual_add_word_hint",
-      "value": "輸入英文單詞並選擇 Part/Unit 後保存。"
-    },
-    {
-      "name": "ebook_manual_add_word_title",
-      "value": "單詞"
-    },
-    {
-      "name": "ebook_manual_add_word_placeholder",
-      "value": "請輸入英文單詞"
-    },
-    {
-      "name": "ebook_manual_add_titlecn1_placeholder",
-      "value": "可選：輸入釋義"
-    },
-    {
-      "name": "ebook_manual_add_next",
-      "value": "下一步"
-    },
-    {
-      "name": "ebook_manual_add_nav_title",
-      "value": "手動添加單詞"
-    },
-    {
-      "name": "ebook_name_section",
-      "value": "詞彙本名稱"
-    },
-    {
-      "name": "ebook_name_placeholder",
-      "value": "請輸入詞彙本名稱"
-    },
-    {
-      "name": "ebook_create_nav_title",
-      "value": "新建詞彙本"
-    },
-    {
-      "name": "ebook_rename_nav_title",
-      "value": "修改詞彙本名稱"
-    },
-    {
-      "name": "list_tab_title_abc",
-      "value": "abc"
-    },
-    {
-      "name": "list_tab_title_part",
-      "value": "parts"
-    },
-    {
-      "name": "list_tab_title_favorite",
-      "value": "收藏夾"
-    },
-    {
-      "name": "list_tab_title_mistake",
-      "value": "常錯單詞"
-    },
-    {
-      "name": "list_tab_title_still",
-      "value": "未測驗"
-    },
-    {
-      "name": "learn_detail_txt_info_correct",
-      "value": "正確:"
-    },
-    {
-      "name": "learn_detail_txt_info_wrong",
-      "value": "不正確:"
-    },
-    {
-      "name": "learn_detail_txt_wordchang",
-      "value": "【單詞變形】"
-    },
-    {
-      "name": "learn_detail_txt_mnemonic",
-      "value": "【詞根助記】"
-    },
-    {
-      "name": "learn_detail_txt_example",
-      "value": "【例句】"
-    },
-    {
-      "name": "learn_detail_txt_synwords",
-      "value": "【同義詞】"
-    },
-    {
-      "name": "learn_detail_txt_asynwords",
-      "value": "【反義詞】"
-    },
-    {
-      "name": "learn_detail_txt_usedphrase",
-      "value": "【常用短語】"
-    },
-    {
-      "name": "learn_detail_txt_en2en",
-      "value": "【英英釋義】"
-    },
-    {
-      "name": "learn_detail_txt_discriminate",
-      "value": "【詳細說明】"
-    },
-    {
-      "name": "learn_detail_txt_samerootdesc",
-      "value": "【同根詞】"
-    },
-    {
-      "name": "learn_detail_txt_memo",
-      "value": "筆記"
-    },
-    {
-      "name": "learn_detail_btn_reclaim",
-      "value": "糾錯"
-    },
-    {
-      "name": "learn_detail_reclaim_txt_pre1",
-      "value": "單詞翻譯有誤"
-    },
-    {
-      "name": "learn_detail_reclaim_txt_pre2",
-      "value": "單詞音標有誤"
-    },
-    {
-      "name": "learn_detail_reclaim_txt_pre3",
-      "value": "單詞發音有誤"
-    },
-    {
-      "name": "learn_detail_reclaim_txt_pre4",
-      "value": "例句翻譯有誤"
-    },
-    {
-      "name": "learn_detail_reclaim_txt_pre5",
-      "value": "例句和單詞不匹配"
-    },
-    {
-      "name": "learn_detail_reclaim_txt_pre6",
-      "value": "例句發音有誤"
-    },
-    {
-      "name": "learn_detail_reclaim_placehold",
-      "value": "手動填寫錯誤信息"
-    },
-    {
-      "name": "learn_detail_reclaim_txt_info",
-      "value": "如果發現此單詞(翻譯，例句，發音等)有錯誤，請向我們發送報告。\n經確認之後，我們會及時更新數據庫！"
-    },
-    {
-      "name": "learn_detail_to_test_msg",
-      "value": "要用這些單詞進行測驗或挑戰嗎？"
-    },
-    {
-      "name": "learn_detail_to_test_btn_test",
-      "value": "我要測驗"
-    },
-    {
-      "name": "learn_detail_to_test_btn_chlg",
-      "value": "我要挑戰"
-    },
-    {
-      "name": "learn_detail_to_test_btn_spell",
-      "value": "拼寫練習"
-    },
-    {
-      "name": "learn_detail_to_test_btn_cancel",
-      "value": "暫時不要"
-    },
-    {
-      "name": "learn_detail_info_txt_hide_tip",
-      "value": "【點擊顯示中文翻譯】"
-    },
-    {
-      "name": "learn_detail_info_txt_hidetrans",
-      "value": "隱藏翻譯"
-    },
-    {
-      "name": "learn_detail_info_txt_autopron",
-      "value": "自動發音(單詞)"
-    },
-    {
-      "name": "learn_detail_info_txt_autopron2",
-      "value": "自動發音(例句)"
-    },
-    {
-      "name": "learn_detail_info_txt_pron_speed",
-      "value": "發音播放速度"
-    },
-    {
-      "name": "learn_detail_info_txt_pron_times",
-      "value": "發音次數"
-    },
-    {
-      "name": "learn_detail_info_txt_font_style",
-      "value": "字體大小"
-    },
-    {
-      "name": "learn_detail_info_txt_font_style_1",
-      "value": "小"
-    },
-    {
-      "name": "learn_detail_info_txt_font_style_2",
-      "value": "中"
-    },
-    {
-      "name": "learn_detail_info_txt_font_style_3",
-      "value": "大"
-    },
-    {
-      "name": "learn_detail_info_txt_set_order",
-      "value": "調整顯示順序"
-    },
-    {
-      "name": "learn_detail_info_txt_pron_gap",
-      "value": "自動發音間隔"
-    },
-    {
-      "name": "learn_detail_info_txt_pron_gap_1",
-      "value": "短"
-    },
-    {
-      "name": "learn_detail_info_txt_pron_gap_2",
-      "value": "中"
-    },
-    {
-      "name": "learn_detail_info_txt_pron_gap_3",
-      "value": "長"
-    },
-    {
-      "name": "wrang_times_1_only",
-      "value": "僅1次"
-    },
-    {
-      "name": "wrang_times_1_3",
-      "value": "1~3次"
-    },
-    {
-      "name": "wrang_times_3_5",
-      "value": "3~5次"
-    },
-    {
-      "name": "wrang_times_5_10",
-      "value": "5~10次"
-    },
-    {
-      "name": "wrang_times_10_over",
-      "value": "10次以上"
-    },
-    {
-      "name": "test_top_txt_unit",
-      "value": "單元別"
-    },
-    {
-      "name": "test_top_txt_all",
-      "value": "全部單詞"
-    },
-    {
-      "name": "test_top_txt_part",
-      "value": "part別"
-    },
-    {
-      "name": "test_top_txt_mistake",
-      "value": "常錯單詞"
-    },
-    {
-      "name": "test_top_txt_favorite",
-      "value": "收藏單詞"
-    },
-    {
-      "name": "test_scope_btn_selectall",
-      "value": "全部選擇"
-    },
-    {
-      "name": "test_scope_btn_next",
-      "value": "下一步"
-    },
-    {
-      "name": "test_scope_err",
-      "value": "請選擇出題範圍。"
-    },
-    {
-      "name": "test_question_scope_txt",
-      "value": "測驗範圍"
-    },
-    {
-      "name": "test_question_scope_all",
-      "value": "全部"
-    },
-    {
-      "name": "test_question_scope_still",
-      "value": "未測驗"
-    },
-    {
-      "name": "test_question_scope_wrang",
-      "value": "常錯"
-    },
-    {
-      "name": "test_question_count_txt",
-      "value": "問題數"
-    },
-    {
-      "name": "test_question_count_1",
-      "value": "10問"
-    },
-    {
-      "name": "test_question_count_2",
-      "value": "20問"
-    },
-    {
-      "name": "test_question_count_3",
-      "value": "50問"
-    },
-    {
-      "name": "test_question_count_4",
-      "value": "100問"
-    },
-    {
-      "name": "test_question_type_txt",
-      "value": "出題種類"
-    },
-    {
-      "name": "test_question_type_eiwa",
-      "value": "英→中"
-    },
-    {
-      "name": "test_question_type_waei",
-      "value": "中→英"
-    },
-    {
-      "name": "test_question_speed_txt",
-      "value": "出題速度"
-    },
-    {
-      "name": "test_question_speed_slow",
-      "value": "慢速"
-    },
-    {
-      "name": "test_question_speed_normal",
-      "value": "中速"
-    },
-    {
-      "name": "test_question_speed_fast",
-      "value": "快速"
-    },
-    {
-      "name": "test_question_order_txt",
-      "value": "出題順序"
-    },
-    {
-      "name": "test_question_order_serialno",
-      "value": "番號順序"
-    },
-    {
-      "name": "test_question_order_random",
-      "value": "隨機"
-    },
-    {
-      "name": "test_question_pronounce_txt",
-      "value": "自動發音"
-    },
-    {
-      "name": "test_question_pronounce_on",
-      "value": "on"
-    },
-    {
-      "name": "test_question_pronounce_off",
-      "value": "off"
-    },
-    {
-      "name": "test_btn_start",
-      "value": "Start"
-    },
-    {
-      "name": "test_running_btn_pause",
-      "value": "暫停"
-    },
-    {
-      "name": "test_running_txt_cnt",
-      "value": "%d/%d問"
-    },
-    {
-      "name": "spell_running_txt_try_again",
-      "value": "再試一次"
-    },
-    {
-      "name": "spell_running_txt_input_answer",
-      "value": "輸入答案"
-    },
-    {
-      "name": "spell_running_txt_right",
-      "value": "正確"
-    },
-    {
-      "name": "spell_running_txt_wrong",
-      "value": "錯誤"
-    },
-    {
-      "name": "spell_running_btn_unknown",
-      "value": "不知道"
-    },
-    {
-      "name": "spell_running_btn_done",
-      "value": "完成"
-    },
-    {
-      "name": "test_result_rate_txt",
-      "value": "正確率"
-    },
-    {
-      "name": "test_result_info",
-      "value": "全:%d問  正確:%d問"
-    },
-    {
-      "name": "test_result_btn_retry",
-      "value": "再測一次"
-    },
-    {
-      "name": "test_result_btn_mistake",
-      "value": "再測一次\n(僅錯誤單詞)"
-    },
-    {
-      "name": "test_result_btn_next",
-      "value": "下一問題"
-    },
-    {
-      "name": "test_result_all_corrected",
-      "value": "全部正確"
-    },
-    {
-      "name": "test_result_share_app",
-      "value": "分享"
-    },
-    {
-      "name": "test_result_share_title",
-      "value": "%s 正確率:%s!"
-    },
-    {
-      "name": "test_result_share_description",
-      "value": "我在《單詞樹》測驗 %s，正確率:%s!  "
-    },
-    {
-      "name": "test_result_comment_studyharder",
-      "value": "Come on!Study harder!"
-    },
-    {
-      "name": "test_result_comment_good",
-      "value": "Good!Keep it up!"
-    },
-    {
-      "name": "test_result_comment_welldone",
-      "value": "Great!Well done!"
-    },
-    {
-      "name": "data_refresh_pull",
-      "value": "下拉刷新"
-    },
-    {
-      "name": "data_refresh_release",
-      "value": "釋放更新"
-    },
-    {
-      "name": "data_refresh_loading",
-      "value": "加載中.."
-    },
-    {
-      "name": "data_loading_more",
-      "value": "加載更多.."
-    },
-    {
-      "name": "data_no_more_datas",
-      "value": "沒有更多數據"
-    },
-    {
-      "name": "memo_compose_btn_save",
-      "value": "保存"
-    },
-    {
-      "name": "memo_compose_menu_edit",
-      "value": "編輯"
-    },
-    {
-      "name": "memo_compose_menu_done",
-      "value": "完成"
-    },
-    {
-      "name": "memo_compose_btn_save_share",
-      "value": "分享"
-    },
-    {
-      "name": "memo_author_txt",
-      "value": "作者"
-    },
-    {
-      "name": "memo_author_self",
-      "value": "我"
-    },
-    {
-      "name": "memo_pri_memo_title",
-      "value": "筆記"
-    },
-    {
-      "name": "memo_pri_memo_txt",
-      "value": "寫筆記.."
-    },
-    {
-      "name": "memo_pub_memo_title",
-      "value": "分享筆記"
-    },
-    {
-      "name": "memo_msg_no_share_memo",
-      "value": "暫無分享筆記."
-    },
-    {
-      "name": "memo_msg_save_success",
-      "value": "保存筆記成功。"
-    },
-    {
-      "name": "memo_msg_share_start",
-      "value": "筆記分享中..."
-    },
-    {
-      "name": "memo_msg_share_success",
-      "value": "分享筆記成功。"
-    },
-    {
-      "name": "memo_msg_remove_share_success",
-      "value": "已刪除分享筆記。"
-    },
-    {
-      "name": "memo_msg_add_share_success",
-      "value": "筆記添加成功。"
-    },
-    {
-      "name": "memo_msg_add_share_error",
-      "value": "最多只能添加%d條分享筆記。"
-    },
-    {
-      "name": "memo_msg_remove_memo_success",
-      "value": "已刪除筆記。"
-    },
-    {
-      "name": "memo_msg_audit_fail",
-      "value": "內容不合規或包含敏感字符"
-    },
-    {
-      "name": "help_caption_home_btn_menu",
-      "value": "設置菜單"
-    },
-    {
-      "name": "help_caption_home_btn_more",
-      "value": "下載更多詞彙"
-    },
-    {
-      "name": "help_caption_detail_btn_favorite",
-      "value": "左右滑動星星可以收藏單詞"
-    },
-    {
-      "name": "help_caption_detail_btn_info",
-      "value": "可設置自動發音，循環滾動"
-    },
-    {
-      "name": "help_caption_detail_btn_record",
-      "value": "錄音"
-    },
-    {
-      "name": "help_caption_detail_btn_contrast",
-      "value": "錄音播放"
-    },
-    {
-      "name": "help_caption_card_btn_show_detail",
-      "value": "點擊單詞，查看詳細釋義"
-    },
-    {
-      "name": "help_caption_detail_btn_del_word",
-      "value": "下拉頁面，\n刪除已會單詞"
-    },
-    {
-      "name": "set_cell_txt_share_info",
-      "value": "分享應用，可立即獲贈單詞發音"
-    },
-    {
-      "name": "set_msg_share_done",
-      "value": "分享成功，獲贈單詞發音 %d次 \n [今日剩餘%d次]"
-    },
-    {
-      "name": "instruction_nav_title",
-      "value": "使用說明"
-    },
-    {
-      "name": "plan_create_nav_title",
-      "value": "設置學習計劃"
-    },
-    {
-      "name": "plan_create_txt_name",
-      "value": "計劃名稱"
-    },
-    {
-      "name": "plan_create_chk_reviewday",
-      "value": "+%d天"
-    },
-    {
-      "name": "plan_create_chk_reviewdays",
-      "value": "+%d天"
-    },
-    {
-      "name": "plan_create_words_cnt",
-      "value": "共%d個詞語"
-    },
-    {
-      "name": "plan_create_words_cnts",
-      "value": "共%d個詞語"
-    },
-    {
-      "name": "plan_create_btn_days_cnt",
-      "value": "%d天"
-    },
-    {
-      "name": "plan_create_btn_days_cnts",
-      "value": "%d天"
-    },
-    {
-      "name": "plan_create_txt_everyday",
-      "value": "每天"
-    },
-    {
-      "name": "plan_create_txt_everydayunit",
-      "value": "個"
-    },
-    {
-      "name": "plan_create_txt_need",
-      "value": "需要"
-    },
-    {
-      "name": "plan_create_txt_review",
-      "value": "復習(艾賓浩斯記憶曲線)"
-    },
-    {
-      "name": "plan_create_txt_start_date",
-      "value": "開始於：%s"
-    },
-    {
-      "name": "plan_create_btn_update",
-      "value": "更新計劃"
-    },
-    {
-      "name": "plan_create_btn_save",
-      "value": "保存計劃"
-    },
-    {
-      "name": "plan_create_msg_need_name",
-      "value": "請輸入計劃名稱"
-    },
-    {
-      "name": "plan_create_alert_update_title",
-      "value": "確認要更新嗎？"
-    },
-    {
-      "name": "plan_create_alert_update_msg",
-      "value": "更新計劃將會刪除已存在的學習記錄"
-    },
-    {
-      "name": "plan_create_alert_update_btn_yes",
-      "value": "更新計劃"
-    },
-    {
-      "name": "plan_create_alert_btn_cancel",
-      "value": "取消"
-    },
-    {
-      "name": "plan_create_alert_msg_making",
-      "value": "計劃製作中.."
-    },
-    {
-      "name": "plan_create_alert_msg_make_done",
-      "value": "計劃製作完成"
-    },
-    {
-      "name": "plan_detail_nav_title",
-      "value": "計劃詳細"
-    },
-    {
-      "name": "plan_detail_txt_learned",
-      "value": "已學習"
-    },
-    {
-      "name": "plan_detail_txt_deleted",
-      "value": "已刪除"
-    },
-    {
-      "name": "plan_detail_txt_wordsall",
-      "value": "單詞總數"
-    },
-    {
-      "name": "plan_detail_txt_everydaystudy",
-      "value": "每天學習"
-    },
-    {
-      "name": "plan_detail_txt_review",
-      "value": "復習"
-    },
-    {
-      "name": "plan_detail_txt_cur",
-      "value": "當前"
-    },
-    {
-      "name": "plan_detail_txt_needs",
-      "value": "共需要"
-    },
-    {
-      "name": "plan_detail_txt_startdate",
-      "value": "開始日期"
-    },
-    {
-      "name": "plan_detail_txt_enddate",
-      "value": "預計結束日期"
-    },
-    {
-      "name": "plan_detail_words_cnt",
-      "value": "%d個"
-    },
-    {
-      "name": "plan_detail_review_day",
-      "value": "+%d天"
-    },
-    {
-      "name": "plan_detail_review_days",
-      "value": "+%d天"
-    },
-    {
-      "name": "plan_detail_cur_day",
-      "value": "第%d天"
-    },
-    {
-      "name": "plan_detail_days_cnt",
-      "value": "%d天"
-    },
-    {
-      "name": "plan_detail_days_cnts",
-      "value": "%d天"
-    },
-    {
-      "name": "plan_str_today",
-      "value": "今天"
-    },
-    {
-      "name": "plan_str_yesterday",
-      "value": "昨天"
-    },
-    {
-      "name": "plan_str_tomorrow",
-      "value": "明天"
-    },
-    {
-      "name": "dayofs_nav_title",
-      "value": "查看計劃"
-    },
-    {
-      "name": "dayofs_alert_btn_detail",
-      "value": "查看計劃詳細信息"
-    },
-    {
-      "name": "dayofs_alert_btn_edit",
-      "value": "修改計劃"
-    },
-    {
-      "name": "dayofs_alert_btn_remove",
-      "value": "刪除計劃"
-    },
-    {
-      "name": "dayofs_alert_btn_clear",
-      "value": "清空學習記錄"
-    },
-    {
-      "name": "dayofs_alert_btn_cancel",
-      "value": "取消"
-    },
-    {
-      "name": "dayofs_cell_txt_study",
-      "value": "學習"
-    },
-    {
-      "name": "dayofs_cell_txt_review",
-      "value": "復習"
-    },
-    {
-      "name": "dayofs_cell_btn_study",
-      "value": "學習"
-    },
-    {
-      "name": "dayofs_cell_btn_edit",
-      "value": "修改"
-    },
-    {
-      "name": "dayofs_alert_msg_delete_plan",
-      "value": "確定要刪除學習計劃嗎?"
-    },
-    {
-      "name": "dayofs_alert_btn_delete",
-      "value": "立即刪除"
-    },
-    {
-      "name": "dayofs_alert_msg_delete_done",
-      "value": "已刪除學習計劃"
-    },
-    {
-      "name": "dayof_num_string",
-      "value": "第%d天"
-    },
-    {
-      "name": "dayof_section_words_new",
-      "value": "學習 %s"
-    },
-    {
-      "name": "dayof_section_words_review",
-      "value": "復習(%s) %s"
-    },
-    {
-      "name": "dayof_btn_study",
-      "value": "開始學習"
-    },
-    {
-      "name": "dayof_btn_chk_quicklearn",
-      "value": "快速記憶"
-    },
-    {
-      "name": "dayof_alert_btn_edit",
-      "value": "修改學習單字個數.."
-    },
-    {
-      "name": "dayof_alert_btn_cancel",
-      "value": "取消"
-    },
-    {
-      "name": "distance_new_string",
-      "value": "學習"
-    },
-    {
-      "name": "distance_review_string",
-      "value": "復習"
-    },
-    {
-      "name": "distance_string_day",
-      "value": "+%d天"
-    },
-    {
-      "name": "distance_string_days",
-      "value": "+%d天"
-    },
-    {
-      "name": "piececount_txt_study",
-      "value": "學習"
-    },
-    {
-      "name": "piececount_txt_unit",
-      "value": "個"
-    },
-    {
-      "name": "piececount_txt_chk_repeat",
-      "value": "同時修改此後所有日期的學習個數"
-    },
-    {
-      "name": "piececount_msg_exclude_0_and_repeat",
-      "value": "學習個數為0時，\n不能勾選【同時修改此後所有日期的學習個數】"
-    },
-    {
-      "name": "piececount_msg_done",
-      "value": "修改完成"
-    },
-    {
-      "name": "piececount_btn_ok",
-      "value": "確定"
-    },
-    {
-      "name": "common_str_word_cnt",
-      "value": "%d個"
-    },
-    {
-      "name": "common_str_word_cnts",
-      "value": "%d個"
-    },
-    {
-      "name": "detail_item_sort_nav_title",
-      "value": "調整顯示順序"
-    },
-    {
-      "name": "detail_item_sort_btn_done",
-      "value": "完成"
-    },
-    {
-      "name": "detail_item_sort_open_tip",
-      "value": "【開啓】"
-    },
-    {
-      "name": "detail_item_sort_drag_tip",
-      "value": "按住拖動，調整順序"
-    },
-    {
-      "name": "cigen_txt_download_finished",
-      "value": "下載詞根數據成功"
-    },
-    {
-      "name": "cigen_txt_update_finished",
-      "value": "更新詞根數據成功"
-    },
-    {
-      "name": "cigen_vname_1",
-      "value": "前綴"
-    },
-    {
-      "name": "cigen_vname_2",
-      "value": "前綴"
-    },
-    {
-      "name": "cigen_vname_3",
-      "value": "詞根"
-    },
-    {
-      "name": "cigen_vname_4",
-      "value": "後綴"
-    },
-    {
-      "name": "cigen_vname_5",
-      "value": "後綴"
-    },
-    {
-      "name": "cigen_vname_6",
-      "value": "詞綴"
-    },
-    {
-      "name": "online_search_nav_title",
-      "value": "單詞查詢"
-    },
-    {
-      "name": "online_search_input_tip",
-      "value": "輸入英文或中文，在線查詢單詞"
-    },
-    {
-      "name": "online_search_loading",
-      "value": "加載中.."
-    },
-    {
-      "name": "online_search_load_no_more",
-      "value": "沒有了"
-    },
-    {
-      "name": "online_search_btn_cancel",
-      "value": "取消"
-    },
-    {
-      "name": "online_search_txt_running",
-      "value": "加載中.."
-    },
-    {
-      "name": "online_search_txt_no_found",
-      "value": "未找到相關單詞"
-    },
-    {
-      "name": "tab_title_learn",
-      "value": "學習"
-    },
-    {
-      "name": "tab_title_list",
-      "value": "一覽"
-    },
-    {
-      "name": "tab_title_quiz",
-      "value": "測試"
-    },
-    {
-      "name": "tab_title_review",
-      "value": "復習"
-    },
-    {
-      "name": "tab_title_report",
-      "value": "報告"
-    },
-    {
-      "name": "cat_tab_title_abc",
-      "value": "ABC"
-    },
-    {
-      "name": "cat_tab_title_category",
-      "value": "PARTS"
-    },
-    {
-      "name": "cat_tab_title_favorite",
-      "value": "收藏夾"
-    },
-    {
-      "name": "cat_tab_title_mistake",
-      "value": "常錯單詞"
-    },
-    {
-      "name": "cat_tab_title_still",
-      "value": "未測驗"
-    },
-    {
-      "name": "search_btn_cancel",
-      "value": "取消"
-    },
-    {
-      "name": "str_unit_no",
-      "value": "Unit%s"
-    },
-    {
-      "name": "wordcard_result_right",
-      "value": "正確:"
-    },
-    {
-      "name": "wordcard_result_wrong",
-      "value": "不正確:"
-    },
-    {
-      "name": "wordcard_result_times",
-      "value": "次"
-    },
-    {
-      "name": "wordcard_txt_example",
-      "value": "例句"
-    },
-    {
-      "name": "wordcard_txt_show_translation",
-      "value": "點擊顯示中文翻譯"
-    },
-    {
-      "name": "wordcard_info_hidetranslation",
-      "value": "隱藏翻譯"
-    },
-    {
-      "name": "wordcard_info_autopronunce",
-      "value": "自動發音(單詞)"
-    },
-    {
-      "name": "wordcard_info_autopronunce_ex",
-      "value": "自動發音(例句)"
-    },
-    {
-      "name": "wordcard_info_repeat",
-      "value": "循環"
-    },
-    {
-      "name": "wordcard_info_inteval",
-      "value": "滾動速度"
-    },
-    {
-      "name": "wordcard_info_inteval_second",
-      "value": "%s秒"
-    },
-    {
-      "name": "wordcard_record_name",
-      "value": "sound_%s"
-    },
-    {
-      "name": "wordcard_info_no_pron",
-      "value": "請先購買發音內容！"
-    },
-    {
-      "name": "wordcard_msg_audio_permission",
-      "value": "要使用錄音功能，請先在手機【設置】中開啓[錄音]權限！"
-    },
-    {
-      "name": "wordcard_memo_txt_title",
-      "value": "筆記"
-    },
-    {
-      "name": "wordcard_memo_txt_tip",
-      "value": "寫筆記.."
-    },
-    {
-      "name": "wordcard_memo_btn_save",
-      "value": "保存"
-    },
-    {
-      "name": "wordcard_memo_btn_share",
-      "value": "分享"
-    },
-    {
-      "name": "wordcard_memo_msg_saved",
-      "value": "保存筆記成功。"
-    },
-    {
-      "name": "wordcard_memo_msg_deleted",
-      "value": "刪除筆記成功。"
-    },
-    {
-      "name": "wordcard_detail_to_test_msg",
-      "value": "要用這些單詞進行測驗或拼寫練習嗎？"
-    },
-    {
-      "name": "wordcard_detail_to_test_btn_test",
-      "value": "立即測驗"
-    },
-    {
-      "name": "wordcard_detail_to_test_btn_spell",
-      "value": "拼寫練習"
-    },
-    {
-      "name": "wordcard_detail_to_test_btn_cancel",
-      "value": "暫時不要"
-    },
-    {
-      "name": "quiz_top_txt_unit",
-      "value": "單元別"
-    },
-    {
-      "name": "quiz_top_txt_all",
-      "value": "全部單詞"
-    },
-    {
-      "name": "quiz_top_txt_category",
-      "value": "Part別"
-    },
-    {
-      "name": "quiz_top_txt_mistake",
-      "value": "常錯單詞"
-    },
-    {
-      "name": "quiz_top_txt_favorite",
-      "value": "收藏單詞"
-    },
-    {
-      "name": "quiz_scope_err",
-      "value": "請選擇測試範圍。"
-    },
-    {
-      "name": "quiz_start_txt_mode",
-      "value": "測試模式"
-    },
-    {
-      "name": "quiz_start_txt_count",
-      "value": "問題數"
-    },
-    {
-      "name": "quiz_start_txt_type",
-      "value": "出題種類"
-    },
-    {
-      "name": "quiz_start_txt_speed",
-      "value": "出題速度"
-    },
-    {
-      "name": "quiz_start_txt_order",
-      "value": "出題順序"
-    },
-    {
-      "name": "quiz_start_txt_pronounce",
-      "value": "自動發音"
-    },
-    {
-      "name": "quiz_start_mode_normal",
-      "value": "普通"
-    },
-    {
-      "name": "quiz_start_mode_challenge",
-      "value": "挑戰"
-    },
-    {
-      "name": "quiz_start_count_10",
-      "value": "10問"
-    },
-    {
-      "name": "quiz_start_count_20",
-      "value": "20問"
-    },
-    {
-      "name": "quiz_start_count_50",
-      "value": "50問"
-    },
-    {
-      "name": "quiz_start_count_100",
-      "value": "100問"
-    },
-    {
-      "name": "quiz_start_type_eiwa",
-      "value": "英→中"
-    },
-    {
-      "name": "quiz_start_type_waei",
-      "value": "中→英"
-    },
-    {
-      "name": "quiz_start_speed_slow",
-      "value": "慢速"
-    },
-    {
-      "name": "quiz_start_speed_normal",
-      "value": "中速"
-    },
-    {
-      "name": "quiz_start_speed_fast",
-      "value": "快速"
-    },
-    {
-      "name": "quiz_start_order_no",
-      "value": "番號順序"
-    },
-    {
-      "name": "quiz_start_order_random",
-      "value": "隨機"
-    },
-    {
-      "name": "quiz_start_pronounce_on",
-      "value": "ON"
-    },
-    {
-      "name": "quiz_start_pronounce_off",
-      "value": "OFF"
-    },
-    {
-      "name": "quiz_start_btn_text",
-      "value": "Start"
-    },
-    {
-      "name": "quiz_result_score_rate",
-      "value": "正確率"
-    },
-    {
-      "name": "quiz_result_score_count_all",
-      "value": "全%s問"
-    },
-    {
-      "name": "quiz_result_score_count_correct",
-      "value": "正確:%s問"
-    },
-    {
-      "name": "quiz_result_score_comment_studyharder",
-      "value": "Come on!Study harder!"
-    },
-    {
-      "name": "quiz_result_score_comment_good",
-      "value": "Good!Keep it up!"
-    },
-    {
-      "name": "quiz_result_score_comment_welldone",
-      "value": "Great!Well done!"
-    },
-    {
-      "name": "quiz_result_btn_txt_retry",
-      "value": "再測一次"
-    },
-    {
-      "name": "quiz_result_btn_txt_mistake",
-      "value": "再測一次\n(僅錯誤單詞)"
-    },
-    {
-      "name": "quiz_result_btn_txt_next",
-      "value": "下一問題"
-    },
-    {
-      "name": "report_title_learn",
-      "value": "學習狀況"
-    },
-    {
-      "name": "report_title_test",
-      "value": "測試狀況"
-    },
-    {
-      "name": "report_title_mistake",
-      "value": "單詞錯誤次數狀況"
-    },
-    {
-      "name": "report_title_category_radar",
-      "value": "正確率(Part別)"
-    },
-    {
-      "name": "report_txt_learn_wordscount",
-      "value": "已學習單詞數"
-    },
-    {
-      "name": "report_txt_test_correct",
-      "value": "正確率"
-    },
-    {
-      "name": "report_txt_test_wrang",
-      "value": "不正確率"
-    },
-    {
-      "name": "report_txt_test_still",
-      "value": "未測試"
-    },
-    {
-      "name": "report_txt_test_percent_format",
-      "value": "%.01f%%"
-    },
-    {
-      "name": "report_txt_test_percent_format2",
-      "value": "%.00f%%"
-    },
-    {
-      "name": "report_txt_chart_all",
-      "value": "全部"
-    },
-    {
-      "name": "setting_txt_learn",
-      "value": "學習履歷刪除"
-    },
-    {
-      "name": "setting_txt_test",
-      "value": "測試結果刪除"
-    },
-    {
-      "name": "setting_txt_review",
-      "value": "復習列表清空"
-    },
-    {
-      "name": "setting_txt_record",
-      "value": "錄音清空"
-    },
-    {
-      "name": "setting_txt_memo",
-      "value": "筆記刪除"
-    },
-    {
-      "name": "setting_txt_favorite",
-      "value": "收藏夾清空"
-    },
-    {
-      "name": "set_txt_deleteword",
-      "value": "恢復已刪除單詞"
-    },
-    {
-      "name": "set_txt_curve",
-      "value": "啓用記憶曲線"
-    },
-    {
-      "name": "set_txt_cache",
-      "value": "清空緩存"
-    },
-    {
-      "name": "setting_txt_soundeffect",
-      "value": "效果音"
-    },
-    {
-      "name": "setting_txt_write_review",
-      "value": "撰寫評論"
-    },
-    {
-      "name": "change_language_title",
-      "value": "切換語言"
-    },
-    {
-      "name": "setting_txt_moreapps",
-      "value": "【MoreApps..】"
-    },
-    {
-      "name": "setting_txt_version",
-      "value": "版本"
-    },
-    {
-      "name": "setting_txt_privacy",
-      "value": "隱私政策"
-    },
-    {
-      "name": "setting_txt_contact",
-      "value": "聯繫客服"
-    },
-    {
-      "name": "setting_msg_del_learn",
-      "value": "確定要刪除學習履歷嗎？"
-    },
-    {
-      "name": "setting_msg_del_test",
-      "value": "確定要刪除測試結果嗎？"
-    },
-    {
-      "name": "setting_msg_del_review",
-      "value": "確定要清空復習列表嗎？"
-    },
-    {
-      "name": "setting_msg_del_record",
-      "value": "確定要清空所有錄音數據嗎？"
-    },
-    {
-      "name": "setting_msg_del_memo",
-      "value": "確定要刪除所有筆記內容嗎？"
-    },
-    {
-      "name": "setting_msg_del_favorite",
-      "value": "確定要清空收藏夾嗎？"
-    },
-    {
-      "name": "setting_msg_done_del_learn",
-      "value": "已成功刪除學習履歷。"
-    },
-    {
-      "name": "setting_msg_done_del_test",
-      "value": "已成功刪除測試結果。"
-    },
-    {
-      "name": "setting_msg_done_del_review",
-      "value": "已成功清空復習列表。"
-    },
-    {
-      "name": "setting_msg_done_del_record",
-      "value": "已成功清空所有錄音數據。"
-    },
-    {
-      "name": "setting_msg_done_del_memo",
-      "value": "已成功刪除所有筆記內容。"
-    },
-    {
-      "name": "setting_msg_done_del_favorite",
-      "value": "已成功清空收藏夾。"
-    },
-    {
-      "name": "nav_title_main_learn",
-      "value": "單詞樹"
-    },
-    {
-      "name": "nav_title_main_list",
-      "value": "單詞一覽"
-    },
-    {
-      "name": "nav_title_main_quiz",
-      "value": "測試選擇"
-    },
-    {
-      "name": "nav_title_main_review",
-      "value": "復習"
-    },
-    {
-      "name": "nav_title_main_report",
-      "value": "報告"
-    },
-    {
-      "name": "nav_title_main_set_left",
-      "value": "設定"
-    },
-    {
-      "name": "nav_title_main_set_right",
-      "value": "應用內購買"
-    },
-    {
-      "name": "nav_title_learn_unitlist",
-      "value": "單元列表"
-    },
-    {
-      "name": "nav_title_quiz_scope_unit",
-      "value": "單元選擇"
-    },
-    {
-      "name": "nav_title_quiz_scope_all",
-      "value": "全部單詞"
-    },
-    {
-      "name": "nav_title_quiz_scope_favorite",
-      "value": "收藏單詞"
-    },
-    {
-      "name": "nav_title_quiz_scope_category",
-      "value": "Part別"
-    },
-    {
-      "name": "nav_title_quiz_scope_mistake",
-      "value": "常錯單詞"
-    },
-    {
-      "name": "nav_title_quiz_start",
-      "value": "測試設定"
-    },
-    {
-      "name": "nav_title_quiz_result",
-      "value": "測試結果"
-    },
-    {
-      "name": "card_txt_example_title",
-      "value": "例句"
-    },
-    {
-      "name": "card_info_slide_interval",
-      "value": "%.0f秒"
-    },
-    {
-      "name": "card_txt_show_translation",
-      "value": "點擊顯示中文翻譯"
-    },
-    {
-      "name": "card_info_txt_hide_translation",
-      "value": "隱藏翻譯"
-    },
-    {
-      "name": "card_info_txt_autopron",
-      "value": "自動發音(單詞)"
-    },
-    {
-      "name": "card_info_txt_autopron_ex",
-      "value": "自動發音(例句)"
-    },
-    {
-      "name": "card_info_txt_repeat",
-      "value": "循環"
-    },
-    {
-      "name": "card_info_txt_rollspeed",
-      "value": "滾動速度"
-    },
-    {
-      "name": "card_info_txt_no_pron",
-      "value": "請先購買發音內容！"
-    },
-    {
-      "name": "card_result_txt",
-      "value": "正確: %d次 不正確: %d次"
-    },
-    {
-      "name": "quiz_question_mode_txt",
-      "value": "測試模式"
-    },
-    {
-      "name": "quiz_question_mode_normal",
-      "value": "普通"
-    },
-    {
-      "name": "quiz_question_mode_challenge",
-      "value": "挑戰"
-    },
-    {
-      "name": "quiz_question_count_txt",
-      "value": "問題數"
-    },
-    {
-      "name": "quiz_question_count_1",
-      "value": "10問"
-    },
-    {
-      "name": "quiz_question_count_2",
-      "value": "20問"
-    },
-    {
-      "name": "quiz_question_count_3",
-      "value": "50問"
-    },
-    {
-      "name": "quiz_question_count_4",
-      "value": "100問"
-    },
-    {
-      "name": "quiz_question_type_txt",
-      "value": "出題種類"
-    },
-    {
-      "name": "quiz_question_type_eiwa",
-      "value": "英→中"
-    },
-    {
-      "name": "quiz_question_type_waei",
-      "value": "中→英"
-    },
-    {
-      "name": "quiz_question_speed_txt",
-      "value": "出題速度"
-    },
-    {
-      "name": "quiz_question_speed_slow",
-      "value": "慢速"
-    },
-    {
-      "name": "quiz_question_speed_normal",
-      "value": "中速"
-    },
-    {
-      "name": "quiz_question_speed_fast",
-      "value": "快速"
-    },
-    {
-      "name": "quiz_question_order_txt",
-      "value": "出題順序"
-    },
-    {
-      "name": "quiz_question_order_serialno",
-      "value": "番號順序"
-    },
-    {
-      "name": "quiz_question_order_random",
-      "value": "隨機"
-    },
-    {
-      "name": "quiz_question_pronounce_txt",
-      "value": "發音"
-    },
-    {
-      "name": "quiz_question_pronounce_on",
-      "value": "ON"
-    },
-    {
-      "name": "quiz_question_pronounce_off",
-      "value": "OFF"
-    },
-    {
-      "name": "quiz_running_btn_pause",
-      "value": "暫停"
-    },
-    {
-      "name": "quiz_running_txt_cnt",
-      "value": "%d/%d問"
-    },
-    {
-      "name": "quiz_result_rate_txt",
-      "value": "正確率"
-    },
-    {
-      "name": "quiz_result_info",
-      "value": "全:%d問  正確:%d問"
-    },
-    {
-      "name": "quiz_result_btn_retry",
-      "value": "再測一次"
-    },
-    {
-      "name": "quiz_result_btn_mistake",
-      "value": "　再測一次\n(僅錯誤單詞)"
-    },
-    {
-      "name": "quiz_result_btn_next",
-      "value": "下一問題"
-    },
-    {
-      "name": "quiz_result_all_corrected",
-      "value": "全部正確"
-    },
-    {
-      "name": "review_btn_edit",
-      "value": "編輯"
-    },
-    {
-      "name": "review_btn_done",
-      "value": "完成"
-    },
-    {
-      "name": "review_btn_retest",
-      "value": "再測試"
-    },
-    {
-      "name": "review_btn_retest_pad",
-      "value": "□再測試"
-    },
-    {
-      "name": "review_btn_retest_pad_hilighted",
-      "value": "■再測試"
-    },
-    {
-      "name": "review_btn_delete",
-      "value": "刪除"
-    },
-    {
-      "name": "review_confirm_msg",
-      "value": "確定要刪除嗎？"
-    },
-    {
-      "name": "review_no_data",
-      "value": "沒有需要復習的單詞。\n請先進行測驗或挑戰!"
-    },
-    {
-      "name": "report_learn_title",
-      "value": "學習狀況"
-    },
-    {
-      "name": "report_learn_txt",
-      "value": "已學習單詞數"
-    },
-    {
-      "name": "report_test_title",
-      "value": "測試狀況"
-    },
-    {
-      "name": "report_test_txt_correct",
-      "value": "正確率"
-    },
-    {
-      "name": "report_test_txt_wrong",
-      "value": "不正確率"
-    },
-    {
-      "name": "report_test_txt_still",
-      "value": "未測試"
-    },
-    {
-      "name": "report_mistake_title",
-      "value": "單詞錯誤次數狀況"
-    },
-    {
-      "name": "report_category_title",
-      "value": "正確率(Part別)"
-    },
-    {
-      "name": "set_txt_title",
-      "value": "設定"
-    },
-    {
-      "name": "set_txt_learn",
-      "value": "學習履歷刪除"
-    },
-    {
-      "name": "set_txt_test",
-      "value": "測試結果刪除"
-    },
-    {
-      "name": "set_txt_review",
-      "value": "復習列表清空"
-    },
-    {
-      "name": "set_txt_record",
-      "value": "錄音清空"
-    },
-    {
-      "name": "set_txt_memo",
-      "value": "備注刪除"
-    },
-    {
-      "name": "set_txt_favorite",
-      "value": "收藏夾清空"
-    },
-    {
-      "name": "set_txt_se",
-      "value": "效果音"
-    },
-    {
-      "name": "set_txt_wtreview",
-      "value": "撰寫評論"
-    },
-    {
-      "name": "set_txt_encourage_info",
-      "value": "免費獲取發音的方法"
-    },
-    {
-      "name": "set_cell_txt_clear_cache",
-      "value": "清空緩存"
-    },
-    {
-      "name": "set_cell_txt_crm_btn_clear_cache",
-      "value": "清空本機緩存"
-    },
-    {
-      "name": "set_msg_clear_done",
-      "value": "清空完成"
-    },
-    {
-      "name": "set_msg_learn",
-      "value": "確定要刪除所有學習履歷嗎？"
-    },
-    {
-      "name": "set_msg_test",
-      "value": "確定要刪除所有測試結果嗎？"
-    },
-    {
-      "name": "set_msg_review",
-      "value": "確定要清空復習列表嗎？"
-    },
-    {
-      "name": "set_msg_record",
-      "value": "確定要清空所有錄音數據嗎？"
-    },
-    {
-      "name": "set_msg_memo",
-      "value": "確定要刪除所有備注內容嗎？"
-    },
-    {
-      "name": "set_msg_favorite",
-      "value": "確定要清空收藏夾嗎？"
-    },
-    {
-      "name": "set_msg_success_learn",
-      "value": "已成功刪除學習履歷。"
-    },
-    {
-      "name": "set_msg_success_test",
-      "value": "已成功刪除測試結果。"
-    },
-    {
-      "name": "set_msg_success_review",
-      "value": "已成功清空復習列表。"
-    },
-    {
-      "name": "set_msg_success_record",
-      "value": "已成功清空錄音數據。"
-    },
-    {
-      "name": "set_msg_success_memo",
-      "value": "已成功刪除備注內容。"
-    },
-    {
-      "name": "set_msg_success_favorite",
-      "value": "已成功清空收藏夾。"
-    },
-    {
-      "name": "set_left_btn_more",
-      "value": "更多.."
-    },
-    {
-      "name": "iap_txt_title",
-      "value": "應用內購買"
-    },
-    {
-      "name": "iap_btn_txt_restore",
-      "value": "還原"
-    },
-    {
-      "name": "iap_btn_txt_purchased",
-      "value": "已購買"
-    },
-    {
-      "name": "iap_msg_success_title",
-      "value": "應用內購買"
-    },
-    {
-      "name": "iap_msg_success_content",
-      "value": "完成！"
-    },
-    {
-      "name": "iap_msg_restore_error",
-      "value": "還沒有已經購買的內容，不能進行還原。"
-    },
-    {
-      "name": "icloud_restore_success",
-      "value": "已成功完成從【免費版】的數據同步。"
-    },
-    {
-      "name": "rate_title",
-      "value": "評價"
-    },
-    {
-      "name": "rate_msg",
-      "value": "為此應用評分？"
-    },
-    {
-      "name": "rate_cancel",
-      "value": "下次再說！"
-    },
-    {
-      "name": "rate_ok",
-      "value": "好的，現在就去！"
-    },
-    {
-      "name": "rate_never",
-      "value": "不用，永不評論！"
-    },
-    {
-      "name": "cat_txt_level_1",
-      "value": "TOEIC600"
-    },
-    {
-      "name": "cat_txt_level_2",
-      "value": "TOEIC730"
-    },
-    {
-      "name": "cat_txt_level_3",
-      "value": "TOEIC860"
-    },
-    {
-      "name": "cat_txt_level_all",
-      "value": "全部"
-    },
-    {
-      "name": "error_sign_in_icloud_title",
-      "value": "登錄iCloud"
-    },
-    {
-      "name": "error_sign_in_icloud_txt",
-      "value": "分享筆記需要登錄到iCloud。\n(在設定頁面，點擊iCloud,然後輸入您的Apple ID，同時打開iCloud Drive)"
-    },
-    {
-      "name": "encourage_instruction_title",
-      "value": "獲取發音"
-    },
-    {
-      "name": "encourage_instruction_msg",
-      "value": "🎉觀看廣告可以立即獲得單詞和例句發音。"
-    },
-    {
-      "name": "encourage_msg_word",
-      "value": "已經解鎖「%s」單詞發音。"
-    },
-    {
-      "name": "encourage_msg_example",
-      "value": "已經解鎖「%s」例句發音。"
-    },
-    {
-      "name": "encourage_msg_word_example",
-      "value": "已經解鎖「%s」單詞和例句發音。"
-    },
-    {
-      "name": "encourage_btn_txt_yes",
-      "value": "現在觀看"
-    },
-    {
-      "name": "encourage_btn_txt_no",
-      "value": "以後再說"
-    },
-    {
-      "name": "set_more_txt_mine_memo",
-      "value": "我的筆記"
-    },
-    {
-      "name": "set_more_txt_mine_record",
-      "value": "我的錄音"
-    },
-    {
-      "name": "set_more_txt_mine_deletes",
-      "value": "我刪除的單詞"
-    },
-    {
-      "name": "set_more_txt_update_now",
-      "value": "立即更新已下載詞彙"
-    },
-    {
-      "name": "set_more_txt_update_auto",
-      "value": "Wifi下自動更新詞彙"
-    },
-    {
-      "name": "set_more_msg_update_started",
-      "value": "正在檢查詞彙更新.."
-    },
-    {
-      "name": "set_more_msg_update_finished",
-      "value": "詞彙更新完成。"
-    },
-    {
-      "name": "set_txt_word_deleted",
-      "value": "查看已刪除單詞"
-    },
-    {
-      "name": "nav_title_deleted_word",
-      "value": "已刪除單詞"
-    },
-    {
-      "name": "word_delete_msg_recover_confirm",
-      "value": "確定要恢復所有已刪除的單詞嗎？"
-    },
-    {
-      "name": "word_delete_msg_recover_success",
-      "value": "已成功恢復所有已刪除單詞。"
-    },
-    {
-      "name": "word_delete_btn_recover",
-      "value": "全部恢復"
-    },
-    {
-      "name": "word_delete_pull_to_delete",
-      "value": "下拉刪除此單詞.."
-    },
-    {
-      "name": "word_delete_pull_to_recover",
-      "value": "下拉恢復此單詞.."
-    },
-    {
-      "name": "word_delete_release_to_delete",
-      "value": "釋放刪除此單詞.."
-    },
-    {
-      "name": "word_delete_release_to_recover",
-      "value": "釋放恢復此單詞.."
-    },
-    {
-      "name": "word_delete_deleting",
-      "value": "刪除中.."
-    },
-    {
-      "name": "word_delete_recoverring",
-      "value": "恢復中.."
-    },
-    {
-      "name": "word_delete_msg_deleted",
-      "value": "已刪除"
-    },
-    {
-      "name": "word_delete_msg_recoverred",
-      "value": "已恢復"
-    },
-    {
-      "name": "word_delete_lbl_txt_deleted",
-      "value": "已刪除"
-    },
-    {
-      "name": "set_txt_remind_title",
-      "value": "學習提醒"
-    },
-    {
-      "name": "set_txt_remind_daily",
-      "value": "每天"
-    },
-    {
-      "name": "set_txt_remind_off",
-      "value": "OFF"
-    },
-    {
-      "name": "set_cell_txt_to_member",
-      "value": "升級為會員"
-    },
-    {
-      "name": "set_cell_txt_member",
-      "value": "會員功能"
-    },
-    {
-      "name": "member_title",
-      "value": "會員功能"
-    },
-    {
-      "name": "member_desc",
-      "value": "・完全無廣告;        \n・任意下載詞彙數據;        \n・任意查看單詞發音;        \n・任意查看例句發音;        \n・任意使用自動發音;        \n・任意使用內置詞典;        \n・任意使用記憶曲線;"
-    },
-    {
-      "name": "member_txt_recommend",
-      "value": "推薦"
-    },
-    {
-      "name": "member_txt_info",
-      "value": "・用戶確認購買並付款後，計入華為賬戶;        \n・通過華為購買的內容或服務，僅限華為Harmony系統使用，不能在其它系統使用;        \n・如需取消續訂，請在當前訂閱週期到期前24小時以前，手動在華為設置管理中關閉自動續費功能，到期前24小時內取消，將會收取訂閱費用；        \n・華為賬戶會在到期前24小時內扣費，扣費成功後訂閱週期順延一個訂閱週期；        \n・用戶若在免費試用期有任何未使用完的部分，剩餘試用期將在購買訂閱產品時被沒收。目前本產品不提供免費試用期。"
-    },
-    {
-      "name": "member_txt_will_expire",
-      "value": "會員到期時間：%s"
-    },
-    {
-      "name": "member_txt_was_expired",
-      "value": "會員已於：%s 到期"
-    },
-    {
-      "name": "member_btn_restore",
-      "value": "恢復"
-    },
-    {
-      "name": "member_btn_subscribe",
-      "value": "升級為會員"
-    },
-    {
-      "name": "member_msg_subscribe_purchasing",
-      "value": "訂閱中.."
-    },
-    {
-      "name": "member_btn_subscribe_done",
-      "value": "恭喜您成功升級為會員"
-    },
-    {
-      "name": "member_msg_restoring",
-      "value": "恢復中.."
-    },
-    {
-      "name": "member_msg_restore_done",
-      "value": "恢復完成"
-    },
-    {
-      "name": "member_msg_restored_nothing",
-      "value": "沒有可供恢復的項目"
-    },
-    {
-      "name": "member_btn_terms",
-      "value": "服務條款"
-    },
-    {
-      "name": "member_btn_privacy",
-      "value": "隱私政策"
-    },
-    {
-      "name": "member_btn_cancel",
-      "value": "取消"
-    },
-    {
-      "name": "member_btn_manage_subs",
-      "value": "查看訂閱"
-    },
-    {
-      "name": "member_manager_msg_limit_download_books",
-      "value": "加入會員可以任意下載詞彙"
-    },
-    {
-      "name": "member_manager_msg_limit_add_ebook",
-      "value": "加入會員可以創建更多詞彙本"
-    },
-    {
-      "name": "member_manager_msg_limit_word_pron",
-      "value": "加入會員可以任意查看單詞發音, \n今日免費次數已用完(每日%d次)"
-    },
-    {
-      "name": "member_manager_msg_limit_example_pron",
-      "value": "加入會員可以任意查看例句發音, \n今日免費次數已用完(每日%d次)"
-    },
-    {
-      "name": "member_manager_msg_limit_auto_pron",
-      "value": "加入會員可以任意使用自動發音"
-    },
-    {
-      "name": "member_manager_msg_limit_dict_show",
-      "value": "加入會員可以任意使用內置詞典, \n今日免費次數已用完(每日%d次)"
-    },
-    {
-      "name": "member_manager_msg_limit_use_night_mode",
-      "value": "加入會員可以任意使用夜晚模式"
-    },
-    {
-      "name": "member_manager_msg_limit_use_hide_trans",
-      "value": "加入會員可以任意使用隱藏翻譯"
-    },
-    {
-      "name": "member_manager_msg_limit_use_retest_mistake",
-      "value": "加入會員可以任意使用再測一次"
-    },
-    {
-      "name": "member_manager_msg_limit_use_all_units",
-      "value": "加入會員可以任意學習所有單元"
-    },
-    {
-      "name": "member_manager_msg_limit_use_all_plan_dayofs",
-      "value": "加入會員可任意使用記憶曲線"
-    },
-    {
-      "name": "member_manager_msg_limit_use_cigen",
-      "value": "加入會員可以任意使用詞根助記"
-    },
-    {
-      "name": "member_manager_msg_limit_use_sameroot",
-      "value": "加入會員可以任意使用同根詞"
-    },
-    {
-      "name": "member_manager_msg_limit_online_dict_use",
-      "value": "加入會員可以任意使用單詞查詢, \n今日免費次數已用完(每日%d次)"
-    },
-    {
-      "name": "member_manager_msg_limit_challenge_use",
-      "value": "加入會員可以任意使用單詞挑戰, \n今日免費次數已用完(每日%d次)"
-    },
-    {
-      "name": "member_gift_one_year",
-      "value": "感謝您對我們的支持，贈送1年會員"
-    },
-    {
-      "name": "member_subscribe_txt_unit_day",
-      "value": "天"
-    },
-    {
-      "name": "member_subscribe_txt_unit_days",
-      "value": "天"
-    },
-    {
-      "name": "member_subscribe_txt_unit_week",
-      "value": "周"
-    },
-    {
-      "name": "member_subscribe_txt_unit_weeks",
-      "value": "周"
-    },
-    {
-      "name": "member_subscribe_txt_unit_month",
-      "value": "月"
-    },
-    {
-      "name": "member_subscribe_txt_unit_months",
-      "value": "月"
-    },
-    {
-      "name": "member_subscribe_txt_unit_year",
-      "value": "年"
-    },
-    {
-      "name": "member_subscribe_txt_unit_years",
-      "value": "年"
-    },
-    {
-      "name": "member_sub_tip_month",
-      "value": "連續包月會員，%s元/月"
-    },
-    {
-      "name": "member_sub_tip_quarter",
-      "value": "連續包季會員，%s元/季，相當於%s元/月"
-    },
-    {
-      "name": "member_sub_tip_year",
-      "value": "連續包年會員，%s元/年，相當於%s元/月"
-    },
-    {
-      "name": "advice_nav_title",
-      "value": "意見反饋"
-    },
-    {
-      "name": "advice_txt_tip",
-      "value": "請在此處留下您的Email"
-    },
-    {
-      "name": "advice_btn_send",
-      "value": "發送"
-    },
-    {
-      "name": "advice_msg_send_suceed",
-      "value": "發送成功。"
-    },
-    {
-      "name": "advice_msg_send_failed",
-      "value": "發送失敗！"
-    },
-    {
-      "name": "reclaim_nav_title",
-      "value": "投訴"
-    },
-    {
-      "name": "reclaim_btn_send",
-      "value": "發送"
-    },
-    {
-      "name": "about_nav_title",
-      "value": "關於"
-    },
-    {
-      "name": "about_btn_term",
-      "value": "《服務協議》"
-    },
-    {
-      "name": "about_btn_privacy",
-      "value": "《隱私政策》"
-    },
-    {
-      "name": "about_btn_privacy_kid",
-      "value": "《兒童隱私政策》"
-    },
-    {
-      "name": "about_btn_redeem",
-      "value": "兌換會員碼"
-    },
-    {
-      "name": "about_btn_reclaim",
-      "value": "投訴"
-    },
-    {
-      "name": "about_btn_contact",
-      "value": "聯繫客服"
-    },
-    {
-      "name": "login_not_login",
-      "value": "請登錄"
-    },
-    {
-      "name": "login_nav_title",
-      "value": "登錄"
-    },
-    {
-      "name": "login_txt_email",
-      "value": "郵箱"
-    },
-    {
-      "name": "login_txt_pwd",
-      "value": "密碼"
-    },
-    {
-      "name": "login_btn_forget",
-      "value": "忘記密碼?"
-    },
-    {
-      "name": "login_btn_login",
-      "value": "登錄"
-    },
-    {
-      "name": "login_btn_signup",
-      "value": "註冊"
-    },
-    {
-      "name": "login_btn_cancel",
-      "value": "取消"
-    },
-    {
-      "name": "login_msg_invalid_email",
-      "value": "請輸入正確的Email"
-    },
-    {
-      "name": "login_msg_need_pwd",
-      "value": "請輸入密碼"
-    },
-    {
-      "name": "login_msg_logining",
-      "value": "登錄中.."
-    },
-    {
-      "name": "login_msg_login_succeed",
-      "value": "登錄成功"
-    },
-    {
-      "name": "login_msg_login_failed",
-      "value": "登錄失敗"
-    },
-    {
-      "name": "login_sns_txt_other",
-      "value": "其它登錄方式"
-    },
-    {
-      "name": "login_sns_weibo",
-      "value": "新浪微博"
-    },
-    {
-      "name": "login_sns_qq",
-      "value": "QQ"
-    },
-    {
-      "name": "login_sns_weixin",
-      "value": "微信"
-    },
-    {
-      "name": "login_sns_facebook",
-      "value": "Facebook"
-    },
-    {
-      "name": "login_agree_txt",
-      "value": "已閱讀並同意服務條款和隱私政策"
-    },
-    {
-      "name": "login_agree_tip",
-      "value": "請閱讀並同意服務條款和隱私政策"
-    },
-    {
-      "name": "login_agree_link_terms",
-      "value": "服務條款"
-    },
-    {
-      "name": "login_agree_link_privacy",
-      "value": "隱私政策"
-    },
-    {
-      "name": "member_agree_txt",
-      "value": "同意《會員服務》、《自動續費協議》和《隱私政策》"
-    },
-    {
-      "name": "member_agree_tip",
-      "value": "訂閱會員需要同意《會員服務》《自動續費協議》《隱私政策》"
-    },
-    {
-      "name": "member_agree_link_terms",
-      "value": "《會員服務》"
-    },
-    {
-      "name": "member_agree_link_privacy",
-      "value": "《隱私政策》"
-    },
-    {
-      "name": "member_agree_link_terms_subscription",
-      "value": "《自動續費協議》"
-    },
-    {
-      "name": "member_buy_cfm_msg_title",
-      "value": "確認"
-    },
-    {
-      "name": "member_buy_cfm_msg_info",
-      "value": "訂閱會員，開通自動續費服務。"
-    },
-    {
-      "name": "member_buy_cfm_msg_info2",
-      "value": "你可以隨時取消訂閱，關閉自動續費服務。"
-    },
-    {
-      "name": "member_buy_cfm_txt_terms_link",
-      "value": "自動續費服務"
-    },
-    {
-      "name": "member_buy_cfm_btn_yes",
-      "value": "確定"
-    },
-    {
-      "name": "member_buy_cfm_btn_no",
-      "value": "取消"
-    },
-    {
-      "name": "logoff_nav_title",
-      "value": "資料管理"
-    },
-    {
-      "name": "logoff_btn_logoff",
-      "value": "註銷帳號"
-    },
-    {
-      "name": "logoff_txt_tip",
-      "value": "註銷帳號，將會從服務器上刪除此賬戶的所有信息，包括所有備份數據，且不可恢復，請謹慎操作。"
-    },
-    {
-      "name": "logoff_msg_logoff",
-      "value": "確定要刪除此帳號的所有數據嗎？(刪除之後不可恢復)"
-    },
-    {
-      "name": "logoff_cfm_yes",
-      "value": "確認註銷"
-    },
-    {
-      "name": "logoff_cfm_no",
-      "value": "取消"
-    },
-    {
-      "name": "logoff_msg_logoff_succee",
-      "value": "帳號註銷成功"
-    },
-    {
-      "name": "logoff_msg_logoff_fail",
-      "value": "操作失敗"
-    },
-    {
-      "name": "signup_nav_title",
-      "value": "註冊"
-    },
-    {
-      "name": "signup_txt_email",
-      "value": "郵箱"
-    },
-    {
-      "name": "signup_txt_username",
-      "value": "用戶名"
-    },
-    {
-      "name": "signup_txt_pwd",
-      "value": "密碼"
-    },
-    {
-      "name": "signup_txt_pwd2",
-      "value": "再次輸入密碼"
-    },
-    {
-      "name": "signup_chk_agree",
-      "value": "同意"
-    },
-    {
-      "name": "signup_btn_terms",
-      "value": "服務條款"
-    },
-    {
-      "name": "signup_btn_signup",
-      "value": "註冊"
-    },
-    {
-      "name": "signup_msg_need_email",
-      "value": "請輸入正確的Email"
-    },
-    {
-      "name": "signup_msg_need_username",
-      "value": "請輸入用戶名"
-    },
-    {
-      "name": "signup_msg_need_pwd",
-      "value": "請輸入密碼"
-    },
-    {
-      "name": "signup_msg_need_pwd2",
-      "value": "請輸入驗證密碼"
-    },
-    {
-      "name": "signup_msg_username_too_long",
-      "value": "用戶名太長"
-    },
-    {
-      "name": "signup_msg_pwd_out_range",
-      "value": "請輸入6～20位之內的密碼"
-    },
-    {
-      "name": "signup_msg_pwd_different",
-      "value": "兩次輸入的密碼不同"
-    },
-    {
-      "name": "signup_msg_need_agree_terms",
-      "value": "繼續註冊您需要同意我們的服務條款"
-    },
-    {
-      "name": "signup_msg_signuping",
-      "value": "註冊中.."
-    },
-    {
-      "name": "signup_msg_signup_succeed",
-      "value": "註冊成功"
-    },
-    {
-      "name": "signup_msg_signup_failed",
-      "value": "註冊失敗"
-    },
-    {
-      "name": "signup_msg_signup_auditing",
-      "value": "審核中.."
-    },
-    {
-      "name": "signup_msg_signup_fail_on_username",
-      "value": "註冊失敗，用戶名違規"
-    },
-    {
-      "name": "sendcode_nav_title",
-      "value": "發送驗證碼"
-    },
-    {
-      "name": "sendcode_txt_email",
-      "value": "請輸入郵箱"
-    },
-    {
-      "name": "sendcode_btn_send",
-      "value": "發送驗證碼"
-    },
-    {
-      "name": "sendcode_msg_need_email",
-      "value": "請輸入正確的Email"
-    },
-    {
-      "name": "sendcode_msg_sending",
-      "value": "正在發送驗證碼.."
-    },
-    {
-      "name": "sendcode_msg_send_done",
-      "value": "驗證碼已經發送到郵箱"
-    },
-    {
-      "name": "sendcode_msg_send_failed",
-      "value": "發送驗證碼失敗"
-    },
-    {
-      "name": "resetpwd_nav_title",
-      "value": "重置密碼"
-    },
-    {
-      "name": "resetpwd_txt_code",
-      "value": "請輸入驗證碼"
-    },
-    {
-      "name": "resetpwd_txt_pwd",
-      "value": "新密碼"
-    },
-    {
-      "name": "resetpwd_txt_pwd2",
-      "value": "再次輸入密碼"
-    },
-    {
-      "name": "resetpwd_btn_excute",
-      "value": "確認"
-    },
-    {
-      "name": "resetpwd_msg_need_code",
-      "value": "請輸入驗證碼"
-    },
-    {
-      "name": "resetpwd_msg_need_pwd",
-      "value": "請輸入密碼"
-    },
-    {
-      "name": "resetpwd_msg_need_pwd2",
-      "value": "請輸入驗證密碼"
-    },
-    {
-      "name": "resetpwd_msg_pwd_out_range",
-      "value": "請輸入6～20位之內的密碼"
-    },
-    {
-      "name": "resetpwd_msg_pwd_different",
-      "value": "兩次輸入的密碼不同"
-    },
-    {
-      "name": "resetpwd_msg_resetting",
-      "value": "密碼重置中.."
-    },
-    {
-      "name": "resetpwd_msg_reset_succeed",
-      "value": "重置密碼成功"
-    },
-    {
-      "name": "resetpwd_msg_reset_failed",
-      "value": "重置密碼失敗"
-    },
-    {
-      "name": "login_qr_nav_title",
-      "value": "微信掃碼登錄"
-    },
-    {
-      "name": "server_code_m402",
-      "value": "Email已經註冊過"
-    },
-    {
-      "name": "server_code_m405",
-      "value": "帳戶不存在"
-    },
-    {
-      "name": "server_code_m406",
-      "value": "密碼不正確"
-    },
-    {
-      "name": "server_code_m410",
-      "value": "驗證碼不正確"
-    },
-    {
-      "name": "server_code_m701",
-      "value": "會員碼無效"
-    },
-    {
-      "name": "server_code_m702",
-      "value": "會員碼已被使用"
-    },
-    {
-      "name": "set_alert_logut_msg",
-      "value": "確定要退出登錄嗎？"
-    },
-    {
-      "name": "set_alert_logut_btn_yes",
-      "value": "是的"
-    },
-    {
-      "name": "set_btn_login",
-      "value": "登錄"
-    },
-    {
-      "name": "set_btn_logout",
-      "value": "退出登錄"
-    },
-    {
-      "name": "set_txt_not_login",
-      "value": "未登錄"
-    },
-    {
-      "name": "set_alert_backup_msg",
-      "value": "將本地數據備份到雲端？"
-    },
-    {
-      "name": "set_alert_backup_btn_yes",
-      "value": "立即備份"
-    },
-    {
-      "name": "set_msg_backuping",
-      "value": "數據備份中.."
-    },
-    {
-      "name": "set_msg_backup_done",
-      "value": "備份成功"
-    },
-    {
-      "name": "set_msg_backup_failed",
-      "value": "備份失敗"
-    },
-    {
-      "name": "set_alert_restore_msg",
-      "value": "從雲端恢複數據到本地？"
-    },
-    {
-      "name": "set_alert_restore_btn_yes",
-      "value": "立即恢復"
-    },
-    {
-      "name": "set_msg_restoreing",
-      "value": "數據恢復中.."
-    },
-    {
-      "name": "set_msg_restore_done",
-      "value": "恢復成功"
-    },
-    {
-      "name": "set_msg_restore_failed",
-      "value": "恢復失敗"
-    },
-    {
-      "name": "set_msg_restore_no_found",
-      "value": "未找到備份數據"
-    },
-    {
-      "name": "set_txt_member_will_expire",
-      "value": "會員到期時間：%s"
-    },
-    {
-      "name": "set_txt_member_was_expired",
-      "value": "會員已於：%s 到期"
-    },
-    {
-      "name": "set_txt_data_last_backup",
-      "value": "上次備份：%s"
-    },
-    {
-      "name": "set_txt_data_to_restore",
-      "value": "從雲端恢複數據"
-    },
-    {
-      "name": "set_txt_about_version",
-      "value": "版本：%s"
-    },
-    {
-      "name": "set_alert_clear_msg",
-      "value": "清空本機緩存數據？"
-    },
-    {
-      "name": "set_alert_clear_btn_yes",
-      "value": "清空"
-    },
-    {
-      "name": "set_nav_title",
-      "value": "設置"
-    },
-    {
-      "name": "set_cell_txt_data_backup",
-      "value": "備份數據"
-    },
-    {
-      "name": "set_cell_txt_data_restore",
-      "value": "恢複數據"
-    },
-    {
-      "name": "set_cell_txt_remind_switch",
-      "value": "學習提醒"
-    },
-    {
-      "name": "set_cell_txt_remind_time",
-      "value": "每日"
-    },
-    {
-      "name": "set_cell_txt_advice",
-      "value": "意見反饋"
-    },
-    {
-      "name": "set_cell_txt_review",
-      "value": "給個好評"
-    },
-    {
-      "name": "set_cell_txt_share",
-      "value": "分享應用"
-    },
-    {
-      "name": "set_cell_txt_about",
-      "value": "關於"
-    },
-    {
-      "name": "set_cell_txt_version",
-      "value": "版本:%s"
-    },
-    {
-      "name": "base_dict_msg_copied",
-      "value": "已經拷貝到剪貼板。"
-    },
-    {
-      "name": "base_dict_tip_title",
-      "value": "提示"
-    },
-    {
-      "name": "base_dict_tip_text",
-      "value": "點擊例句英文單詞，可查看中文釋義。"
-    },
-    {
-      "name": "word_kind_n",
-      "value": "【名】"
-    },
-    {
-      "name": "word_kind_v",
-      "value": "【動】"
-    },
-    {
-      "name": "word_kind_vt",
-      "value": "【動】"
-    },
-    {
-      "name": "word_kind_vi",
-      "value": "【動】"
-    },
-    {
-      "name": "word_kind_vt_vi",
-      "value": "【動】"
-    },
-    {
-      "name": "word_kind_adj",
-      "value": "【形】"
-    },
-    {
-      "name": "word_kind_adv",
-      "value": "【副】"
-    },
-    {
-      "name": "word_kind_pron",
-      "value": "【代】"
-    },
-    {
-      "name": "word_kind_prep",
-      "value": "【介】"
-    },
-    {
-      "name": "word_kind_aux",
-      "value": "【助】"
-    },
-    {
-      "name": "word_kind_abbr",
-      "value": "【縮】"
-    },
-    {
-      "name": "word_kind_conj",
-      "value": "【連】"
-    },
-    {
-      "name": "word_kind_art",
-      "value": "【冠】"
-    },
-    {
-      "name": "word_kind_int",
-      "value": "【感】"
-    },
-    {
-      "name": "word_kind_interj",
-      "value": "【感】"
-    },
-    {
-      "name": "word_kind_det",
-      "value": "【限】"
-    },
-    {
-      "name": "word_kind_num",
-      "value": "【數】"
-    },
-    {
-      "name": "word_kind_phr",
-      "value": "【短】"
-    },
-    {
-      "name": "cfm_title_select",
-      "value": "請選擇"
-    },
-    {
-      "name": "cfm_btn_cancel",
-      "value": "取消"
-    },
-    {
-      "name": "alert_title_confirm",
-      "value": "確認"
-    },
-    {
-      "name": "alert_msg_confirm_remove",
-      "value": "確定要刪除嗎?"
-    },
-    {
-      "name": "confirm_btn_remove",
-      "value": "刪除"
-    },
-    {
-      "name": "confirm_btn_yes",
-      "value": "是的"
-    },
-    {
-      "name": "confirm_btn_no",
-      "value": "不要"
-    },
-    {
-      "name": "confirm_btn_ok",
-      "value": "好的"
-    },
-    {
-      "name": "confirm_btn_cancel",
-      "value": "取消"
-    },
-    {
-      "name": "common_date_str_today",
-      "value": "今天"
-    },
-    {
-      "name": "common_date_str_yesterday",
-      "value": "昨天"
-    },
-    {
-      "name": "common_date_str_tomorrow",
-      "value": "明天"
-    },
-    {
-      "name": "network_not_available",
-      "value": "網絡連接失敗！"
-    },
-    {
-      "name": "network_wifi_not_available",
-      "value": "當前網絡未連接到WIFI，繼續下載可能會消耗流量，是否繼續下載？"
-    },
-    {
-      "name": "remind_title",
-      "value": " "
-    },
-    {
-      "name": "remind_daily_msg_1",
-      "value": "你設置的學習時間到了！"
-    },
-    {
-      "name": "remind_daily_msg_2",
-      "value": "學習時間到了，加油吧！"
-    },
-    {
-      "name": "remind_sys_msg_day3",
-      "value": "同學，你已經有三天沒有學習了， 要加油哦^_^。"
-    },
-    {
-      "name": "remind_sys_msg_day7",
-      "value": "同學，你已經有一周沒有學習了，其它同學可都在努學習哦^_^。"
-    },
-    {
-      "name": "remind_sys_msg_day15",
-      "value": "同學，你已經有半個月沒有學習了， 不會是不想進步了吧^_^。"
-    },
-    {
-      "name": "remind_sys_msg_day30",
-      "value": "同學，你已經有一個月沒有學習了，哎， 我們都懶得提醒你了。"
-    },
-    {
-      "name": "help_tip_swipe_left_default",
-      "value": "←向左滑動"
-    },
-    {
-      "name": "help_tip_swipe_left_to_delete",
-      "value": "←左滑刪除"
-    },
-    {
-      "name": "help_tip_swipe_left_to_fav",
-      "value": "←左滑收藏"
-    },
-    {
-      "name": "privacy_pop_txt_title",
-      "value": "隱私政策"
-    },
-    {
-      "name": "privacy_pop_btn_disagree",
-      "value": "不同意"
-    },
-    {
-      "name": "privacy_pop_btn_agree",
-      "value": "同意並繼續"
-    },
-    {
-      "name": "privacy_pop_content",
-      "value": "    請你務必審慎閱讀，充分理解「服務協議」和「隱私政策」各條款，包括但不限於： \n    為了向你提供內容分享，數據備份及恢復等服務，我們需要收集你的設備基本信息，操作日誌等個人信息。\n    你可以在設置中查看，管理你的數據。你可以閱讀《服務協議》和《隱私政策》瞭解詳細信息。如果您是14週歲以下的未成年人，您需要和您的監護人一起仔細閱讀《兒童隱私政策》，並在徵得您的監護人同意後，使用我們的產品、服務或向我們提供信息。 \n    如你同意，請點擊“同意並繼續”，開始接受我們的服務。"
-    },
-    {
-      "name": "privacy_pop_link_privacy",
-      "value": "《隱私政策》"
-    },
-    {
-      "name": "privacy_pop_link_privacy_kid",
-      "value": "《兒童隱私政策》"
-    },
-    {
-      "name": "privacy_pop_link_terms",
-      "value": "《服務協議》"
-    },
-    {
-      "name": "link_url_cfm_btn_sharelink",
-      "value": "分享鏈接"
-    },
-    {
-      "name": "microphone_permission_reason",
-      "value": "用於單詞錄音跟讀學習。"
-    },
-    {
-      "name": "image_write_permission_reason",
-      "value": "用於存儲字卡到相冊"
-    },
-    {
-      "name": "image_read_permission_reason",
-      "value": "用於選擇相冊圖片識別字卡內容。"
-    },
-    {
-      "name": "camera_permission_reason",
-      "value": "用於掃描並識別文字。"
-    },
-    {
-      "name": "set_msg_permission_notification",
-      "value": "開啓提醒需要通知權限。"
-    },
-    {
-      "name": "sys_msg_volume_small",
-      "value": "手機音量太小，可能無法聽到聲音！\n請按手機側邊音量鍵調整。"
-    },
-    {
-      "name": "sys_msg_disk_space_not_enough",
-      "value": "手機容量不足，可能會影響應用運行.."
-    },
-    {
-      "name": "photo_picker_nav_title",
-      "value": "照片選擇"
-    },
-    {
-      "name": "eword_field_pron_us",
-      "value": "音標"
-    },
-    {
-      "name": "eword_field_title_cn1",
-      "value": "單詞釋義1"
-    },
-    {
-      "name": "eword_field_title_cn2",
-      "value": "單詞釋義2"
-    },
-    {
-      "name": "eword_field_title_cn3",
-      "value": "單詞釋義3"
-    },
-    {
-      "name": "eword_field_word_change",
-      "value": "單詞變形"
-    },
-    {
-      "name": "eword_field_syn_words",
-      "value": "近義詞"
-    },
-    {
-      "name": "eword_field_asyn_words",
-      "value": "反義詞"
-    },
-    {
-      "name": "eword_field_example_en1",
-      "value": "例句1(英)"
-    },
-    {
-      "name": "eword_field_example_cn1",
-      "value": "例句1(中)"
-    },
-    {
-      "name": "eword_field_example_en2",
-      "value": "例句2(英)"
-    },
-    {
-      "name": "eword_field_example_cn2",
-      "value": "例句2(中)"
-    },
-    {
-      "name": "eword_field_example_en3",
-      "value": "例句3(英)"
-    },
-    {
-      "name": "eword_field_example_cn3",
-      "value": "例句3(中)"
-    },
-    {
-      "name": "eword_field_used_phrase",
-      "value": "常用短語"
-    },
-    {
-      "name": "eword_field_en2en",
-      "value": "英英釋義"
-    },
-    {
-      "name": "eword_field_discriminate",
-      "value": "詳細說明"
-    },
-    {
-      "name": "eword_field_root",
-      "value": "詞根助記"
-    },
-    {
-      "name": "eword_field_cognates",
-      "value": "同根詞"
-    }
+    { "name": "module_desc"                                  , "value": "module description" },
+    { "name": "EntryAbility_desc"                            , "value": "description" },
+    { "name": "EntryAbility_label"                           , "value": "label" },
+
+    { "name": "app_share_title"                              , "value": "高效的英文單詞學習工具" },
+
+    { "name": "main_words_cbook_msg_update_succeed"          , "value": "更新成功" },
+
+    { "name": "nav_title_home"                               , "value": "單詞樹" },
+    { "name": "nav_title_books"                              , "value": "詞彙管理" },
+    { "name": "nav_title_quick_learn_unit"                   , "value": "快速記憶" },
+    { "name": "nav_title_learn_unit"                         , "value": "單元列表" },
+    { "name": "nav_title_test"                               , "value": "測驗選擇" },
+    { "name": "nav_title_challenge"                          , "value": "挑戰選擇" },
+    { "name": "nav_title_advice"                             , "value": "反饋建議" },
+    { "name": "nav_title_reclaim"                            , "value": "單詞糾錯" },
+    { "name": "nav_title_books_all"                          , "value": "單詞下載" },
+    { "name": "nav_title_iap"                                , "value": "應用內購買" },
+    { "name": "nav_title_login"                              , "value": "登錄" },
+    { "name": "nav_title_set_more"                           , "value": "設置" },
+    { "name": "nav_title_mine_memo"                          , "value": "我的筆記" },
+    { "name": "nav_title_mine_record"                        , "value": "我的錄音" },
+    { "name": "nav_title_mine_deletes"                       , "value": "我刪除的單詞" },
+    { "name": "nav_title_set_terms"                          , "value": "服務條款" },
+    { "name": "nav_title_set_privacy"                        , "value": "隱私協議" },
+    { "name": "nav_title_set_contact"                        , "value": "聯繫客服" },
+    { "name": "nav_title_test_scope_unit"                    , "value": "單元選擇" },
+    { "name": "nav_title_test_scope_all"                     , "value": "全部單詞" },
+    { "name": "nav_title_test_scope_favorite"                , "value": "收藏單詞" },
+    { "name": "nav_title_test_scope_part"                    , "value": "part別" },
+    { "name": "nav_title_test_scope_mistake"                 , "value": "常錯單詞" },
+    { "name": "nav_title_test_start"                         , "value": "測試設定" },
+    { "name": "nav_title_test_result"                        , "value": "測試結果" },
+
+    { "name": "main_tab_title_home"                          , "value": "學習" },
+    { "name": "main_tab_title_list"                          , "value": "一覽" },
+    { "name": "main_tab_title_review"                        , "value": "復習" },
+    { "name": "main_tab_title_report"                        , "value": "報告" },
+    { "name": "main_tab_title_social"                        , "value": "社區" },
+    { "name": "main_msg_no_books"                            , "value": "請先下載單詞！" },
+
+    { "name": "no_books_exit_cfm_title"                      , "value": "退出應用" },
+    { "name": "no_books_exit_cfm_msg"                        , "value": "您確定要退出應用嗎？" },
+    { "name": "no_books_exit_cfm_yes"                        , "value": "退出應用" },
+    { "name": "no_books_exit_cfm_no"                         , "value": "取消" },
+
+    { "name": "main_study_txt_info_units"                    , "value": "%d個單元" },
+    { "name": "main_study_txt_info_words"                    , "value": "%d個單詞" },
+    { "name": "main_study_txt_info_learned"                  , "value": "已學習:" },
+    { "name": "main_study_txt_info_tested"                   , "value": "已測驗:" },
+    { "name": "main_study_txt_no_books"                      , "value": "請選擇要學習的詞彙！" },
+    { "name": "main_study_btn_quickremember"                 , "value": "快速記憶" },
+    { "name": "main_study_btn_study"                         , "value": "學習" },
+    { "name": "main_study_btn_test"                          , "value": "測驗" },
+    { "name": "main_study_btn_challenge"                     , "value": "挑戰" },
+    { "name": "main_curve_txt_curve"                         , "value": "記憶曲線" },
+    { "name": "main_curve_btn_study_start"                   , "value": "開始學習" },
+    { "name": "main_curve_btn_create_plam"                   , "value": "+創建學習計劃" },
+    { "name": "main_curve_btn_no_words_today"                , "value": "今天沒有學習" },
+    { "name": "main_curve_txt_info_create"                   , "value": "使用記憶曲線創建學習計劃" },
+    { "name": "main_curve_txt_info_days"                     , "value": "第%d天，%d個單詞" },
+    { "name": "main_curve_txt_info_days2"                    , "value": "需要%d天， 共%d個單詞" },
+    { "name": "main_other_link_txt"                          , "value": "使用「速詞」創建單詞集" },
+    { "name": "main_other_link_title"                        , "value": "更多應用" },
+
+    { "name": "books_tab_title_mybooks"                      , "value": "我的詞彙" },
+    { "name": "books_tab_title_allbooks"                     , "value": "所有詞彙" },
+    { "name": "books_txt_info_counts"                        , "value": "%d個單元，共%d個單詞" },
+    { "name": "books_txt_info_downloads"                     , "value": "下載%d次" },
+    { "name": "books_txt_info_size"                          , "value": "單詞:%s 發音:%s" },
+    { "name": "books_txt_info_golds"                         , "value": "金幣:%d個" },
+    { "name": "books_btn_title_to_download"                  , "value": "點擊下載" },
+    { "name": "books_btn_title_downloaded"                   , "value": "已下載" },
+    { "name": "books_msg_download_start_word"                , "value": "詞彙下載中.." },
+    { "name": "books_msg_download_start_sound"               , "value": "發音下載中.." },
+    { "name": "books_btn_title_edit"                         , "value": "編輯" },
+    { "name": "books_btn_title_buygolds"                     , "value": "購買金幣" },
+    { "name": "books_btn_title_reject_buy"                   , "value": "就不買" },
+    { "name": "books_msg_download_succeed"                   , "value": "下載成功！" },
+    { "name": "books_msg_download_failed"                    , "value": "下載失敗,請稍後再試！" },
+    { "name": "books_msg_golds_shotage"                      , "value": "金幣不足" },
+    { "name": "books_msg_golds_needs"                        , "value": "需要金幣%d個， 剩餘金幣%d個。" },
+    { "name": "books_msg_golds_costed"                       , "value": "用去金幣%d個， 剩餘金幣%d個。" },
+
+    { "name": "gain_gold_for_install"                        , "value": "初次安裝成功，獲得%d個金幣!" },
+
+    { "name": "set_txt_got_gold"                             , "value": "獲得%d個金幣，已經有金幣%d個" },
+
+    { "name": "books_msg_updated_book_txt"                   , "value": "更新:%s 詞彙成功！" },
+    { "name": "books_msg_updated_book_sound"                 , "value": "更新:%s 聲音成功！" },
+    { "name": "books_msg_need_disk_space"                    , "value": "磁盤空間不足！" },
+    { "name": "books_msg_change_book"                        , "value": "切換詞彙到： %s" },
+    { "name": "books_btn_title_delete"                       , "value": "刪除" },
+    { "name": "books_txt_selected"                           , "value": "選中" },
+    { "name": "books_section_cbook_header"                   , "value": "" },
+    { "name": "books_section_ebook_header"                   , "value": "自建詞彙本" },
+
+    { "name": "ebook_plus_btn"                               , "value": "+建立詞彙本" },
+    { "name": "ebook_choose_action"                          , "value": "請選擇操作" },
+    { "name": "ebook_new_book"                               , "value": "新建詞彙本" },
+    { "name": "ebook_import_btn"                             , "value": "導入 .wte 檔" },
+    { "name": "ebook_my_backed_up_btn"                       , "value": "下載我備份的詞彙本" },
+    { "name": "ebook_my_backed_up_title"                     , "value": "我備份的詞彙本" },
+    { "name": "ebook_my_backed_up_empty_hint"                , "value": "暫無雲端備份記錄" },
+    { "name": "ebook_download_btn"                           , "value": "下載" },
+    { "name": "ebook_already_downloaded"                     , "value": "已下載" },
+    { "name": "ebook_save_failed"                            , "value": "儲存失敗" },
+    { "name": "ebook_nav_add_word"                           , "value": "添加單詞" },
+    { "name": "ebook_add"                                    , "value": "添加" },
+    { "name": "ebook_add_word_ok"                            , "value": "已添加到詞彙本" },
+    { "name": "ebook_msg_select_ebook_first"                 , "value": "請先選擇自建詞彙本" },
+    { "name": "ebook_msg_input_query"                        , "value": "請輸入查詢內容" },
+    { "name": "ebook_search_placeholder"                     , "value": "輸入英文或中文查詢" },
+    { "name": "ebook_search_btn"                             , "value": "搜尋" },
+    { "name": "ebook_get_detail_failed"                      , "value": "取得詞條詳情失敗" },
+    { "name": "ebook_rename_label"                           , "value": "改名" },
+    { "name": "ebook_rename_title"                           , "value": "修改名稱" },
+    { "name": "ebook_create_title"                           , "value": "新建詞彙本" },
+    { "name": "ebook_name_hint"                              , "value": "請輸入書名" },
+    { "name": "ebook_import_title"                           , "value": "導入詞彙本" },
+    { "name": "ebook_import_pick_btn"                        , "value": "選擇 .wte 檔" },
+    { "name": "ebook_import_help_link"                       , "value": "如何導入導出詞彙本" },
+    { "name": "ebook_export_failed_msg"                      , "value": "導出失敗" },
+    { "name": "ebook_export_btn"                             , "value": "導出" },
+    { "name": "ebook_default_book_name"                      , "value": "詞彙本" },
+    { "name": "ebook_import_detect_title"                    , "value": "檢測到詞彙本檔案，是否導入？" },
+
+    { "name": "confirm_btn_import"                           , "value": "導入" },
+
+    { "name": "ebook_import_success_fmt"                     , "value": "已成功導入「%s」。" },
+    { "name": "ebook_import_failed_msg"                      , "value": "導入失敗，請稍後重試。" },
+    { "name": "ebook_select_title"                           , "value": "選擇要保存到的詞彙本" },
+    { "name": "ebook_no_other"                               , "value": "暫無其它可用詞彙本" },
+    { "name": "ebook_part_header"                            , "value": "選擇 Part" },
+    { "name": "ebook_unit_header"                            , "value": "選擇 Unit" },
+    { "name": "ebook_save_to_nav_title"                      , "value": "保存到詞彙本" },
+    { "name": "ebook_overwrite_confirm_title"                , "value": "已存在相同單詞" },
+    { "name": "ebook_overwrite_btn"                          , "value": "覆蓋" },
+    { "name": "ebook_overwrite_msg"                          , "value": "該單詞已存在於 %s / %s，是否覆蓋？" },
+    { "name": "ebook_added"                                  , "value": "已添加「%s」" },
+    { "name": "ebook_add_failed"                             , "value": "添加失敗" },
+    { "name": "ebook_not_found_manual_add"                   , "value": "沒有搜到？手動輸入單詞" },
+    { "name": "ebook_manual_add_word_hint"                   , "value": "輸入英文單詞並選擇 Part/Unit 後保存。" },
+    { "name": "ebook_manual_add_word_title"                  , "value": "單詞" },
+    { "name": "ebook_manual_add_word_placeholder"            , "value": "請輸入英文單詞" },
+    { "name": "ebook_manual_add_titlecn1_placeholder"        , "value": "可選：輸入釋義" },
+    { "name": "ebook_manual_add_next"                        , "value": "下一步" },
+    { "name": "ebook_manual_add_nav_title"                   , "value": "手動添加單詞" },
+    { "name": "ebook_name_section"                           , "value": "詞彙本名稱" },
+    { "name": "ebook_name_placeholder"                       , "value": "請輸入詞彙本名稱" },
+    { "name": "ebook_create_nav_title"                       , "value": "新建詞彙本" },
+    { "name": "ebook_rename_nav_title"                       , "value": "修改詞彙本名稱" },
+
+    { "name": "list_tab_title_abc"                           , "value": "abc" },
+    { "name": "list_tab_title_part"                          , "value": "parts" },
+    { "name": "list_tab_title_favorite"                      , "value": "收藏夾" },
+    { "name": "list_tab_title_mistake"                       , "value": "常錯單詞" },
+    { "name": "list_tab_title_still"                         , "value": "未測驗" },
+
+    { "name": "learn_detail_txt_info_correct"                , "value": "正確:" },
+    { "name": "learn_detail_txt_info_wrong"                  , "value": "不正確:" },
+    { "name": "learn_detail_txt_wordchang"                   , "value": "【單詞變形】" },
+    { "name": "learn_detail_txt_mnemonic"                    , "value": "【詞根助記】" },
+    { "name": "learn_detail_txt_example"                     , "value": "【例句】" },
+    { "name": "learn_detail_txt_synwords"                    , "value": "【同義詞】" },
+    { "name": "learn_detail_txt_asynwords"                   , "value": "【反義詞】" },
+    { "name": "learn_detail_txt_usedphrase"                  , "value": "【常用短語】" },
+    { "name": "learn_detail_txt_en2en"                       , "value": "【英英釋義】" },
+    { "name": "learn_detail_txt_discriminate"                , "value": "【詳細說明】" },
+    { "name": "learn_detail_txt_samerootdesc"                , "value": "【同根詞】" },
+    { "name": "learn_detail_txt_memo"                        , "value": "筆記" },
+    { "name": "learn_detail_btn_reclaim"                     , "value": "糾錯" },
+    { "name": "learn_detail_reclaim_txt_pre1"                , "value": "單詞翻譯有誤" },
+    { "name": "learn_detail_reclaim_txt_pre2"                , "value": "單詞音標有誤" },
+    { "name": "learn_detail_reclaim_txt_pre3"                , "value": "單詞發音有誤" },
+    { "name": "learn_detail_reclaim_txt_pre4"                , "value": "例句翻譯有誤" },
+    { "name": "learn_detail_reclaim_txt_pre5"                , "value": "例句和單詞不匹配" },
+    { "name": "learn_detail_reclaim_txt_pre6"                , "value": "例句發音有誤" },
+    { "name": "learn_detail_reclaim_placehold"               , "value": "手動填寫錯誤信息" },
+    { "name": "learn_detail_reclaim_txt_info"                , "value": "如果發現此單詞(翻譯，例句，發音等)有錯誤，請向我們發送報告。\n經確認之後，我們會及時更新數據庫！" },
+    { "name": "learn_detail_to_test_msg"                     , "value": "要用這些單詞進行測驗或挑戰嗎？" },
+    { "name": "learn_detail_to_test_btn_test"                , "value": "我要測驗" },
+    { "name": "learn_detail_to_test_btn_chlg"                , "value": "我要挑戰" },
+    { "name": "learn_detail_to_test_btn_spell"               , "value": "拼寫練習" },
+    { "name": "learn_detail_to_test_btn_cancel"              , "value": "暫時不要" },
+    { "name": "learn_detail_info_txt_hide_tip"               , "value": "【點擊顯示中文翻譯】" },
+    { "name": "learn_detail_info_txt_hidetrans"              , "value": "隱藏翻譯" },
+    { "name": "learn_detail_info_txt_autopron"               , "value": "自動發音(單詞)" },
+    { "name": "learn_detail_info_txt_autopron2"              , "value": "自動發音(例句)" },
+    { "name": "learn_detail_info_txt_pron_speed"             , "value": "發音播放速度" },
+    { "name": "learn_detail_info_txt_pron_times"             , "value": "發音次數" },
+    { "name": "learn_detail_info_txt_font_style"             , "value": "字體大小" },
+    { "name": "learn_detail_info_txt_font_style_1"           , "value": "小" },
+    { "name": "learn_detail_info_txt_font_style_2"           , "value": "中" },
+    { "name": "learn_detail_info_txt_font_style_3"           , "value": "大" },
+    { "name": "learn_detail_info_txt_set_order"              , "value": "調整顯示順序" },
+    { "name": "learn_detail_info_txt_pron_gap"               , "value": "自動發音間隔" },
+    { "name": "learn_detail_info_txt_pron_gap_1"             , "value": "短" },
+    { "name": "learn_detail_info_txt_pron_gap_2"             , "value": "中" },
+    { "name": "learn_detail_info_txt_pron_gap_3"             , "value": "長" },
+
+    { "name": "wrang_times_1_only"                           , "value": "僅1次" },
+    { "name": "wrang_times_1_3"                              , "value": "1~3次" },
+    { "name": "wrang_times_3_5"                              , "value": "3~5次" },
+    { "name": "wrang_times_5_10"                             , "value": "5~10次" },
+    { "name": "wrang_times_10_over"                          , "value": "10次以上" },
+
+    { "name": "test_top_txt_unit"                            , "value": "單元別" },
+    { "name": "test_top_txt_all"                             , "value": "全部單詞" },
+    { "name": "test_top_txt_part"                            , "value": "part別" },
+    { "name": "test_top_txt_mistake"                         , "value": "常錯單詞" },
+    { "name": "test_top_txt_favorite"                        , "value": "收藏單詞" },
+    { "name": "test_scope_btn_selectall"                     , "value": "全部選擇" },
+    { "name": "test_scope_btn_next"                          , "value": "下一步" },
+    { "name": "test_scope_err"                               , "value": "請選擇出題範圍。" },
+    { "name": "test_question_scope_txt"                      , "value": "測驗範圍" },
+    { "name": "test_question_scope_all"                      , "value": "全部" },
+    { "name": "test_question_scope_still"                    , "value": "未測驗" },
+    { "name": "test_question_scope_wrang"                    , "value": "常錯" },
+    { "name": "test_question_count_txt"                      , "value": "問題數" },
+    { "name": "test_question_count_1"                        , "value": "10問" },
+    { "name": "test_question_count_2"                        , "value": "20問" },
+    { "name": "test_question_count_3"                        , "value": "50問" },
+    { "name": "test_question_count_4"                        , "value": "100問" },
+    { "name": "test_question_type_txt"                       , "value": "出題種類" },
+    { "name": "test_question_type_eiwa"                      , "value": "英→中" },
+    { "name": "test_question_type_waei"                      , "value": "中→英" },
+    { "name": "test_question_speed_txt"                      , "value": "出題速度" },
+    { "name": "test_question_speed_slow"                     , "value": "慢速" },
+    { "name": "test_question_speed_normal"                   , "value": "中速" },
+    { "name": "test_question_speed_fast"                     , "value": "快速" },
+    { "name": "test_question_order_txt"                      , "value": "出題順序" },
+    { "name": "test_question_order_serialno"                 , "value": "番號順序" },
+    { "name": "test_question_order_random"                   , "value": "隨機" },
+    { "name": "test_question_pronounce_txt"                  , "value": "自動發音" },
+    { "name": "test_question_pronounce_on"                   , "value": "on" },
+    { "name": "test_question_pronounce_off"                  , "value": "off" },
+    { "name": "test_btn_start"                               , "value": "Start" },
+    { "name": "test_running_btn_pause"                       , "value": "暫停" },
+    { "name": "test_running_txt_cnt"                         , "value": "%d/%d問" },
+
+    { "name": "spell_running_txt_try_again"                  , "value": "再試一次" },
+    { "name": "spell_running_txt_input_answer"               , "value": "輸入答案" },
+    { "name": "spell_running_txt_right"                      , "value": "正確" },
+    { "name": "spell_running_txt_wrong"                      , "value": "錯誤" },
+    { "name": "spell_running_btn_unknown"                    , "value": "不知道" },
+    { "name": "spell_running_btn_done"                       , "value": "完成" },
+
+    { "name": "test_result_rate_txt"                         , "value": "正確率" },
+    { "name": "test_result_info"                             , "value": "全:%d問  正確:%d問" },
+    { "name": "test_result_btn_retry"                        , "value": "再測一次" },
+    { "name": "test_result_btn_mistake"                      , "value": "再測一次\n(僅錯誤單詞)" },
+    { "name": "test_result_btn_next"                         , "value": "下一問題" },
+    { "name": "test_result_all_corrected"                    , "value": "全部正確" },
+    { "name": "test_result_share_app"                        , "value": "分享" },
+    { "name": "test_result_share_title"                      , "value": "%s 正確率:%s!" },
+    { "name": "test_result_share_description"                , "value": "我在《單詞樹》測驗 %s，正確率:%s!  " },
+    { "name": "test_result_comment_studyharder"              , "value": "Come on!Study harder!" },
+    { "name": "test_result_comment_good"                     , "value": "Good!Keep it up!" },
+    { "name": "test_result_comment_welldone"                 , "value": "Great!Well done!" },
+
+    { "name": "data_refresh_pull"                            , "value": "下拉刷新" },
+    { "name": "data_refresh_release"                         , "value": "釋放更新" },
+    { "name": "data_refresh_loading"                         , "value": "加載中.." },
+    { "name": "data_loading_more"                            , "value": "加載更多.." },
+    { "name": "data_no_more_datas"                           , "value": "沒有更多數據" },
+
+    { "name": "memo_compose_btn_save"                        , "value": "保存" },
+    { "name": "memo_compose_menu_edit"                       , "value": "編輯" },
+    { "name": "memo_compose_menu_done"                       , "value": "完成" },
+    { "name": "memo_compose_btn_save_share"                  , "value": "分享" },
+    { "name": "memo_author_txt"                              , "value": "作者" },
+    { "name": "memo_author_self"                             , "value": "我" },
+    { "name": "memo_pri_memo_title"                          , "value": "筆記" },
+    { "name": "memo_pri_memo_txt"                            , "value": "寫筆記.." },
+    { "name": "memo_pub_memo_title"                          , "value": "分享筆記" },
+    { "name": "memo_msg_no_share_memo"                       , "value": "暫無分享筆記." },
+    { "name": "memo_msg_save_success"                        , "value": "保存筆記成功。" },
+    { "name": "memo_msg_share_start"                         , "value": "筆記分享中..." },
+    { "name": "memo_msg_share_success"                       , "value": "分享筆記成功。" },
+    { "name": "memo_msg_remove_share_success"                , "value": "已刪除分享筆記。" },
+    { "name": "memo_msg_add_share_success"                   , "value": "筆記添加成功。" },
+    { "name": "memo_msg_add_share_error"                     , "value": "最多只能添加%d條分享筆記。" },
+    { "name": "memo_msg_remove_memo_success"                 , "value": "已刪除筆記。" },
+    { "name": "memo_msg_audit_fail"                          , "value": "內容不合規或包含敏感字符" },
+
+    { "name": "help_caption_home_btn_menu"                   , "value": "設置菜單" },
+    { "name": "help_caption_home_btn_more"                   , "value": "下載更多詞彙" },
+    { "name": "help_caption_detail_btn_favorite"             , "value": "左右滑動星星可以收藏單詞" },
+    { "name": "help_caption_detail_btn_info"                 , "value": "可設置自動發音，循環滾動" },
+    { "name": "help_caption_detail_btn_record"               , "value": "錄音" },
+    { "name": "help_caption_detail_btn_contrast"             , "value": "錄音播放" },
+    { "name": "help_caption_card_btn_show_detail"            , "value": "點擊單詞，查看詳細釋義" },
+    { "name": "help_caption_detail_btn_del_word"             , "value": "下拉頁面，\n刪除已會單詞" },
+
+    { "name": "set_cell_txt_share_info"                      , "value": "分享應用，可立即獲贈單詞發音" },
+    { "name": "set_msg_share_done"                           , "value": "分享成功，獲贈單詞發音 %d次 \n [今日剩餘%d次]" },
+
+    { "name": "instruction_nav_title"                        , "value": "使用說明" },
+
+    { "name": "plan_create_nav_title"                        , "value": "設置學習計劃" },
+    { "name": "plan_create_txt_name"                         , "value": "計劃名稱" },
+    { "name": "plan_create_chk_reviewday"                    , "value": "+%d天" },
+    { "name": "plan_create_chk_reviewdays"                   , "value": "+%d天" },
+    { "name": "plan_create_words_cnt"                        , "value": "共%d個詞語" },
+    { "name": "plan_create_words_cnts"                       , "value": "共%d個詞語" },
+    { "name": "plan_create_btn_days_cnt"                     , "value": "%d天" },
+    { "name": "plan_create_btn_days_cnts"                    , "value": "%d天" },
+    { "name": "plan_create_txt_everyday"                     , "value": "每天" },
+    { "name": "plan_create_txt_everydayunit"                 , "value": "個" },
+    { "name": "plan_create_txt_need"                         , "value": "需要" },
+    { "name": "plan_create_txt_review"                       , "value": "復習(艾賓浩斯記憶曲線)" },
+    { "name": "plan_create_txt_start_date"                   , "value": "開始於：%s" },
+    { "name": "plan_create_btn_update"                       , "value": "更新計劃" },
+    { "name": "plan_create_btn_save"                         , "value": "保存計劃" },
+    { "name": "plan_create_msg_need_name"                    , "value": "請輸入計劃名稱" },
+    { "name": "plan_create_alert_update_title"               , "value": "確認要更新嗎？" },
+    { "name": "plan_create_alert_update_msg"                 , "value": "更新計劃將會刪除已存在的學習記錄" },
+    { "name": "plan_create_alert_update_btn_yes"             , "value": "更新計劃" },
+    { "name": "plan_create_alert_btn_cancel"                 , "value": "取消" },
+    { "name": "plan_create_alert_msg_making"                 , "value": "計劃製作中.." },
+    { "name": "plan_create_alert_msg_make_done"              , "value": "計劃製作完成" },
+    { "name": "plan_detail_nav_title"                        , "value": "計劃詳細" },
+    { "name": "plan_detail_txt_learned"                      , "value": "已學習" },
+    { "name": "plan_detail_txt_deleted"                      , "value": "已刪除" },
+    { "name": "plan_detail_txt_wordsall"                     , "value": "單詞總數" },
+    { "name": "plan_detail_txt_everydaystudy"                , "value": "每天學習" },
+    { "name": "plan_detail_txt_review"                       , "value": "復習" },
+    { "name": "plan_detail_txt_cur"                          , "value": "當前" },
+    { "name": "plan_detail_txt_needs"                        , "value": "共需要" },
+    { "name": "plan_detail_txt_startdate"                    , "value": "開始日期" },
+    { "name": "plan_detail_txt_enddate"                      , "value": "預計結束日期" },
+    { "name": "plan_detail_words_cnt"                        , "value": "%d個" },
+    { "name": "plan_detail_review_day"                       , "value": "+%d天" },
+    { "name": "plan_detail_review_days"                      , "value": "+%d天" },
+    { "name": "plan_detail_cur_day"                          , "value": "第%d天" },
+    { "name": "plan_detail_days_cnt"                         , "value": "%d天" },
+    { "name": "plan_detail_days_cnts"                        , "value": "%d天" },
+    { "name": "plan_str_today"                               , "value": "今天" },
+    { "name": "plan_str_yesterday"                           , "value": "昨天" },
+    { "name": "plan_str_tomorrow"                            , "value": "明天" },
+
+    { "name": "dayofs_nav_title"                             , "value": "查看計劃" },
+    { "name": "dayofs_alert_btn_detail"                      , "value": "查看計劃詳細信息" },
+    { "name": "dayofs_alert_btn_edit"                        , "value": "修改計劃" },
+    { "name": "dayofs_alert_btn_remove"                      , "value": "刪除計劃" },
+    { "name": "dayofs_alert_btn_clear"                       , "value": "清空學習記錄" },
+    { "name": "dayofs_alert_btn_cancel"                      , "value": "取消" },
+    { "name": "dayofs_cell_txt_study"                        , "value": "學習" },
+    { "name": "dayofs_cell_txt_review"                       , "value": "復習" },
+    { "name": "dayofs_cell_btn_study"                        , "value": "學習" },
+    { "name": "dayofs_cell_btn_edit"                         , "value": "修改" },
+    { "name": "dayofs_alert_msg_delete_plan"                 , "value": "確定要刪除學習計劃嗎?" },
+    { "name": "dayofs_alert_btn_delete"                      , "value": "立即刪除" },
+    { "name": "dayofs_alert_msg_delete_done"                 , "value": "已刪除學習計劃" },
+
+    { "name": "dayof_num_string"                             , "value": "第%d天" },
+    { "name": "dayof_section_words_new"                      , "value": "學習 %s" },
+    { "name": "dayof_section_words_review"                   , "value": "復習(%s) %s" },
+    { "name": "dayof_btn_study"                              , "value": "開始學習" },
+    { "name": "dayof_btn_chk_quicklearn"                     , "value": "快速記憶" },
+    { "name": "dayof_alert_btn_edit"                         , "value": "修改學習單字個數.." },
+    { "name": "dayof_alert_btn_cancel"                       , "value": "取消" },
+
+    { "name": "distance_new_string"                          , "value": "學習" },
+    { "name": "distance_review_string"                       , "value": "復習" },
+    { "name": "distance_string_day"                          , "value": "+%d天" },
+    { "name": "distance_string_days"                         , "value": "+%d天" },
+
+    { "name": "piececount_txt_study"                         , "value": "學習" },
+    { "name": "piececount_txt_unit"                          , "value": "個" },
+    { "name": "piececount_txt_chk_repeat"                    , "value": "同時修改此後所有日期的學習個數" },
+    { "name": "piececount_msg_exclude_0_and_repeat"          , "value": "學習個數為0時，\n不能勾選【同時修改此後所有日期的學習個數】" },
+    { "name": "piececount_msg_done"                          , "value": "修改完成" },
+    { "name": "piececount_btn_ok"                            , "value": "確定" },
+
+    { "name": "common_str_word_cnt"                          , "value": "%d個" },
+    { "name": "common_str_word_cnts"                         , "value": "%d個" },
+
+    { "name": "detail_item_sort_nav_title"                   , "value": "調整顯示順序" },
+    { "name": "detail_item_sort_btn_done"                    , "value": "完成" },
+    { "name": "detail_item_sort_open_tip"                    , "value": "【開啓】" },
+    { "name": "detail_item_sort_drag_tip"                    , "value": "按住拖動，調整順序" },
+
+    { "name": "cigen_txt_download_finished"                  , "value": "下載詞根數據成功" },
+    { "name": "cigen_txt_update_finished"                    , "value": "更新詞根數據成功" },
+    { "name": "cigen_vname_1"                                , "value": "前綴" },
+    { "name": "cigen_vname_2"                                , "value": "前綴" },
+    { "name": "cigen_vname_3"                                , "value": "詞根" },
+    { "name": "cigen_vname_4"                                , "value": "後綴" },
+    { "name": "cigen_vname_5"                                , "value": "後綴" },
+    { "name": "cigen_vname_6"                                , "value": "詞綴" },
+
+    { "name": "online_search_nav_title"                      , "value": "單詞查詢" },
+    { "name": "online_search_input_tip"                      , "value": "輸入英文或中文，在線查詢單詞" },
+    { "name": "online_search_loading"                        , "value": "加載中.." },
+    { "name": "online_search_load_no_more"                   , "value": "沒有了" },
+    { "name": "online_search_btn_cancel"                     , "value": "取消" },
+    { "name": "online_search_txt_running"                    , "value": "加載中.." },
+    { "name": "online_search_txt_no_found"                   , "value": "未找到相關單詞" },
+
+    { "name": "tab_title_learn"                              , "value": "學習" },
+    { "name": "tab_title_list"                               , "value": "一覽" },
+    { "name": "tab_title_quiz"                               , "value": "測試" },
+    { "name": "tab_title_review"                             , "value": "復習" },
+    { "name": "tab_title_report"                             , "value": "報告" },
+
+    { "name": "cat_tab_title_abc"                            , "value": "ABC" },
+    { "name": "cat_tab_title_category"                       , "value": "PARTS" },
+    { "name": "cat_tab_title_favorite"                       , "value": "收藏夾" },
+    { "name": "cat_tab_title_mistake"                        , "value": "常錯單詞" },
+    { "name": "cat_tab_title_still"                          , "value": "未測驗" },
+
+    { "name": "search_btn_cancel"                            , "value": "取消" },
+
+    { "name": "str_unit_no"                                  , "value": "Unit%s" },
+
+    { "name": "wordcard_result_right"                        , "value": "正確:" },
+    { "name": "wordcard_result_wrong"                        , "value": "不正確:" },
+    { "name": "wordcard_result_times"                        , "value": "次" },
+    { "name": "wordcard_txt_example"                         , "value": "例句" },
+    { "name": "wordcard_txt_show_translation"                , "value": "點擊顯示中文翻譯" },
+    { "name": "wordcard_info_hidetranslation"                , "value": "隱藏翻譯" },
+    { "name": "wordcard_info_autopronunce"                   , "value": "自動發音(單詞)" },
+    { "name": "wordcard_info_autopronunce_ex"                , "value": "自動發音(例句)" },
+    { "name": "wordcard_info_repeat"                         , "value": "循環" },
+    { "name": "wordcard_info_inteval"                        , "value": "滾動速度" },
+    { "name": "wordcard_info_inteval_second"                 , "value": "%s秒" },
+    { "name": "wordcard_record_name"                         , "value": "sound_%s" },
+    { "name": "wordcard_info_no_pron"                        , "value": "請先購買發音內容！" },
+    { "name": "wordcard_msg_audio_permission"                , "value": "要使用錄音功能，請先在手機【設置】中開啓[錄音]權限！" },
+    { "name": "wordcard_memo_txt_title"                      , "value": "筆記" },
+    { "name": "wordcard_memo_txt_tip"                        , "value": "寫筆記.." },
+    { "name": "wordcard_memo_btn_save"                       , "value": "保存" },
+    { "name": "wordcard_memo_btn_share"                      , "value": "分享" },
+    { "name": "wordcard_memo_msg_saved"                      , "value": "保存筆記成功。" },
+    { "name": "wordcard_memo_msg_deleted"                    , "value": "刪除筆記成功。" },
+    { "name": "wordcard_detail_to_test_msg"                  , "value": "要用這些單詞進行測驗或拼寫練習嗎？" },
+    { "name": "wordcard_detail_to_test_btn_test"             , "value": "立即測驗" },
+    { "name": "wordcard_detail_to_test_btn_spell"            , "value": "拼寫練習" },
+    { "name": "wordcard_detail_to_test_btn_cancel"           , "value": "暫時不要" },
+
+    { "name": "quiz_top_txt_unit"                            , "value": "單元別" },
+    { "name": "quiz_top_txt_all"                             , "value": "全部單詞" },
+    { "name": "quiz_top_txt_category"                        , "value": "Part別" },
+    { "name": "quiz_top_txt_mistake"                         , "value": "常錯單詞" },
+    { "name": "quiz_top_txt_favorite"                        , "value": "收藏單詞" },
+    { "name": "quiz_scope_err"                               , "value": "請選擇測試範圍。" },
+    { "name": "quiz_start_txt_mode"                          , "value": "測試模式" },
+    { "name": "quiz_start_txt_count"                         , "value": "問題數" },
+    { "name": "quiz_start_txt_type"                          , "value": "出題種類" },
+    { "name": "quiz_start_txt_speed"                         , "value": "出題速度" },
+    { "name": "quiz_start_txt_order"                         , "value": "出題順序" },
+    { "name": "quiz_start_txt_pronounce"                     , "value": "自動發音" },
+    { "name": "quiz_start_mode_normal"                       , "value": "普通" },
+    { "name": "quiz_start_mode_challenge"                    , "value": "挑戰" },
+    { "name": "quiz_start_count_10"                          , "value": "10問" },
+    { "name": "quiz_start_count_20"                          , "value": "20問" },
+    { "name": "quiz_start_count_50"                          , "value": "50問" },
+    { "name": "quiz_start_count_100"                         , "value": "100問" },
+    { "name": "quiz_start_type_eiwa"                         , "value": "英→中" },
+    { "name": "quiz_start_type_waei"                         , "value": "中→英" },
+    { "name": "quiz_start_speed_slow"                        , "value": "慢速" },
+    { "name": "quiz_start_speed_normal"                      , "value": "中速" },
+    { "name": "quiz_start_speed_fast"                        , "value": "快速" },
+    { "name": "quiz_start_order_no"                          , "value": "番號順序" },
+    { "name": "quiz_start_order_random"                      , "value": "隨機" },
+    { "name": "quiz_start_pronounce_on"                      , "value": "ON" },
+    { "name": "quiz_start_pronounce_off"                     , "value": "OFF" },
+    { "name": "quiz_start_btn_text"                          , "value": "Start" },
+    { "name": "quiz_result_score_rate"                       , "value": "正確率" },
+    { "name": "quiz_result_score_count_all"                  , "value": "全%s問" },
+    { "name": "quiz_result_score_count_correct"              , "value": "正確:%s問" },
+    { "name": "quiz_result_score_comment_studyharder"        , "value": "Come on!Study harder!" },
+    { "name": "quiz_result_score_comment_good"               , "value": "Good!Keep it up!" },
+    { "name": "quiz_result_score_comment_welldone"           , "value": "Great!Well done!" },
+    { "name": "quiz_result_btn_txt_retry"                    , "value": "再測一次" },
+    { "name": "quiz_result_btn_txt_mistake"                  , "value": "再測一次\n(僅錯誤單詞)" },
+    { "name": "quiz_result_btn_txt_next"                     , "value": "下一問題" },
+
+    { "name": "report_title_learn"                           , "value": "學習狀況" },
+    { "name": "report_title_test"                            , "value": "測試狀況" },
+    { "name": "report_title_mistake"                         , "value": "單詞錯誤次數狀況" },
+    { "name": "report_title_category_radar"                  , "value": "正確率(Part別)" },
+    { "name": "report_txt_learn_wordscount"                  , "value": "已學習單詞數" },
+    { "name": "report_txt_test_correct"                      , "value": "正確率" },
+    { "name": "report_txt_test_wrang"                        , "value": "不正確率" },
+    { "name": "report_txt_test_still"                        , "value": "未測試" },
+    { "name": "report_txt_test_percent_format"               , "value": "%.01f%%" },
+    { "name": "report_txt_test_percent_format2"              , "value": "%.00f%%" },
+    { "name": "report_txt_chart_all"                         , "value": "全部" },
+
+    { "name": "setting_txt_learn"                            , "value": "學習履歷刪除" },
+    { "name": "setting_txt_test"                             , "value": "測試結果刪除" },
+    { "name": "setting_txt_review"                           , "value": "復習列表清空" },
+    { "name": "setting_txt_record"                           , "value": "錄音清空" },
+    { "name": "setting_txt_memo"                             , "value": "筆記刪除" },
+    { "name": "setting_txt_favorite"                         , "value": "收藏夾清空" },
+
+    { "name": "set_txt_deleteword"                           , "value": "恢復已刪除單詞" },
+    { "name": "set_txt_curve"                                , "value": "啓用記憶曲線" },
+    { "name": "set_txt_cache"                                , "value": "清空緩存" },
+
+    { "name": "setting_txt_soundeffect"                      , "value": "效果音" },
+    { "name": "setting_txt_write_review"                     , "value": "撰寫評論" },
+
+    { "name": "change_language_title"                        , "value": "切換語言" },
+
+    { "name": "setting_txt_moreapps"                         , "value": "【MoreApps..】" },
+    { "name": "setting_txt_version"                          , "value": "版本" },
+    { "name": "setting_txt_privacy"                          , "value": "隱私政策" },
+    { "name": "setting_txt_contact"                          , "value": "聯繫客服" },
+    { "name": "setting_msg_del_learn"                        , "value": "確定要刪除學習履歷嗎？" },
+    { "name": "setting_msg_del_test"                         , "value": "確定要刪除測試結果嗎？" },
+    { "name": "setting_msg_del_review"                       , "value": "確定要清空復習列表嗎？" },
+    { "name": "setting_msg_del_record"                       , "value": "確定要清空所有錄音數據嗎？" },
+    { "name": "setting_msg_del_memo"                         , "value": "確定要刪除所有筆記內容嗎？" },
+    { "name": "setting_msg_del_favorite"                     , "value": "確定要清空收藏夾嗎？" },
+    { "name": "setting_msg_done_del_learn"                   , "value": "已成功刪除學習履歷。" },
+    { "name": "setting_msg_done_del_test"                    , "value": "已成功刪除測試結果。" },
+    { "name": "setting_msg_done_del_review"                  , "value": "已成功清空復習列表。" },
+    { "name": "setting_msg_done_del_record"                  , "value": "已成功清空所有錄音數據。" },
+    { "name": "setting_msg_done_del_memo"                    , "value": "已成功刪除所有筆記內容。" },
+    { "name": "setting_msg_done_del_favorite"                , "value": "已成功清空收藏夾。" },
+
+    { "name": "nav_title_main_learn"                         , "value": "單詞樹" },
+    { "name": "nav_title_main_list"                          , "value": "單詞一覽" },
+    { "name": "nav_title_main_quiz"                          , "value": "測試選擇" },
+    { "name": "nav_title_main_review"                        , "value": "復習" },
+    { "name": "nav_title_main_report"                        , "value": "報告" },
+    { "name": "nav_title_main_set_left"                      , "value": "設定" },
+    { "name": "nav_title_main_set_right"                     , "value": "應用內購買" },
+    { "name": "nav_title_learn_unitlist"                     , "value": "單元列表" },
+    { "name": "nav_title_quiz_scope_unit"                    , "value": "單元選擇" },
+    { "name": "nav_title_quiz_scope_all"                     , "value": "全部單詞" },
+    { "name": "nav_title_quiz_scope_favorite"                , "value": "收藏單詞" },
+    { "name": "nav_title_quiz_scope_category"                , "value": "Part別" },
+    { "name": "nav_title_quiz_scope_mistake"                 , "value": "常錯單詞" },
+    { "name": "nav_title_quiz_start"                         , "value": "測試設定" },
+    { "name": "nav_title_quiz_result"                        , "value": "測試結果" },
+
+    { "name": "card_txt_example_title"                       , "value": "例句" },
+    { "name": "card_info_slide_interval"                     , "value": "%.0f秒" },
+    { "name": "card_txt_show_translation"                    , "value": "點擊顯示中文翻譯" },
+    { "name": "card_info_txt_hide_translation"               , "value": "隱藏翻譯" },
+    { "name": "card_info_txt_autopron"                       , "value": "自動發音(單詞)" },
+    { "name": "card_info_txt_autopron_ex"                    , "value": "自動發音(例句)" },
+    { "name": "card_info_txt_repeat"                         , "value": "循環" },
+    { "name": "card_info_txt_rollspeed"                      , "value": "滾動速度" },
+    { "name": "card_info_txt_no_pron"                        , "value": "請先購買發音內容！" },
+    { "name": "card_result_txt"                              , "value": "正確: %d次 不正確: %d次" },
+
+    { "name": "quiz_question_mode_txt"                       , "value": "測試模式" },
+    { "name": "quiz_question_mode_normal"                    , "value": "普通" },
+    { "name": "quiz_question_mode_challenge"                 , "value": "挑戰" },
+    { "name": "quiz_question_count_txt"                      , "value": "問題數" },
+    { "name": "quiz_question_count_1"                        , "value": "10問" },
+    { "name": "quiz_question_count_2"                        , "value": "20問" },
+    { "name": "quiz_question_count_3"                        , "value": "50問" },
+    { "name": "quiz_question_count_4"                        , "value": "100問" },
+    { "name": "quiz_question_type_txt"                       , "value": "出題種類" },
+    { "name": "quiz_question_type_eiwa"                      , "value": "英→中" },
+    { "name": "quiz_question_type_waei"                      , "value": "中→英" },
+    { "name": "quiz_question_speed_txt"                      , "value": "出題速度" },
+    { "name": "quiz_question_speed_slow"                     , "value": "慢速" },
+    { "name": "quiz_question_speed_normal"                   , "value": "中速" },
+    { "name": "quiz_question_speed_fast"                     , "value": "快速" },
+    { "name": "quiz_question_order_txt"                      , "value": "出題順序" },
+    { "name": "quiz_question_order_serialno"                 , "value": "番號順序" },
+    { "name": "quiz_question_order_random"                   , "value": "隨機" },
+    { "name": "quiz_question_pronounce_txt"                  , "value": "發音" },
+    { "name": "quiz_question_pronounce_on"                   , "value": "ON" },
+    { "name": "quiz_question_pronounce_off"                  , "value": "OFF" },
+    { "name": "quiz_running_btn_pause"                       , "value": "暫停" },
+    { "name": "quiz_running_txt_cnt"                         , "value": "%d/%d問" },
+    { "name": "quiz_result_rate_txt"                         , "value": "正確率" },
+    { "name": "quiz_result_info"                             , "value": "全:%d問  正確:%d問" },
+    { "name": "quiz_result_btn_retry"                        , "value": "再測一次" },
+    { "name": "quiz_result_btn_mistake"                      , "value": "　再測一次\n(僅錯誤單詞)" },
+    { "name": "quiz_result_btn_next"                         , "value": "下一問題" },
+    { "name": "quiz_result_all_corrected"                    , "value": "全部正確" },
+
+    { "name": "review_btn_edit"                              , "value": "編輯" },
+    { "name": "review_btn_done"                              , "value": "完成" },
+    { "name": "review_btn_retest"                            , "value": "再測試" },
+    { "name": "review_btn_retest_pad"                        , "value": "□再測試" },
+    { "name": "review_btn_retest_pad_hilighted"              , "value": "■再測試" },
+    { "name": "review_btn_delete"                            , "value": "刪除" },
+    { "name": "review_confirm_msg"                           , "value": "確定要刪除嗎？" },
+    { "name": "review_no_data"                               , "value": "沒有需要復習的單詞。\n請先進行測驗或挑戰!" },
+
+    { "name": "report_learn_title"                           , "value": "學習狀況" },
+    { "name": "report_learn_txt"                             , "value": "已學習單詞數" },
+    { "name": "report_test_title"                            , "value": "測試狀況" },
+    { "name": "report_test_txt_correct"                      , "value": "正確率" },
+    { "name": "report_test_txt_wrong"                        , "value": "不正確率" },
+    { "name": "report_test_txt_still"                        , "value": "未測試" },
+    { "name": "report_mistake_title"                         , "value": "單詞錯誤次數狀況" },
+    { "name": "report_category_title"                        , "value": "正確率(Part別)" },
+
+    { "name": "set_txt_title"                                , "value": "設定" },
+    { "name": "set_txt_learn"                                , "value": "學習履歷刪除" },
+    { "name": "set_txt_test"                                 , "value": "測試結果刪除" },
+    { "name": "set_txt_review"                               , "value": "復習列表清空" },
+    { "name": "set_txt_record"                               , "value": "錄音清空" },
+    { "name": "set_txt_memo"                                 , "value": "備注刪除" },
+    { "name": "set_txt_favorite"                             , "value": "收藏夾清空" },
+    { "name": "set_txt_se"                                   , "value": "效果音" },
+    { "name": "set_txt_wtreview"                             , "value": "撰寫評論" },
+    { "name": "set_txt_encourage_info"                       , "value": "免費獲取發音的方法" },
+    { "name": "set_cell_txt_clear_cache"                     , "value": "清空緩存" },
+    { "name": "set_cell_txt_crm_btn_clear_cache"             , "value": "清空本機緩存" },
+    { "name": "set_msg_clear_done"                           , "value": "清空完成" },
+    { "name": "set_msg_learn"                                , "value": "確定要刪除所有學習履歷嗎？" },
+    { "name": "set_msg_test"                                 , "value": "確定要刪除所有測試結果嗎？" },
+    { "name": "set_msg_review"                               , "value": "確定要清空復習列表嗎？" },
+    { "name": "set_msg_record"                               , "value": "確定要清空所有錄音數據嗎？" },
+    { "name": "set_msg_memo"                                 , "value": "確定要刪除所有備注內容嗎？" },
+    { "name": "set_msg_favorite"                             , "value": "確定要清空收藏夾嗎？" },
+    { "name": "set_msg_success_learn"                        , "value": "已成功刪除學習履歷。" },
+    { "name": "set_msg_success_test"                         , "value": "已成功刪除測試結果。" },
+    { "name": "set_msg_success_review"                       , "value": "已成功清空復習列表。" },
+    { "name": "set_msg_success_record"                       , "value": "已成功清空錄音數據。" },
+    { "name": "set_msg_success_memo"                         , "value": "已成功刪除備注內容。" },
+    { "name": "set_msg_success_favorite"                     , "value": "已成功清空收藏夾。" },
+    { "name": "set_left_btn_more"                            , "value": "更多.." },
+
+    { "name": "iap_txt_title"                                , "value": "應用內購買" },
+    { "name": "iap_btn_txt_restore"                          , "value": "還原" },
+    { "name": "iap_btn_txt_purchased"                        , "value": "已購買" },
+    { "name": "iap_msg_success_title"                        , "value": "應用內購買" },
+    { "name": "iap_msg_success_content"                      , "value": "完成！" },
+    { "name": "iap_msg_restore_error"                        , "value": "還沒有已經購買的內容，不能進行還原。" },
+
+    { "name": "icloud_restore_success"                       , "value": "已成功完成從【免費版】的數據同步。" },
+
+    { "name": "rate_title"                                   , "value": "評價" },
+    { "name": "rate_msg"                                     , "value": "為此應用評分？" },
+    { "name": "rate_cancel"                                  , "value": "下次再說！" },
+    { "name": "rate_ok"                                      , "value": "好的，現在就去！" },
+    { "name": "rate_never"                                   , "value": "不用，永不評論！" },
+
+    { "name": "cat_txt_level_1"                              , "value": "TOEIC600" },
+    { "name": "cat_txt_level_2"                              , "value": "TOEIC730" },
+    { "name": "cat_txt_level_3"                              , "value": "TOEIC860" },
+    { "name": "cat_txt_level_all"                            , "value": "全部" },
+
+    { "name": "error_sign_in_icloud_title"                   , "value": "登錄iCloud" },
+    { "name": "error_sign_in_icloud_txt"                     , "value": "分享筆記需要登錄到iCloud。\n(在設定頁面，點擊iCloud,然後輸入您的Apple ID，同時打開iCloud Drive)" },
+
+    { "name": "encourage_instruction_title"                  , "value": "獲取發音" },
+    { "name": "encourage_instruction_msg"                    , "value": "🎉觀看廣告可以立即獲得單詞和例句發音。" },
+    { "name": "encourage_msg_word"                           , "value": "已經解鎖「%s」單詞發音。" },
+    { "name": "encourage_msg_example"                        , "value": "已經解鎖「%s」例句發音。" },
+    { "name": "encourage_msg_word_example"                   , "value": "已經解鎖「%s」單詞和例句發音。" },
+    { "name": "encourage_btn_txt_yes"                        , "value": "現在觀看" },
+    { "name": "encourage_btn_txt_no"                         , "value": "以後再說" },
+
+    { "name": "set_more_txt_mine_memo"                       , "value": "我的筆記" },
+    { "name": "set_more_txt_mine_record"                     , "value": "我的錄音" },
+    { "name": "set_more_txt_mine_deletes"                    , "value": "我刪除的單詞" },
+    { "name": "set_more_txt_update_now"                      , "value": "立即更新已下載詞彙" },
+    { "name": "set_more_txt_update_auto"                     , "value": "Wifi下自動更新詞彙" },
+    { "name": "set_more_msg_update_started"                  , "value": "正在檢查詞彙更新.." },
+    { "name": "set_more_msg_update_finished"                 , "value": "詞彙更新完成。" },
+    { "name": "set_txt_word_deleted"                         , "value": "查看已刪除單詞" },
+
+    { "name": "nav_title_deleted_word"                       , "value": "已刪除單詞" },
+
+    { "name": "word_delete_msg_recover_confirm"              , "value": "確定要恢復所有已刪除的單詞嗎？" },
+    { "name": "word_delete_msg_recover_success"              , "value": "已成功恢復所有已刪除單詞。" },
+    { "name": "word_delete_btn_recover"                      , "value": "全部恢復" },
+    { "name": "word_delete_pull_to_delete"                   , "value": "下拉刪除此單詞.." },
+    { "name": "word_delete_pull_to_recover"                  , "value": "下拉恢復此單詞.." },
+    { "name": "word_delete_release_to_delete"                , "value": "釋放刪除此單詞.." },
+    { "name": "word_delete_release_to_recover"               , "value": "釋放恢復此單詞.." },
+    { "name": "word_delete_deleting"                         , "value": "刪除中.." },
+    { "name": "word_delete_recoverring"                      , "value": "恢復中.." },
+    { "name": "word_delete_msg_deleted"                      , "value": "已刪除" },
+    { "name": "word_delete_msg_recoverred"                   , "value": "已恢復" },
+    { "name": "word_delete_lbl_txt_deleted"                  , "value": "已刪除" },
+
+    { "name": "set_txt_remind_title"                         , "value": "學習提醒" },
+    { "name": "set_txt_remind_daily"                         , "value": "每天" },
+    { "name": "set_txt_remind_off"                           , "value": "OFF" },
+    { "name": "set_cell_txt_to_member"                       , "value": "升級為會員" },
+    { "name": "set_cell_txt_member"                          , "value": "會員功能" },
+
+    { "name": "member_title"                                 , "value": "會員功能" },
+    { "name": "member_desc"                                  , "value": "・完全無廣告;        \n・任意下載詞彙數據;        \n・任意查看單詞發音;        \n・任意查看例句發音;        \n・任意使用自動發音;        \n・任意使用內置詞典;        \n・任意使用記憶曲線;" },
+    { "name": "member_txt_recommend"                         , "value": "推薦" },
+    { "name": "member_txt_info"                              , "value": "・用戶確認購買並付款後，計入華為賬戶;        \n・通過華為購買的內容或服務，僅限華為Harmony系統使用，不能在其它系統使用;        \n・如需取消續訂，請在當前訂閱週期到期前24小時以前，手動在華為設置管理中關閉自動續費功能，到期前24小時內取消，將會收取訂閱費用；        \n・華為賬戶會在到期前24小時內扣費，扣費成功後訂閱週期順延一個訂閱週期；        \n・用戶若在免費試用期有任何未使用完的部分，剩餘試用期將在購買訂閱產品時被沒收。目前本產品不提供免費試用期。" },
+    { "name": "member_txt_will_expire"                       , "value": "會員到期時間：%s" },
+    { "name": "member_txt_was_expired"                       , "value": "會員已於：%s 到期" },
+    { "name": "member_btn_restore"                           , "value": "恢復" },
+    { "name": "member_btn_subscribe"                         , "value": "升級為會員" },
+    { "name": "member_msg_subscribe_purchasing"              , "value": "訂閱中.." },
+    { "name": "member_btn_subscribe_done"                    , "value": "恭喜您成功升級為會員" },
+    { "name": "member_msg_restoring"                         , "value": "恢復中.." },
+    { "name": "member_msg_restore_done"                      , "value": "恢復完成" },
+    { "name": "member_msg_restored_nothing"                  , "value": "沒有可供恢復的項目" },
+    { "name": "member_btn_terms"                             , "value": "服務條款" },
+    { "name": "member_btn_privacy"                           , "value": "隱私政策" },
+    { "name": "member_btn_cancel"                            , "value": "取消" },
+    { "name": "member_btn_manage_subs"                       , "value": "查看訂閱" },
+    { "name": "member_manager_msg_limit_download_books"      , "value": "加入會員可以任意下載詞彙" },
+    { "name": "member_manager_msg_limit_add_ebook"           , "value": "加入會員可以創建更多詞彙本" },
+    { "name": "member_manager_msg_limit_word_pron"           , "value": "加入會員可以任意查看單詞發音, \n今日免費次數已用完(每日%d次)" },
+    { "name": "member_manager_msg_limit_example_pron"        , "value": "加入會員可以任意查看例句發音, \n今日免費次數已用完(每日%d次)" },
+    { "name": "member_manager_msg_limit_auto_pron"           , "value": "加入會員可以任意使用自動發音" },
+    { "name": "member_manager_msg_limit_dict_show"           , "value": "加入會員可以任意使用內置詞典, \n今日免費次數已用完(每日%d次)" },
+    { "name": "member_manager_msg_limit_use_night_mode"      , "value": "加入會員可以任意使用夜晚模式" },
+    { "name": "member_manager_msg_limit_use_hide_trans"      , "value": "加入會員可以任意使用隱藏翻譯" },
+    { "name": "member_manager_msg_limit_use_retest_mistake"  , "value": "加入會員可以任意使用再測一次" },
+    { "name": "member_manager_msg_limit_use_all_units"       , "value": "加入會員可以任意學習所有單元" },
+    { "name": "member_manager_msg_limit_use_all_plan_dayofs" , "value": "加入會員可任意使用記憶曲線" },
+    { "name": "member_manager_msg_limit_use_cigen"           , "value": "加入會員可以任意使用詞根助記" },
+    { "name": "member_manager_msg_limit_use_sameroot"        , "value": "加入會員可以任意使用同根詞" },
+    { "name": "member_manager_msg_limit_online_dict_use"     , "value": "加入會員可以任意使用單詞查詢, \n今日免費次數已用完(每日%d次)" },
+    { "name": "member_manager_msg_limit_challenge_use"       , "value": "加入會員可以任意使用單詞挑戰, \n今日免費次數已用完(每日%d次)" },
+    { "name": "member_gift_one_year"                         , "value": "感謝您對我們的支持，贈送1年會員" },
+    { "name": "member_subscribe_txt_unit_day"                , "value": "天" },
+    { "name": "member_subscribe_txt_unit_days"               , "value": "天" },
+    { "name": "member_subscribe_txt_unit_week"               , "value": "周" },
+    { "name": "member_subscribe_txt_unit_weeks"              , "value": "周" },
+    { "name": "member_subscribe_txt_unit_month"              , "value": "月" },
+    { "name": "member_subscribe_txt_unit_months"             , "value": "月" },
+    { "name": "member_subscribe_txt_unit_year"               , "value": "年" },
+    { "name": "member_subscribe_txt_unit_years"              , "value": "年" },
+    { "name": "member_sub_tip_month"                         , "value": "連續包月會員，%s元/月" },
+    { "name": "member_sub_tip_quarter"                       , "value": "連續包季會員，%s元/季，相當於%s元/月" },
+    { "name": "member_sub_tip_year"                          , "value": "連續包年會員，%s元/年，相當於%s元/月" },
+
+    { "name": "advice_nav_title"                             , "value": "意見反饋" },
+    { "name": "advice_txt_tip"                               , "value": "請在此處留下您的Email" },
+    { "name": "advice_btn_send"                              , "value": "發送" },
+    { "name": "advice_msg_send_suceed"                       , "value": "發送成功。" },
+    { "name": "advice_msg_send_failed"                       , "value": "發送失敗！" },
+
+    { "name": "reclaim_nav_title"                            , "value": "投訴" },
+    { "name": "reclaim_btn_send"                             , "value": "發送" },
+
+    { "name": "about_nav_title"                              , "value": "關於" },
+    { "name": "about_btn_term"                               , "value": "《服務協議》" },
+    { "name": "about_btn_privacy"                            , "value": "《隱私政策》" },
+    { "name": "about_btn_privacy_kid"                        , "value": "《兒童隱私政策》" },
+    { "name": "about_btn_redeem"                             , "value": "兌換會員碼" },
+    { "name": "about_btn_reclaim"                            , "value": "投訴" },
+    { "name": "about_btn_contact"                            , "value": "聯繫客服" },
+
+    { "name": "login_not_login"                              , "value": "請登錄" },
+    { "name": "login_nav_title"                              , "value": "登錄" },
+    { "name": "login_txt_email"                              , "value": "郵箱" },
+    { "name": "login_txt_pwd"                                , "value": "密碼" },
+    { "name": "login_btn_forget"                             , "value": "忘記密碼?" },
+    { "name": "login_btn_login"                              , "value": "登錄" },
+    { "name": "login_btn_signup"                             , "value": "註冊" },
+    { "name": "login_btn_cancel"                             , "value": "取消" },
+    { "name": "login_msg_invalid_email"                      , "value": "請輸入正確的Email" },
+    { "name": "login_msg_need_pwd"                           , "value": "請輸入密碼" },
+    { "name": "login_msg_logining"                           , "value": "登錄中.." },
+    { "name": "login_msg_login_succeed"                      , "value": "登錄成功" },
+    { "name": "login_msg_login_failed"                       , "value": "登錄失敗" },
+    { "name": "login_sns_txt_other"                          , "value": "其它登錄方式" },
+    { "name": "login_sns_weibo"                              , "value": "新浪微博" },
+    { "name": "login_sns_qq"                                 , "value": "QQ" },
+    { "name": "login_sns_weixin"                             , "value": "微信" },
+    { "name": "login_sns_facebook"                           , "value": "Facebook" },
+    { "name": "login_agree_txt"                              , "value": "已閱讀並同意服務條款和隱私政策" },
+    { "name": "login_agree_tip"                              , "value": "請閱讀並同意服務條款和隱私政策" },
+    { "name": "login_agree_link_terms"                       , "value": "服務條款" },
+    { "name": "login_agree_link_privacy"                     , "value": "隱私政策" },
+
+    { "name": "member_agree_txt"                             , "value": "同意《會員服務》、《自動續費協議》和《隱私政策》" },
+    { "name": "member_agree_tip"                             , "value": "訂閱會員需要同意《會員服務》《自動續費協議》《隱私政策》" },
+    { "name": "member_agree_link_terms"                      , "value": "《會員服務》" },
+    { "name": "member_agree_link_privacy"                    , "value": "《隱私政策》" },
+    { "name": "member_agree_link_terms_subscription"         , "value": "《自動續費協議》" },
+    { "name": "member_buy_cfm_msg_title"                     , "value": "確認" },
+    { "name": "member_buy_cfm_msg_info"                      , "value": "訂閱會員，開通自動續費服務。" },
+    { "name": "member_buy_cfm_msg_info2"                     , "value": "你可以隨時取消訂閱，關閉自動續費服務。" },
+    { "name": "member_buy_cfm_txt_terms_link"                , "value": "自動續費服務" },
+    { "name": "member_buy_cfm_btn_yes"                       , "value": "確定" },
+    { "name": "member_buy_cfm_btn_no"                        , "value": "取消" },
+
+    { "name": "logoff_nav_title"                             , "value": "資料管理" },
+    { "name": "logoff_btn_logoff"                            , "value": "註銷帳號" },
+    { "name": "logoff_txt_tip"                               , "value": "註銷帳號，將會從服務器上刪除此賬戶的所有信息，包括所有備份數據，且不可恢復，請謹慎操作。" },
+    { "name": "logoff_msg_logoff"                            , "value": "確定要刪除此帳號的所有數據嗎？(刪除之後不可恢復)" },
+    { "name": "logoff_cfm_yes"                               , "value": "確認註銷" },
+    { "name": "logoff_cfm_no"                                , "value": "取消" },
+    { "name": "logoff_msg_logoff_succee"                     , "value": "帳號註銷成功" },
+    { "name": "logoff_msg_logoff_fail"                       , "value": "操作失敗" },
+
+    { "name": "signup_nav_title"                             , "value": "註冊" },
+    { "name": "signup_txt_email"                             , "value": "郵箱" },
+    { "name": "signup_txt_username"                          , "value": "用戶名" },
+    { "name": "signup_txt_pwd"                               , "value": "密碼" },
+    { "name": "signup_txt_pwd2"                              , "value": "再次輸入密碼" },
+    { "name": "signup_chk_agree"                             , "value": "同意" },
+    { "name": "signup_btn_terms"                             , "value": "服務條款" },
+    { "name": "signup_btn_signup"                            , "value": "註冊" },
+    { "name": "signup_msg_need_email"                        , "value": "請輸入正確的Email" },
+    { "name": "signup_msg_need_username"                     , "value": "請輸入用戶名" },
+    { "name": "signup_msg_need_pwd"                          , "value": "請輸入密碼" },
+    { "name": "signup_msg_need_pwd2"                         , "value": "請輸入驗證密碼" },
+    { "name": "signup_msg_username_too_long"                 , "value": "用戶名太長" },
+    { "name": "signup_msg_pwd_out_range"                     , "value": "請輸入6～20位之內的密碼" },
+    { "name": "signup_msg_pwd_different"                     , "value": "兩次輸入的密碼不同" },
+    { "name": "signup_msg_need_agree_terms"                  , "value": "繼續註冊您需要同意我們的服務條款" },
+    { "name": "signup_msg_signuping"                         , "value": "註冊中.." },
+    { "name": "signup_msg_signup_succeed"                    , "value": "註冊成功" },
+    { "name": "signup_msg_signup_failed"                     , "value": "註冊失敗" },
+    { "name": "signup_msg_signup_auditing"                   , "value": "審核中.." },
+    { "name": "signup_msg_signup_fail_on_username"           , "value": "註冊失敗，用戶名違規" },
+
+    { "name": "sendcode_nav_title"                           , "value": "發送驗證碼" },
+    { "name": "sendcode_txt_email"                           , "value": "請輸入郵箱" },
+    { "name": "sendcode_btn_send"                            , "value": "發送驗證碼" },
+    { "name": "sendcode_msg_need_email"                      , "value": "請輸入正確的Email" },
+    { "name": "sendcode_msg_sending"                         , "value": "正在發送驗證碼.." },
+    { "name": "sendcode_msg_send_done"                       , "value": "驗證碼已經發送到郵箱" },
+    { "name": "sendcode_msg_send_failed"                     , "value": "發送驗證碼失敗" },
+
+    { "name": "resetpwd_nav_title"                           , "value": "重置密碼" },
+    { "name": "resetpwd_txt_code"                            , "value": "請輸入驗證碼" },
+    { "name": "resetpwd_txt_pwd"                             , "value": "新密碼" },
+    { "name": "resetpwd_txt_pwd2"                            , "value": "再次輸入密碼" },
+    { "name": "resetpwd_btn_excute"                          , "value": "確認" },
+    { "name": "resetpwd_msg_need_code"                       , "value": "請輸入驗證碼" },
+    { "name": "resetpwd_msg_need_pwd"                        , "value": "請輸入密碼" },
+    { "name": "resetpwd_msg_need_pwd2"                       , "value": "請輸入驗證密碼" },
+    { "name": "resetpwd_msg_pwd_out_range"                   , "value": "請輸入6～20位之內的密碼" },
+    { "name": "resetpwd_msg_pwd_different"                   , "value": "兩次輸入的密碼不同" },
+    { "name": "resetpwd_msg_resetting"                       , "value": "密碼重置中.." },
+    { "name": "resetpwd_msg_reset_succeed"                   , "value": "重置密碼成功" },
+    { "name": "resetpwd_msg_reset_failed"                    , "value": "重置密碼失敗" },
+
+    { "name": "login_qr_nav_title"                           , "value": "微信掃碼登錄" },
+
+    { "name": "server_code_m402"                             , "value": "Email已經註冊過" },
+    { "name": "server_code_m405"                             , "value": "帳戶不存在" },
+    { "name": "server_code_m406"                             , "value": "密碼不正確" },
+    { "name": "server_code_m410"                             , "value": "驗證碼不正確" },
+    { "name": "server_code_m701"                             , "value": "會員碼無效" },
+    { "name": "server_code_m702"                             , "value": "會員碼已被使用" },
+
+    { "name": "set_alert_logut_msg"                          , "value": "確定要退出登錄嗎？" },
+    { "name": "set_alert_logut_btn_yes"                      , "value": "是的" },
+    { "name": "set_btn_login"                                , "value": "登錄" },
+    { "name": "set_btn_logout"                               , "value": "退出登錄" },
+    { "name": "set_txt_not_login"                            , "value": "未登錄" },
+    { "name": "set_alert_backup_msg"                         , "value": "將本地數據備份到雲端？" },
+    { "name": "set_alert_backup_btn_yes"                     , "value": "立即備份" },
+    { "name": "set_msg_backuping"                            , "value": "數據備份中.." },
+    { "name": "set_msg_backup_done"                          , "value": "備份成功" },
+    { "name": "set_msg_backup_failed"                        , "value": "備份失敗" },
+    { "name": "set_alert_restore_msg"                        , "value": "從雲端恢複數據到本地？" },
+    { "name": "set_alert_restore_btn_yes"                    , "value": "立即恢復" },
+    { "name": "set_msg_restoreing"                           , "value": "數據恢復中.." },
+    { "name": "set_msg_restore_done"                         , "value": "恢復成功" },
+    { "name": "set_msg_restore_failed"                       , "value": "恢復失敗" },
+    { "name": "set_msg_restore_no_found"                     , "value": "未找到備份數據" },
+    { "name": "set_txt_member_will_expire"                   , "value": "會員到期時間：%s" },
+    { "name": "set_txt_member_was_expired"                   , "value": "會員已於：%s 到期" },
+    { "name": "set_txt_data_last_backup"                     , "value": "上次備份：%s" },
+    { "name": "set_txt_data_to_restore"                      , "value": "從雲端恢複數據" },
+    { "name": "set_txt_about_version"                        , "value": "版本：%s" },
+    { "name": "set_alert_clear_msg"                          , "value": "清空本機緩存數據？" },
+    { "name": "set_alert_clear_btn_yes"                      , "value": "清空" },
+    { "name": "set_nav_title"                                , "value": "設置" },
+    { "name": "set_cell_txt_data_backup"                     , "value": "備份數據" },
+    { "name": "set_cell_txt_data_restore"                    , "value": "恢複數據" },
+    { "name": "set_cell_txt_remind_switch"                   , "value": "學習提醒" },
+    { "name": "set_cell_txt_remind_time"                     , "value": "每日" },
+    { "name": "set_cell_txt_advice"                          , "value": "意見反饋" },
+    { "name": "set_cell_txt_review"                          , "value": "給個好評" },
+    { "name": "set_cell_txt_share"                           , "value": "分享應用" },
+    { "name": "set_cell_txt_about"                           , "value": "關於" },
+    { "name": "set_cell_txt_version"                         , "value": "版本:%s" },
+
+    { "name": "base_dict_msg_copied"                         , "value": "已經拷貝到剪貼板。" },
+    { "name": "base_dict_tip_title"                          , "value": "提示" },
+    { "name": "base_dict_tip_text"                           , "value": "點擊例句英文單詞，可查看中文釋義。" },
+
+    { "name": "word_kind_n"                                  , "value": "【名】" },
+    { "name": "word_kind_v"                                  , "value": "【動】" },
+    { "name": "word_kind_vt"                                 , "value": "【動】" },
+    { "name": "word_kind_vi"                                 , "value": "【動】" },
+    { "name": "word_kind_vt_vi"                              , "value": "【動】" },
+    { "name": "word_kind_adj"                                , "value": "【形】" },
+    { "name": "word_kind_adv"                                , "value": "【副】" },
+    { "name": "word_kind_pron"                               , "value": "【代】" },
+    { "name": "word_kind_prep"                               , "value": "【介】" },
+    { "name": "word_kind_aux"                                , "value": "【助】" },
+    { "name": "word_kind_abbr"                               , "value": "【縮】" },
+    { "name": "word_kind_conj"                               , "value": "【連】" },
+    { "name": "word_kind_art"                                , "value": "【冠】" },
+    { "name": "word_kind_int"                                , "value": "【感】" },
+    { "name": "word_kind_interj"                             , "value": "【感】" },
+    { "name": "word_kind_det"                                , "value": "【限】" },
+    { "name": "word_kind_num"                                , "value": "【數】" },
+    { "name": "word_kind_phr"                                , "value": "【短】" },
+
+    { "name": "cfm_title_select"                             , "value": "請選擇" },
+    { "name": "cfm_btn_cancel"                               , "value": "取消" },
+
+    { "name": "alert_title_confirm"                          , "value": "確認" },
+    { "name": "alert_msg_confirm_remove"                     , "value": "確定要刪除嗎?" },
+
+    { "name": "confirm_btn_remove"                           , "value": "刪除" },
+    { "name": "confirm_btn_yes"                              , "value": "是的" },
+    { "name": "confirm_btn_no"                               , "value": "不要" },
+    { "name": "confirm_btn_ok"                               , "value": "好的" },
+    { "name": "confirm_btn_cancel"                           , "value": "取消" },
+
+    { "name": "common_date_str_today"                        , "value": "今天" },
+    { "name": "common_date_str_yesterday"                    , "value": "昨天" },
+    { "name": "common_date_str_tomorrow"                     , "value": "明天" },
+
+    { "name": "network_not_available"                        , "value": "網絡連接失敗！" },
+    { "name": "network_wifi_not_available"                   , "value": "當前網絡未連接到WIFI，繼續下載可能會消耗流量，是否繼續下載？" },
+
+    { "name": "remind_title"                                 , "value": " " },
+    { "name": "remind_daily_msg_1"                           , "value": "你設置的學習時間到了！" },
+    { "name": "remind_daily_msg_2"                           , "value": "學習時間到了，加油吧！" },
+    { "name": "remind_sys_msg_day3"                          , "value": "同學，你已經有三天沒有學習了， 要加油哦^_^。" },
+    { "name": "remind_sys_msg_day7"                          , "value": "同學，你已經有一周沒有學習了，其它同學可都在努學習哦^_^。" },
+    { "name": "remind_sys_msg_day15"                         , "value": "同學，你已經有半個月沒有學習了， 不會是不想進步了吧^_^。" },
+    { "name": "remind_sys_msg_day30"                         , "value": "同學，你已經有一個月沒有學習了，哎， 我們都懶得提醒你了。" },
+
+    { "name": "help_tip_swipe_left_default"                  , "value": "←向左滑動" },
+    { "name": "help_tip_swipe_left_to_delete"                , "value": "←左滑刪除" },
+    { "name": "help_tip_swipe_left_to_fav"                   , "value": "←左滑收藏" },
+
+    { "name": "privacy_pop_txt_title"                        , "value": "隱私政策" },
+    { "name": "privacy_pop_btn_disagree"                     , "value": "不同意" },
+    { "name": "privacy_pop_btn_agree"                        , "value": "同意並繼續" },
+    { "name": "privacy_pop_content"                          , "value": "    請你務必審慎閱讀，充分理解「服務協議」和「隱私政策」各條款，包括但不限於： \n    為了向你提供內容分享，數據備份及恢復等服務，我們需要收集你的設備基本信息，操作日誌等個人信息。\n    你可以在設置中查看，管理你的數據。你可以閱讀《服務協議》和《隱私政策》瞭解詳細信息。如果您是14週歲以下的未成年人，您需要和您的監護人一起仔細閱讀《兒童隱私政策》，並在徵得您的監護人同意後，使用我們的產品、服務或向我們提供信息。 \n    如你同意，請點擊“同意並繼續”，開始接受我們的服務。" },
+    { "name": "privacy_pop_link_privacy"                     , "value": "《隱私政策》" },
+    { "name": "privacy_pop_link_privacy_kid"                 , "value": "《兒童隱私政策》" },
+    { "name": "privacy_pop_link_terms"                       , "value": "《服務協議》" },
+
+    { "name": "link_url_cfm_btn_sharelink"                   , "value": "分享鏈接" },
+
+    { "name": "microphone_permission_reason"                 , "value": "用於單詞錄音跟讀學習。" },
+
+    { "name": "image_write_permission_reason"                , "value": "用於存儲字卡到相冊" },
+    { "name": "image_read_permission_reason"                 , "value": "用於選擇相冊圖片識別字卡內容。" },
+
+    { "name": "camera_permission_reason"                     , "value": "用於掃描並識別文字。" },
+
+    { "name": "set_msg_permission_notification"              , "value": "開啓提醒需要通知權限。" },
+
+    { "name": "sys_msg_volume_small"                         , "value": "手機音量太小，可能無法聽到聲音！\n請按手機側邊音量鍵調整。" },
+    { "name": "sys_msg_disk_space_not_enough"                , "value": "手機容量不足，可能會影響應用運行.." },
+
+    { "name": "photo_picker_nav_title"                       , "value": "照片選擇" },
+
+    { "name": "eword_field_pron_us"                          , "value": "音標" },
+    { "name": "eword_field_title_cn1"                        , "value": "單詞釋義1" },
+    { "name": "eword_field_title_cn2"                        , "value": "單詞釋義2" },
+    { "name": "eword_field_title_cn3"                        , "value": "單詞釋義3" },
+    { "name": "eword_field_word_change"                      , "value": "單詞變形" },
+    { "name": "eword_field_syn_words"                        , "value": "近義詞" },
+    { "name": "eword_field_asyn_words"                       , "value": "反義詞" },
+    { "name": "eword_field_example_en1"                      , "value": "例句1(英)" },
+    { "name": "eword_field_example_cn1"                      , "value": "例句1(中)" },
+    { "name": "eword_field_example_en2"                      , "value": "例句2(英)" },
+    { "name": "eword_field_example_cn2"                      , "value": "例句2(中)" },
+    { "name": "eword_field_example_en3"                      , "value": "例句3(英)" },
+    { "name": "eword_field_example_cn3"                      , "value": "例句3(中)" },
+    { "name": "eword_field_used_phrase"                      , "value": "常用短語" },
+    { "name": "eword_field_en2en"                            , "value": "英英釋義" },
+    { "name": "eword_field_discriminate"                     , "value": "詳細說明" },
+    { "name": "eword_field_root"                             , "value": "詞根助記" },
+    { "name": "eword_field_cognates"                         , "value": "同根詞" }
   ]
 }

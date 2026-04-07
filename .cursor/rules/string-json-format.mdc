@@ -1,0 +1,29 @@
+---
+description: Harmony string.json 排版（base / zh_Hant 的 element/string.json）
+globs: entry/src/main/resources/**/element/string.json
+alwaysApply: false
+---
+
+# `string.json` 排版约定
+
+路径示例：`entry/src/main/resources/base/element/string.json`、`entry/src/main/resources/zh_Hant/element/string.json`。
+
+## 必须遵守
+
+1. **每个条目仅占一行**：禁止使用多行形式的 `{` / `"name":` / `"value":` 块。
+2. **对齐**：同一文件内所有条目的 `"name"` 键名右对齐到同一列，使 **`name` 与 `value` 之间的逗号** 垂直对齐；行首统一为四个空格 + `{ "`（`{` 与 `"name"` 之间有一个空格）。
+3. **模块间空一行**：当条目的「模块键」变化时，在上一行条目与下一行条目之间插入一个空行（仍保留在 `string` 数组内，不是 JSON 结构上的分段）。
+   - **模块键规则**：取 `name` 在第一个 `_` 之前的段作为前缀，同一前缀属于同一模块；**例外**：`module_desc` 与所有以 `EntryAbility_` 开头的键合并为同一小组（不加空行）。
+
+## 行模板
+
+```text
+    { "name": "<键名 padded 空白>" , "value": <json 转义的字符串> },
+```
+
+最后一项条目末尾无逗号。
+
+## 编辑方式
+
+- 禁止对该文件使用会整文件重排为多行对象的 `json.dump(indent=...)`。
+- 手工增删键时，维持现有对齐宽度（按全文件最长 `name` 长度补空格）；必要时在相邻模块之间补/删空行。

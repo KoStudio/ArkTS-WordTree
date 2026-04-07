@@ -2,15 +2,14 @@
 // EWordSearchAddView.ets
 // WordTree
 //
-// 添加单词到当前 EBook：UI 与 OnlineSearch 一致（标题栏/搜索栏/列表/无数据态），列表项中与搜索框相同的英文或中文红色高亮。
+// 添加单词到当前 EBook：顶栏与搜索区排版参考 iOS「添加单词」；列表项中与搜索框相同的英文或中文红色高亮。
 //
 
-import { buildNavTitle } from '../../../app/constants/AppBuilders'
-import { dNavBackIcon } from '../../../app/constants/AppDefines'
 import { HighlightText } from '../../../app/views/HighlightText'
+import { NavBarView } from '../../../app/views/NavBarView'
 import { OnlineWord } from '../../../models/managers/onlinesearch/OnlineWord'
 import { OnlineWordManager } from '../../../models/managers/onlinesearch/OnlineWordManager'
-import { NavTo } from '../../../pages/NavPathManager'
+import { NavPop, NavTo } from '../../../pages/NavPathManager'
 import { NoDataPanel } from '../../../app/views/NoDataView'
 import { LoadingDialog } from '@kit.ArkUI'
 import { Toast } from '../../../common/utils/Toast'
@@ -27,6 +26,7 @@ export namespace EWordSearchAddViewConfig {
 
   export const NavKey: string = 'EWordSearchAddView_show'
 
+  // 打开添加单词查询页
   export function open(): void {
 
     NavTo(EWordSearchAddViewConfig.NavKey, undefined, true, true)
@@ -37,13 +37,11 @@ export namespace EWordSearchAddViewConfig {
 export struct EWordSearchAddView {
 
   @Local searchResults : WordDetail[] = []
-  @Local isSearching   : boolean      = false
   @Local searchText    : string       = ''
   @Local addingTitleEn : string       = ''
   @Local hintMessage   : string       = ''
 
-  private searchController: SearchController = new SearchController()
-
+  // 页面即将显示：校验当前词汇本并聚焦搜索框
   aboutToAppear(): void {
     // 分支：当前未选中 EBook 时给出提示
     if (BookManager.shared.currentBook?.isEBook !== true) {
@@ -55,64 +53,93 @@ export struct EWordSearchAddView {
     }, 100)
   }
 
+  // 构建整页：主题色顶栏 + 白底内容区
   build() {
     NavDestination() {
 
       Column() {
 
-        this.SearchPanel()
+        Column() {
 
-        if (this.searchResults.length > 0) {
-          this.buildList()
-        } else {
-          this.buildNoDataPanel()
+          NavBarView({
+            title       : $r('app.string.ebook_nav_add_word'),
+            leftButtons : [{
+              text   : $r('app.string.online_search_btn_cancel'),
+              onClick: () => {
+                NavPop()
+              }
+            }],
+            rightButtons: []
+          })
+
+          this.buildSearchRow()
         }
+          .width('100%')
+          .backgroundColor($r('app.color.colorPrimary'))
+
+        Column() {
+
+          // 分支：有结果时显示列表
+          if (this.searchResults.length > 0) {
+            this.buildList()
+          } else {
+            this.buildNoDataPanel()
+          }
+        }
+          .layoutWeight(1)
+          .width('100%')
+          .backgroundColor($r('app.color.color_background'))
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       }
-        .backgroundColor($r('app.color.color_background'))
-        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+        .width('100%')
+        .height('100%')
     }
-      .title(buildNavTitle($r('app.string.ebook_nav_add_word')))
-      .backButtonIcon(dNavBackIcon)
+      .hideTitleBar(true)
       .backgroundColor($r('app.color.colorPrimary'))
   }
 
+  // 顶栏下方：圆角灰底输入框 + 描边「搜索」按钮
   @Builder
-  SearchPanel() {
+  buildSearchRow() {
 
-    Row() {
+    Row({ space: 10 }) {
 
-      Search({ placeholder: '', value: $$this.searchText, controller: this.searchController })
-        .backgroundColor($r('app.color.color_obscure'))
-        .layoutWeight(1)
-        .enterKeyType(EnterKeyType.Search)
-        .enableHapticFeedback(true)
+      TextInput({
+        placeholder: $r('app.string.ebook_search_placeholder'),
+        text       : $$this.searchText
+      })
         .id('searchText')
-        .onSubmit((value: string) => {
-
-          this.searchText = value
+        .layoutWeight(1)
+        .height(40)
+        .backgroundColor($r('app.color.color_obscure'))
+        .borderRadius(10)
+        .placeholderColor($r('app.color.color_text2'))
+        .fontColor($r('app.color.color_title'))
+        .enterKeyType(EnterKeyType.Search)
+        .onSubmit(() => {
           void this.runSearch()
         })
 
-      if (this.isSearching) {
+      Button() {
 
-        Button() {
-
-          Text($r('app.string.online_search_btn_cancel'))
-        }
-          .padding(5)
-          .backgroundColor(Color.Transparent)
-          .fontColor($r('app.color.color_link'))
-          .onClick(() => {
-            this.clearSearch()
-          })
+        Text($r('app.string.ebook_search_btn'))
+          .fontColor($r('app.color.color_nav_tint'))
+          .fontSize(16)
       }
+        .height(40)
+        .padding({ left: 16, right: 16 })
+        .backgroundColor($r('app.color.color_transparent'))
+        .border({ width: 1, color: $r('app.color.color_nav_tint') })
+        .borderRadius(10)
+        .onClick(() => {
+          void this.runSearch()
+        })
     }
       .width('100%')
-      .padding({ top: 2, left: 10, right: 10, bottom: 0 })
-      .align(Alignment.Bottom)
-      .backgroundColor($r('app.color.colorPrimary'))
+      .padding({ left: 16, right: 16, top: 4, bottom: 14 })
   }
 
+  // 在线查询结果列表
   @Builder
   buildList() {
 
@@ -123,6 +150,16 @@ export struct EWordSearchAddView {
         ListItem() {
           this.buildRowContent(word, rowIndex)
         }
+          .onClick(() => {
+            const titleEn: string = word.titleEn ?? ''
+
+            // 分支：无英文标题或已有添加请求进行中时不响应
+            if (titleEn.length < 1 || this.addingTitleEn.length > 0) {
+              return
+            }
+
+            void this.addWord(titleEn)
+          })
           .margin({ bottom: 1 })
       }, (word: WordDetail, rowIndex: number) => `${word.titleEn}_${rowIndex}`)
     }
@@ -132,6 +169,7 @@ export struct EWordSearchAddView {
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
   }
 
+  // 单行词条：高亮关键字 + 绿色「添加」胶囊（整行点击触发添加；绿色用 `color_btn_bg2`）
   @Builder
   buildRowContent(word: WordDetail, _rowIndex: number) {
 
@@ -140,22 +178,23 @@ export struct EWordSearchAddView {
       Column({ space: 10 }) {
 
         HighlightText({
-          content : word.titleEn || '',
-          keyword : this.searchText,
-          normalColor: $r('app.color.color_title'),
-          textStyle: { fontSize: 18, maxLines: 1 }
+          content     : word.titleEn || '',
+          keyword     : this.searchText,
+          normalColor : $r('app.color.color_title'),
+          textStyle   : { fontSize: 18, maxLines: 1 }
         })
 
         HighlightText({
-          content    : word.getTitleCnsJoined(),
-          keyword    : this.searchText,
-          normalColor: $r('app.color.color_detail'),
-          textStyle  : { fontSize: 15, maxLines: 3 }
+          content     : word.getTitleCnsJoined(),
+          keyword     : this.searchText,
+          normalColor : $r('app.color.color_detail'),
+          textStyle   : { fontSize: 15, maxLines: 3 }
         })
       }
         .layoutWeight(1)
         .alignItems(HorizontalAlign.Start)
 
+      // 分支：当前行正在提交添加时显示进度（与 iOS ProgressView 一致）
       if (this.addingTitleEn === (word.titleEn ?? '')) {
 
         LoadingProgress()
@@ -163,18 +202,13 @@ export struct EWordSearchAddView {
           .height(24)
       } else {
 
-        Button() {
-
-          Text($r('app.string.ebook_add'))
-            .fontSize(14)
-            .fontColor(Color.White)
-        }
+        Text($r('app.string.ebook_add'))
+          .fontSize(14)
+          .fontWeight(FontWeight.Medium)
+          .fontColor($r('app.color.color_white'))
           .padding({ left: 12, right: 12, top: 6, bottom: 6 })
-          .backgroundColor($r('app.color.colorPrimary'))
-          .onClick(() => {
-
-            void this.addWord(word.titleEn ?? '')
-          })
+          .backgroundColor($r('app.color.color_btn_bg2'))
+          .borderRadius(8)
       }
     }
       .width('100%')
@@ -184,17 +218,24 @@ export struct EWordSearchAddView {
       .border({ width: { bottom: 1 }, style: BorderStyle.Dashed, color: $r('app.color.color_obscure') })
   }
 
+  // 无结果：水印空态 + 绿色「手动输入」链（与同应用 `color_btn_bg2` 积极操作色一致）
   @Builder
   private buildNoDataPanel() {
-    Column({ space: 12 }) {
-      NoDataPanel({ message: this.hintMessage.length > 0 ? this.hintMessage : $r('app.string.online_search_input_tip') })
+    Column() {
 
+      NoDataPanel({
+        message      : this.hintMessage.length > 0 ? this.hintMessage : $r('app.string.online_search_input_tip'),
+        expandHeight : false
+      })
+
+      // 分支：已选自建本时显示「手动输入」入口（置于空态下方略偏下、水平居中）
       if (BookManager.shared.currentBook?.isEBook === true) {
-        Button() {
-          Text($r('app.string.ebook_not_found_manual_add'))
-            .fontColor($r('app.color.colorPrimary'))
-        }
-          .backgroundColor(Color.Transparent)
+        Text($r('app.string.ebook_not_found_manual_add'))
+          .fontSize(16)
+          .fontColor($r('app.color.color_btn_bg2'))
+          .width('100%')
+          .textAlign(TextAlign.Center)
+          .margin({ top: 20 })
           .onClick(() => {
             ManualAddWordViewConfig.open({ initialTitleEn: this.searchText })
           })
@@ -203,21 +244,17 @@ export struct EWordSearchAddView {
       .width('100%')
       .layoutWeight(1)
       .justifyContent(FlexAlign.Center)
+      .alignItems(HorizontalAlign.Center)
   }
 
-  private clearSearch(): void {
-
-    this.searchText    = ''
-    this.searchResults = []
-    this.hintMessage   = ''
-  }
-
+  // 加载中弹层内容
   @Builder
   buildLoadingDialog(msg?: ResourceStr | null): void {
 
     LoadingDialog({ content: msg ?? 'loading' })
   }
 
+  // 执行在线搜索；q 取自搜索框 trim 后文本
   private async runSearch(): Promise<void> {
 
     const q = this.searchText.trim()
@@ -227,17 +264,18 @@ export struct EWordSearchAddView {
       return
     }
 
+    // 调用：检查网络
     if (!NetWorkTool.checkInternetConnection(true)) {
       return
     }
 
+    // 调用：会员在线词典可用性
     if (!MemberManager.shared.checkOnlineDictUsable(true, true)) {
       return
     }
 
     DailyCountManager.shared.increase(DailyCountType.onlineDict)
 
-    this.isSearching     = true
     this.hintMessage     = ''
     this.searchResults   = []
 
@@ -245,11 +283,12 @@ export struct EWordSearchAddView {
       this.buildLoadingDialog($r('app.string.online_search_loading'))
     }, false)
 
+    // 调用：在线搜索
     OnlineWordManager.shared.searchWords(q, 0, (success: boolean, msg: string | null, words: OnlineWord[] | null) => {
 
       Toast.closeCustomDialog()
-      this.isSearching = false
 
+      // 分支：有结果时填充列表
       if (success && words !== null && words.length > 0) {
         this.searchResults = words.map((v: OnlineWord) => v.asWordDetail())
       } else {
@@ -258,6 +297,7 @@ export struct EWordSearchAddView {
     })
   }
 
+  // 按英文标题拉详情并打开 Part/Unit 选择；titleEn 为词条英文
   private async addWord(titleEn: string): Promise<void> {
 
     if (titleEn.length < 1) {
@@ -266,6 +306,7 @@ export struct EWordSearchAddView {
 
     const book = BookManager.shared.currentBook
 
+    // 分支：未选自建本则不提交
     if (book === null || !book.isEBook || book.textDb === null) {
       Toast.showMessage(getString($r('app.string.ebook_msg_select_ebook_first')))
       return
@@ -273,6 +314,7 @@ export struct EWordSearchAddView {
 
     this.addingTitleEn = titleEn
 
+    // 调用：拉取词条详情后进入 Part/Unit 选择
     OnlineWordManager.shared.loadWord(titleEn, async (success: boolean, msg: string | null, ow: OnlineWord | null) => {
 
       this.addingTitleEn = ''
@@ -284,7 +326,6 @@ export struct EWordSearchAddView {
 
       const detail = ow.asWordDetail()
 
-      // 调用：进入 Part/Unit 选择页，由该页完成覆盖确认与写库
       PartUnitPickerViewConfig.open({
         detail : detail,
         bookId : book.bookId ?? 0
