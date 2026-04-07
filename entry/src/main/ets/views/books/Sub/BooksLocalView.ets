@@ -492,7 +492,8 @@ export struct BooksLocalView {
                 }
                   .margin({ left: 16, right: 16, top: 8, bottom: 8 })
               }
-                .gesture(
+                // parallelGesture：长按与行内 Button 点击并行识别，避免 .gesture 独占导致图标无响应
+                .parallelGesture(
                   LongPressGesture()
                     .onAction(() => {
 
@@ -537,7 +538,7 @@ export struct BooksLocalView {
                 }
                   .margin({ left: 16, right: 16, top: 8, bottom: 8 })
               }
-                .gesture(
+                .parallelGesture(
                   LongPressGesture()
                     .onAction(() => {
 
@@ -689,7 +690,6 @@ export struct BooksLocalView {
                 }
               })
           }
-            .hitTestBehavior(HitTestMode.Block)
         }
           .width('100%')
       }
