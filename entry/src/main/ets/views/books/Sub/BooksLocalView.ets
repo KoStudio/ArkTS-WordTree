@@ -16,10 +16,10 @@ import { SearchManager } from '../../../models/datas/model/SearchManager'
 import { WordUserDbAccess } from '../../../models/datas/myData/WordUserDbAccess'
 import { MemberManager } from '../../../models/managers/member/MemberManager'
 import { UserManager } from '../../../models/managers/user/UserManager'
-import { TextButton } from '../../../app/views/buttons/TextButton'
-import { EBookImportView } from '../../ebook/EBookImportView'
-import { MyBackedUpEBooksView } from '../../ebook/MyBackedUpEBooksView'
 import { EWordSearchAddView } from '../../ebook/EWordSearchAddView'
+import { MyBackedUpEBooksView } from '../../ebook/MyBackedUpEBooksView'
+import { EBookImportView } from '../../ebook/EBookImportView'
+import { TextButton } from '../../../app/views/buttons/TextButton'
 
 // 统一管理 BooksLocalView 中单一 bindSheet 的内容类型，避免多个 bindSheet 同层互相抢占。
 enum EBookSheetType {
@@ -517,8 +517,8 @@ export struct BooksLocalView {
         return
       }
 
-      // 调用：弹出系统分享
-      ShareUtils.shareFile(exportPath, book.bookName ?? '词汇本', '')
+      // 调用：系统分享按 UTD 筛选目标应用；.wte 实为 zip，用 general.zip-archive 更易出现微信/QQ 等
+      ShareUtils.shareFile(exportPath, book.bookName ?? '词汇本', '', 'general.zip-archive')
     })
   }
 

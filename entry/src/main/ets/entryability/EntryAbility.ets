@@ -60,7 +60,11 @@ export default class EntryAbility extends UIAbility {
 
   onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     ///配置微信登录回调
-    // import('../models/managers/sns/wx/WxLoginManager').then((it)=>{it.WXLoginManager.shared.handleWeChatCallIfNeed(want)})
+
+    import('../models/managers/sns/wx/WxLoginManager').then((it) => {
+
+      it.WXLoginManager.shared.handleWeChatCallIfNeed(want)
+    })
 
     // 热启动/后台被再次唤起：例如已打开单词树时从微信「其他应用打开」.wte，Want 由此入口进入
     import('../models/managers/ebook/EBookExportImportManager').then((m) => {
@@ -201,13 +205,15 @@ export default class EntryAbility extends UIAbility {
     ////////////////////////////////////////////////////////////
 
     ///配置微信登录回调
-    // import('../models/managers/sns/wx/WxLoginManager').then((it)=>{
-    //   // 尽早初始化微信SDK
-    //   it.WXLoginManager.shared.registerApp();
-    //
-    //   //处理回调
-    //   it.WXLoginManager.shared.handleWeChatCallIfNeed(want)}
-    // )
+
+    import('../models/managers/sns/wx/WxLoginManager').then((it) => {
+
+      // 尽早初始化微信 SDK
+      it.WXLoginManager.shared.registerApp()
+
+      // 处理回调
+      it.WXLoginManager.shared.handleWeChatCallIfNeed(want)
+    })
   }
 
 

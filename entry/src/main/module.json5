@@ -220,10 +220,10 @@
       }
     ],
     "querySchemes": [
-//      "weixin",     //微信登录
-//      "wxopensdk",  //微信登录
-      "https",      //QQ登录
-      "qqopenapi"   //QQ登录
+      "weixin",                                      // 微信（登录 / 系统分享目标可见性需声明）
+      "wxopensdk",                                   // 微信 SDK
+      "https",                                       // QQ 登录、通用链接
+      "qqopenapi"                                    // QQ 互联
     ]
   }
 }
