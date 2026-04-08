@@ -15,6 +15,8 @@ import call from "@ohos.telephony.call";
 import { Toast } from "../../../common/utils/Toast";
 import { SpeechRecordManager } from "../../../common/components/Speech/Recorder/SpeechRecordManager";
 import { getAppContext } from "../../../app/constants/AppContext";
+import { SimpleEventBus } from "../../../common/components/eventbus/SimpleEventBus";
+import { BookManagerNotification } from "../book/BookManager";
 
 // MARK: - 常量定义（类似Swift的static let或Kotlin的const val）
 export class SearchConstants {
@@ -62,9 +64,9 @@ export class SearchManager {
   }
 
   // MARK: - 私有属性
-  private parts: Part[] = [];
-  private units: Unit[] = [];
-  private allWords: WordUser[] = [];
+  private parts                     : Part[]                    = [];
+  private units                     : Unit[]                    = [];
+  private allWords                  : WordUser[]                = [];
 
   private allCnTexts: Record<string, string>[] = []
 
@@ -74,8 +76,29 @@ export class SearchManager {
   }
 
   // MARK: - 初始化方法
+  // 初始化：注册与 iOS SearchManager 一致的书本事件监听，并首次加载缓存数据。
+  // SearchManager 为全局单例常驻，不维护 on(...) 的解绑句柄。
   private initialize(): void {
-    this.loadWords();
+
+    // 调用：监听书本切换（bookChanged）后重建缓存
+    SimpleEventBus.on(BookManagerNotification.bookChanged, () => {
+      void this.refreshData()
+    })
+
+    // 调用：监听当前书更新（currentBookUpdated）后重建缓存
+    SimpleEventBus.on(BookManagerNotification.currentBookUpdated, () => {
+      void this.refreshData()
+    })
+
+    // 调用：监听书单更新（bookListUpdated）后重建缓存
+    SimpleEventBus.on(BookManagerNotification.bookListUpdated, () => {
+      void this.refreshData()
+    })
+
+    // 调用：首次加载数据缓存
+    void this.loadWords();
+
+    // 调用：输出初始化日志
     DebugLog.d('SearchManager: 初始化完成');
   }
 

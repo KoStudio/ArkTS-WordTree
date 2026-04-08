@@ -969,7 +969,7 @@
     { "name": "eword_field_titlecn2"                        , "value": "单词释义2" },
     { "name": "eword_field_titlecn3"                        , "value": "单词释义3" },
     { "name": "eword_field_wordchange"                      , "value": "单词变形" },
-    { "name": "eword_field_synwords"                        , "value": "近义词" },
+    { "name": "eword_field_synwords"                        , "value": "同义词" },
     { "name": "eword_field_asynwords"                       , "value": "反义词" },
     { "name": "eword_field_exampleen1"                      , "value": "例句1(英)" },
     { "name": "eword_field_examplecn1"                      , "value": "例句1(中)" },
