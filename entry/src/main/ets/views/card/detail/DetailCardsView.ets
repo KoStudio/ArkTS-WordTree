@@ -235,6 +235,13 @@ export struct DetailCardsView {
         showClose       : false,
         onDisappear     : () => {
           this.isShowEBookSelectSheet = false
+          this.wordDetailForEBookSelect = null
+
+          const w = this.words[this.pageIndex]
+
+          w.clearWordDetailCache()
+
+          this.shareMemoUiTick++
         }
       })
     }
@@ -524,17 +531,9 @@ export struct DetailCardsView {
 
       EBookSelectView({
         originalDetail : this.wordDetailForEBookSelect as WordDetail,
-        closeBySheet     : true,
         onDismiss        : () => {
 
           this.isShowEBookSelectSheet = false
-          this.wordDetailForEBookSelect = null
-
-          const w = this.words[this.pageIndex]
-
-          w.clearWordDetailCache()
-
-          this.shareMemoUiTick++
         }
       })
     }

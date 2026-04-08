@@ -361,10 +361,14 @@ export struct EWordSearchAddView {
       })
     } else {
       PartUnitPickerView({
-        detail: this.sheetDetail,
-        bookId: this.sheetBookId,
-        closeBySheet: true,
-        onDismiss: () => {
+        detail       : this.sheetDetail,
+        bookId       : this.sheetBookId,
+        closeBySheet : true,
+        onDismiss    : () => {
+          this.isShowSubSheet = false
+          this.subSheetType = EWordSearchSubSheetType.None
+        },
+        onAddSucceed : () => {
           this.isShowSubSheet = false
           this.subSheetType = EWordSearchSubSheetType.None
         }

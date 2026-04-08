@@ -410,8 +410,11 @@ export struct PartUnitPickerView {
     void SearchManager.shared.refreshData()
     SimpleEventBus.emit(BookManagerNotification.currentBookUpdated)
     SimpleEventBus.emit(BookManagerNotification.bookListUpdated)
-    this.onAddSucceed()
-    this.closeSelf()
+
+    // 成功路径不调用 `closeSelf()`：嵌套 `bindSheet` 下先子 `closeSelf` 再 `@Event` 易导致外层只剩纯色底。由父在 `onAddSucceed` 关内层状态并关外层；`await` 后下一任务再派发，避免事件未触达父组件
+    setTimeout(() => {
+      this.onAddSucceed()
+    }, 0)
   }
 
   private closeSelf(): void {

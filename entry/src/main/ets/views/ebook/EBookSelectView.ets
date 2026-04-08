@@ -18,15 +18,13 @@ import { SearchManager } from '../../models/datas/model/SearchManager'
 import { WordDetail } from '../../models/datas/word/WordDetail'
 import { EBookManager } from '../../models/managers/ebook/EBookManager'
 import { MemberManager } from '../../models/managers/member/MemberManager'
-import { NavPop } from '../../pages/NavPathManager'
 import { PartUnitPickerView } from './PartUnitPickerView'
 
 @ComponentV2
 export struct EBookSelectView {
 
   @Param @Require originalDetail      : WordDetail                // 来源词条
-  @Param closeBySheet                 : boolean                   = true       // true：取消走 onDismiss（Sheet）；false：NavPop
-  @Event onDismiss                    : () => void                = () => {}   // 关闭整页（Sheet 或导航）
+  @Event onDismiss                    : () => void                = () => {}   // 关闭 bindSheet（由 DetailCardsView 等传入）
   @Local private eBooks               : Book[]                    = []         // 可选 EBook 列表
   @Local private isShowPartUnitSheet  : boolean                   = false      // Part/Unit sheet 显示开关
   @Local private sheetBookId          : number                    = 0          // sheet 目标书 id
@@ -145,14 +143,10 @@ export struct EBookSelectView {
       })
   }
 
-  // Sheet 关闭或导航返回
+  // 关闭当前 bindSheet（仅 `onDismiss`，不使用导航栈 NavPop）
   private closeSelf(): void {
 
-    if (this.closeBySheet) {
-      this.onDismiss()
-    } else {
-      NavPop()
-    }
+    this.onDismiss()
   }
 
   @Builder
@@ -344,7 +338,9 @@ export struct EBookSelectView {
       },
       onAddSucceed  : () => {
 
-        // 与 iOS 保存成功后 dismiss 整页一致：关闭外层「保存到」Sheet
+        // 与 iOS `onSaved`：一次关掉 Part/Unit 与「保存到」；由父状态关内层 bindSheet，再关 DetailCards 外层，避免嵌套 Sheet 子先 dismiss 导致 Event 失效、只剩纯色底
+        this.isShowPartUnitSheet = false
+        this.selectedBookId = null
         this.closeSelf()
       }
     })
