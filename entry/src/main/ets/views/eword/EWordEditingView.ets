@@ -6,12 +6,14 @@
 //
 
 import { NavBarView, NavButtonItem } from '../../app/views/NavBarView'
+import { CSoundHelper } from '../../common/components/Sounds/Cloud/Manager/CSoundHelper'
 import { SimpleEventBus } from '../../common/components/eventbus/SimpleEventBus'
 import { BookManager, BookManagerNotification } from '../../models/datas/book/BookManager'
 import { WordDbAccess } from '../../models/datas/word/WordDbAccess'
 import { EBookManager } from '../../models/managers/ebook/EBookManager'
 import { EWordEditManager, EWordEditableField } from '../../models/managers/eword/EWordEditManager'
 import { EWordManager } from '../../models/managers/eword/EWordManager'
+import { MemberManager } from '../../models/managers/member/MemberManager'
 
 @ComponentV2
 export struct EWordEditingView {
@@ -118,9 +120,14 @@ export struct EWordEditingView {
    * @returns Promise<void>
    */
   async saveAndComplete(): Promise<void> {
-    const fk     = EWordEditManager.fieldKey(this.field)
-    const book   = BookManager.shared.currentBook
-    const textDb = book?.textDb ?? ''
+    const fieldKey = EWordEditManager.fieldKey(this.field)
+    const book     = BookManager.shared.currentBook
+    const textDb   = book?.textDb ?? ''
+    const isExampleField =
+      this.field === EWordEditableField.exampleEn1 ||
+      this.field === EWordEditableField.exampleEn2 ||
+      this.field === EWordEditableField.exampleEn3
+    let succeed = false
 
     const canWriteWordTable =
       !this.isOnlineWord &&
@@ -134,10 +141,26 @@ export struct EWordEditingView {
       // 调用：EBook 字段写回 textDb Word 表
       const path = EBookManager.textDbPath(textDb)
 
-      await WordDbAccess.updateWordField(path, this.titleEn, fk, this.editText)
+      // 调用：按 iOS saveAndComplete 逻辑，将可写字段直接写回 EBook Word 表。
+      succeed = await WordDbAccess.updateWordField(path, this.titleEn, fieldKey, this.editText)
     } else {
-      // 调用：写入 learnDb EWordOverride
-      await EWordManager.shared.saveOverride(this.titleEn, fk, this.editText)
+      // 调用：按 iOS saveAndComplete 逻辑，将不可直写 Word 表的字段保存到 EWordOverride。
+      succeed = await EWordManager.shared.saveOverride(this.titleEn, fieldKey, this.editText)
+    }
+
+    // 若保存失败，则不继续触发刷新与关闭，避免 UI 误判为保存成功。
+    if (!succeed) {
+      return
+    }
+
+    // 若修改的是例句英文，则与 iOS 一样在保存成功后触发云发音下载/生成。
+    if (
+      isExampleField &&
+      MemberManager.shared.checkExamplePronUsable(false, false) &&
+      this.editText.length > 0
+    ) {
+      // 调用：优先尝试下载缓存，若缓存不存在则继续走云端生成。
+      void CSoundHelper.startDownloadOrGenerateSound(this.editText)
     }
 
     // 调用：通知详情页刷新（对齐 iOS currentBookUpdated）
@@ -151,10 +174,15 @@ export struct EWordEditingView {
    * @returns Promise<void>
    */
   async restoreAndComplete(): Promise<void> {
-    const fk = EWordEditManager.fieldKey(this.field)
+    const fieldKey = EWordEditManager.fieldKey(this.field)
 
-    // 调用：删除单字段覆盖
-    await EWordManager.shared.deleteOverride(this.titleEn, fk)
+    // 调用：删除单字段覆盖（与 iOS restoreAndComplete 一致）。
+    const succeed = await EWordManager.shared.deleteOverride(this.titleEn, fieldKey)
+
+    // 若删除覆盖失败，则不继续触发刷新与关闭，避免 UI 误判为恢复成功。
+    if (!succeed) {
+      return
+    }
 
     // 调用：通知详情页刷新（对齐 iOS currentBookUpdated）
     SimpleEventBus.emit(BookManagerNotification.currentBookUpdated)

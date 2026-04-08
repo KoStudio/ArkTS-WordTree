@@ -129,7 +129,11 @@ export struct EWordItemPickerView {
           this.showEditing = false
           this.selectedField = null
 
+          // 调用：刷新该词覆盖 map，确保列表中的“已修改”状态立即与 iOS 一致。
           void this.refreshOverrides()
+
+          // 调用：刷新 root / cognates 的 fallback 文案，确保再次进入编辑页时初始值为最新展示值。
+          void this.refreshFallbackTexts()
         }
       })
   }

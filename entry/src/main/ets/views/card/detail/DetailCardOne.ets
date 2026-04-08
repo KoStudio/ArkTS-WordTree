@@ -323,8 +323,8 @@ export struct DetailCardOne {
   // 构建发音显示行
   @Builder
   buildPronunciationRow() {
-    // 与 EWord「音标(item8/pronUs)」保持一致：优先展示已合并覆盖后的详情值
-    Text(`${this.wordDetail?.pronUs ?? this.word.pronUs ?? this.word.pronEn ?? ''}`)
+    // 与 iOS 一致：发音仅展示详情中的 pronUs（不做 word 层回退）
+    Text(`${this.wordDetail?.pronUs ?? ''}`)
       .width('100%')
       .fontSize(this.styleItem.wordPron.fontSize)//(18)
       .fontColor($r('app.color.color_card_detail'))
@@ -830,41 +830,17 @@ export struct DetailCardOne {
           break;
 
         case DetailItem.Cigens        :// 词根助记
-          // 与 iOS 一致：若存在 EWord 覆盖（root）则优先显示覆盖；否则回退到 Cigen 词根库拼装结果。
-          if ((word.root?.length ?? 0) > 0) {
-            cells.push({
-              type    : SubCellType.text,
-              section : getString($r('app.string.learn_detail_txt_mnemonic')),
-              subTitle: word.root
-            })
-          } else if (this.cigenWords) {
+          if (this.cigenWords) {
             for (const cigenWord of this.cigenWords) {
-              cells.push({
-                type      : SubCellType.text,
-                section   : getString($r('app.string.learn_detail_txt_mnemonic')),
-                subTitle  : cigenWord.mnemonic,
-                detail    : cigenWord.getDetail(),
-                hasMoreBtn: cigenWord.getDetail() !== null
-              })
+              cells.push({type: SubCellType.text, section: getString($r('app.string.learn_detail_txt_mnemonic')), subTitle: cigenWord.mnemonic, detail: cigenWord.getDetail(), hasMoreBtn: cigenWord.getDetail() !== null})
             }
           }
 
           break;
 
         case DetailItem.SameRootDesc  :// 同根词
-          // 与 iOS 一致：若存在 EWord 覆盖（cognates）则优先显示覆盖；否则回退到 sameRootDesc。
-          if ((word.cognates?.length ?? 0) > 0) {
-            cells.push({
-              type    : SubCellType.text,
-              section : getString($r('app.string.learn_detail_txt_samerootdesc')),
-              subTitle: word.cognates
-            })
-          } else if ((this.sameRootDesc?.length ?? 0) > 0) {
-            cells.push({
-              type    : SubCellType.text,
-              section : getString($r('app.string.learn_detail_txt_samerootdesc')),
-              subTitle: this.sameRootDesc
-            })
+          if ((this.sameRootDesc?.length  ?? 0) > 0) {
+            cells.push({type: SubCellType.text, section: getString($r('app.string.learn_detail_txt_samerootdesc')), subTitle: this.sameRootDesc})
           }
           break;
 
