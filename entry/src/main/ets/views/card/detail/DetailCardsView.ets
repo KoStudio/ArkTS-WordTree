@@ -41,7 +41,7 @@ import { DailyCountManager, DailyCountType } from "../../../models/managers/memb
 import { WordDetail } from "../../../models/datas/word/WordDetail"
 import { BookManager } from "../../../models/datas/book/BookManager"
 import { EWordItemPickerView } from "../../eword/EWordItemPickerView"
-import { EBookSelectViewConfig } from "../../ebook/EBookSelectView"
+import { EBookSelectView } from "../../ebook/EBookSelectView"
 
 export namespace DetailCardsViewConfig {
 
@@ -90,6 +90,8 @@ export struct DetailCardsView {
   @Local private isShowDetailSort      : boolean       = false     // 是否显示详细项目排序面板
   @Local private isShowEWordPickerSheet : boolean       = false     // 与 iOS editCurrentWord → EWordItemPicker 一致
   @Local private wordDetailForEWordPicker : WordDetail | null = null
+  @Local private isShowEBookSelectSheet    : boolean       = false
+  @Local private wordDetailForEBookSelect  : WordDetail | null = null
 
   @Local private isEnableContrast      : boolean       = false
 
@@ -224,6 +226,15 @@ export struct DetailCardsView {
         showClose       : false,
         onDisappear     : () => {
           this.isShowEWordPickerSheet = false
+        }
+      })
+      .bindSheet($$this.isShowEBookSelectSheet, this.buildEBookSelectSheet(), {
+        detents         : [SheetSize.LARGE],
+        preferType      : SheetType.CENTER,
+        backgroundColor : $r('app.color.colorPrimary'),
+        showClose       : false,
+        onDisappear     : () => {
+          this.isShowEBookSelectSheet = false
         }
       })
     }
@@ -489,7 +500,7 @@ export struct DetailCardsView {
     this.isShowEWordPickerSheet = true
   }
 
-  // 与 iOS：present EBookSelectView(originalDetail:)
+  // 与 iOS：present EBookSelectView(originalDetail:)，此处用 bindSheet 承载
   private async openEBookSelectForCurrentWord(): Promise<void> {
 
     const w = this.words[this.pageIndex]
@@ -502,7 +513,31 @@ export struct DetailCardsView {
       return
     }
 
-    EBookSelectViewConfig.open({ originalDetail: detail })
+    this.wordDetailForEBookSelect = detail
+    this.isShowEBookSelectSheet = true
+  }
+
+  @Builder
+  buildEBookSelectSheet() {
+
+    if (this.wordDetailForEBookSelect !== null) {
+
+      EBookSelectView({
+        originalDetail : this.wordDetailForEBookSelect as WordDetail,
+        closeBySheet     : true,
+        onDismiss        : () => {
+
+          this.isShowEBookSelectSheet = false
+          this.wordDetailForEBookSelect = null
+
+          const w = this.words[this.pageIndex]
+
+          w.clearWordDetailCache()
+
+          this.shareMemoUiTick++
+        }
+      })
+    }
   }
 
   // 构建 EWord 编辑 Sheet（与 DetailCardOne / iOS UIHostingController 一致）

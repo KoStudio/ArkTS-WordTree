@@ -17,6 +17,7 @@
     {"name": "color_text2"                       , "value": "#555555"     },
     {"name": "color_title"                       , "value": "#373737"     },
     {"name": "color_line"                        , "value": "#E1E1E1"     },
+    {"name": "color_list_row_separator"        , "value": "#EBEBEB"     },
     {"name": "color_ripple"                      , "value": "#585858"     },
     {"name": "color_text_marked"                 , "value": "#E14374"     },
     {"name": "color_text_touched"                , "value": "#E9967A"     },

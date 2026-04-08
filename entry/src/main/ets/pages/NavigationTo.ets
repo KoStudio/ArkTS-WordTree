@@ -41,9 +41,6 @@ import { OnlineSearchWordsView, OnlineSearchWordsViewConfig } from '../views/onl
 import { MyBackedUpEBooksView } from '../views/ebook/MyBackedUpEBooksView';
 import { EWordSearchAddView } from '../views/ebook/EWordSearchAddView';
 import { EBookImportView } from '../views/ebook/EBookImportView';
-import { CreateEBookView, CreateEBookViewConfig } from '../views/ebook/CreateEBookView';
-import { EBookSelectView, EBookSelectViewConfig } from '../views/ebook/EBookSelectView';
-import { PartUnitPickerView } from '../views/ebook/PartUnitPickerView';
 import { ManualAddWordView } from '../views/ebook/ManualAddWordView';
 import { EBookHelpView } from '../views/ebook/EBookHelpView';
 import { MyMemosView, MyMemosViewConfig } from '../views/setting/mine/MyMemosView';
@@ -95,8 +92,6 @@ export function navigationTo<T>(name: string, param: T){
   }else if (name === MyRecordsViewConfig.NavKey)          { MyRecordsView()
   }else if (name === AboutViewConfig.NavKey)              { AboutView()
   }else if (name === OnlineSearchWordsViewConfig.NavKey)  { OnlineSearchWordsView()
-  }else if (name === CreateEBookViewConfig.NavKey)         { CreateEBookView()
-  }else if (name === EBookSelectViewConfig.NavKey)         { EBookSelectView({originalDetail: (param as EBookSelectViewConfig.Param).originalDetail})
   }else if (name === InstructionsViewConfig.NavKey)       { InstructionsView()
   }else{ NavDestination(){Text(`<Index.ets>未配置navigationTo: ${name}`)}
   }
