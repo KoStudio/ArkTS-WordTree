@@ -21,7 +21,7 @@ import { SimpleEventBus } from '../../../common/components/eventbus/SimpleEventB
 import { DetailStyle, StyleItem } from '../detailstyle/DetailStyle';
 import { CigenWordsViewConfig } from '../cigen/CigenWordsView';
 import { ReclaimWordViewConfig } from '../../reclaimword/ReclaimWordView';
-import { EWordItemPickerViewConfig } from '../../eword/EWordItemPickerView';
+import { EWordItemPickerView } from '../../eword/EWordItemPickerView';
 import { BookManager, BookManagerNotification } from '../../../models/datas/book/BookManager';
 
 
@@ -54,6 +54,8 @@ export struct DetailCardOne {
   // @Local subCells        : SubCell[]       = []
 
   @Local sectionedCells : SectionDatas<string, SubCell> = new SectionDatas()
+
+  @Local isShowEWordPickerSheet : boolean = false
 
   private unsubItemOrder   : (() => void) | undefined = undefined  // 详情块显示顺序变更
   private unsubBookUpdated : (() => void) | undefined = undefined  // 当前课本/EWord 等数据变更
@@ -145,6 +147,15 @@ export struct DetailCardOne {
     }
     .width('100%')
     .height('100%')
+    .bindSheet($$this.isShowEWordPickerSheet, this.buildEWordItemPickerSheet(), {
+      detents: [SheetSize.LARGE],
+      preferType: SheetType.CENTER,
+      backgroundColor: $r('app.color.colorPrimary'),
+      showClose: false,
+      onDisappear: () => {
+        this.isShowEWordPickerSheet = false
+      }
+    })
 
   }
 
@@ -467,6 +478,40 @@ export struct DetailCardOne {
     .margin({ top: 5, left: 5, right: 5 })
   }
 
+  // 打开 EWord 字段选择 Sheet（按用户要求：使用 bindSheet，而非 NavPath 跳转）
+  async openEWordItemPickerSheet(): Promise<void> {
+
+    if (this.wordDetail === null) {
+      this.word.clearWordDetailCache()
+      this.wordDetail = await this.word.getWordDetail()
+    }
+
+    if (this.wordDetail === null) {
+      return
+    }
+
+    this.isShowEWordPickerSheet = true
+  }
+
+  // 构建 EWord 字段选择 Sheet 内容（与 iOS present sheet 行为一致）
+  @Builder
+  buildEWordItemPickerSheet() {
+
+    if (this.wordDetail !== null) {
+      EWordItemPickerView({
+        originalDetail : this.wordDetail as WordDetail,
+        isEBook        : BookManager.shared.currentBook?.isEBook === true,
+        isOnlineWord   : this.word.isOnlineWord,
+        onDismiss      : () => {
+          this.isShowEWordPickerSheet = false
+          this.word.clearWordDetailCache()
+
+          void this.loadData()
+        }
+      })
+    }
+  }
+
   // 纠错行：EWord「编辑」+ 纠错入口（与 iOS Detail 行为一致）
   @Builder buildReclaimPanel(){
     Row(){
@@ -480,12 +525,8 @@ export struct DetailCardOne {
       .backgroundColor(Color.Transparent)
       .margin({ right: 16 })
       .onClick(()=> {
-        // 跳转到 EWord 字段选择页（NavPath 由 NavigationTo 注册）
-        EWordItemPickerViewConfig.open({
-          titleEn      : this.word.titleEn || '',
-          isEBook      : BookManager.shared.currentBook?.isEBook === true,
-          isOnlineWord : this.word.isOnlineWord
-        })
+        // 打开 EWord 选择页（按用户要求：使用 bindSheet，而非 NavPath 跳转）
+        this.openEWordItemPickerSheet()
       })
 
       Button(){

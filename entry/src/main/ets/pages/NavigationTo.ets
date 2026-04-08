@@ -49,8 +49,6 @@ import { EBookHelpView } from '../views/ebook/EBookHelpView';
 import { MyMemosView, MyMemosViewConfig } from '../views/setting/mine/MyMemosView';
 import { MyRecordsView, MyRecordsViewConfig } from '../views/setting/mine/MyRecordsView';
 import { ReclaimWordView, ReclaimWordViewConfig } from '../views/reclaimword/ReclaimWordView';
-// 详情「编辑」：EWord 字段选择（与 iOS EWordItemPickerView 对应）
-import { EWordItemPickerView, EWordItemPickerViewConfig } from '../views/eword/EWordItemPickerView';
 import { InstructionsView, InstructionsViewConfig } from '../views/setting/instruction/InstructionsView';
 
 
@@ -90,12 +88,6 @@ export function navigationTo<T>(name: string, param: T){
   }else if (name === QuizResultViewConfig.NavKey)         { QuizResultView()
   }else if (name === AdviceViewConfig.NavKey)             { AdviceView()
   }else if (name === ReclaimWordViewConfig.NavKey)        { ReclaimWordView({titleEn: (param as ReclaimWordViewConfig.Param).titleEn})
-  // EWord：字段列表 + 单字段编辑（sheet 内由 EWordItemPickerView 承载）
-  }else if (name === EWordItemPickerViewConfig.NavKey)    { EWordItemPickerView({
-    titleEn      : (param as EWordItemPickerViewConfig.Param).titleEn,
-    isEBook      : (param as EWordItemPickerViewConfig.Param).isEBook,
-    isOnlineWord : (param as EWordItemPickerViewConfig.Param).isOnlineWord
-  })
   }else if (name === ReclaimViewConfig.NavKey)            { ReclaimView()
   }else if (name === LogOffViewConfig.NavKey)             { LogOffView()
   }else if (name === SetViewConfig.NavKey)                { SetView()

@@ -2,54 +2,56 @@
 //  EWordEditingView.ets
 //  WordTree
 //
-//  编辑单个 EWord 字段（与 iOS `EWordEditingView.swift` 行为一致：保存写 EBook Word 表或 learnDb EWordOverride）。
+//  编辑单个字段：保存写 EBook Word 表或 learnDb EWordOverride；CBook/在线词可「恢复」。
 //
 
 import { SimpleEventBus } from '../../common/components/eventbus/SimpleEventBus'
 import { BookManager, BookManagerNotification } from '../../models/datas/book/BookManager'
+import { WordDbAccess } from '../../models/datas/word/WordDbAccess'
 import { EBookManager } from '../../models/managers/ebook/EBookManager'
 import { EWordEditManager, EWordEditableField } from '../../models/managers/eword/EWordEditManager'
 import { EWordManager } from '../../models/managers/eword/EWordManager'
-import { WordDbAccess } from '../../models/datas/word/WordDbAccess'
 
 @ComponentV2
 export struct EWordEditingView {
 
   @Param titleEn      : string              = ''
   @Param field        : EWordEditableField  = EWordEditableField.pronUs
-  @Param initialText  : string              = ''
+  @Param currentValue : string              = ''
   @Param isEBook      : boolean             = false
   @Param isOnlineWord : boolean             = false
-  @Event onCancel     : () => void          = () => {}
   @Event onComplete   : () => void          = () => {}
+  @Event onCancel     : () => void          = () => {}
 
-  @Local editText                    : string  = ''     // 编辑中的文本
-  @Local hasOverrideForCurrentField   : boolean = false  // 当前字段是否已有 Override（决定是否显示「恢复」）
+  @Local editText                   : string  = ''     // 编辑区文本（与 iOS currentValue 对齐）
+  @Local hasOverrideForCurrentField : boolean = false  // 当前字段是否已有覆盖（决定恢复按钮显隐）
 
-  // 在线词或 CBook，且该字段已有 Override 时显示「恢复」
+  // 仅在可恢复且当前字段已有覆盖时展示「恢复」
   get canShowRestore(): boolean {
     return (this.isOnlineWord || !this.isEBook) && this.hasOverrideForCurrentField
   }
 
-  // 进入 sheet：同步初始文本并查询是否已有覆盖
+  // 页面出现：同步编辑初始值并检查覆盖状态
   aboutToAppear(): void {
-    this.editText = this.initialText
+    this.editText = this.currentValue
 
-    void this.refreshHasOverride()
+    void this.refreshHasOverrideForCurrentField()
   }
 
-  // 读取当前字段在 EWordOverride 中是否已有覆盖（控制「恢复」按钮）
-  async refreshHasOverride(): Promise<void> {
-    const m   = await EWordManager.shared.loadOverrides(this.titleEn)
-    const fk  = EWordEditManager.fieldKey(this.field)
-    const val = m[fk]
+  // 读取当前字段覆盖状态
+  async refreshHasOverrideForCurrentField(): Promise<void> {
+    const fk = EWordEditManager.fieldKey(this.field)
 
-    this.hasOverrideForCurrentField = val !== undefined && val !== null
+    // 调用：读取该词的全部覆盖 map
+    const map = await EWordManager.shared.loadOverrides(this.titleEn)
+
+    this.hasOverrideForCurrentField = map[fk] !== undefined
   }
 
   build() {
     Column({ space: 16 }) {
 
+      // 顶栏：取消 / 恢复 / 保存（配色对齐 iOS 导航栏）
       Row() {
         Button() {
           Text($r('app.string.online_search_btn_cancel'))
@@ -63,7 +65,6 @@ export struct EWordEditingView {
 
         Blank().layoutWeight(1)
 
-        // 仅可恢复场景展示「恢复」按钮
         if (this.canShowRestore) {
           Button() {
             Text($r('app.string.eword_restore'))
@@ -87,7 +88,17 @@ export struct EWordEditingView {
           })
       }
         .width('100%')
-        .padding({ left: 8, right: 8, top: 8 })
+        .padding({ left: 8, right: 8, top: 8, bottom: 8 })
+        .backgroundColor($r('app.color.colorPrimary'))
+
+      Text(this.titleEn)
+        .fontSize(18)
+        .fontWeight(FontWeight.Medium)
+        .fontColor($r('app.color.color_white'))
+        .width('100%')
+        .textAlign(TextAlign.Center)
+        .padding({ left: 16, right: 16, bottom: 8 })
+        .backgroundColor($r('app.color.colorPrimary'))
 
       Text(EWordEditManager.displayName(this.field))
         .fontSize(14)
@@ -96,13 +107,14 @@ export struct EWordEditingView {
         .padding({ left: 16, right: 16 })
 
       TextArea({ text: this.editText })
-        .height(200)
+        .height(220)
         .margin({ left: 16, right: 16 })
         .padding(12)
         .backgroundColor($r('app.color.color_obscure'))
         .borderRadius(8)
         .border({ width: 1, color: $r('app.color.colorPrimary') })
-        // onChange：将输入同步到状态，供保存时使用
+        .fontColor($r('app.color.color_text'))
+        // 调用：同步输入内容，保存时直接使用
         .onChange((v: string) => {
           this.editText = v
         })
@@ -115,39 +127,50 @@ export struct EWordEditingView {
       .backgroundColor($r('app.color.color_background'))
   }
 
-  // 保存当前编辑内容并结束（写 EBook Word 表或 learnDb Override，并广播 currentBookUpdated）
+  /**
+   * 保存：在线词一律写 EWordOverride；EBook 且字段在 Word 表时写 textDb。
+   * @returns Promise<void>
+   */
   async saveAndComplete(): Promise<void> {
-    const fk   = EWordEditManager.fieldKey(this.field)
-    const book = BookManager.shared.currentBook
-    const td   = book?.textDb ?? ''
-    const canWriteEbook =
+    const fk     = EWordEditManager.fieldKey(this.field)
+    const book   = BookManager.shared.currentBook
+    const textDb = book?.textDb ?? ''
+
+    const canWriteWordTable =
       !this.isOnlineWord &&
       this.isEBook &&
       EWordEditManager.existsInWordTable(this.field) &&
       book !== null &&
       book.isEBook === true &&
-      td.length > 0
+      textDb.length > 0
 
-    // EBook 内词且字段属于 Word 表：写 textDb；否则写 learnDb Override
-    if (canWriteEbook) {
-      const path = EBookManager.textDbPath(td)
+    if (canWriteWordTable) {
+      // 调用：EBook 字段写回 textDb Word 表
+      const path = EBookManager.textDbPath(textDb)
 
       await WordDbAccess.updateWordField(path, this.titleEn, fk, this.editText)
     } else {
+      // 调用：写入 learnDb EWordOverride
       await EWordManager.shared.saveOverride(this.titleEn, fk, this.editText)
     }
 
+    // 调用：通知详情页刷新（对齐 iOS currentBookUpdated）
     SimpleEventBus.emit(BookManagerNotification.currentBookUpdated)
 
     this.onComplete()
   }
 
-  // 删除当前字段的 Override 并结束（与 iOS restore 一致）
+  /**
+   * 恢复：删除当前字段覆盖并退出。
+   * @returns Promise<void>
+   */
   async restoreAndComplete(): Promise<void> {
     const fk = EWordEditManager.fieldKey(this.field)
 
+    // 调用：删除单字段覆盖
     await EWordManager.shared.deleteOverride(this.titleEn, fk)
 
+    // 调用：通知详情页刷新（对齐 iOS currentBookUpdated）
     SimpleEventBus.emit(BookManagerNotification.currentBookUpdated)
 
     this.onComplete()
