@@ -5,7 +5,6 @@
 
 import { common } from '@kit.AbilityKit'
 import { picker } from '@kit.CoreFileKit'
-import { NavPop } from '../../pages/NavPathManager'
 import { EBookExportImportManager } from '../../models/managers/ebook/EBookExportImportManager'
 import { Book } from '../../models/datas/book/Book'
 import { Toast } from '../../common/utils/Toast'
@@ -17,7 +16,6 @@ import { NavBarView } from '../../app/views/NavBarView'
 @ComponentV2
 export struct EBookImportView {
 
-  @Param closeBySheet       : boolean   = false          // 是否由 sheet 承载
   @Event onDismiss          : () => void = () => {}      // 关闭回调
   @Local busy               : boolean   = false          // 导入执行中
   @Local pickedUri          : string    = ''             // 文档选择器返回的 URI（须用 fileIo 打开；不可当本地 path 直接 fs.access）
@@ -35,7 +33,7 @@ export struct EBookImportView {
           leftButtons: [{
             text: $r('app.string.online_search_btn_cancel'),
             onClick: () => {
-              this.closeSelf()
+              this.onDismiss()
             }
           }],
           rightButtons: [{
@@ -286,22 +284,13 @@ export struct EBookImportView {
             Toast.showMessage(getStringF($r('app.string.ebook_import_success_fmt'), display))
           }
 
-          this.closeSelf()
+          this.onDismiss()
         })
     } catch (e) {
 
       FileUtility.deleteFileAt(tempPath)
       this.busy = false
       this.message = `${e}`
-    }
-  }
-
-  private closeSelf(): void {
-    // 分支：Sheet 模式回调关闭；导航模式执行 NavPop
-    if (this.closeBySheet) {
-      this.onDismiss()
-    } else {
-      NavPop()
     }
   }
 }

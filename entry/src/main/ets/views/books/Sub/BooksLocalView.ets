@@ -475,7 +475,6 @@ export struct BooksLocalView {
   private buildEBookSheet() {
     if (this.eBookSheetType === EBookSheetType.Import) {
       EBookImportView({
-        closeBySheet: true,
         onDismiss: () => {
           this.isShowEBookSheet = false
           this.eBookSheetType = EBookSheetType.None
@@ -483,7 +482,6 @@ export struct BooksLocalView {
       })
     } else if (this.eBookSheetType === EBookSheetType.MyBackedUp) {
       MyBackedUpEBooksView({
-        closeBySheet: true,
         onDismiss: () => {
           this.isShowEBookSheet = false
           this.eBookSheetType = EBookSheetType.None
@@ -491,7 +489,6 @@ export struct BooksLocalView {
       })
     } else {
       EWordSearchAddView({
-        closeBySheet: true,
         onDismiss: () => {
           this.isShowEBookSheet = false
           this.eBookSheetType = EBookSheetType.None

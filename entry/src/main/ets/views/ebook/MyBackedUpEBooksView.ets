@@ -17,12 +17,10 @@ import { CUserDataManager } from '../../models/managers/userdata/CUserData/CUser
 import { WordUserDbAccess } from '../../models/datas/myData/WordUserDbAccess'
 import { SearchManager } from '../../models/datas/model/SearchManager'
 import { SimpleEventBus } from '../../common/components/eventbus/SimpleEventBus'
-import { NavPop } from '../../pages/NavPathManager'
 
 @ComponentV2
 export struct MyBackedUpEBooksView {
 
-  @Param closeBySheet       : boolean         = false        // 是否由 sheet 承载
   @Event onDismiss          : () => void      = () => {}     // 关闭回调
   @Local items              : UserDataEBook[] = []           // 云端备份列表
   @Local loading            : boolean         = true         // 加载中
@@ -51,7 +49,7 @@ export struct MyBackedUpEBooksView {
     void SearchManager.shared.refreshData()
     SimpleEventBus.emit(BookManagerNotification.currentBookUpdated)
     SimpleEventBus.emit(BookManagerNotification.bookListUpdated)
-    this.closeSelf()
+    this.onDismiss()
   }
 
   private loadList(): void {
@@ -189,7 +187,7 @@ export struct MyBackedUpEBooksView {
             leftButtons: [{
               text   : $r('app.string.online_search_btn_cancel'),
               onClick: () => {
-                this.closeSelf()
+                this.onDismiss()
               }
             }],
             rightButtons: []
@@ -325,14 +323,5 @@ export struct MyBackedUpEBooksView {
 
         this.download(item)
       })
-  }
-
-  private closeSelf(): void {
-    // 分支：Sheet 模式回调关闭；导航模式执行 NavPop
-    if (this.closeBySheet) {
-      this.onDismiss()
-    } else {
-      NavPop()
-    }
   }
 }

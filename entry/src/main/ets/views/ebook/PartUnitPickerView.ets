@@ -18,13 +18,11 @@ import { WordUserDbAccess } from '../../models/datas/myData/WordUserDbAccess'
 import { WordDetail } from '../../models/datas/word/WordDetail'
 import { WordDbAccess } from '../../models/datas/word/WordDbAccess'
 import { EBookManager } from '../../models/managers/ebook/EBookManager'
-import { NavPop } from '../../pages/NavPathManager'
 import { SimpleEventBus } from '../../common/components/eventbus/SimpleEventBus'
 
 @ComponentV2
 export struct PartUnitPickerView {
 
-  @Param closeBySheet                : boolean    = false     // 是否由 sheet 承载
   @Event onDismiss                   : () => void = () => {}  // 关闭回调
   @Event onAddSucceed                : () => void = () => {}  // 添加成功回调（用于联动关闭上一层）
   @Param @Require detail             : WordDetail             // 待保存词条
@@ -69,7 +67,7 @@ export struct PartUnitPickerView {
           leftButtons : [{
             text   : $r('app.string.online_search_btn_cancel'),
             onClick: () => {
-              this.closeSelf()
+              this.onDismiss()
             }
           }],
           rightButtons: [{
@@ -415,15 +413,6 @@ export struct PartUnitPickerView {
     setTimeout(() => {
       this.onAddSucceed()
     }, 0)
-  }
-
-  private closeSelf(): void {
-    // 分支：Sheet 模式回调关闭；导航模式执行 NavPop
-    if (this.closeBySheet) {
-      this.onDismiss()
-    } else {
-      NavPop()
-    }
   }
 
   // 组合原始词条与当前选择，生成最终待保存的 WordDetail。

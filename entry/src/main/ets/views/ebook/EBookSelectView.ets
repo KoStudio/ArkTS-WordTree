@@ -58,7 +58,7 @@ export struct EBookSelectView {
         leftButtons : [{
           text   : $r('app.string.online_search_btn_cancel'),
           onClick: () => {
-            this.closeSelf()
+            this.onDismiss()
           }
         }],
         rightButtons: []
@@ -144,10 +144,6 @@ export struct EBookSelectView {
   }
 
   // 关闭当前 bindSheet（仅 `onDismiss`，不使用导航栈 NavPop）
-  private closeSelf(): void {
-
-    this.onDismiss()
-  }
 
   @Builder
   private buildNewBookRow() {
@@ -331,7 +327,6 @@ export struct EBookSelectView {
     PartUnitPickerView({
       detail        : this.originalDetail,
       bookId        : this.sheetBookId,
-      closeBySheet  : true,
       onDismiss     : () => {
         this.isShowPartUnitSheet = false
         this.selectedBookId = null
@@ -341,7 +336,7 @@ export struct EBookSelectView {
         // 与 iOS `onSaved`：一次关掉 Part/Unit 与「保存到」；由父状态关内层 bindSheet，再关 DetailCards 外层，避免嵌套 Sheet 子先 dismiss 导致 Event 失效、只剩纯色底
         this.isShowPartUnitSheet = false
         this.selectedBookId = null
-        this.closeSelf()
+        this.onDismiss()
       }
     })
   }

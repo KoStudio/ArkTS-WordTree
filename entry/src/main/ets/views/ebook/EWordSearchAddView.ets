@@ -9,7 +9,6 @@ import { HighlightText } from '../../app/views/HighlightText'
 import { NavBarView } from '../../app/views/NavBarView'
 import { OnlineWord } from '../../models/managers/onlinesearch/OnlineWord'
 import { OnlineWordManager } from '../../models/managers/onlinesearch/OnlineWordManager'
-import { NavPop } from '../../pages/NavPathManager'
 import { NoDataPanel } from '../../app/views/NoDataView'
 import { LoadingDialog } from '@kit.ArkUI'
 import { Toast } from '../../common/utils/Toast'
@@ -32,7 +31,6 @@ enum EWordSearchSubSheetType {
 @ComponentV2
 export struct EWordSearchAddView {
 
-  @Param closeBySheet        : boolean                  = false                          // 是否由 sheet 承载
   @Event onDismiss           : () => void               = () => {}                       // 关闭回调
   @Local searchResults       : WordDetail[]             = []                             // 搜索结果
   @Local searchText          : string                   = ''                             // 搜索输入文本
@@ -69,7 +67,7 @@ export struct EWordSearchAddView {
             leftButtons : [{
               text   : $r('app.string.online_search_btn_cancel'),
               onClick: () => {
-                this.closeSelf()
+                this.onDismiss()
               }
             }],
             rightButtons: []
@@ -353,7 +351,6 @@ export struct EWordSearchAddView {
     if (this.subSheetType === EWordSearchSubSheetType.ManualAdd) {
       ManualAddWordView({
         initialTitleEn: this.sheetInitialTitleEn,
-        closeBySheet: true,
         onDismiss: () => {
           this.isShowSubSheet = false
           this.subSheetType = EWordSearchSubSheetType.None
@@ -363,7 +360,6 @@ export struct EWordSearchAddView {
       PartUnitPickerView({
         detail       : this.sheetDetail,
         bookId       : this.sheetBookId,
-        closeBySheet : true,
         onDismiss    : () => {
           this.isShowSubSheet = false
           this.subSheetType = EWordSearchSubSheetType.None
@@ -373,15 +369,6 @@ export struct EWordSearchAddView {
           this.subSheetType = EWordSearchSubSheetType.None
         }
       })
-    }
-  }
-
-  private closeSelf(): void {
-    // 分支：Sheet 模式回调关闭；导航模式执行 NavPop
-    if (this.closeBySheet) {
-      this.onDismiss()
-    } else {
-      NavPop()
     }
   }
 }

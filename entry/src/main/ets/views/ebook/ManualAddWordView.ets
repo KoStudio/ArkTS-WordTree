@@ -11,13 +11,11 @@ import { getString } from '../../common/utils/ResourceUtils'
 import { Toast } from '../../common/utils/Toast'
 import { BookManager } from '../../models/datas/book/BookManager'
 import { WordDetail } from '../../models/datas/word/WordDetail'
-import { NavPop } from '../../pages/NavPathManager'
 import { PartUnitPickerView } from './PartUnitPickerView'
 
 @ComponentV2
 export struct ManualAddWordView {
 
-  @Param closeBySheet               : boolean    = false             // 是否由 sheet 承载
   @Event onDismiss                  : () => void = () => {}          // 关闭回调
   @Param initialTitleEn             : string     = ''                // 初始英文（来自上一页）
   @Local private titleEnInput       : string     = ''                // 英文输入
@@ -134,24 +132,15 @@ export struct ManualAddWordView {
   // 构建 Part/Unit 选择 Sheet。
   private buildPartUnitSheet() {
     PartUnitPickerView({
-      detail: this.sheetDetail,
-      bookId: this.sheetBookId,
-      closeBySheet: true,
-      onAddSucceed: () => {
-        this.closeSelf()
+      detail       : this.sheetDetail,
+      bookId       : this.sheetBookId,
+      onAddSucceed : () => {
+        this.isShowPartUnitSheet = false
+        this.onDismiss()
       },
-      onDismiss: () => {
+      onDismiss    : () => {
         this.isShowPartUnitSheet = false
       }
     })
-  }
-
-  private closeSelf(): void {
-    // 分支：Sheet 模式回调关闭；导航模式执行 NavPop
-    if (this.closeBySheet) {
-      this.onDismiss()
-    } else {
-      NavPop()
-    }
   }
 }
