@@ -34,6 +34,9 @@ export class EBookExportImportManager {
 
   static readonly fileExtension: string = 'wte'
 
+  // 与 rawfile/arkdata/utd/utd.json5 中 TypeId 一致；系统分享时须传此 UTD（勿用 general.zip-archive），否则微信会按 zip 类型把保存名改成 .zip
+  static readonly uniformDataTypeId: string = 'com.ou.hm.wordtree.ebook'
+
   /**
    * 对应 iOS `checkToImportEBookIfNeed(from:)` 的解析与受理阶段：从 Want 得到等效于打开文件的 URI，并校验扩展名为 .wte。
    * iOS 在同方法内继续 present；鸿蒙因 Want 入口早、窗体未必就绪，此处只写入 pending，弹窗由 `tryPresentPendingOpenWteImport` 触发。
@@ -276,15 +279,16 @@ export class EBookExportImportManager {
       return null
     }
 
-    // zip 在 wrapDir 下，下面会 deleteDirectoryAt(wrapDir)；若不先移出，会把 zip 一起删掉导致导出必败
-    const zipOutside = FileUtility.appendPathComponent(parent, `_ebook_pack_${jobId}.zip`)
+    // 打包体须移出 wrapDir 再删目录；扩展名用 .wte（内容仍为 zip），与最终导出、系统分享 URI 缀名一致
+    const wteTempPath = FileUtility.appendPathComponent(parent,
+      `_ebook_pack_${jobId}.${EBookExportImportManager.fileExtension}`)
 
-    FileUtility.deleteFileAt(zipOutside)
+    FileUtility.deleteFileAt(wteTempPath)
 
     // 分支：移出 wrapDir 失败时再尝试复制
-    if (!FileUtility.moveFile(zipInsideWrap, zipOutside)) {
+    if (!FileUtility.moveFile(zipInsideWrap, wteTempPath)) {
 
-      if (!FileUtility.copyFile(zipInsideWrap, zipOutside)) {
+      if (!FileUtility.copyFile(zipInsideWrap, wteTempPath)) {
 
         FileUtility.deleteDirectoryAt(wrapDir)
         return null
@@ -293,10 +297,10 @@ export class EBookExportImportManager {
       FileUtility.deleteFileAt(zipInsideWrap)
     }
 
-    // 调用：临时目录可回收，zip 已落到 parent
+    // 调用：临时目录可回收，.wte 已落到 parent
     FileUtility.deleteDirectoryAt(wrapDir)
 
-    return zipOutside
+    return wteTempPath
   }
 
   /**
@@ -321,11 +325,11 @@ export class EBookExportImportManager {
       return
     }
 
-    // 调用：创建单文件 zip，再重命名为 .wte
-    void EBookExportImportManager.createZipForSingleSqliteAtPath(textDbPath).then((zipPath: string | null) => {
+    // 调用：单文件打 zip 包；中间文件已为 .wte 扩展名，再复制到用户可见路径供分享
+    void EBookExportImportManager.createZipForSingleSqliteAtPath(textDbPath).then((wtePackPath: string | null) => {
 
       // 分支：打包失败时返回错误
-      if (zipPath === null || !FileUtility.isFileExistAt(zipPath)) {
+      if (wtePackPath === null || !FileUtility.isFileExistAt(wtePackPath)) {
         completion(false, getString($r('app.string.ebook_export_failed_msg')), null)
         return
       }
@@ -343,20 +347,18 @@ export class EBookExportImportManager {
       // 调用：清理同名旧导出文件
       FileUtility.deleteFileAt(exportPath)
 
-      // 分支：移动导出文件失败时清理 zip 并返回
-      if (!FileUtility.moveFile(zipPath, exportPath)) {
+      // 分支：移动导出文件失败时再复制
+      if (!FileUtility.moveFile(wtePackPath, exportPath)) {
 
         // 分支：移动失败时回退为复制（部分机型/目录组合下 move 可能失败）
-        if (!FileUtility.copyFile(zipPath, exportPath)) {
+        if (!FileUtility.copyFile(wtePackPath, exportPath)) {
 
-          // 调用：删除未落地成功的 zip
-          FileUtility.deleteFileAt(zipPath)
-          completion(false, `export move/copy failed: ${zipPath} -> ${exportPath}`, null)
+          FileUtility.deleteFileAt(wtePackPath)
+          completion(false, `export move/copy failed: ${wtePackPath} -> ${exportPath}`, null)
           return
         }
 
-        // 调用：复制成功后清理临时 zip
-        FileUtility.deleteFileAt(zipPath)
+        FileUtility.deleteFileAt(wtePackPath)
       }
 
       completion(true, null, exportPath)

@@ -517,8 +517,8 @@ export struct BooksLocalView {
         return
       }
 
-      // 调用：系统分享按 UTD 筛选目标应用；.wte 实为 zip，用 general.zip-archive 更易出现微信/QQ 等
-      ShareUtils.shareFile(exportPath, book.bookName ?? '词汇本', '', 'general.zip-archive')
+      // 调用：分享数据 UTD 须为自定义电子书类型；若用 general.zip-archive，微信保存时会按 zip 改扩展名，QQ 仍可能沿用路径上的 .wte
+      ShareUtils.shareFile(exportPath, book.bookName ?? '词汇本', '', EBookExportImportManager.uniformDataTypeId)
     })
   }
 
