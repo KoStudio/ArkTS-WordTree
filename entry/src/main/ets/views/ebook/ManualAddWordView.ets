@@ -54,7 +54,7 @@ export struct ManualAddWordView {
           .backgroundColor($r('app.color.color_obscure'))
           .borderRadius(8)
 
-        Text($r('app.string.eword_field_title_cn1'))
+        Text($r('app.string.eword_field_titlecn1'))
           .fontSize(13)
           .fontColor($r('app.color.color_list_item_subtitle'))
           .width('100%')

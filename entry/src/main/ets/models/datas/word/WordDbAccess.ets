@@ -689,4 +689,61 @@ export class WordDbAccess implements DBPrepareProtocol {
 
     return true
   }
+
+  /**
+   * 与 iOS `WordManager.updateWordField`：更新 EBook textDb 中 Word 表指定列（列名为 item8～item24 等）。
+   * @param textDbPath  textDb.sqlite 完整路径
+   * @param titleEn     单词英文（未编码）
+   * @param fieldKey    列名，须为 Word 表中已存在列（与 `EWordEditableField` 的 raw 值一致）
+   * @param value       新明文值（内部会做 encodeAndAddSalt）
+   */
+  static async updateWordField(textDbPath: string, titleEn: string, fieldKey: string, value: string): Promise<boolean> {
+    const allowed: string[] = [
+      WordTable.Col.PRONEN,
+      WordTable.Col.PRONUS,
+      WordTable.Col.TITLECN1,
+      WordTable.Col.TITLECN2,
+      WordTable.Col.TITLECN3,
+      WordTable.Col.WORDIMAGE,
+      WordTable.Col.WORDCHANGE,
+      WordTable.Col.SYNWORDS,
+      WordTable.Col.ASYNWORDS,
+      WordTable.Col.EXAMPLEEN1,
+      WordTable.Col.EXAMPLECN1,
+      WordTable.Col.EXAMPLEEN2,
+      WordTable.Col.EXAMPLECN2,
+      WordTable.Col.EXAMPLEEN3,
+      WordTable.Col.EXAMPLECN3,
+      WordTable.Col.USEDPHRASE,
+      WordTable.Col.EN2EN,
+      WordTable.Col.DISCRIMINATE
+    ]
+
+    // 非法列名直接拒绝，避免 SQL 注入
+    if (allowed.indexOf(fieldKey) < 0) {
+      return false
+    }
+
+    const titleEnEncoded: string | null = StringEncoder.encodedToBase64(titleEn)
+
+    // titleEn 无法 Base64 编码则无法匹配 WHERE 条件
+    if (!titleEnEncoded) {
+      return false
+    }
+
+    const encodedValue: string | null = StringEncoder.encodeAndAddSalt(value)
+
+    if (encodedValue === null) {
+      return false
+    }
+
+    const sql =
+      `UPDATE ${WordTable.Table_Name} SET "${fieldKey}" = ? WHERE SUBSTR(` +
+      `${WordTable.Col.TITLEEN}, ${DB.salt} + 1, LENGTH(${WordTable.Col.TITLEEN}) - ${DB.salt}` +
+      `) = ?`
+    const accessor = new DBAccessor(textDbPath, null, false)
+
+    // 执行 UPDATE（与 insertWordDetail 相同的 SUBSTR+Base64 匹配方式）
+    return await accessor.updateDb(sql, [encodedValue, titleEnEncoded])
+  }
 }

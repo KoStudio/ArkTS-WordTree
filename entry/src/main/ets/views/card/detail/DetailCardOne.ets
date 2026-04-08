@@ -21,6 +21,8 @@ import { SimpleEventBus } from '../../../common/components/eventbus/SimpleEventB
 import { DetailStyle, StyleItem } from '../detailstyle/DetailStyle';
 import { CigenWordsViewConfig } from '../cigen/CigenWordsView';
 import { ReclaimWordViewConfig } from '../../reclaimword/ReclaimWordView';
+import { EWordItemPickerViewConfig } from '../../eword/EWordItemPickerView';
+import { BookManager, BookManagerNotification } from '../../../models/datas/book/BookManager';
 
 
 @ComponentV2
@@ -53,17 +55,35 @@ export struct DetailCardOne {
 
   @Local sectionedCells : SectionDatas<string, SubCell> = new SectionDatas()
 
+  private unsubItemOrder   : (() => void) | undefined = undefined  // 详情块显示顺序变更
+  private unsubBookUpdated : (() => void) | undefined = undefined  // 当前课本/EWord 等数据变更
+
   aboutToAppear(): void {
     this.loadData()
 
-    //监听order是否改变
-    SimpleEventBus.on(DetailItemNotification.Name.ItemVisibleOrderChanged, ()=>{
+    this.unsubItemOrder = SimpleEventBus.on(DetailItemNotification.Name.ItemVisibleOrderChanged, () => {
       this.loadData()
+    })
+
+    // EWord 保存、课本切换等与 iOS `currentBookUpdated` 对齐，需重拉详情并丢缓存
+    this.unsubBookUpdated = SimpleEventBus.on(BookManagerNotification.currentBookUpdated, () => {
+      this.word.clearWordDetailCache()
+
+      void this.loadData()
     })
   }
 
   aboutToDisappear(): void {
-    SimpleEventBus.off(DetailItemNotification.Name.ItemVisibleOrderChanged)
+    // 取消订阅，避免卡片复用时重复回调
+    if (this.unsubItemOrder) {
+      this.unsubItemOrder()
+      this.unsubItemOrder = undefined
+    }
+
+    if (this.unsubBookUpdated) {
+      this.unsubBookUpdated()
+      this.unsubBookUpdated = undefined
+    }
   }
 
   async loadData(){
@@ -447,10 +467,26 @@ export struct DetailCardOne {
     .margin({ top: 5, left: 5, right: 5 })
   }
 
-  //纠错
+  // 纠错行：EWord「编辑」+ 纠错入口（与 iOS Detail 行为一致）
   @Builder buildReclaimPanel(){
     Row(){
       Blank().layoutWeight(1)
+
+      Button(){
+        Text($r('app.string.eword_edit_action'))
+          .fontSize(15)
+          .fontColor($r('app.color.color_text2'))
+      }
+      .backgroundColor(Color.Transparent)
+      .margin({ right: 16 })
+      .onClick(()=> {
+        // 跳转到 EWord 字段选择页（NavPath 由 NavigationTo 注册）
+        EWordItemPickerViewConfig.open({
+          titleEn      : this.word.titleEn || '',
+          isEBook      : BookManager.shared.currentBook?.isEBook === true,
+          isOnlineWord : this.word.isOnlineWord
+        })
+      })
 
       Button(){
         ///纠错

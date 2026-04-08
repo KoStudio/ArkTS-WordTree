@@ -26,6 +26,24 @@ export class Word {
 
   private wordDetail: WordDetail | null = null
 
+  // 与 iOS `OnlineWord.Constant`（PartId 999 / UnitId 0）一致，用于判断是否在线搜索词
+  get isOnlineWord(): boolean {
+    const p = this.partId
+    const u = this.unitId
+
+    // partId / unitId 缺省时不可判定为在线词
+    if (p === null || p === undefined || u === null || u === undefined) {
+      return false
+    }
+
+    return p === 999 && u === 0
+  }
+
+  // 使详情缓存失效（EWord 保存后需重新查库并合并 Override）
+  clearWordDetailCache(): void {
+    this.wordDetail = null
+  }
+
   // async getWordDetail(): Promise<WordDetail | null> {
   //   if (!this.wordDetail) {
   //     this.wordDetail = await SearchManager.shared.getWordDbAccess()?.getWordDetailByTitleEn(this.titleEn) ?? null

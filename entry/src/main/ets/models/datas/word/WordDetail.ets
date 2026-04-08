@@ -46,6 +46,76 @@ export class WordDetail extends Word {
   }
 
   /**
+   * 按可编辑字段取当前展示值（与 iOS `WordDetail.value(for:)` 一致，供 EWord 编辑页用）。
+   * @param field                    字段枚举
+   * @param rootDisplayFromCigens    无 root 覆盖时与详情页一致的词根助记文案（Cigen 拼接）
+   * @param sameRootDescFallback     无 cognates 覆盖时的同根词展示 fallback
+   */
+  valueForField(field: EWordEditableField, rootDisplayFromCigens: string, sameRootDescFallback: string): string {
+    const dedup = this.getDiscriminateRemovedDuplications()
+
+    switch (field) {
+      case EWordEditableField.pronUs:
+        return this.pronUs ?? ''
+
+      case EWordEditableField.titleCn1:
+        return this.titleCn1 ?? ''
+
+      case EWordEditableField.titleCn2:
+        return this.titleCn2 ?? ''
+
+      case EWordEditableField.titleCn3:
+        return this.titleCn3 ?? ''
+
+      case EWordEditableField.wordChange:
+        return this.wordChange ?? ''
+
+      case EWordEditableField.synWords:
+        return this.synWords ?? ''
+
+      case EWordEditableField.asynWords:
+        return this.asynWords ?? ''
+
+      case EWordEditableField.exampleEn1:
+        return this.exampleEn1 ?? ''
+
+      case EWordEditableField.exampleCn1:
+        return this.exampleCn1 ?? ''
+
+      case EWordEditableField.exampleEn2:
+        return this.exampleEn2 ?? ''
+
+      case EWordEditableField.exampleCn2:
+        return this.exampleCn2 ?? ''
+
+      case EWordEditableField.exampleEn3:
+        return this.exampleEn3 ?? ''
+
+      case EWordEditableField.exampleCn3:
+        return this.exampleCn3 ?? ''
+
+      case EWordEditableField.usedPhrase:
+        return this.usedPhrase ?? ''
+
+      case EWordEditableField.en2En:
+        return this.en2En ?? ''
+
+      // 详情页用 discriminateRemovedDuplications，编辑页保持一致
+      case EWordEditableField.discriminate:
+        return (dedup ?? this.discriminate) ?? ''
+
+      case EWordEditableField.root:
+        return (this.root ?? rootDisplayFromCigens) || ''
+
+      case EWordEditableField.cognates:
+        return (this.cognates ?? sameRootDescFallback) || ''
+
+      default:
+        return ''
+    }
+  }
+
+  /**
    * 详情层合并 EWordOverride（与 iOS `WordDetail.applyEWordOverrideMap(forDetail:)` 一致）。
    * @param map fieldKey（item* / root / cognates）到覆盖展示值的映射
    */

@@ -1,3 +1,7 @@
+//
+// NavigationTo.ets
+// 全局 NavPathStack 的 @Builder：按 name 实例化目标页（与各 *ViewConfig.NavKey 对应）。
+//
 
 import { AboutView, AboutViewConfig } from '../views/setting/AboutView';
 import { ReclaimView, ReclaimViewConfig } from '../views/setting/ReclaimView';
@@ -33,11 +37,20 @@ import { DayOfsView, DayOfsViewConfig } from '../views/plan/DayOfsView';
 import { DayOfWordsView, DayOfWordsViewConfig } from '../views/plan/DayOfWordsView';
 import { PlanDetailView, PlanDetailViewConfig } from '../views/plan/PlanDetailView';
 import { OnlineSearchWordsView, OnlineSearchWordsViewConfig } from '../views/onlinesearch/OnlineSearchWordsView';
+// EBook 相关视图源码目录为 views/ebook（非 views/books/ebook）
+import { MyBackedUpEBooksView } from '../views/ebook/MyBackedUpEBooksView';
+import { EWordSearchAddView } from '../views/ebook/EWordSearchAddView';
+import { EBookImportView } from '../views/ebook/EBookImportView';
 import { CreateEBookView, CreateEBookViewConfig } from '../views/ebook/CreateEBookView';
 import { EBookSelectView, EBookSelectViewConfig } from '../views/ebook/EBookSelectView';
+import { PartUnitPickerView } from '../views/ebook/PartUnitPickerView';
+import { ManualAddWordView } from '../views/ebook/ManualAddWordView';
+import { EBookHelpView } from '../views/ebook/EBookHelpView';
 import { MyMemosView, MyMemosViewConfig } from '../views/setting/mine/MyMemosView';
 import { MyRecordsView, MyRecordsViewConfig } from '../views/setting/mine/MyRecordsView';
 import { ReclaimWordView, ReclaimWordViewConfig } from '../views/reclaimword/ReclaimWordView';
+// 详情「编辑」：EWord 字段选择（与 iOS EWordItemPickerView 对应）
+import { EWordItemPickerView, EWordItemPickerViewConfig } from '../views/eword/EWordItemPickerView';
 import { InstructionsView, InstructionsViewConfig } from '../views/setting/instruction/InstructionsView';
 
 
@@ -77,6 +90,12 @@ export function navigationTo<T>(name: string, param: T){
   }else if (name === QuizResultViewConfig.NavKey)         { QuizResultView()
   }else if (name === AdviceViewConfig.NavKey)             { AdviceView()
   }else if (name === ReclaimWordViewConfig.NavKey)        { ReclaimWordView({titleEn: (param as ReclaimWordViewConfig.Param).titleEn})
+  // EWord：字段列表 + 单字段编辑（sheet 内由 EWordItemPickerView 承载）
+  }else if (name === EWordItemPickerViewConfig.NavKey)    { EWordItemPickerView({
+    titleEn      : (param as EWordItemPickerViewConfig.Param).titleEn,
+    isEBook      : (param as EWordItemPickerViewConfig.Param).isEBook,
+    isOnlineWord : (param as EWordItemPickerViewConfig.Param).isOnlineWord
+  })
   }else if (name === ReclaimViewConfig.NavKey)            { ReclaimView()
   }else if (name === LogOffViewConfig.NavKey)             { LogOffView()
   }else if (name === SetViewConfig.NavKey)                { SetView()

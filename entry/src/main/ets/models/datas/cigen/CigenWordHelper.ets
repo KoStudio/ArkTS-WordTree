@@ -64,4 +64,30 @@ export class CigenWordHelper {
 
     return await CigenWordDbAccess.shared.getSameRootStringByText(text)
   }
+
+  // 与 iOS `WordDetail.rootDisplayTextFromCigens`：按详情页 cigens 段顺序拼成一段文案
+  static rootDisplayTextFromCigens(cigens: CigenWord[] | null): string {
+    // 无双列 desc 与 mnemonic 时无词根段
+    if (!cigens || cigens.length < 1) {
+      return ''
+    }
+
+    const parts: string[] = []
+
+    for (let i = 0; i < cigens.length; i++) {
+      const cw  = cigens[i]
+      const det = cw.getDetail()
+      const mn  = cw.mnemonic ?? ''
+
+      // 有 desc 展示段：mnemonic 可作小标题
+      if (det && det.length > 0) {
+        parts.push(mn.length > 0 ? `${mn}\n${det}` : det)
+      } else if (mn.length > 0) {
+        // 仅有助记词时也纳入一段
+        parts.push(mn)
+      }
+    }
+
+    return parts.join('\n\n')
+  }
 }
