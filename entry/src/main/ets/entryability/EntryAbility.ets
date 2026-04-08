@@ -22,8 +22,8 @@ export default class EntryAbility extends UIAbility {
     // 必须动态 import：静态 import 会早于 initAppContext 触发 EBookExportImportManager 依赖链（AppDefines 等）。
     import('../models/managers/ebook/EBookExportImportManager').then((m) => {
 
-      // 从 Want 中提取 URI 等参数，判断是否为 .wte 打开；若是则记入管理类，待首屏后再弹导入流程
-      m.EBookExportImportManager.offerWantForWteOpenIfNeed(want)
+      // 对应 iOS `checkToImportEBookIfNeed(from:)` 前半段：辨 .wte 并入 pending；弹窗延至首屏（见 Index 中 PresentPending）
+      m.EBookExportImportManager.checkToImportEBookIfNeedFromWant(want)
     })
 
     ///初始化ShareUtils
@@ -65,11 +65,11 @@ export default class EntryAbility extends UIAbility {
     // 热启动/后台被再次唤起：例如已打开单词树时从微信「其他应用打开」.wte，Want 由此入口进入
     import('../models/managers/ebook/EBookExportImportManager').then((m) => {
 
-      // 解析并更新/入队 .wte 打开任务（与 onCreate 中逻辑一致，避免遗漏第二次 Want）
-      m.EBookExportImportManager.offerWantForWteOpenIfNeed(want)
+      // 与 onCreate 一致：对应 iOS 同方法内对 url 的再次校验与受理
+      m.EBookExportImportManager.checkToImportEBookIfNeedFromWant(want)
 
-      // 不依赖隐私协议状态：有 pending 则尝试弹出 .wte 导入确认（与 Index 中补调一致，pending 已消费则立即返回）
-      m.EBookExportImportManager.tryPresentPendingWteImportIfReady()
+      // 对应 iOS 中 nav.present(alert)：热启动时窗体通常已就绪，try 弹确认
+      m.EBookExportImportManager.tryPresentPendingOpenWteImport()
     })
 
     //QQ登录配置

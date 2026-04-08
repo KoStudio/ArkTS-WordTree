@@ -61,8 +61,8 @@ struct Index {
     /// 隐私弹窗 已同意时
     this.onChangeOfIsPrivacyAgreed()
 
-    // 外部打开 .wte 的 pending 与隐私弹窗无关：首屏出现后即可尝试弹出导入确认（无 pending 则内部直接返回）
-    EBookExportImportManager.tryPresentPendingWteImportIfReady()
+    // 对应 iOS `checkToImportEBookIfNeed` 的弹窗阶段：冷启动 pending 在 EntryAbility 已入队，此处 try 与主导航就绪时机对齐
+    EBookExportImportManager.tryPresentPendingOpenWteImport()
 
   }
 
@@ -87,7 +87,9 @@ struct Index {
       logEvent("index_showed") //日志
 
       // 已登录时尽早从服务器只读同步订阅（与登录成功时一致），避免冷启动后首次会员判断仍用旧/空内存态
-      SubscriptionInfoManager.shared.autoRefreshSubscriptionInfoIfNeeds()
+      if (UserManager.shared.isLogin()) {
+        SubscriptionInfoManager.shared.asyncRefreshSubscriptionInfo(true)
+      }
     }
   }
 

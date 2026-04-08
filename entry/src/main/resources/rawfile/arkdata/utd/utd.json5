@@ -1,22 +1,21 @@
 {
-  // 应用自定义 UTD（标准化数据类型）：安装时写入本机；TypeId 须与 module.json5 中 FileOpen 的 type 一致
   "UniformDataTypeDeclarations": [
     {
-      "TypeId": "com.ou.hm.wordtree.ebook",                            // 唯一标识；与 bundleName 同一命名空间
+      "TypeId": "com.ou.hm.wordtree.ebook",
       "BelongingToTypes": [
-        "general.zip-archive"                                          // 父类型；.wte 内容实为 zip 包
+        "general.zip-archive"
       ],
       "FilenameExtensions": [
-        ".wte"                                                         // 单词树电子书后缀
+        ".wte"
       ],
       "MIMETypes": [
-        "application/vnd.wordtree.ebook",                              // 业务主 MIME
-        "application/x-wte",                                           // 与 .wte 常见声明
-        "application/zip",                                             // 与 zip 归档一致（部分调用方）
-        "application/octet-stream"                                     // 仅标二进制时的兜底
+        "application/vnd.wordtree.ebook",
+        "application/x-wte",
+        "application/zip",
+        "application/octet-stream"
       ],
-      "Description": "WordTree ebook package (.wte).",                 // 类型说明（展示/调试）
-      "ReferenceURL": ""                                               // 可选文档 URL；无则保持空串
+      "Description": "WordTree ebook package (.wte).",
+      "ReferenceURL": ""
     }
   ]
 }

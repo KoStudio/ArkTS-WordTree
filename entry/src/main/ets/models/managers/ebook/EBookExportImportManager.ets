@@ -17,6 +17,11 @@ import { SearchManager } from '../../datas/model/SearchManager'
 import { SimpleEventBus } from '../../../common/components/eventbus/SimpleEventBus'
 
 // 与 iOS `EBookExportImportManager` 对齐：本地 EBook 导出 / 导入 .wte（实为 zip）、他应用打开 .wte 确认导入
+//
+// 外部打开流程与 iOS 差异：iOS AppDelegate 一条 `checkToImportEBookIfNeed(from: URL?)` 内完成「辨扩展名 → 弹确认框 → 导入」；
+// 鸿蒙在 EntryAbility.onCreate 收到 Want 时常尚未具备可弹窗的 UI 上下文（类比 iOS 尚无 nav 可 present），故拆成两步：
+// 1）`checkToImportEBookIfNeedFromWant`：等价于 iOS 中对 URL 的校验与受理，结果先记入 pending；
+// 2）`tryPresentPendingOpenWteImport`：等价于 iOS 中取 nav/root present 确认框，在 Index 或 onNewWant 等时机调用（try 表示无 pending 时静默返回）。
 export class EBookExportImportManager {
 
   private static instance: EBookExportImportManager = new EBookExportImportManager()
@@ -30,14 +35,16 @@ export class EBookExportImportManager {
   static readonly fileExtension: string = 'wte'
 
   /**
-   * EntryAbility 收到 Want 时调用：URI 指向 .wte 时记入待导入队列。
+   * 对应 iOS `checkToImportEBookIfNeed(from:)` 的解析与受理阶段：从 Want 得到等效于打开文件的 URI，并校验扩展名为 .wte。
+   * iOS 在同方法内继续 present；鸿蒙因 Want 入口早、窗体未必就绪，此处只写入 pending，弹窗由 `tryPresentPendingOpenWteImport` 触发。
    * @param want 启动或 onNewWant 传入的 Want
+   * @returns 已识别为 .wte 并入队时为 true（便于调用侧与 iOS「已消费该打开意图」类比）
    */
-  static offerWantForWteOpenIfNeed(want: Want | undefined): void {
+  static checkToImportEBookIfNeedFromWant(want: Want | undefined): boolean {
 
     // 分支：Want 不存在时直接返回
     if (want === undefined) {
-      return
+      return false
     }
 
     let uriRaw: string | undefined = want.uri
@@ -61,24 +68,26 @@ export class EBookExportImportManager {
 
     // 分支：仍无可用路径时返回
     if (uriRaw === undefined || uriRaw.length < 1) {
-      return
+      return false
     }
 
     const lower = uriRaw.toLowerCase()
 
     // 分支：非 .wte 文件不处理
     if (!lower.endsWith(`.${EBookExportImportManager.fileExtension}`)) {
-      return
+      return false
     }
 
-    // 调用：缓存待导入 URI，待 tryPresentPendingWteImportIfReady 触发确认弹窗
+    // 调用：缓存待导入 URI，待 tryPresentPendingOpenWteImport 弹出确认（与 iOS 中 present 前已锁定 url 等价）
     EBookExportImportManager.pendingWteOpenUri = uriRaw
+    return true
   }
 
   /**
-   * 主界面/Ability 已能弹窗时调用：若有待导入 .wte 则弹出确认框（与 iOS `checkToImportEBookIfNeed` 对齐）。
+   * 对应 iOS `checkToImportEBookIfNeed(from:)` 中展示 `UIAlertController` 的阶段：在可安全使用 Toast/弹窗的时机调用。
+   * 无 pending 时 try 语义下直接返回；与 iOS 在若无 nav/root 则 return false 未弹窗可作类比。
    */
-  static tryPresentPendingWteImportIfReady(): void {
+  static tryPresentPendingOpenWteImport(): void {
 
     const uri = EBookExportImportManager.pendingWteOpenUri
 
@@ -146,7 +155,26 @@ export class EBookExportImportManager {
     })
   }
 
-  // 从 URI 提取展示文件名（去 query/fragment）。
+  // 对路径最后一段做百分号解码，修正微信等来源 URI 中 UTF-8 文件名编码导致的显示乱码；非法序列则保持原样。
+  private static decodeUriLastPathSegmentForDisplay(segment: string): string {
+
+    // 分支：无百分号编码时原样返回
+    if (segment.indexOf('%') < 0) {
+      return segment
+    }
+
+    try {
+
+      // 调用：标准 URI 百分号解码（如 %E4%B8%AD%E6%96%87.wte → 中文.wte）
+      return decodeURIComponent(segment)
+    } catch (_e) {
+
+      // 分支：畸形编码时不解码，避免抛错中断导入流程
+      return segment
+    }
+  }
+
+  // 从 URI 提取展示文件名（去 query/fragment，并对最后一段解码）。
   private static fileNameHintFromUri(uri: string): string {
     let s = uri
     const qi = s.indexOf('?')
@@ -161,7 +189,10 @@ export class EBookExportImportManager {
       s = s.substring('file://'.length)
     }
     const last = s.lastIndexOf('/')
-    return last >= 0 ? s.substring(last + 1) : s
+    const seg  = last >= 0 ? s.substring(last + 1) : s
+
+    // 调用：解码后用于弹窗标题/文案，与其它端中文文件名一致
+    return EBookExportImportManager.decodeUriLastPathSegmentForDisplay(seg)
   }
 
   // 外部应用 URI 导入：先复制到沙箱，再走既有 importEBookAtPath。
@@ -377,7 +408,9 @@ export class EBookExportImportManager {
     }
 
     const defName    = getString($r('app.string.ebook_default_book_name'))
-    const rawTitle   = PathUtility.getLastComponentName(filePath).replace(/\.wte$/i, '').trim()
+    const lastComp   = PathUtility.getLastComponentName(filePath)
+    const decoded    = EBookExportImportManager.decodeUriLastPathSegmentForDisplay(lastComp)
+    const rawTitle   = decoded.replace(/\.wte$/i, '').trim()
     const bookName   = rawTitle.length < 1 ? defName : rawTitle
     const newBook    = await EBookManager.shared.createLocalEBook(bookName, null)
 
