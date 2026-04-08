@@ -97,21 +97,21 @@
         "exported": true,
         "skills": [
           {
-            // 桌面图标 + QQ；单独一条 skill，避免 domainVerify 参与 FileOpen 的 Want 匹配
+            // 桌面 + QQ；单独一条 skill，避免 domainVerify 与本段 https 参与下面 FileOpen 的 Want 匹配
             "entities": [
               "entity.system.home",                      // 桌面
               "entity.system.browsable"                  // Deep Link、QQ
             ],
             "actions": [
               "action.system.home",                      // 桌面入口
-              "ohos.want.action.viewData"                // QQ SDK 回调等 viewData
+              "ohos.want.action.viewData"                // QQ 等 viewData
             ],
             "uris": [
               {
                 "scheme": "qqopenapi",                    // QQ 互联
                 "host": "1105391403",
                 "pathRegex": "\\b(auth|share)\\b",
-                "linkFeature": "Login"                    // 须与开放平台 appId 一致
+                "linkFeature": "Login"                    // 与开放平台 appId 一致
               },
               {
                 "scheme": "https",                        // AppLink
@@ -119,109 +119,80 @@
                 "path": "path1"                           // 按 QQ 开放平台填写
               }
             ],
-            "domainVerify": true                          // 仅对上一段 https 做域名校验
+            "domainVerify": true                          // 仅对本段 https 校验域名
           },
           {
-            // 目标方：《拉起文件处理类应用》— viewData + scheme + type + linkFeature=FileOpen（大小写敏感）
-            // https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/file-processing-apps-startup
-            // .wte：`TypeId` 与 `MIMETypes` 见 resources/rawfile/arkdata/utd/utd.json5；安装后 UTD 方生效，改配置请卸载重装
-            "entities": [
-              "entity.system.default"                    // 系统「打开方式」等场景常见携带的默认实体，利于应用出现在候选列表
-            ],
+            // ---------- .wte / 电子书「其他应用打开」（须配合 utd.json5；说明见下，utd 文件内禁止注释）----------
+            // ① UTD 声明文件：entry/src/main/resources/rawfile/arkdata/utd/utd.json5（无扩展名的 utd 包）
+            // ② 其中 TypeId（如 com.ou.hm.wordtree.ebook）必须与本段 uris[].type 中自定义类型字符串完全一致。
+            // ③ FilenameExtensions、MIMETypes、BelongingToTypes 与该类型一致；改后需卸载重装才会重新注册 UTD。
+            // ④ 关键：utd.json5 内不得出现任何 // 或块注释。若含注释，系统无法正确注册类型，应用不会出现在「使用其他应用打开」列表。
+            // ⑤ 目标方能力见《拉起文件处理类应用》：
+            //    https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/file-processing-apps-startup
+            //    action 固定 ohos.want.action.viewData；scheme+type+linkFeature=FileOpen（大小写敏感）。
             "actions": [
-              "ohos.want.action.viewData"                // 打开文件场景固定为此 action
+              "ohos.want.action.viewData"                // 打开文件场景固定 action
             ],
             "uris": [
               {
-                "scheme": "file",                         // 《拉起文件》目标方须写 file
-                "type": "com.ou.hm.wordtree.ebook",       // 自定义 UTD，见 utd.json5
-                "linkFeature": "FileOpen"                 // 大小写敏感，必选
+                "scheme": "file",                         // 文档要求本地 file
+                "type": "com.ou.hm.wordtree.ebook",       // 与 utd.json5 中 TypeId 一致（自定义 .wte）
+                "linkFeature": "FileOpen"                 // 必选，首字母大写
               },
               {
                 "scheme": "content",                      // 应用间常见 content 授权 URI
                 "type": "com.ou.hm.wordtree.ebook",       // 同上 type
-                "linkFeature": "FileOpen"                 // 大小写敏感，必选
+                "linkFeature": "FileOpen"                 // 必选，首字母大写
               },
               {
-                "scheme": "file",                         // 《拉起文件》目标方须写 file
-                "type": "general.zip-archive",            // .wte 同属 zip 归档
-                "linkFeature": "FileOpen"                 // 大小写敏感，必选
+                "scheme": "file",                         // 文档要求本地 file
+                "type": "general.zip-archive",            // 与 utd BelongingToTypes、包格式一致
+                "linkFeature": "FileOpen"                 // 必选，首字母大写
               },
               {
                 "scheme": "content",                      // 应用间常见 content 授权 URI
                 "type": "general.zip-archive",            // 同上 type
-                "linkFeature": "FileOpen"                 // 大小写敏感，必选
+                "linkFeature": "FileOpen"                 // 必选，首字母大写
               },
               {
-                "scheme": "file",                         // 《拉起文件》目标方须写 file
-                "type": "application/vnd.wordtree.ebook", // utd.json5 MIMETypes 主项
-                "linkFeature": "FileOpen"                 // 大小写敏感，必选
+                "scheme": "file",                         // 文档要求本地 file
+                "type": "application/vnd.wordtree.ebook", // 与 utd.json5 中 MIMETypes 一致
+                "linkFeature": "FileOpen"                 // 必选，首字母大写
               },
               {
                 "scheme": "content",                      // 应用间常见 content 授权 URI
                 "type": "application/vnd.wordtree.ebook", // 同上 type
-                "linkFeature": "FileOpen"                 // 大小写敏感，必选
+                "linkFeature": "FileOpen"                 // 必选，首字母大写
               },
               {
-                "scheme": "file",                         // 《拉起文件》目标方须写 file
-                "type": "application/x-wte",              // utd.json5 MIMETypes 备用项
-                "linkFeature": "FileOpen"                 // 大小写敏感，必选
+                "scheme": "file",                         // 文档要求本地 file
+                "type": "application/x-wte",              // 与 utd.json5 中 MIMETypes 一致
+                "linkFeature": "FileOpen"                 // 必选，首字母大写
               },
               {
                 "scheme": "content",                      // 应用间常见 content 授权 URI
                 "type": "application/x-wte",              // 同上 type
-                "linkFeature": "FileOpen"                 // 大小写敏感，必选
+                "linkFeature": "FileOpen"                 // 必选，首字母大写
               },
               {
-                "scheme": "file",                         // 《拉起文件》目标方须写 file
-                "type": "application/zip",                // 第三方常用 zip MIME
-                "linkFeature": "FileOpen"                 // 大小写敏感，必选
+                "scheme": "file",                         // 文档要求本地 file
+                "type": "application/zip",                // 调用方只标 zip MIME 时
+                "linkFeature": "FileOpen"                 // 必选，首字母大写
               },
               {
                 "scheme": "content",                      // 应用间常见 content 授权 URI
                 "type": "application/zip",                // 同上 type
-                "linkFeature": "FileOpen"                 // 大小写敏感，必选
+                "linkFeature": "FileOpen"                 // 必选，首字母大写
               },
               {
-                "scheme": "file",                         // 《拉起文件》目标方须写 file
-                "type": "application/octet-stream",       // 调用方未细分类型时兜底
-                "linkFeature": "FileOpen"                 // 大小写敏感，必选
+                "scheme": "file",                         // 文档要求本地 file
+                "type": "application/octet-stream",       // 调用方未给细分类时的兜底
+                "linkFeature": "FileOpen"                 // 必选，首字母大写
               },
               {
                 "scheme": "content",                      // 应用间常见 content 授权 URI
                 "type": "application/octet-stream",       // 同上 type
-                "linkFeature": "FileOpen"                 // 大小写敏感，必选
-              }
-            ]
-          },
-          {
-            // 分享入口：sendData 须带 entity.system.share（与 viewData 拆开，避免实体混用）
-            "entities": [
-              "entity.system.share"                      // 分享到应用
-            ],
-            "actions": [
-              "ohos.want.action.sendData"                // 系统分享 / 发送多类数据
-            ],
-            "uris": [
-              {
-                "scheme": "file",                         // 分享附带本地路径时
-                "type": "com.ou.hm.wordtree.ebook",       // 自定义 UTD
-                "linkFeature": "FileOpen"                 // sendData + FileOpen
-              },
-              {
-                "scheme": "content",                      // 分享附带 content URI 时
-                "type": "com.ou.hm.wordtree.ebook",       // 同上 type
-                "linkFeature": "FileOpen"                 // sendData + FileOpen
-              },
-              {
-                "scheme": "file",                         // 分享附带本地路径时
-                "type": "general.zip-archive",            // zip 类包
-                "linkFeature": "FileOpen"                 // sendData + FileOpen
-              },
-              {
-                "scheme": "content",                      // 分享附带 content URI 时
-                "type": "general.zip-archive",            // 同上 type
-                "linkFeature": "FileOpen"                 // sendData + FileOpen
+                "linkFeature": "FileOpen"                 // 必选，首字母大写
               }
             ]
           }
