@@ -21,7 +21,7 @@ export class EBookExportImportManager {
 
   private static instance: EBookExportImportManager = new EBookExportImportManager()
 
-  private static pendingWteOpenPath: string | null = null
+  private static pendingWteOpenUri: string | null = null
 
   static get shared(): EBookExportImportManager {
     return EBookExportImportManager.instance
@@ -29,32 +29,8 @@ export class EBookExportImportManager {
 
   static readonly fileExtension: string = 'wte'
 
-  // 将路径末段文件名做百分号解码（用于中文文件名导入，防止出现乱码）
-  private static decodeUriFileNameIfNeeds(rawName: string): string {
-
-    // 分支：空串直接返回
-    if (rawName.length < 1) {
-      return rawName
-    }
-
-    try {
-
-      // 分支：无百分号编码时直接返回
-      if (rawName.indexOf('%') < 0) {
-        return rawName
-      }
-
-      // 调用：执行 URI 组件解码
-      return decodeURIComponent(rawName)
-    } catch (_e) {
-
-      // 分支：解码失败时保留原值，避免中断导入流程
-      return rawName
-    }
-  }
-
   /**
-   * EntryAbility 收到 Want 时调用：路径为 .wte 且文件存在则记入待导入队列。
+   * EntryAbility 收到 Want 时调用：URI 指向 .wte 时记入待导入队列。
    * @param want 启动或 onNewWant 传入的 Want
    */
   static offerWantForWteOpenIfNeed(want: Want | undefined): void {
@@ -70,10 +46,16 @@ export class EBookExportImportManager {
     if ((uriRaw === undefined || uriRaw.length < 1) && want.parameters) {
 
       const p = want.parameters['path'] as string | undefined
+      const u = want.parameters['uri'] as string | undefined
+      const url = want.parameters['url'] as string | undefined
 
       // 分支：兜底路径可用时覆盖 uriRaw
       if (p !== undefined && p.length > 0) {
         uriRaw = p
+      } else if (u !== undefined && u.length > 0) {
+        uriRaw = u
+      } else if (url !== undefined && url.length > 0) {
+        uriRaw = url
       }
     }
 
@@ -82,46 +64,34 @@ export class EBookExportImportManager {
       return
     }
 
-    let path = uriRaw
-
-    // 分支：file:// 前缀需要裁剪成真实文件路径
-    if (path.indexOf('file://') === 0) {
-      path = path.substring('file://'.length)
-    }
-
-    const lower = path.toLowerCase()
+    const lower = uriRaw.toLowerCase()
 
     // 分支：非 .wte 文件不处理
     if (!lower.endsWith(`.${EBookExportImportManager.fileExtension}`)) {
       return
     }
 
-    // 分支：文件不存在时不入队
-    if (!FileUtility.isFileExistAt(path)) {
-      return
-    }
-
-    // 调用：缓存待导入路径，等待隐私同意后弹窗
-    EBookExportImportManager.pendingWteOpenPath = path
+    // 调用：缓存待导入 URI，待 tryPresentPendingWteImportIfReady 触发确认弹窗
+    EBookExportImportManager.pendingWteOpenUri = uriRaw
   }
 
   /**
-   * 隐私已同意且主界面可用时调用：若有待导入 .wte 则弹出确认框（与 iOS `checkToImportEBookIfNeed` 对齐）。
+   * 主界面/Ability 已能弹窗时调用：若有待导入 .wte 则弹出确认框（与 iOS `checkToImportEBookIfNeed` 对齐）。
    */
   static tryPresentPendingWteImportIfReady(): void {
 
-    const path = EBookExportImportManager.pendingWteOpenPath
+    const uri = EBookExportImportManager.pendingWteOpenUri
 
     // 分支：无待导入路径时返回
-    if (path === null || path === undefined || path.length < 1) {
+    if (uri === null || uri === undefined || uri.length < 1) {
       return
     }
 
     // 调用：先消费队列，避免重复弹窗
-    EBookExportImportManager.pendingWteOpenPath = null
+    EBookExportImportManager.pendingWteOpenUri = null
 
     // 调用：展示导入确认弹窗
-    EBookExportImportManager.presentOpenWteImportConfirm(path)
+    EBookExportImportManager.presentOpenWteImportConfirm(uri)
   }
 
   /**
@@ -148,11 +118,11 @@ export class EBookExportImportManager {
 
   /**
    * 弹出“检测到 .wte 文件”确认框，确认后执行导入。
-   * @param filePath 外部打开的 .wte 路径
+   * @param sourceUri 外部打开的 .wte URI
    */
-  private static presentOpenWteImportConfirm(filePath: string): void {
+  private static presentOpenWteImportConfirm(sourceUri: string): void {
 
-    const fileName = PathUtility.getLastComponentName(filePath)
+    const fileName = EBookExportImportManager.fileNameHintFromUri(sourceUri)
 
     // 调用：展示确认弹窗
     Toast.showAlert({
@@ -162,46 +132,81 @@ export class EBookExportImportManager {
         value     : $r('app.string.cfm_btn_cancel'),
         fontColor : Color.Gray,
         action    : () => {
-
-          // 调用：取消时删除临时导入文件
-          FileUtility.deleteFileAt(filePath)
+          // 分支：取消不处理外部源文件
         }
       },
       primaryButton   : {
         value  : $r('app.string.confirm_btn_import'),
         action : () => {
 
-          // 调用：确认后执行导入
-          void EBookExportImportManager.shared.importEBookAtPath(filePath,
-            (ok: boolean, errMsg: string | null, newBook: Book | null) => {
-
-              // 调用：导入流程结束后删除临时导入文件
-              FileUtility.deleteFileAt(filePath)
-
-              // 分支：导入失败时提示错误
-              if (!ok) {
-
-                // 调用：展示失败文案
-                Toast.showMessage(errMsg ?? getString($r('app.string.ebook_import_failed_msg')))
-                return
-              }
-
-              // 分支：导入成功并返回 book 时，执行后续刷新
-              if (newBook !== null) {
-
-                // 调用：应用导入成功后的统一刷新逻辑
-                EBookExportImportManager.applyImportSuccess(newBook)
-
-                const raw     = (newBook.bookName ?? '').trim()
-                const display = raw.length < 1 ? getString($r('app.string.ebook_default_book_name')) : raw
-
-                // 调用：展示导入成功提示
-                Toast.showMessage(getStringF($r('app.string.ebook_import_success_fmt'), display))
-              }
-            })
+          // 调用：确认后按 URI 复制到沙箱，再执行导入
+          void EBookExportImportManager.importEBookFromExternalUri(sourceUri)
         }
       }
     })
+  }
+
+  // 从 URI 提取展示文件名（去 query/fragment）。
+  private static fileNameHintFromUri(uri: string): string {
+    let s = uri
+    const qi = s.indexOf('?')
+    if (qi >= 0) {
+      s = s.substring(0, qi)
+    }
+    const hi = s.indexOf('#')
+    if (hi >= 0) {
+      s = s.substring(0, hi)
+    }
+    if (s.indexOf('file://') === 0) {
+      s = s.substring('file://'.length)
+    }
+    const last = s.lastIndexOf('/')
+    return last >= 0 ? s.substring(last + 1) : s
+  }
+
+  // 外部应用 URI 导入：先复制到沙箱，再走既有 importEBookAtPath。
+  private static async importEBookFromExternalUri(sourceUri: string): Promise<void> {
+    const hint = EBookExportImportManager.fileNameHintFromUri(sourceUri)
+    if (!hint.toLowerCase().endsWith(`.${EBookExportImportManager.fileExtension}`)) {
+      Toast.showMessage(getString($r('app.string.ebook_import_failed_msg')))
+      return
+    }
+
+    let tempPath = await FileUtility.copyToTempDir(sourceUri)
+
+    // 分支：部分 file:// 场景 copyToTempDir 失败时，回退本地路径
+    if ((tempPath === null || tempPath.length < 1) && sourceUri.indexOf('file://') === 0) {
+      tempPath = sourceUri.substring('file://'.length)
+    }
+
+    if (tempPath !== null && tempPath.length > 0 && !tempPath.toLowerCase().endsWith(`.${EBookExportImportManager.fileExtension}`)) {
+      const parent = FileUtility.deleteLastPathComponent(tempPath)
+      const fixed  = FileUtility.appendPathComponent(parent, `ebook_open_${Date.now()}.${EBookExportImportManager.fileExtension}`)
+      if (FileUtility.copyFile(tempPath, fixed)) {
+        FileUtility.deleteFileAt(tempPath)
+        tempPath = fixed
+      }
+    }
+
+    if (tempPath === null || !FileUtility.isFileExistAt(tempPath)) {
+      Toast.showMessage(getString($r('app.string.ebook_import_failed_msg')))
+      return
+    }
+
+    await EBookExportImportManager.shared.importEBookAtPath(tempPath,
+      (ok: boolean, errMsg: string | null, newBook: Book | null) => {
+        FileUtility.deleteFileAt(tempPath!)
+        if (!ok) {
+          Toast.showMessage(errMsg ?? getString($r('app.string.ebook_import_failed_msg')))
+          return
+        }
+        if (newBook !== null) {
+          EBookExportImportManager.applyImportSuccess(newBook)
+          const raw     = (newBook.bookName ?? '').trim()
+          const display = raw.length < 1 ? getString($r('app.string.ebook_default_book_name')) : raw
+          Toast.showMessage(getStringF($r('app.string.ebook_import_success_fmt'), display))
+        }
+      })
   }
 
   /**
@@ -209,16 +214,13 @@ export class EBookExportImportManager {
    * @param srcPath 教材 sqlite 绝对路径
    * @returns zip 沙箱路径；失败则 null
    */
-  private static async createWteForSingleSqliteAtPath(srcPath: string): Promise<string | null> {
+  private static async createZipForSingleSqliteAtPath(srcPath: string): Promise<string | null> {
 
-    const base       = PathUtility.getLastComponentName(srcPath)
-    const jobId      = `${Date.now()}`
-    const exportRoot = FileUtility.appendPathComponent(dAppCachefolder, 'EBookExport')
-    const wrapDir    = FileUtility.appendPathComponent(exportRoot, `_ebook_exp_${jobId}`)
-    const innerDir   = FileUtility.appendPathComponent(wrapDir, 'inner')
-
-    // 调用：确保导出根目录存在（与 iOS temporaryDirectory/EBookExport 对齐）
-    createFolderIfNeeds(exportRoot)
+    const base     = PathUtility.getLastComponentName(srcPath)
+    const parent   = FileUtility.deleteLastPathComponent(srcPath)
+    const jobId    = `${Date.now()}`
+    const wrapDir  = FileUtility.appendPathComponent(parent, `_ebook_exp_${jobId}`)
+    const innerDir = FileUtility.appendPathComponent(wrapDir, 'inner')
 
     // 调用：确保中间目录存在
     createFolderIfNeeds(innerDir)
@@ -233,35 +235,13 @@ export class EBookExportImportManager {
       return null
     }
 
-    // 调用：打包 inner 目录为压缩包（ZipTool 当前输出为 .zip）
-    const zipPathInWrapDir = await ZipTool.createOneZip(innerDir)
+    // 调用：打包 inner 目录为 zip
+    const zipPath = await ZipTool.createOneZip(innerDir)
 
-    // 分支：打包失败时清理并返回
-    if (zipPathInWrapDir === null || !FileUtility.isFileExistAt(zipPathInWrapDir)) {
-
-      // 调用：清理临时目录
-      FileUtility.deleteDirectoryAt(wrapDir)
-      return null
-    }
-
-    // 目标：在清理 wrapDir 前先把压缩包移动并统一改名为 .wte，避免被一并删除导致导出失败
-    const exportedWtePath = FileUtility.appendPathComponent(exportRoot, `_ebook_exp_${jobId}.${EBookExportImportManager.fileExtension}`)
-
-    // 调用：同名旧文件先删，避免 move 失败
-    FileUtility.deleteFileAt(exportedWtePath)
-
-    // 分支：移动压缩包并改名为 .wte 失败时清理并返回
-    if (!FileUtility.moveFile(zipPathInWrapDir, exportedWtePath)) {
-
-      // 调用：清理临时目录
-      FileUtility.deleteDirectoryAt(wrapDir)
-      return null
-    }
-
-    // 调用：打包完成后清理临时目录（此时 zip 已移出，不会被删除）
+    // 调用：打包后清理临时目录
     FileUtility.deleteDirectoryAt(wrapDir)
 
-    return exportedWtePath
+    return zipPath
   }
 
   /**
@@ -286,11 +266,11 @@ export class EBookExportImportManager {
       return
     }
 
-    // 调用：创建单文件 .wte（内部仍为 zip 内容）
-    void EBookExportImportManager.createWteForSingleSqliteAtPath(textDbPath).then((wtePath: string | null) => {
+    // 调用：创建单文件 zip，再重命名为 .wte
+    void EBookExportImportManager.createZipForSingleSqliteAtPath(textDbPath).then((zipPath: string | null) => {
 
       // 分支：打包失败时返回错误
-      if (wtePath === null || !FileUtility.isFileExistAt(wtePath)) {
+      if (zipPath === null || !FileUtility.isFileExistAt(zipPath)) {
         completion(false, getString($r('app.string.ebook_export_failed_msg')), null)
         return
       }
@@ -308,11 +288,11 @@ export class EBookExportImportManager {
       // 调用：清理同名旧导出文件
       FileUtility.deleteFileAt(exportPath)
 
-      // 分支：移动导出文件失败时清理临时 .wte 并返回
-      if (!FileUtility.moveFile(wtePath, exportPath)) {
+      // 分支：移动导出文件失败时清理 zip 并返回
+      if (!FileUtility.moveFile(zipPath, exportPath)) {
 
-        // 调用：删除未移动成功的临时 .wte
-        FileUtility.deleteFileAt(wtePath)
+        // 调用：删除未移动成功的 zip
+        FileUtility.deleteFileAt(zipPath)
 
         completion(false, getString($r('app.string.ebook_export_failed_msg')), null)
         return
@@ -357,10 +337,10 @@ export class EBookExportImportManager {
     // 调用：创建导入工作目录
     createFolderIfNeeds(tempRoot)
 
-    const tempWte    = FileUtility.appendPathComponent(tempRoot, `pack.${EBookExportImportManager.fileExtension}`)
+    const tempZip    = FileUtility.appendPathComponent(tempRoot, `pack.zip`)
 
-    // 分支：复制 .wte 到临时 .wte 失败时清理并返回
-    if (!FileUtility.copyFile(filePath, tempWte)) {
+    // 分支：复制 .wte 到临时 zip 失败时清理并返回
+    if (!FileUtility.copyFile(filePath, tempZip)) {
 
       // 调用：清理导入工作目录
       FileUtility.deleteDirectoryAt(tempRoot)
@@ -370,11 +350,11 @@ export class EBookExportImportManager {
 
     const unzipDir   = FileUtility.appendPathComponent(tempRoot, 'unz')
 
-    // 调用：解压临时 .wte（内容为 zip）
-    const unzipped   = await ZipTool.unzipTo(tempWte, unzipDir)
+    // 调用：解压临时 zip
+    const unzipped   = await ZipTool.unzipTo(tempZip, unzipDir)
 
-    // 调用：解压后删除临时 .wte
-    FileUtility.deleteFileAt(tempWte)
+    // 调用：解压后删除临时 zip
+    FileUtility.deleteFileAt(tempZip)
 
     // 分支：解压失败时清理并返回
     if (unzipped === null) {
@@ -397,9 +377,7 @@ export class EBookExportImportManager {
     }
 
     const defName    = getString($r('app.string.ebook_default_book_name'))
-    const rawFileName = PathUtility.getLastComponentName(filePath)
-    const decodedFileName = EBookExportImportManager.decodeUriFileNameIfNeeds(rawFileName)
-    const rawTitle   = decodedFileName.replace(new RegExp(`\\.${EBookExportImportManager.fileExtension}$`, 'i'), '').trim()
+    const rawTitle   = PathUtility.getLastComponentName(filePath).replace(/\.wte$/i, '').trim()
     const bookName   = rawTitle.length < 1 ? defName : rawTitle
     const newBook    = await EBookManager.shared.createLocalEBook(bookName, null)
 

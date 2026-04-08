@@ -18,6 +18,8 @@ import { SetViewConfig } from '../views/main/under/SetView';
 import { SimpleEventBus } from '../common/components/eventbus/SimpleEventBus';
 import { MemberManager } from '../models/managers/member/MemberManager';
 import { MemberView } from '../views/setting/member/MemberView';
+import { UserManager } from '../models/managers/user/UserManager';
+import { SubscriptionInfoManager } from '../models/managers/subscription/SubscriptionInfoManager';
 import { BookListViewConfig } from '../views/books/BookListView';
 import { StatusBarUtil } from '../common/utils/StatusBarUtils';
 import { OnlineSearchWordsViewConfig } from '../views/onlinesearch/OnlineSearchWordsView';
@@ -59,6 +61,8 @@ struct Index {
     /// 隐私弹窗 已同意时
     this.onChangeOfIsPrivacyAgreed()
 
+    // 外部打开 .wte 的 pending 与隐私弹窗无关：首屏出现后即可尝试弹出导入确认（无 pending 则内部直接返回）
+    EBookExportImportManager.tryPresentPendingWteImportIfReady()
 
   }
 
@@ -82,7 +86,8 @@ struct Index {
 
       logEvent("index_showed") //日志
 
-      EBookExportImportManager.tryPresentPendingWteImportIfReady()
+      // 已登录时尽早从服务器只读同步订阅（与登录成功时一致），避免冷启动后首次会员判断仍用旧/空内存态
+      SubscriptionInfoManager.shared.autoRefreshSubscriptionInfoIfNeeds()
     }
   }
 

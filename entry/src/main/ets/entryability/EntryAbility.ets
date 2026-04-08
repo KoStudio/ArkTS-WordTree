@@ -6,9 +6,6 @@ import { SystemSizeManager as SystemSizeManager } from '../common/managers/Syste
 
 import { BundleUtils } from '../common/utils/BundleUtils';
 import { DebugFlg } from '../app/debug/DebugFlg';
-import { PrivacyManager } from '../common/components/Privacy/PrivacyManager';
-
-
 const DOMAIN = 0x0000;
 
 export default class EntryAbility extends UIAbility {
@@ -21,8 +18,11 @@ export default class EntryAbility extends UIAbility {
 
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
 
-    // 静态 import EBookExportImportManager 会链式加载 AppDefines / AppSettings，在 initAppContext 之前触发 getAppContext
+    // 冷启动时若由「其他应用打开」等带入 .wte 的 Want，须在本 UIAbility 解析并入队。
+    // 必须动态 import：静态 import 会早于 initAppContext 触发 EBookExportImportManager 依赖链（AppDefines 等）。
     import('../models/managers/ebook/EBookExportImportManager').then((m) => {
+
+      // 从 Want 中提取 URI 等参数，判断是否为 .wte 打开；若是则记入管理类，待首屏后再弹导入流程
       m.EBookExportImportManager.offerWantForWteOpenIfNeed(want)
     })
 
@@ -62,12 +62,14 @@ export default class EntryAbility extends UIAbility {
     ///配置微信登录回调
     // import('../models/managers/sns/wx/WxLoginManager').then((it)=>{it.WXLoginManager.shared.handleWeChatCallIfNeed(want)})
 
+    // 热启动/后台被再次唤起：例如已打开单词树时从微信「其他应用打开」.wte，Want 由此入口进入
     import('../models/managers/ebook/EBookExportImportManager').then((m) => {
+
+      // 解析并更新/入队 .wte 打开任务（与 onCreate 中逻辑一致，避免遗漏第二次 Want）
       m.EBookExportImportManager.offerWantForWteOpenIfNeed(want)
 
-      if (PrivacyManager.shared.checkAgreement()) {
-        m.EBookExportImportManager.tryPresentPendingWteImportIfReady()
-      }
+      // 不依赖隐私协议状态：有 pending 则尝试弹出 .wte 导入确认（与 Index 中补调一致，pending 已消费则立即返回）
+      m.EBookExportImportManager.tryPresentPendingWteImportIfReady()
     })
 
     //QQ登录配置

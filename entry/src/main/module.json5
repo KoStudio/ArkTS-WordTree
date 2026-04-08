@@ -97,66 +97,99 @@
         "exported": true,
         "skills": [
           {
+            // 桌面入口 + QQ（与下方「打开文件」分 skill，避免本段 domainVerify 影响 file/content 的 Want）
             "entities": [
               "entity.system.home",
-              "entity.system.share",
-              "entity.system.browsable"       // QQ登录配置
+              "entity.system.browsable"                  // QQ 登录、Deep Link
             ],
             "actions": [
               "action.system.home",
-//              "wxentity.action.open",         // 微信登录
-//              "ohos.want.action.sendData",    // 打开分享的文件
-              "ohos.want.action.view",        // 查看本地文件（.wte 等）
-              "ohos.want.action.viewData",    // QQ登录配置
-//              "action.system.open",           // 打开本地文件
+              "ohos.want.action.viewData"                // QQ 回调
             ],
             "uris": [
               {
-                "scheme": "qqopenapi",              // QQ登录配置;接收 QQ 回调数据
-                "host": "1105391403",               // QQ登录配置;业务申请的互联 appId，如果填错会导致 QQ 无法回调
-                "pathRegex": "\\b(auth|share)\\b",  // QQ登录配置;
-                "linkFeature": "Login"
+                "scheme": "qqopenapi",
+                "host": "1105391403",
+                "pathRegex": "\\b(auth|share)\\b",
+                "linkFeature": "Login"                 // QQ 互联；appId 须与开放平台一致
               },
               {
-                "scheme": "file",
-                "type": "application/zip",
-                "linkFeature": "FileOpen"
-              },
-              {
-                "scheme": "file",
-                "type": "application/octet-stream",
-                "linkFeature": "FileOpen"
-              },
-//              {
-//                "scheme": "file",                // 必填，声明协议类型为文件,允许打开uri中以file://协议开头标识的本地文件
-//                "type": "general.plain-text",    // 必填，表示支持打开的文件类型
-//                "linkFeature": "FileOpen"        // 必填且大小写敏感，表示此URI的功能为文件打开
-//              },
-//              {
-//                "scheme": "file",
-//                "type": "general.comma-separated-values-text",
-//                "linkFeature": "FileOpen"
-//              },
-
-
-//              {
-//                "scheme": "file",
-//                "type": "com.zhika.hzkb",
-//                "linkFeature": "FileOpen"
-//              },
-//              {
-//                "scheme": "file",
-//                "type": "application/hzkb",
-//                "linkFeature": "FileOpen" // 关键标识
-//              },
-
-              {
-                "scheme": "https",           // QQ登录配置 // scheme须配置为https
-                "host": "www.dancishu.com",  // QQ登录配置 // host须配置为关联的域名
-                "path": "path1"              // QQ登录配置 // path可选，表示域名服务器上的目录或文件路径，例如www.example.com/path1中的path1// 如果应用只能处理部分特定的path，则此处应该配置应用所支持的path，避免出现应用不能处理的path链接也被引流到应用中的问题
+                "scheme": "https",
+                "host": "www.dancishu.com",
+                "path": "path1"                        // QQ 关联域名；path 按业务收窄
               }
             ],
-            "domainVerify": true,            // QQ登录配置 domainVerify须设置为true
+            "domainVerify": true                        // AppLink 域名验证
+          },
+          {
+            // 其他应用打开文件：action=ohos.want.action.viewData，uris 须 linkFeature=FileOpen
+            // .wte 自定义 UTD：resources/rawfile/arkdata/utd/utd.json5（TypeId 与下列 type 相同）
+            "actions": [
+              "ohos.want.action.viewData"
+            ],
+            "uris": [
+              {
+                "scheme": "file",
+                "type": "com.ou.hm.wordtree.ebook",
+                "linkFeature": "FileOpen"              // 自定义类型（.wte），安装时写入系统 UTD
+              },
+              {
+                "scheme": "content",
+                "type": "com.ou.hm.wordtree.ebook",
+                "linkFeature": "FileOpen"              // 常见沙箱/微信等 content URI
+              },
+              {
+                "scheme": "file",
+                "type": "general.zip-archive",
+                "linkFeature": "FileOpen"              // 调用方只声明 zip 时的兜底
+              },
+              {
+                "scheme": "file",
+                "type": "general.octet-stream",
+                "linkFeature": "FileOpen"              // 调用方只声明二进制时的兜底
+              },
+              {
+                "scheme": "content",
+                "type": "general.zip-archive",
+                "linkFeature": "FileOpen"              // content + zip 兜底
+              },
+              {
+                "scheme": "content",
+                "type": "general.octet-stream",
+                "linkFeature": "FileOpen"              // content + 二进制兜底
+              }
+            ]
+          },
+          {
+            // 系统分享 Sheet：sendData + entity.system.share；uri 类型与「打开文件」段对齐
+            "entities": [
+              "entity.system.share"
+            ],
+            "actions": [
+              "ohos.want.action.sendData"
+            ],
+            "uris": [
+              {
+                "scheme": "file",
+                "type": "com.ou.hm.wordtree.ebook",
+                "linkFeature": "FileOpen"              // 自定义 .wte
+              },
+              {
+                "scheme": "content",
+                "type": "com.ou.hm.wordtree.ebook",
+                "linkFeature": "FileOpen"              // 分享常见 content
+              },
+              {
+                "scheme": "file",
+                "type": "general.zip-archive",
+                "linkFeature": "FileOpen"              // zip 兜底
+              },
+              {
+                "scheme": "content",
+                "type": "general.zip-archive",
+                "linkFeature": "FileOpen"              // content zip 兜底
+              }
+            ]
           }
         ]
       }
