@@ -830,17 +830,41 @@ export struct DetailCardOne {
           break;
 
         case DetailItem.Cigens        :// 词根助记
-          if (this.cigenWords) {
+          // 与 iOS 一致：若存在 EWord 覆盖（root）则优先显示覆盖；否则回退到 Cigen 词根库拼装结果。
+          if ((word.root?.length ?? 0) > 0) {
+            cells.push({
+              type    : SubCellType.text,
+              section : getString($r('app.string.learn_detail_txt_mnemonic')),
+              subTitle: word.root
+            })
+          } else if (this.cigenWords) {
             for (const cigenWord of this.cigenWords) {
-              cells.push({type: SubCellType.text, section: getString($r('app.string.learn_detail_txt_mnemonic')), subTitle: cigenWord.mnemonic, detail: cigenWord.getDetail(), hasMoreBtn: cigenWord.getDetail() !== null})
+              cells.push({
+                type      : SubCellType.text,
+                section   : getString($r('app.string.learn_detail_txt_mnemonic')),
+                subTitle  : cigenWord.mnemonic,
+                detail    : cigenWord.getDetail(),
+                hasMoreBtn: cigenWord.getDetail() !== null
+              })
             }
           }
 
           break;
 
         case DetailItem.SameRootDesc  :// 同根词
-          if ((this.sameRootDesc?.length  ?? 0) > 0) {
-            cells.push({type: SubCellType.text, section: getString($r('app.string.learn_detail_txt_samerootdesc')), subTitle: this.sameRootDesc})
+          // 与 iOS 一致：若存在 EWord 覆盖（cognates）则优先显示覆盖；否则回退到 sameRootDesc。
+          if ((word.cognates?.length ?? 0) > 0) {
+            cells.push({
+              type    : SubCellType.text,
+              section : getString($r('app.string.learn_detail_txt_samerootdesc')),
+              subTitle: word.cognates
+            })
+          } else if ((this.sameRootDesc?.length ?? 0) > 0) {
+            cells.push({
+              type    : SubCellType.text,
+              section : getString($r('app.string.learn_detail_txt_samerootdesc')),
+              subTitle: this.sameRootDesc
+            })
           }
           break;
 

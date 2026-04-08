@@ -150,29 +150,37 @@ export struct ComposeMemoView {
           }
           .width('100%')
 
-          Row({ space: 16 }) {
+          // 保存 / 分享 作为一组水平居中（与 iOS HStack 内双按钮居中排布一致）
+          Row() {
 
-            TextButton({
-              text: $r('app.string.memo_compose_btn_save'),
-              bgColor: this.isSaveEnabled ? $r('app.color.color_btn_bg2') : $r('app.color.color_gray'),
-              onClickCallBack: () => {
-                this.actionSave()
-              },
-              isEnabled: this.isSaveEnabled
-            })
+            Blank()
               .layoutWeight(1)
-              .height(48)
 
-            TextButton({
-              text: $r('app.string.memo_compose_btn_save_share'),
-              bgColor: this.isSaveEnabled ? $r('app.color.color_btn_bg2') : $r('app.color.color_gray'),
-              onClickCallBack: () => {
-                this.actionSaveAndShare()
-              },
-              isEnabled: this.isSaveEnabled
-            })
+            Row({ space: 16 }) {
+
+              TextButton({
+                text               : $r('app.string.memo_compose_btn_save'),
+                bgColor            : this.isSaveEnabled ? $r('app.color.color_btn_bg2') : $r('app.color.color_gray'),
+                onClickCallBack    : () => {
+                  this.actionSave()
+                },
+                isEnabled          : this.isSaveEnabled
+              })
+                .height(48)
+
+              TextButton({
+                text               : $r('app.string.memo_compose_btn_save_share'),
+                bgColor            : this.isSaveEnabled ? $r('app.color.color_btn_bg2') : $r('app.color.color_gray'),
+                onClickCallBack    : () => {
+                  this.actionSaveAndShare()
+                },
+                isEnabled          : this.isSaveEnabled
+              })
+                .height(48)
+            }
+
+            Blank()
               .layoutWeight(1)
-              .height(48)
           }
           .width('100%')
         }
@@ -187,6 +195,7 @@ export struct ComposeMemoView {
       .width('100%')
       .height('100%')
       .backgroundColor($r('app.color.color_background'))
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       .bindSheet($$this.isShowLoginView, this.buildLoginSheet(), {
         detents     : [SheetSize.LARGE],
         preferType  : SheetType.CENTER,
@@ -231,16 +240,15 @@ export struct ComposeMemoView {
     return this.word.titleEn ?? ''
   }
 
-  // 构建导航栏「编辑 / 完成」菜单项
+  // 构建导航栏「编辑 / 完成」：图标与 iOS toolbar（pencil / checkmark）一致
   private buildMenuItems(): CustomNavigationMenuItem[] {
-
-    const label = this.isEditing ? $r('app.string.memo_compose_menu_done') :
-      $r('app.string.memo_compose_menu_edit')
 
     return [
       {
-        value  : label,
-        action : () => {
+        value   : this.isEditing ? 'done' : 'edit',
+        icon    : this.isEditing ? $r('app.media.check_mark') : $r('app.media.pencil'),
+        isSvg   : true,
+        action  : () => {
 
           this.isEditing = !this.isEditing
           this.menuRefreshKey++
