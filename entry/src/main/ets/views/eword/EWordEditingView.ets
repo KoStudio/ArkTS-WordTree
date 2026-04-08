@@ -5,6 +5,7 @@
 //  编辑单个字段：保存写 EBook Word 表或 learnDb EWordOverride；CBook/在线词可「恢复」。
 //
 
+import { NavBarView, NavButtonItem } from '../../app/views/NavBarView'
 import { SimpleEventBus } from '../../common/components/eventbus/SimpleEventBus'
 import { BookManager, BookManagerNotification } from '../../models/datas/book/BookManager'
 import { WordDbAccess } from '../../models/datas/word/WordDbAccess'
@@ -48,57 +49,42 @@ export struct EWordEditingView {
     this.hasOverrideForCurrentField = map[fk] !== undefined
   }
 
+  // 右上角按钮：按 iOS 规则组合「恢复」「保存」
+  get rightButtons(): NavButtonItem[] {
+    const items: NavButtonItem[] = []
+
+    if (this.canShowRestore) {
+      items.push({
+        text   : $r('app.string.eword_restore'),
+        onClick: () => {
+          void this.restoreAndComplete()
+        }
+      })
+    }
+
+    items.push({
+      text   : $r('app.string.eword_save'),
+      onClick: () => {
+        void this.saveAndComplete()
+      }
+    })
+
+    return items
+  }
+
   build() {
     Column({ space: 16 }) {
-
-      // 顶栏：取消 / 恢复 / 保存（配色对齐 iOS 导航栏）
-      Row() {
-        Button() {
-          Text($r('app.string.online_search_btn_cancel'))
-            .fontSize(16)
-            .fontColor($r('app.color.color_nav_tint'))
-        }
-          .backgroundColor(Color.Transparent)
-          .onClick(() => {
+      // 顶栏：使用与 EBookImportView 相同的 NavBarView 结构
+      NavBarView({
+        title       : this.titleEn,
+        leftButtons : [{
+          text   : $r('app.string.online_search_btn_cancel'),
+          onClick: () => {
             this.onCancel()
-          })
-
-        Blank().layoutWeight(1)
-
-        if (this.canShowRestore) {
-          Button() {
-            Text($r('app.string.eword_restore'))
-              .fontSize(16)
-              .fontColor($r('app.color.color_nav_tint'))
           }
-            .backgroundColor(Color.Transparent)
-            .onClick(() => {
-              void this.restoreAndComplete()
-            })
-        }
-
-        Button() {
-          Text($r('app.string.eword_save'))
-            .fontSize(16)
-            .fontColor($r('app.color.color_nav_tint'))
-        }
-          .backgroundColor(Color.Transparent)
-          .onClick(() => {
-            void this.saveAndComplete()
-          })
-      }
-        .width('100%')
-        .padding({ left: 8, right: 8, top: 8, bottom: 8 })
-        .backgroundColor($r('app.color.colorPrimary'))
-
-      Text(this.titleEn)
-        .fontSize(18)
-        .fontWeight(FontWeight.Medium)
-        .fontColor($r('app.color.color_white'))
-        .width('100%')
-        .textAlign(TextAlign.Center)
-        .padding({ left: 16, right: 16, bottom: 8 })
-        .backgroundColor($r('app.color.colorPrimary'))
+        }],
+        rightButtons: this.rightButtons
+      })
 
       Text(EWordEditManager.displayName(this.field))
         .fontSize(14)

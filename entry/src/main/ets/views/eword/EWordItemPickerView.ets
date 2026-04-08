@@ -5,6 +5,7 @@
 //  从详情「编辑」进入：列出可编辑字段，点击进入 EWordEditingView（对齐 iOS EWordItemPickerView）。
 //
 
+import { NavBarView } from '../../app/views/NavBarView'
 import { getString } from '../../common/utils/ResourceUtils'
 import { Toast } from '../../common/utils/Toast'
 import { SimpleEventBus } from '../../common/components/eventbus/SimpleEventBus'
@@ -25,11 +26,11 @@ export struct EWordItemPickerView {
   @Param isOnlineWord            : boolean = false
   @Event onDismiss               : () => void = () => {}
 
-  @Local selectedField         : EWordEditableField | null = null  // 当前选中字段
-  @Local showEditing           : boolean                   = false // 内层编辑页 sheet 开关
-  @Local overrideMap           : Record<string, string>    = {}    // 该词覆盖值 [fieldKey: value]
-  @Local cigenWords            : CigenWord[] | null        = null  // root fallback 数据
-  @Local sameRootDesc          : string | null             = null  // cognates fallback 数据
+  @Local selectedField           : EWordEditableField | null = null  // 当前选中字段
+  @Local showEditing             : boolean                   = false  // 内层编辑页 sheet 开关
+  @Local overrideMap             : Record<string, string>    = {}     // 该词覆盖值 [fieldKey: value]
+  @Local cigenWords              : CigenWord[] | null        = null   // root fallback 数据
+  @Local sameRootDesc            : string | null             = null   // cognates fallback 数据
 
   // 当前编辑词 title（与 iOS currentTitleEn 对齐）
   get currentTitleEn(): string {
@@ -43,14 +44,12 @@ export struct EWordItemPickerView {
 
   // 进入页面后拉取覆盖与 fallback 文案
   aboutToAppear(): void {
-
     void this.refreshOverrides()
     void this.refreshFallbackTexts()
   }
 
   // 读取该词覆盖 map（与 iOS refreshOverrides 对齐）
   async refreshOverrides(): Promise<void> {
-
     this.overrideMap = await EWordManager.shared.loadOverrides(this.currentTitleEn)
   }
 
@@ -69,7 +68,6 @@ export struct EWordItemPickerView {
 
   // 计算当前字段编辑初始值（与 iOS originalDetail.value(for:) 语义一致）
   currentValueForField(field: EWordEditableField): string {
-
     return this.originalDetail.valueForField(
       field,
       CigenWordHelper.rootDisplayTextFromCigens(this.cigenWords),
@@ -79,45 +77,22 @@ export struct EWordItemPickerView {
 
   build() {
     Column() {
-
-      // 顶栏：取消 / 全部恢复（样式对齐 iOS 导航栏）
-      Row() {
-        Button() {
-          Text($r('app.string.online_search_btn_cancel'))
-            .fontSize(16)
-            .fontColor($r('app.color.color_nav_tint'))
-        }
-          .backgroundColor(Color.Transparent)
-          .onClick(() => {
+      // 顶栏：使用与 EBookImportView 相同的 NavBarView 结构
+      NavBarView({
+        title       : this.currentTitleEn,
+        leftButtons : [{
+          text   : $r('app.string.online_search_btn_cancel'),
+          onClick: () => {
             this.onDismiss()
-          })
-
-        Blank().layoutWeight(1)
-
-        if (this.canRestoreAll) {
-          Button() {
-            Text($r('app.string.eword_restore_all'))
-              .fontSize(16)
-              .fontColor($r('app.color.color_nav_tint'))
           }
-            .backgroundColor(Color.Transparent)
-            .onClick(() => {
-              this.showRestoreAllConfirmDialog()
-            })
-        }
-      }
-        .width('100%')
-        .padding({ left: 8, right: 8, top: 8, bottom: 8 })
-        .backgroundColor($r('app.color.colorPrimary'))
-
-      Text(this.currentTitleEn)
-        .fontSize(18)
-        .fontWeight(FontWeight.Medium)
-        .fontColor($r('app.color.color_white'))
-        .width('100%')
-        .textAlign(TextAlign.Center)
-        .padding({ left: 16, right: 16, bottom: 8 })
-        .backgroundColor($r('app.color.colorPrimary'))
+        }],
+        rightButtons: this.canRestoreAll ? [{
+          text   : $r('app.string.eword_restore_all'),
+          onClick: () => {
+            this.showRestoreAllConfirmDialog()
+          }
+        }] : []
+      })
 
       // 列表提示语：与 iOS section header 对齐
       Text($r('app.string.eword_picker_hint'))
@@ -158,7 +133,6 @@ export struct EWordItemPickerView {
         }
       })
   }
-
 
   // 判断字段是否有覆盖值（供 @Builder 使用，避免在 @Builder 内写局部 const）
   hasOverrideForField(field: EWordEditableField): boolean {
@@ -214,7 +188,6 @@ export struct EWordItemPickerView {
   // 内层单字段编辑页（sheet）
   @Builder
   buildEditingSheet() {
-
     if (this.selectedField !== null) {
       EWordEditingView({
         titleEn      : this.currentTitleEn,
@@ -249,7 +222,6 @@ export struct EWordItemPickerView {
 
   // 执行全部恢复并关闭当前 picker
   async restoreAllAndDismiss(): Promise<void> {
-
     if (this.currentTitleEn.length < 1) {
       return
     }
