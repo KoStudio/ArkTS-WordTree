@@ -58,7 +58,7 @@ export namespace  Servers {
     // 这里模拟Swift中的isDebug()判断
     // 实际开发中可以根据需要实现调试判断逻辑
     if (DebugFlg.isDebugMode()) {
-      return Address_dcs.local;
+      //return Address_dcs.local;
     }
 
     if (route === Route.word || route === Route.search) {

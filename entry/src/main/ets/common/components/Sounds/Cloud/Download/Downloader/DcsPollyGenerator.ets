@@ -80,6 +80,7 @@ export class DcsPollyGenerator {
       // 业务失败或 data 为空
       if (!resp.succeed || !resp.data || resp.data.length === 0) {
         finished(null, resp.msg ?? 'Polly request failed');
+        DebugLog.e(resp.msg ?? 'Polly request failed')
         return;
       }
       const b64 = resp.data[0].audioBase64;
