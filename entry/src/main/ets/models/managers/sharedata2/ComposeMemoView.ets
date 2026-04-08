@@ -394,15 +394,12 @@ export struct ComposeMemoView {
             .opacity(0.35)
         } else {
 
-          // 他人笔记：点心形收藏/取消
+          // 他人笔记：心形仅展示，点击整行切换收藏（避免与外层 Column.onClick 重复触发）
           Text(this.isMemoAdded(memo) ? '♥' : '♡')
             .fontSize(22)
             .width(36)
             .textAlign(TextAlign.Center)
             .fontColor($r('app.color.color_text'))
-            .onClick(() => {
-              this.actionToggleFavorite(memo, index)
-            })
         }
 
         Text(`${memo.favCount ?? 0}`)
@@ -610,7 +607,7 @@ export struct ComposeMemoView {
     }
   }
 
-  // 取消收藏他人笔记（乐观更新 + 回滚）
+  // 取消收藏他人笔记（乐观更新 UI；shareMemos 仅由 ShareMemoManager2 删除，否则 removeLocalShareMemoFromWordWithMemoId 找不到行）
   private removeFavorite(memo: Memo2, index: number): void {
 
     const memoId = memo.memoId
@@ -620,13 +617,6 @@ export struct ComposeMemoView {
     }
 
     this.favoritedMemoIds = this.favoritedMemoIds.filter((id) => id !== memoId)
-
-    const shareMemos = this.word.shareMemos
-
-    if (shareMemos) {
-      this.word.shareMemos = shareMemos.filter((d) =>
-        (d[WordUser.KShareMemo_MemoId] ?? '') !== String(memoId))
-    }
 
     const oldFav = memo.favCount ?? 0
 
@@ -638,7 +628,7 @@ export struct ComposeMemoView {
 
     this.refreshTrigger++
 
-    // 写库并请求 fav -1
+    // 写库并请求 fav -1（内部从 word.shareMemos 按 memoId 删除）
     ShareMemoManager2.shared.removeLocalShareMemoFromWordWithMemoId(this.word, memoId, (succeed: boolean) => {
 
       if (succeed) {
@@ -650,16 +640,6 @@ export struct ComposeMemoView {
 
         this.favoritedMemoIds = [...this.favoritedMemoIds, memoId]
 
-        if (shareMemos) {
-
-          const restore: Record<string, string> = {}
-
-          restore[WordUser.KShareMemo_MemoText]   = memo.memoText ?? ''
-          restore[WordUser.KShareMemo_AuthorName] = memo.userName ?? '-'
-          restore[WordUser.KShareMemo_MemoId]     = String(memoId)
-          this.word.shareMemos = [...shareMemos, restore]
-        }
-
         if (index < this.memos.length) {
           const arr = [...this.memos]
           arr[index] = this.memos[index].withFavCount(oldFav)
@@ -667,6 +647,8 @@ export struct ComposeMemoView {
         }
 
         this.refreshTrigger++
+
+        // 与列表/DB 对齐
         this.loadData()
       }
     })
@@ -691,15 +673,8 @@ export struct ComposeMemoView {
       return
     }
 
+    // 不在此处写入 word.shareMemos：addLocalShareMemo 会追加一条，重复写入会导致同一笔记出现两条
     this.favoritedMemoIds = [...this.favoritedMemoIds, memoId]
-
-    const newMemo: Record<string, string> = {}
-
-    newMemo[WordUser.KShareMemo_MemoText]   = memo.memoText ?? ''
-    newMemo[WordUser.KShareMemo_AuthorName] = memo.userName ?? '-'
-    newMemo[WordUser.KShareMemo_MemoId]     = String(memoId)
-
-    this.word.shareMemos = [...cur, newMemo]
 
     const oldFav = memo.favCount ?? 0
 

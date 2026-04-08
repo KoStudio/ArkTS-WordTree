@@ -7,7 +7,6 @@ import { getString } from '../../../common/utils/ResourceUtils';
 import { TEUtility } from '../../../common/utils/TEUtility';
 import { CigenWord } from '../../../models/datas/cigen/CigenWord';
 import { CigenWordHelper } from '../../../models/datas/cigen/CigenWordHelper';
-import { SearchConstants, SearchManager } from '../../../models/datas/model/SearchManager';
 import { WordUser } from '../../../models/datas/myData/WordUser';
 import { WordDetail } from '../../../models/datas/word/WordDetail';
 import { DetailItem, DetailItemManager,
@@ -16,8 +15,13 @@ import { DetailItem, DetailItemManager,
 import { MemberManager } from '../../../models/managers/member/MemberManager';
 import { SettingManager } from '../../../models/managers/setting/SettingManager';
 import { ComposeMemoViewConfig } from '../wordcard/memo/ComposeMemoView';
-import { ItemInfo } from '@kit.MediaLibraryKit';
 import { SimpleEventBus } from '../../../common/components/eventbus/SimpleEventBus';
+import { Toast } from '../../../common/utils/Toast';
+import {
+  ShareMemoManager2,
+  ShareMemoManager2Notification,
+  ShareMemoNotificationPayload
+} from '../../../models/managers/sharedata2/ShareMemoManager2';
 import { DetailStyle, StyleItem } from '../detailstyle/DetailStyle';
 import { CigenWordsViewConfig } from '../cigen/CigenWordsView';
 import { ReclaimWordViewConfig } from '../../reclaimword/ReclaimWordView';
@@ -54,11 +58,14 @@ export struct DetailCardOne {
   // @Local subCells        : SubCell[]       = []
 
   @Local sectionedCells : SectionDatas<string, SubCell> = new SectionDatas()
-
   @Local isShowEWordPickerSheet : boolean = false
+  // 与 iOS DetailView.wordMemos 一致：自建 + shareMemos 合并列表（ShareMemoManager2.loadLocalMemosOfWord）
+  @Local wordMemos       : Array<Record<string, string>> = []
 
   private unsubItemOrder   : (() => void) | undefined = undefined  // 详情块显示顺序变更
   private unsubBookUpdated : (() => void) | undefined = undefined  // 当前课本/EWord 等数据变更
+  private unsubShareMemoPrivate : (() => void) | undefined = undefined  // 笔记本地变更（与 iOS PrivateChanged）
+  private unsubShareMemoPublic  : (() => void) | undefined = undefined  // 公开列表/收藏变更（与 iOS PublicChanged）
 
   aboutToAppear(): void {
     this.loadData()
@@ -73,6 +80,22 @@ export struct DetailCardOne {
 
       void this.loadData()
     })
+
+    // 与 iOS DetailView `ShareMemoManager2.Notification` 订阅一致，ComposeMemo 返回后刷新合并笔记区
+    if (this.unsubShareMemoPrivate === undefined) {
+
+      this.unsubShareMemoPrivate = SimpleEventBus.on<ShareMemoNotificationPayload>(
+        ShareMemoManager2Notification.Name.PrivateChanged,
+        (p?: ShareMemoNotificationPayload) => {
+          this.handleShareMemoNotification(p)
+        })
+
+      this.unsubShareMemoPublic = SimpleEventBus.on<ShareMemoNotificationPayload>(
+        ShareMemoManager2Notification.Name.PublicChanged,
+        (p?: ShareMemoNotificationPayload) => {
+          this.handleShareMemoNotification(p)
+        })
+    }
   }
 
   aboutToDisappear(): void {
@@ -86,6 +109,39 @@ export struct DetailCardOne {
       this.unsubBookUpdated()
       this.unsubBookUpdated = undefined
     }
+
+    if (this.unsubShareMemoPrivate) {
+      this.unsubShareMemoPrivate()
+      this.unsubShareMemoPrivate = undefined
+    }
+
+    if (this.unsubShareMemoPublic) {
+      this.unsubShareMemoPublic()
+      this.unsubShareMemoPublic = undefined
+    }
+  }
+
+  // p：事件负载；仅当前词条 titleEn 一致时刷新（与 iOS idx 匹配语义）
+  private handleShareMemoNotification(p?: ShareMemoNotificationPayload): void {
+
+    if (!p) {
+      return
+    }
+
+    if (p.word.titleEn !== this.word.titleEn) {
+      return
+    }
+
+    this.reloadWordMemos()
+  }
+
+  // 从 WordUser 合并自建与收藏笔记，写入 wordMemos
+  private reloadWordMemos(): void {
+
+    ShareMemoManager2.shared.loadLocalMemosOfWord(this.word, (localMemos: Array<Record<string, string>>) => {
+
+      this.wordMemos = localMemos
+    })
   }
 
   async loadData(){
@@ -101,6 +157,9 @@ export struct DetailCardOne {
       }
       this.sectionedCells = sectionedCells
     }
+
+    // 详情刷新后同步笔记区（含 shareMemos）
+    this.reloadWordMemos()
 
   }
 
@@ -264,7 +323,8 @@ export struct DetailCardOne {
   // 构建发音显示行
   @Builder
   buildPronunciationRow() {
-    Text(`${this.word.pronEn}`)
+    // 与 EWord「音标(item8/pronUs)」保持一致：优先展示已合并覆盖后的详情值
+    Text(`${this.wordDetail?.pronUs ?? this.word.pronUs ?? this.word.pronEn ?? ''}`)
       .width('100%')
       .fontSize(this.styleItem.wordPron.fontSize)//(18)
       .fontColor($r('app.color.color_card_detail'))
@@ -478,13 +538,11 @@ export struct DetailCardOne {
     .margin({ top: 5, left: 5, right: 5 })
   }
 
-  // 打开 EWord 字段选择 Sheet（按用户要求：使用 bindSheet，而非 NavPath 跳转）
+  // 打开 EWord 字段选择 Sheet（按 iOS present sheet 路径对齐）
   async openEWordItemPickerSheet(): Promise<void> {
-
-    if (this.wordDetail === null) {
-      this.word.clearWordDetailCache()
-      this.wordDetail = await this.word.getWordDetail()
-    }
+    // 先清除缓存，确保读取到最新 detail（包含刚保存后的覆盖）
+    this.word.clearWordDetailCache()
+    this.wordDetail = await this.word.getWordDetail()
 
     if (this.wordDetail === null) {
       return
@@ -493,10 +551,9 @@ export struct DetailCardOne {
     this.isShowEWordPickerSheet = true
   }
 
-  // 构建 EWord 字段选择 Sheet 内容（与 iOS present sheet 行为一致）
+  // 构建 EWord 字段选择 Sheet
   @Builder
   buildEWordItemPickerSheet() {
-
     if (this.wordDetail !== null) {
       EWordItemPickerView({
         originalDetail : this.wordDetail as WordDetail,
@@ -504,8 +561,9 @@ export struct DetailCardOne {
         isOnlineWord   : this.word.isOnlineWord,
         onDismiss      : () => {
           this.isShowEWordPickerSheet = false
-          this.word.clearWordDetailCache()
 
+          // 关闭后立即强制刷新（与 iOS dismiss 后刷新一致）
+          this.word.clearWordDetailCache()
           void this.loadData()
         }
       })
@@ -525,8 +583,8 @@ export struct DetailCardOne {
       .backgroundColor(Color.Transparent)
       .margin({ right: 16 })
       .onClick(()=> {
-        // 打开 EWord 选择页（按用户要求：使用 bindSheet，而非 NavPath 跳转）
-        this.openEWordItemPickerSheet()
+        // 在当前详情页内弹出 EWord 编辑 Sheet
+        void this.openEWordItemPickerSheet()
       })
 
       Button(){
@@ -546,48 +604,81 @@ export struct DetailCardOne {
     .margin({bottom: 20})
     .width('100%')
   }
-  // 构建备忘录标题区域
+  // 构建备忘录标题区域（与 iOS DetailView getSectionDatasFromWord + Memo 区一致：loadLocalMemosOfWord）
   @Builder
   buildMemoPanel() {
     Column(){
 
-      if (this.word.memo){
-        //笔记 标题
-        Text($r('app.string.wordcard_memo_txt_title')) //笔记
+      if (this.wordMemos.length > 0) {
+
+        Text($r('app.string.memo_pri_memo_title'))
           .fontSize(14)
           .fontColor($r('app.color.color_detail'))
           .textAlign(TextAlign.Start)
-          .margin({ top: 25, left:10 })
+          .margin({ top: 25, left: 10 })
       }
 
-      //笔记内容
       Column(){
-        if (this.word.memo){ //有笔记
 
-          Column(){
-            Text(this.word.memo)
-              .fontSize(this.styleItem.subtitle.fontSize)//(16)
-              .fontColor($r('app.color.color_list_item_subtitle'))
-              .textAlign(TextAlign.Start)
+        if (this.wordMemos.length > 0) {
 
-            Row(){
-              // 删除按钮
-              IconTintButton({ icon: $r('app.media.trash'), iconSize: 26, onClickCallBack:()=>{ this.actionRemoveMemo() } })
+          ForEach(this.wordMemos, (memoDict: Record<string, string>, rowIndex: number) => {
+
+            Column({ space: 6 }) {
+
+              Column({ space: 4 }) {
+
+                Text(memoDict[WordUser.KShareMemo_MemoText] ?? '')
+                  .fontSize(this.styleItem.subtitle.fontSize)
+                  .fontColor($r('app.color.color_list_item_subtitle'))
+                  .textAlign(TextAlign.Start)
+                  .width('100%')
+
+                Text(this.memoAuthorLineFor(memoDict))
+                  .fontSize(12)
+                  .fontColor($r('app.color.color_list_item_detail'))
+                  .textAlign(TextAlign.Start)
+                  .width('100%')
+              }
+              .width('100%')
+              .onClick(() => {
+
+                // 进入编辑页（与 iOS didSelectRow / actionNeedEditMemo）
+                ComposeMemoViewConfig.open({ word: this.word, wordIndexOnPage: this.wordIndexOnPage })
+              })
+
+              Row(){
+
+                IconTintButton({
+                  icon             : $r('app.media.trash'),
+                  iconSize         : 26,
+                  onClickCallBack  : () => {
+                    this.actionRemoveMemoAtRow(rowIndex)
+                  }
+                })
+              }
+              .padding({ right: 10 })
+              .justifyContent(FlexAlign.End)
+              .width('100%')
             }
-            .padding({right: 10})
-            .justifyContent(FlexAlign.End)
             .width('100%')
-          }
-          .justifyContent(FlexAlign.Start)
-          .alignItems(HorizontalAlign.Start)
+            .padding({ top: 8, bottom: 10 })
+            .border({
+              width  : { bottom: rowIndex < this.wordMemos.length - 1 ? 1 : 0 },
+              style  : BorderStyle.Dashed,
+              color  : $r('app.color.color_line')
+            })
+          },
+            (memoDict: Record<string, string>, idx: number) =>
+              `${idx}_${memoDict[WordUser.KShareMemo_MemoId] ?? ''}`)
+        } else {
 
-        }else{
-          ///写笔记
+          // 无笔记：写笔记入口（与 iOS memoEmptyCell）
           Row(){
-            TintImage({src: $r('app.media.ic_xuebiji'),colorStr: '#ffffffff',iconSize: 30})
-              .margin({right: 5})
+            TintImage({ src: $r('app.media.ic_xuebiji'), colorStr: '#ffffffff', iconSize: 30 })
+              .margin({ right: 5 })
 
-            Text($r('app.string.wordcard_memo_txt_tip'))///写笔记
+            Text($r('app.string.memo_pri_memo_txt'))
               .fontColor($r('app.color.color_white'))
               .fontSize(16)
           }
@@ -598,24 +689,86 @@ export struct DetailCardOne {
           .margin(5)
           .justifyContent(FlexAlign.Center)
           .width('100%')
+          .onClick(() => {
+
+            ComposeMemoViewConfig.open({ word: this.word, wordIndexOnPage: this.wordIndexOnPage })
+          })
         }
 
       }
       .width('100%')
       .padding(10)
       .backgroundColor(this.word.deleted ? Color.Transparent : Color.White)
-      .border({width: {bottom: 1}, style: BorderStyle.Dashed, color: $r('app.color.color_line')})
-      .onClick(()=>{
-        //编辑笔记
-        ComposeMemoViewConfig.open({ word: this.word, wordIndexOnPage: this.wordIndexOnPage })
-      })
-
+      .border({ width: { bottom: 1 }, style: BorderStyle.Dashed, color: $r('app.color.color_line') })
 
     }
     .width('100%')
     .justifyContent(FlexAlign.Start)
     .alignItems(HorizontalAlign.Start)
 
+  }
+
+  // memoDict：一行合并笔记；返回作者行文案（与 iOS config memoListCell lblDetail）
+  private memoAuthorLineFor(memoDict: Record<string, string>): string {
+
+    const base      = getString($r('app.string.memo_author_txt'))
+    const memoIdStr = memoDict[WordUser.KShareMemo_MemoId] ?? ''
+
+    // 本人本地笔记
+    if (memoIdStr === ShareMemoManager2.PrivateMemoId) {
+
+      return `${base}: ${getString($r('app.string.memo_author_self'))}`
+    }
+
+    return `${base}: ${memoDict[WordUser.KShareMemo_AuthorName] ?? ''}`
+  }
+
+  // rowIndex：wordMemos 下标；删除自建或收藏的他人笔记（与 iOS didClickedButton memo）
+  private actionRemoveMemoAtRow(rowIndex: number): void {
+
+    const memoDict = this.wordMemos[rowIndex]
+
+    if (!memoDict) {
+      return
+    }
+
+    const memoIdStr = memoDict[WordUser.KShareMemo_MemoId] ?? ''
+
+    // 删除本地正文（与 iOS removeLocalSelfMemoFromWord）
+    if (memoIdStr === ShareMemoManager2.PrivateMemoId) {
+
+      void ShareMemoManager2.shared.removeLocalSelfMemoFromWord(this.word, (succeed: boolean) => {
+
+        if (succeed) {
+
+          Toast.showMessage($r('app.string.memo_msg_remove_memo_success'))
+
+          ShareMemoManager2.shared.postNotification(false, this.word, this.wordIndexOnPage)
+
+          this.reloadWordMemos()
+        }
+      })
+      return
+    }
+
+    // 删除收藏：映射到 shareMemos 下标（与 iOS realIndex）
+    let shareIndex = rowIndex
+
+    if (this.word.memo !== null && (this.word.memo?.length ?? 0) > 0) {
+      shareIndex = rowIndex - 1
+    }
+
+    ShareMemoManager2.shared.removeLocalShareMemoFromWordByIndex(this.word, shareIndex, (succeed: boolean) => {
+
+      if (succeed) {
+
+        Toast.showMessage($r('app.string.memo_msg_remove_memo_success'))
+
+        ShareMemoManager2.shared.postNotification(false, this.word, this.wordIndexOnPage)
+
+        this.reloadWordMemos()
+      }
+    })
   }
 
   // 构建已删除标签
@@ -638,11 +791,6 @@ export struct DetailCardOne {
     //删除或恢复
     this.word.changeDeletedWord(!this.word.isDeleted())
     this.isRefreshing = false
-  }
-
-  actionRemoveMemo(){
-    //删除笔记
-    SearchManager.shared.saveLocalMemoForWord(this.word, '');
   }
 
   getHilightTexts(): string [] {
