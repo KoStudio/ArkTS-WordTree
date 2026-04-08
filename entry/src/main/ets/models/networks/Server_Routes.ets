@@ -5,7 +5,7 @@ class Address_dcs {
   // 生产环境服务器地址
   static readonly server: string = "https://www.dancishu.com/dcs";
   // 本地开发环境地址
-  //static readonly local: string = "http://192.168.1.118:3005";//暂无Dev环境
+  static readonly local: string = "http://192.168.1.121:3005";//暂无Dev环境
 }
 
 // 定义服务器地址常量类
@@ -58,7 +58,7 @@ export namespace  Servers {
     // 这里模拟Swift中的isDebug()判断
     // 实际开发中可以根据需要实现调试判断逻辑
     if (DebugFlg.isDebugMode()) {
-      //return Address.local;
+      return Address_dcs.local;
     }
 
     if (route === Route.word || route === Route.search) {
