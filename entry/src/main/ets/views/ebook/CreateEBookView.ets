@@ -5,15 +5,15 @@
 // 简单的 EBook 创建输入界面，通过 sheet 弹出，采用与 EBookImportView 一致的卡片风格。
 //
 
-import { buildNavTitle } from '../../../app/constants/AppBuilders'
-import { dNavBackIcon } from '../../../app/constants/AppDefines'
-import { Toast } from '../../../common/utils/Toast'
-import { getString } from '../../../common/utils/ResourceUtils'
-import { BookManagerNotification } from '../../../models/datas/book/BookManager'
-import { EBookManager } from '../../../models/managers/ebook/EBookManager'
-import { MemberManager } from '../../../models/managers/member/MemberManager'
-import { NavPop, NavTo } from '../../../pages/NavPathManager'
-import { SimpleEventBus } from '../../../common/components/eventbus/SimpleEventBus'
+import { buildNavTitle } from '../../app/constants/AppBuilders'
+import { dNavBackIcon } from '../../app/constants/AppDefines'
+import { Toast } from '../../common/utils/Toast'
+import { getString } from '../../common/utils/ResourceUtils'
+import { BookManagerNotification } from '../../models/datas/book/BookManager'
+import { EBookManager } from '../../models/managers/ebook/EBookManager'
+import { MemberManager } from '../../models/managers/member/MemberManager'
+import { NavPop, NavTo } from '../../pages/NavPathManager'
+import { SimpleEventBus } from '../../common/components/eventbus/SimpleEventBus'
 
 export namespace CreateEBookViewConfig {
 

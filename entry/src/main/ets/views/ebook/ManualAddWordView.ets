@@ -5,13 +5,13 @@
 // 从零添加：仅输入英文拼写 + 选 Part/Unit，保存后生成仅含 titleEn 的词条，内容可在详情中用 EWord 补全。
 //
 
-import { buildNavTitle } from '../../../app/constants/AppBuilders'
-import { dNavBackIcon } from '../../../app/constants/AppDefines'
-import { getString } from '../../../common/utils/ResourceUtils'
-import { Toast } from '../../../common/utils/Toast'
-import { BookManager } from '../../../models/datas/book/BookManager'
-import { WordDetail } from '../../../models/datas/word/WordDetail'
-import { NavPop } from '../../../pages/NavPathManager'
+import { buildNavTitle } from '../../app/constants/AppBuilders'
+import { dNavBackIcon } from '../../app/constants/AppDefines'
+import { getString } from '../../common/utils/ResourceUtils'
+import { Toast } from '../../common/utils/Toast'
+import { BookManager } from '../../models/datas/book/BookManager'
+import { WordDetail } from '../../models/datas/word/WordDetail'
+import { NavPop } from '../../pages/NavPathManager'
 import { PartUnitPickerView } from './PartUnitPickerView'
 
 @ComponentV2

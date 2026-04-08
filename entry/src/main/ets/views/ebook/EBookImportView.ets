@@ -5,14 +5,14 @@
 
 import { common } from '@kit.AbilityKit'
 import { picker } from '@kit.CoreFileKit'
-import { NavPop } from '../../../pages/NavPathManager'
-import { EBookExportImportManager } from '../../../models/managers/ebook/EBookExportImportManager'
-import { Book } from '../../../models/datas/book/Book'
-import { Toast } from '../../../common/utils/Toast'
-import { FileUtility } from '../../../common/utils/FileUtility'
-import { getString, getStringF } from '../../../common/utils/ResourceUtils'
+import { NavPop } from '../../pages/NavPathManager'
+import { EBookExportImportManager } from '../../models/managers/ebook/EBookExportImportManager'
+import { Book } from '../../models/datas/book/Book'
+import { Toast } from '../../common/utils/Toast'
+import { FileUtility } from '../../common/utils/FileUtility'
+import { getString, getStringF } from '../../common/utils/ResourceUtils'
 import { EBookHelpView } from './EBookHelpView'
-import { NavBarView } from '../../../app/views/NavBarView'
+import { NavBarView } from '../../app/views/NavBarView'
 
 @ComponentV2
 export struct EBookImportView {

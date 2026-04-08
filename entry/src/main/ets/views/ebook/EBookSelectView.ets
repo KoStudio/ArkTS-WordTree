@@ -5,14 +5,14 @@
 // 从学习详情页将当前单词保存到任意本地 EBook：选 EBook 或新建 → 选 Part/Unit → 若已存在则确认覆盖后写入。
 //
 
-import { buildNavTitle } from '../../../app/constants/AppBuilders'
-import { dNavBackIcon } from '../../../app/constants/AppDefines'
-import { getStringF } from '../../../common/utils/ResourceUtils'
-import { Book } from '../../../models/datas/book/Book'
-import { BookManager, BookManagerNotification } from '../../../models/datas/book/BookManager'
-import { WordDetail } from '../../../models/datas/word/WordDetail'
-import { NavTo } from '../../../pages/NavPathManager'
-import { SimpleEventBus } from '../../../common/components/eventbus/SimpleEventBus'
+import { buildNavTitle } from '../../app/constants/AppBuilders'
+import { dNavBackIcon } from '../../app/constants/AppDefines'
+import { getStringF } from '../../common/utils/ResourceUtils'
+import { Book } from '../../models/datas/book/Book'
+import { BookManager, BookManagerNotification } from '../../models/datas/book/BookManager'
+import { WordDetail } from '../../models/datas/word/WordDetail'
+import { NavTo } from '../../pages/NavPathManager'
+import { SimpleEventBus } from '../../common/components/eventbus/SimpleEventBus'
 import { CreateEBookViewConfig } from './CreateEBookView'
 import { PartUnitPickerView } from './PartUnitPickerView'
 

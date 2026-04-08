@@ -6,10 +6,10 @@
 //
 
 import webview from '@ohos.web.webview'
-import { buildNavTitle } from '../../../app/constants/AppBuilders'
-import { dNavBackIcon } from '../../../app/constants/AppDefines'
-import { LanguageManager } from '../../../common/components/Language/LanguageManager'
-import { AppLanguage } from '../../../common/components/Language/AppLanguage'
+import { buildNavTitle } from '../../app/constants/AppBuilders'
+import { dNavBackIcon } from '../../app/constants/AppDefines'
+import { LanguageManager } from '../../common/components/Language/LanguageManager'
+import { AppLanguage } from '../../common/components/Language/AppLanguage'
 
 @ComponentV2
 export struct EBookHelpView {
