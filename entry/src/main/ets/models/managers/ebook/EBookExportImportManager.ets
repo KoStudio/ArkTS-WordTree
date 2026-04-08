@@ -266,13 +266,37 @@ export class EBookExportImportManager {
       return null
     }
 
-    // 调用：打包 inner 目录为 zip
-    const zipPath = await ZipTool.createOneZip(innerDir)
+    // 调用：打包 inner 目录为 zip（产物路径为 innerDir + ".zip"，位于 wrapDir 内）
+    const zipInsideWrap = await ZipTool.createOneZip(innerDir)
 
-    // 调用：打包后清理临时目录
+    // 分支：打包失败时清理并返回
+    if (zipInsideWrap === null || !FileUtility.isFileExistAt(zipInsideWrap)) {
+
+      FileUtility.deleteDirectoryAt(wrapDir)
+      return null
+    }
+
+    // zip 在 wrapDir 下，下面会 deleteDirectoryAt(wrapDir)；若不先移出，会把 zip 一起删掉导致导出必败
+    const zipOutside = FileUtility.appendPathComponent(parent, `_ebook_pack_${jobId}.zip`)
+
+    FileUtility.deleteFileAt(zipOutside)
+
+    // 分支：移出 wrapDir 失败时再尝试复制
+    if (!FileUtility.moveFile(zipInsideWrap, zipOutside)) {
+
+      if (!FileUtility.copyFile(zipInsideWrap, zipOutside)) {
+
+        FileUtility.deleteDirectoryAt(wrapDir)
+        return null
+      }
+
+      FileUtility.deleteFileAt(zipInsideWrap)
+    }
+
+    // 调用：临时目录可回收，zip 已落到 parent
     FileUtility.deleteDirectoryAt(wrapDir)
 
-    return zipPath
+    return zipOutside
   }
 
   /**
@@ -322,11 +346,17 @@ export class EBookExportImportManager {
       // 分支：移动导出文件失败时清理 zip 并返回
       if (!FileUtility.moveFile(zipPath, exportPath)) {
 
-        // 调用：删除未移动成功的 zip
-        FileUtility.deleteFileAt(zipPath)
+        // 分支：移动失败时回退为复制（部分机型/目录组合下 move 可能失败）
+        if (!FileUtility.copyFile(zipPath, exportPath)) {
 
-        completion(false, getString($r('app.string.ebook_export_failed_msg')), null)
-        return
+          // 调用：删除未落地成功的 zip
+          FileUtility.deleteFileAt(zipPath)
+          completion(false, `export move/copy failed: ${zipPath} -> ${exportPath}`, null)
+          return
+        }
+
+        // 调用：复制成功后清理临时 zip
+        FileUtility.deleteFileAt(zipPath)
       }
 
       completion(true, null, exportPath)

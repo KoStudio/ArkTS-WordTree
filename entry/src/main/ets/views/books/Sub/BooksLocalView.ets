@@ -16,10 +16,10 @@ import { SearchManager } from '../../../models/datas/model/SearchManager'
 import { WordUserDbAccess } from '../../../models/datas/myData/WordUserDbAccess'
 import { MemberManager } from '../../../models/managers/member/MemberManager'
 import { UserManager } from '../../../models/managers/user/UserManager'
-import { EWordSearchAddView } from '../../ebook/EWordSearchAddView'
-import { MyBackedUpEBooksView } from '../../ebook/MyBackedUpEBooksView'
-import { EBookImportView } from '../../ebook/EBookImportView'
 import { TextButton } from '../../../app/views/buttons/TextButton'
+import { EBookImportView } from '../../ebook/EBookImportView'
+import { MyBackedUpEBooksView } from '../../ebook/MyBackedUpEBooksView'
+import { EWordSearchAddView } from '../../ebook/EWordSearchAddView'
 
 // 统一管理 BooksLocalView 中单一 bindSheet 的内容类型，避免多个 bindSheet 同层互相抢占。
 enum EBookSheetType {
@@ -507,12 +507,13 @@ export struct BooksLocalView {
   private actionExportEbook(book: Book): void {
 
     // 调用：导出 EBook
-    EBookExportImportManager.shared.exportEBook(book, (ok: boolean, _err: string | null, exportPath: string | null) => {
+    EBookExportImportManager.shared.exportEBook(book, (ok: boolean, err: string | null, exportPath: string | null) => {
 
       if (!ok || exportPath === null) {
 
         // 调用：提示导出失败
-        Toast.showMessage(getString($r('app.string.ebook_export_failed_msg')))
+        const msg = (err !== null && err.length > 0) ? err : getString($r('app.string.ebook_export_failed_msg'))
+        Toast.showMessage(msg)
         return
       }
 
