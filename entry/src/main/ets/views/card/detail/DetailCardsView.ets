@@ -38,6 +38,10 @@ import { Plan } from "../../../models/managers/plan/plancurve/Plan"
 import { DayOf } from "../../../models/managers/plan/plancurve/DayOf"
 import { OnlineSearchWordsViewConfig } from "../../onlinesearch/OnlineSearchWordsView"
 import { DailyCountManager, DailyCountType } from "../../../models/managers/member/DailyCountManaer"
+import { WordDetail } from "../../../models/datas/word/WordDetail"
+import { BookManager } from "../../../models/datas/book/BookManager"
+import { EWordItemPickerView } from "../../eword/EWordItemPickerView"
+import { EBookSelectViewConfig } from "../../ebook/EBookSelectView"
 
 export namespace DetailCardsViewConfig {
 
@@ -84,6 +88,8 @@ export struct DetailCardsView {
   @Local private showingDictText       : string        = ''        // 字典正在显示的文本
   @Local private isShowMemberView      : boolean       = false
   @Local private isShowDetailSort      : boolean       = false     // 是否显示详细项目排序面板
+  @Local private isShowEWordPickerSheet : boolean       = false     // 与 iOS editCurrentWord → EWordItemPicker 一致
+  @Local private wordDetailForEWordPicker : WordDetail | null = null
 
   @Local private isEnableContrast      : boolean       = false
 
@@ -211,6 +217,15 @@ export struct DetailCardsView {
       .height('100%')
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       .backgroundColor($r('app.color.color_background'))
+      .bindSheet($$this.isShowEWordPickerSheet, this.buildEWordItemPickerSheet(), {
+        detents         : [SheetSize.LARGE],
+        preferType      : SheetType.CENTER,
+        backgroundColor : $r('app.color.colorPrimary'),
+        showClose       : false,
+        onDisappear     : () => {
+          this.isShowEWordPickerSheet = false
+        }
+      })
     }
     .hideTitleBar(true) //这里使用buildNavBar
     .title(buildNavTitle(this.getNavTitle())) // 设置导航栏标题
@@ -395,37 +410,123 @@ export struct DetailCardsView {
     OnlineSearchWordsViewConfig.open()
   }
 
-  ///显示转到测验或挑战页面的弹出选项
+  ///显示转到测验或挑战页面的弹出选项（与 iOS DetailViewController.actionPopmenu 顺序、文案一致）
   private actionPopmenu(){
-    let options: ItemOption[] = []
 
+    // 与 iOS `stopRoll()` 一致：弹出菜单时停止自动翻页
+    if (this.isRolling) {
+      this.isRolling = false
+    }
 
-    ///我要测验
-    options.push(
-      {text: getString($r('app.string.learn_detail_to_test_btn_test')),action: ()=>{
-        //我要测验
+    logEvent("CardsView_detail_popmenu")
+
+    const options: ItemOption[] = []
+
+    // LEARN_DETAIL_TO_TEST_BTN_TEST
+    options.push({
+      text   : getString($r('app.string.learn_detail_to_test_btn_test')),
+      action : () => {
         QuizManager.shared.questionMode = QuestionMode.Normal
         this.openTestStart()
-      }})
+      }
+    })
 
-    ///我要挑战
-    options.push(
-      {text: getString($r('app.string.learn_detail_to_test_btn_chlg')),action: ()=>{
-        //我要测验
+    // LEARN_DETAIL_TO_TEST_BTN_CHLG
+    options.push({
+      text   : getString($r('app.string.learn_detail_to_test_btn_chlg')),
+      action : () => {
         QuizManager.shared.questionMode = QuestionMode.Challenge
         this.openTestStart()
-      }})
+      }
+    })
 
-    ///拼写练习
-    options.push(
-      {text: getString($r('app.string.learn_detail_to_test_btn_spell')),action: ()=>{
-        //拼写练习
+    // LEARN_DETAIL_TO_TEST_BTN_SPELL
+    options.push({
+      text   : getString($r('app.string.learn_detail_to_test_btn_spell')),
+      action : () => {
         QuizManager.shared.questionMode = QuestionMode.Spell
         this.openTestStart()
-      }})
+      }
+    })
 
-    Toast.showSelectOptions($r('app.string.learn_detail_to_test_msg'),undefined, options, $r('app.string.learn_detail_to_test_btn_cancel'))
+    // EWORD_EDIT_ACTION → editCurrentWord()
+    options.push({
+      text   : getString($r('app.string.eword_edit_action')),
+      action : () => {
+        void this.openEWordItemPickerForCurrentWord()
+      }
+    })
 
+    // EBOOK_SAVE_AS → EBookSelectView
+    options.push({
+      text   : getString($r('app.string.ebook_save_as')),
+      action : () => {
+        void this.openEBookSelectForCurrentWord()
+      }
+    })
+
+    Toast.showSelectOptions(
+      $r('app.string.learn_detail_to_test_msg'),
+      undefined,
+      options,
+      $r('app.string.learn_detail_to_test_btn_cancel'))
+  }
+
+  // 与 iOS `editCurrentWord()`：当前页词条打开 EWord 字段选择 Sheet
+  private async openEWordItemPickerForCurrentWord(): Promise<void> {
+
+    const w = this.words[this.pageIndex]
+
+    w.clearWordDetailCache()
+
+    const detail = await w.getWordDetail()
+
+    if (detail === null) {
+      return
+    }
+
+    this.wordDetailForEWordPicker = detail
+    this.isShowEWordPickerSheet = true
+  }
+
+  // 与 iOS：present EBookSelectView(originalDetail:)
+  private async openEBookSelectForCurrentWord(): Promise<void> {
+
+    const w = this.words[this.pageIndex]
+
+    w.clearWordDetailCache()
+
+    const detail = await w.getWordDetail()
+
+    if (detail === null) {
+      return
+    }
+
+    EBookSelectViewConfig.open({ originalDetail: detail })
+  }
+
+  // 构建 EWord 编辑 Sheet（与 DetailCardOne / iOS UIHostingController 一致）
+  @Builder
+  buildEWordItemPickerSheet() {
+
+    if (this.wordDetailForEWordPicker !== null) {
+
+      EWordItemPickerView({
+        originalDetail : this.wordDetailForEWordPicker as WordDetail,
+        isEBook        : BookManager.shared.currentBook?.isEBook === true,
+        isOnlineWord   : this.word.isOnlineWord,
+        onDismiss      : () => {
+
+          this.isShowEWordPickerSheet = false
+
+          const w = this.words[this.pageIndex]
+
+          w.clearWordDetailCache()
+
+          this.shareMemoUiTick++
+        }
+      })
+    }
   }
 
   //打开QuizStart

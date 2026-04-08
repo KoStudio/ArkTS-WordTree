@@ -140,6 +140,7 @@
     { "name": "ebook_part_header"                            , "value": "分冊 Part" },
     { "name": "ebook_unit_header"                            , "value": "單元 Unit" },
     { "name": "ebook_save_to_nav_title"                      , "value": "儲存到.." },
+    { "name": "ebook_save_as"                                , "value": "保存到.." },
     { "name": "ebook_overwrite_confirm_title"                , "value": "覆蓋確認" },
     { "name": "ebook_overwrite_btn"                          , "value": "覆蓋" },
     { "name": "ebook_overwrite_msg"                          , "value": "已經存在此單詞在 %s、%s 中，是否要覆蓋？" },
