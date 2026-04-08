@@ -65,6 +65,13 @@ export namespace DetailCardsViewConfig {
 
 }
 
+// 统一管理 DetailCardsView 中单一 bindSheet 的内容类型，避免多个 bindSheet 同层互相抢占。
+enum DetailSheetType {
+  None         = 0,
+  EWordPicker  = 1,
+  EBookSelect  = 2
+}
+
 @ComponentV2
 export struct DetailCardsView {
 
@@ -88,9 +95,9 @@ export struct DetailCardsView {
   @Local private showingDictText       : string        = ''        // 字典正在显示的文本
   @Local private isShowMemberView      : boolean       = false
   @Local private isShowDetailSort      : boolean       = false     // 是否显示详细项目排序面板
-  @Local private isShowEWordPickerSheet : boolean       = false     // 与 iOS editCurrentWord → EWordItemPicker 一致
+  @Local private isShowDetailSheet         : boolean              = false                  // 单一 Sheet 显示开关（避免同层多个 bindSheet 抢占）
+  @Local private detailSheetType           : DetailSheetType      = DetailSheetType.None   // 当前单一 Sheet 的内容类型
   @Local private wordDetailForEWordPicker : WordDetail | null = null
-  @Local private isShowEBookSelectSheet    : boolean       = false
   @Local private wordDetailForEBookSelect  : WordDetail | null = null
 
   @Local private isEnableContrast      : boolean       = false
@@ -219,29 +226,32 @@ export struct DetailCardsView {
       .height('100%')
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       .backgroundColor($r('app.color.color_background'))
-      .bindSheet($$this.isShowEWordPickerSheet, this.buildEWordItemPickerSheet(), {
+      .bindSheet($$this.isShowDetailSheet, this.buildDetailSheet(), {
         detents         : [SheetSize.LARGE],
         preferType      : SheetType.CENTER,
         backgroundColor : $r('app.color.colorPrimary'),
         showClose       : false,
         onDisappear     : () => {
-          this.isShowEWordPickerSheet = false
-        }
-      })
-      .bindSheet($$this.isShowEBookSelectSheet, this.buildEBookSelectSheet(), {
-        detents         : [SheetSize.LARGE],
-        preferType      : SheetType.CENTER,
-        backgroundColor : $r('app.color.colorPrimary'),
-        showClose       : false,
-        onDisappear     : () => {
-          this.isShowEBookSelectSheet = false
-          this.wordDetailForEBookSelect = null
+          // 记录关闭前类型：onDisappear 触发后会立即重置 detailSheetType
+          const oldType               = this.detailSheetType
+          this.isShowDetailSheet = false
+          this.detailSheetType   = DetailSheetType.None
 
-          const w = this.words[this.pageIndex]
+          // 分支：关闭前是 EWord 选择 Sheet，清理 EWord 的临时 detail 并刷新当前卡片缓存
+          if (oldType === DetailSheetType.EWordPicker && this.wordDetailForEWordPicker !== null) {
+            this.wordDetailForEWordPicker = null
 
-          w.clearWordDetailCache()
+            const w = this.words[this.pageIndex]
+            w.clearWordDetailCache()
+            this.shareMemoUiTick++
+          // 分支：关闭前是 EBook 选择 Sheet，清理 EBook 的临时 detail 并刷新当前卡片缓存
+          } else if (oldType === DetailSheetType.EBookSelect && this.wordDetailForEBookSelect !== null) {
+            this.wordDetailForEBookSelect = null
 
-          this.shareMemoUiTick++
+            const w = this.words[this.pageIndex]
+            w.clearWordDetailCache()
+            this.shareMemoUiTick++
+          }
         }
       })
     }
@@ -504,7 +514,8 @@ export struct DetailCardsView {
     }
 
     this.wordDetailForEWordPicker = detail
-    this.isShowEWordPickerSheet = true
+    this.detailSheetType          = DetailSheetType.EWordPicker
+    this.isShowDetailSheet        = true
   }
 
   // 与 iOS：present EBookSelectView(originalDetail:)，此处用 bindSheet 承载
@@ -521,29 +532,15 @@ export struct DetailCardsView {
     }
 
     this.wordDetailForEBookSelect = detail
-    this.isShowEBookSelectSheet = true
+    this.detailSheetType          = DetailSheetType.EBookSelect
+    this.isShowDetailSheet        = true
   }
 
   @Builder
-  buildEBookSelectSheet() {
+  // 单一 Sheet 出口：按 detailSheetType 分发 EWord/EBook 页面（参考 BooksLocalView 的单 bindSheet 模式）
+  buildDetailSheet() {
 
-    if (this.wordDetailForEBookSelect !== null) {
-
-      EBookSelectView({
-        originalDetail : this.wordDetailForEBookSelect as WordDetail,
-        onDismiss        : () => {
-
-          this.isShowEBookSelectSheet = false
-        }
-      })
-    }
-  }
-
-  // 构建 EWord 编辑 Sheet（与 DetailCardOne / iOS UIHostingController 一致）
-  @Builder
-  buildEWordItemPickerSheet() {
-
-    if (this.wordDetailForEWordPicker !== null) {
+    if (this.detailSheetType === DetailSheetType.EWordPicker && this.wordDetailForEWordPicker !== null) {
 
       EWordItemPickerView({
         originalDetail : this.wordDetailForEWordPicker as WordDetail,
@@ -551,13 +548,16 @@ export struct DetailCardsView {
         isOnlineWord   : this.word.isOnlineWord,
         onDismiss      : () => {
 
-          this.isShowEWordPickerSheet = false
+          this.isShowDetailSheet = false
+        }
+      })
+    } else if (this.detailSheetType === DetailSheetType.EBookSelect && this.wordDetailForEBookSelect !== null) {
 
-          const w = this.words[this.pageIndex]
+      EBookSelectView({
+        originalDetail : this.wordDetailForEBookSelect as WordDetail,
+        onDismiss        : () => {
 
-          w.clearWordDetailCache()
-
-          this.shareMemoUiTick++
+          this.isShowDetailSheet = false
         }
       })
     }
