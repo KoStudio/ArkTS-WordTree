@@ -33,34 +33,34 @@ import { BookManager, BookManagerNotification } from '../../../models/datas/book
 export struct DetailCardOne {
 
 
-  @Param @Require word: WordUser
-  @Param @Require pageInfo: string = ''
-  @Param wordIndexOnPage: number = 0
+  @Param @Require word                         : WordUser
+  @Param @Require pageInfo                     : string                           = ''
+  @Param wordIndexOnPage                       : number                           = 0
 
   @Event onClickedBtnWordPron: (word: WordUser) => void
   @Event onClickedBtnExamplePron: (text: string) => void
   @Event onClickedText: (text: string) => void
 
-  @Local settingManager: SettingManager    = SettingManager.shared
-  @Local isHideWordTranslation: boolean    = SettingManager.shared.hideTranslation
-  @Local isHideExampleTranslation1: boolean = SettingManager.shared.hideTranslation
-  @Local isHideExampleTranslation2: boolean = SettingManager.shared.hideTranslation
-  @Local isHideExampleTranslation3: boolean = SettingManager.shared.hideTranslation
+  @Local settingManager                        : SettingManager                   = SettingManager.shared
+  @Local isHideWordTranslation                 : boolean                          = SettingManager.shared.hideTranslation
+  @Local isHideExampleTranslation1             : boolean                          = SettingManager.shared.hideTranslation
+  @Local isHideExampleTranslation2             : boolean                          = SettingManager.shared.hideTranslation
+  @Local isHideExampleTranslation3             : boolean                          = SettingManager.shared.hideTranslation
 
 
-  @Local styleItem: StyleItem = DetailStyle.getItem(DetailStyle.init(SettingManager.shared.detailStyle))
+  @Local styleItem                             : StyleItem                        = DetailStyle.getItem(DetailStyle.init(SettingManager.shared.detailStyle))
 
-  @Local isRefreshing: boolean = false
+  @Local isRefreshing                          : boolean                          = false
 
-  @Local wordDetail      : WordDetail | null = null
-  @Local cigenWords      : CigenWord[] | null  = []
-  @Local sameRootDesc    : string | null = null
+  @Local wordDetail                            : WordDetail | null                = null
+  @Local cigenWords                            : CigenWord[] | null               = []
+  @Local sameRootDesc                          : string | null                    = null
   // @Local subCells        : SubCell[]       = []
 
-  @Local sectionedCells : SectionDatas<string, SubCell> = new SectionDatas()
-  @Local isShowEWordPickerSheet : boolean = false
+  @Local sectionedCells                        : SectionDatas<string, SubCell>    = new SectionDatas()
+  @Local isShowEWordPickerSheet                : boolean                          = false
   // 与 iOS DetailView.wordMemos 一致：自建 + shareMemos 合并列表（ShareMemoManager2.loadLocalMemosOfWord）
-  @Local wordMemos       : Array<Record<string, string>> = []
+  @Local wordMemos                             : Array<Record<string, string>>    = []
 
   private unsubItemOrder   : (() => void) | undefined = undefined  // 详情块显示顺序变更
   private unsubBookUpdated : (() => void) | undefined = undefined  // 当前课本/EWord 等数据变更
@@ -540,8 +540,8 @@ export struct DetailCardOne {
 
   // 打开 EWord 字段选择 Sheet（按 iOS present sheet 路径对齐）
   async openEWordItemPickerSheet(): Promise<void> {
-    // 先清除缓存，确保读取到最新 detail（包含刚保存后的覆盖）
-    this.word.clearWordDetailCache()
+    // 与 iOS/Android 一致：打开编辑页时不主动清缓存，避免页面无变更也闪动。
+    // 缓存失效统一放在数据真正变化后（save/restore -> syncWordMemoryByTitleEn）处理。
     this.wordDetail = await this.word.getWordDetail()
 
     if (this.wordDetail === null) {

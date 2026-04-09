@@ -19,20 +19,20 @@ import { ComposeMemoViewConfig } from './memo/ComposeMemoView';
 export struct WordCardOne {
 
 
-  @Param @Require word: WordUser
-  @Param @Require pageInfo: string = ''
-  @Param wordIndexOnPage: number = 0
+  @Param @Require word                         : WordUser
+  @Param @Require pageInfo                     : string                           = ''
+  @Param wordIndexOnPage                       : number                           = 0
 
   @Event onClickedBtnWordPron: (word: WordUser) => void
   @Event onClickedBtnExamplePron: (word: WordUser) => void
   @Event onClickedText: (text: string) => void
   @Event needOpenDetail: (word: WordUser) => void
 
-  @Local settingManager: SettingManager    = SettingManager.shared
-  @Local isHideWordTranslation: boolean    = SettingManager.shared.hideTranslation
-  @Local isHideExampleTranslation: boolean = SettingManager.shared.hideTranslation
+  @Local settingManager                        : SettingManager                   = SettingManager.shared
+  @Local isHideWordTranslation                 : boolean                          = SettingManager.shared.hideTranslation
+  @Local isHideExampleTranslation              : boolean                          = SettingManager.shared.hideTranslation
 
-  @Local isRefreshing: boolean = false
+  @Local isRefreshing                          : boolean                          = false
 
 
   @Monitor('settingManager.hideTranslation')

@@ -37,6 +37,10 @@ import {
   ShareMemoManager2Notification,
   ShareMemoNotificationPayload
 } from "../../../models/managers/sharedata2/ShareMemoManager2"
+import { WordDetail } from "../../../models/datas/word/WordDetail"
+import { BookManager } from "../../../models/datas/book/BookManager"
+import { EWordItemPickerView } from "../../eword/EWordItemPickerView"
+import { EBookSelectView } from "../../ebook/EBookSelectView"
 
 export namespace WordCardsViewConfig {
 
@@ -59,36 +63,42 @@ export namespace WordCardsViewConfig {
 
 }
 
+// 与 DetailCardsView 对齐：统一管理单一 bindSheet 内容，避免多 Sheet 同层冲突
+enum WordCardSheetType {
+  None         = 0,
+  EWordPicker  = 1,
+  EBookSelect  = 2
+}
+
 @ComponentV2
 export struct WordCardsView {
 
   /// 参数
-  @Param @Require words                : WordUser[]               // 初始卡片文本内容数组（用于区分 initText）
-  @Param initIndex                     : number        = 0        // 初始显示的卡片索引
-
-  @Param plan?: Plan | null = null             // 用于学习记录
-  @Param dayOf?: DayOf| null = null           // 用于学习记录
+  @Param @Require words                    : WordUser[]             // 初始卡片文本内容数组（用于区分 initText）
+  @Param initIndex                         : number                 = 0                              // 初始显示的卡片索引
+  @Param plan?                             : Plan | null            = null                           // 用于学习记录
+  @Param dayOf?                            : DayOf | null           = null                           // 用于学习记录
 
   /// 本地状态变量声明
-  @Local private pageIndex             : number        = 0        // 当前显示的卡片索引
-  @Local swiperController              : SwiperController = new SwiperController() // 控制滑动视图
-
-  @Local private recordManager         : SpeechRecordManager = new SpeechRecordManager() // 语音录音管理器
-  @Local private isTalking             : boolean       = false     // 是否正在语音识别
-
-  @Local private isShowRecording       : boolean       = false     // 是否正在录音
-  @Local private isShowInfoView        : boolean       = false     // 是否显示设置 info 弹窗
-  @Local private isShowDictView        : boolean       = false     // 是否显示字典 info 弹窗
-  @Local private showingDictText       : string        = ''        // 字典正在显示的文本
-  @Local private isShowMemberView      : boolean       = false
-
-  @Local private isEnableContrast      : boolean       = false
-
-  @Local isRolling                     : boolean       = false
-  @Local shareMemoUiTick               : number        = 0
-  @Local settingManager                : SettingManager = SettingManager.shared
-  @Local rollInterval                  : number        = SettingManager.shared.autoPlayInterval
-  @Local isRepeat                      : boolean       = SettingManager.shared.rollRepeat
+  @Local private pageIndex                      : number                 = 0                              // 当前显示的卡片索引
+  @Local swiperController                       : SwiperController       = new SwiperController()         // 控制滑动视图
+  @Local private recordManager                  : SpeechRecordManager    = new SpeechRecordManager()      // 语音录音管理器
+  @Local private isTalking                      : boolean                = false                          // 是否正在语音识别
+  @Local private isShowRecording                : boolean                = false                          // 是否正在录音
+  @Local private isShowInfoView                 : boolean                = false                          // 是否显示设置 info 弹窗
+  @Local private isShowDictView                 : boolean                = false                          // 是否显示字典 info 弹窗
+  @Local private showingDictText                : string                 = ''                             // 字典正在显示的文本
+  @Local private isShowMemberView               : boolean                = false
+  @Local private isShowCardSheet                : boolean                = false                          // 统一 Sheet 显示开关
+  @Local private cardSheetType                  : WordCardSheetType      = WordCardSheetType.None         // 当前 Sheet 类型
+  @Local private wordDetailForEWordPicker       : WordDetail | null      = null                           // EWord 编辑使用的临时 detail
+  @Local private wordDetailForEBookSelect       : WordDetail | null      = null                           // EBook 保存使用的临时 detail
+  @Local private isEnableContrast               : boolean                = false
+  @Local isRolling                              : boolean                = false
+  @Local shareMemoUiTick                        : number                 = 0
+  @Local settingManager                         : SettingManager         = SettingManager.shared
+  @Local rollInterval                           : number                 = SettingManager.shared.autoPlayInterval
+  @Local isRepeat                               : boolean                = SettingManager.shared.rollRepeat
 
   private shareMemoUnsubPrivate: (() => void) | undefined = undefined
   private shareMemoUnsubPublic: (() => void) | undefined = undefined
@@ -207,6 +217,31 @@ export struct WordCardsView {
       .height('100%')
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       .backgroundColor($r('app.color.color_background'))
+      .bindSheet($$this.isShowCardSheet, this.buildCardSheet(), {
+        detents         : [SheetSize.LARGE],
+        preferType      : SheetType.CENTER,
+        backgroundColor : $r('app.color.colorPrimary'),
+        showClose       : false,
+        onDisappear     : () => {
+          const oldType        = this.cardSheetType
+          this.isShowCardSheet = false
+          this.cardSheetType   = WordCardSheetType.None
+
+          // 分支：EWord 编辑 Sheet 关闭后，清理临时 detail 并刷新当前卡片缓存。
+          if (oldType === WordCardSheetType.EWordPicker && this.wordDetailForEWordPicker !== null) {
+            this.wordDetailForEWordPicker = null
+            const w = this.words[this.pageIndex]
+            w.clearWordDetailCache()
+            this.shareMemoUiTick++
+          // 分支：EBook 保存 Sheet 关闭后，清理临时 detail 并刷新当前卡片缓存。
+          } else if (oldType === WordCardSheetType.EBookSelect && this.wordDetailForEBookSelect !== null) {
+            this.wordDetailForEBookSelect = null
+            const w = this.words[this.pageIndex]
+            w.clearWordDetailCache()
+            this.shareMemoUiTick++
+          }
+        }
+      })
     }
     .hideTitleBar(true) //这里使用buildNavBar
     .title(buildNavTitle(this.getNavTitle())) // 设置导航栏标题
@@ -394,39 +429,115 @@ export struct WordCardsView {
     OnlineSearchWordsViewConfig.open()
   }
 
-  ///显示转到测验或挑战页面的弹出选项
+  /// 显示转到测验/挑战/拼写/编辑/保存到词汇本的菜单（与 DetailCardsView / iOS 对齐）
   private actionPopmenu(){
-    let options: ItemOption[] = []
+    // 与 DetailCardsView / iOS DetailViewController.actionPopmenu 一致：弹出菜单前停止自动翻页
+    if (this.isRolling) {
+      this.isRolling = false
+    }
 
-    ///我要测验
-    options.push(
-      {text: getString($r('app.string.learn_detail_to_test_btn_test')),action: ()=>{
-        //我要测验
+    const options: ItemOption[] = []
+
+    options.push({
+      text   : getString($r('app.string.learn_detail_to_test_btn_test')),
+      action : () => {
         QuizManager.shared.questionMode = QuestionMode.Normal
         this.openTestStart()
-      }})
+      }
+    })
 
-    ///我要挑战
-    options.push(
-      {text: getString($r('app.string.learn_detail_to_test_btn_chlg')),action: ()=>{
-        //我要测验
+    options.push({
+      text   : getString($r('app.string.learn_detail_to_test_btn_chlg')),
+      action : () => {
         QuizManager.shared.questionMode = QuestionMode.Challenge
         this.openTestStart()
-      }})
+      }
+    })
 
-    ///拼写练习
-    options.push(
-      {text: getString($r('app.string.learn_detail_to_test_btn_spell')),action: ()=>{
-        //拼写练习
+    options.push({
+      text   : getString($r('app.string.learn_detail_to_test_btn_spell')),
+      action : () => {
         QuizManager.shared.questionMode = QuestionMode.Spell
         this.openTestStart()
-      }})
+      }
+    })
 
-    Toast.showSelectOptions($r('app.string.learn_detail_to_test_msg'),undefined, options, $r('app.string.learn_detail_to_test_btn_cancel'))
+    options.push({
+      text   : getString($r('app.string.eword_edit_action')),
+      action : () => {
+        void this.openEWordItemPickerForCurrentWord()
+      }
+    })
+
+    options.push({
+      text   : getString($r('app.string.ebook_save_as')),
+      action : () => {
+        void this.openEBookSelectForCurrentWord()
+      }
+    })
+
+    Toast.showSelectOptions(
+      $r('app.string.learn_detail_to_test_msg'),
+      undefined,
+      options,
+      $r('app.string.learn_detail_to_test_btn_cancel'))
 
   }
 
-  //打开QuizStart
+  /// 打开当前页词条的 EWord 字段选择 Sheet
+  private async openEWordItemPickerForCurrentWord(): Promise<void> {
+    const w      = this.words[this.pageIndex]
+    const detail = await w.getWordDetail()
+
+    // 分支：当前词条无详情时，不打开 Sheet。
+    if (detail === null) {
+      return
+    }
+
+    this.wordDetailForEWordPicker = detail
+    this.cardSheetType            = WordCardSheetType.EWordPicker
+    this.isShowCardSheet          = true
+  }
+
+  /// 打开当前页词条的 EBook 选择 Sheet
+  private async openEBookSelectForCurrentWord(): Promise<void> {
+    const w      = this.words[this.pageIndex]
+    const detail = await w.getWordDetail()
+
+    // 分支：当前词条无详情时，不打开 Sheet。
+    if (detail === null) {
+      return
+    }
+
+    this.wordDetailForEBookSelect = detail
+    this.cardSheetType            = WordCardSheetType.EBookSelect
+    this.isShowCardSheet          = true
+  }
+
+  @Builder
+  private buildCardSheet() {
+    // 分支：当前类型为 EWordPicker，构建 EWord 选择页。
+    if (this.cardSheetType === WordCardSheetType.EWordPicker && this.wordDetailForEWordPicker !== null) {
+      EWordItemPickerView({
+        originalDetail : this.wordDetailForEWordPicker as WordDetail,
+        isEBook        : BookManager.shared.currentBook?.isEBook === true,
+        isOnlineWord   : this.word.isOnlineWord,
+        onDismiss      : () => {
+          this.isShowCardSheet = false
+        }
+      })
+    // 分支：当前类型为 EBookSelect，构建 EBook 选择页。
+    } else if (this.cardSheetType === WordCardSheetType.EBookSelect && this.wordDetailForEBookSelect !== null) {
+      EBookSelectView({
+        originalDetail : this.wordDetailForEBookSelect as WordDetail,
+        onDismiss      : () => {
+          this.isShowCardSheet = false
+        }
+      })
+    }
+  }
+
+  /// 打开 QuizStart（自定义范围：当前卡片集）
   openTestStart(){
     QuizManager.shared.quizType    = QuizType.Custom
     QuizManager.shared.customWords = this.words

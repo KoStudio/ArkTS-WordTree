@@ -76,40 +76,35 @@ enum DetailSheetType {
 export struct DetailCardsView {
 
   /// 参数
-  @Param @Require words                : WordUser[]               // 初始卡片文本内容数组（用于区分 initText）
-  @Param initIndex                     : number        = 0        // 初始显示的卡片索引
-
-  @Param plan?: Plan | null = null             // 用于学习记录
-  @Param dayOf?: DayOf| null = null           // 用于学习记录
+  @Param @Require words                    : WordUser[]             // 初始卡片文本内容数组（用于区分 initText）
+  @Param initIndex                         : number                 = 0                              // 初始显示的卡片索引
+  @Param plan?                             : Plan | null            = null                           // 用于学习记录
+  @Param dayOf?                            : DayOf | null           = null                           // 用于学习记录
 
   /// 本地状态变量声明
-  @Local private pageIndex             : number        = 0        // 当前显示的卡片索引
-  @Local swiperController              : SwiperController = new SwiperController() // 控制滑动视图
+  @Local private pageIndex                      : number                 = 0                              // 当前显示的卡片索引
+  @Local swiperController                       : SwiperController       = new SwiperController()         // 控制滑动视图
+  @Local private recordManager                  : SpeechRecordManager    = new SpeechRecordManager()      // 语音录音管理器
+  @Local private isTalking                      : boolean                = false                          // 是否正在语音识别
+  @Local private isShowRecording                : boolean                = false                          // 是否正在录音
+  @Local private isShowInfoView                 : boolean                = false                          // 是否显示设置 info 弹窗
+  @Local private isShowDictView                 : boolean                = false                          // 是否显示字典 info 弹窗
+  @Local private showingDictText                : string                 = ''                             // 字典正在显示的文本
+  @Local private isShowMemberView               : boolean                = false
+  @Local private isShowDetailSort               : boolean                = false                          // 是否显示详细项目排序面板
+  @Local private isShowDetailSheet              : boolean                = false                          // 单一 Sheet 显示开关（避免同层多个 bindSheet 抢占）
+  @Local private detailSheetType                : DetailSheetType        = DetailSheetType.None           // 当前单一 Sheet 的内容类型
+  @Local private wordDetailForEWordPicker       : WordDetail | null      = null                           // EWord 编辑使用的临时 detail
+  @Local private wordDetailForEBookSelect       : WordDetail | null      = null                           // EBook 保存使用的临时 detail
+  @Local private isEnableContrast               : boolean                = false
+  @Local isRolling                              : boolean                = false
+  @Local shareMemoUiTick                        : number                 = 0
+  @Local settingManager                         : SettingManager         = SettingManager.shared
+  @Local rollInterval                           : number                 = SettingManager.shared.autoPlayInterval
+  @Local isRepeat                               : boolean                = SettingManager.shared.rollRepeat
 
-  @Local private recordManager         : SpeechRecordManager = new SpeechRecordManager() // 语音录音管理器
-  @Local private isTalking             : boolean       = false     // 是否正在语音识别
-
-  @Local private isShowRecording       : boolean       = false     // 是否正在录音
-  @Local private isShowInfoView        : boolean       = false     // 是否显示设置 info 弹窗
-  @Local private isShowDictView        : boolean       = false     // 是否显示字典 info 弹窗
-  @Local private showingDictText       : string        = ''        // 字典正在显示的文本
-  @Local private isShowMemberView      : boolean       = false
-  @Local private isShowDetailSort      : boolean       = false     // 是否显示详细项目排序面板
-  @Local private isShowDetailSheet         : boolean              = false                  // 单一 Sheet 显示开关（避免同层多个 bindSheet 抢占）
-  @Local private detailSheetType           : DetailSheetType      = DetailSheetType.None   // 当前单一 Sheet 的内容类型
-  @Local private wordDetailForEWordPicker : WordDetail | null = null
-  @Local private wordDetailForEBookSelect  : WordDetail | null = null
-
-  @Local private isEnableContrast      : boolean       = false
-
-  @Local isRolling                     : boolean       = false
-  @Local shareMemoUiTick               : number        = 0
-  @Local settingManager                : SettingManager = SettingManager.shared
-  @Local rollInterval                  : number        = SettingManager.shared.autoPlayInterval
-  @Local isRepeat                      : boolean       = SettingManager.shared.rollRepeat
-
-  private shareMemoUnsubPrivate: (() => void) | undefined = undefined
-  private shareMemoUnsubPublic: (() => void) | undefined = undefined
+  private shareMemoUnsubPrivate          : (() => void) | undefined = undefined
+  private shareMemoUnsubPublic           : (() => void) | undefined = undefined
 
   @Monitor('settingManager.autoPlayInterval')
   onChangeOfRollInterval(){
@@ -233,7 +228,7 @@ export struct DetailCardsView {
         showClose       : false,
         onDisappear     : () => {
           // 记录关闭前类型：onDisappear 触发后会立即重置 detailSheetType
-          const oldType               = this.detailSheetType
+          const oldType = this.detailSheetType
           this.isShowDetailSheet = false
           this.detailSheetType   = DetailSheetType.None
 
@@ -500,7 +495,7 @@ export struct DetailCardsView {
       $r('app.string.learn_detail_to_test_btn_cancel'))
   }
 
-  // 与 iOS `editCurrentWord()`：当前页词条打开 EWord 字段选择 Sheet
+  /// 打开当前页词条的 EWord 字段选择 Sheet（与 iOS editCurrentWord 对齐）
   private async openEWordItemPickerForCurrentWord(): Promise<void> {
 
     const w = this.words[this.pageIndex]
@@ -509,6 +504,7 @@ export struct DetailCardsView {
 
     const detail = await w.getWordDetail()
 
+    // 分支：当前词条无详情时，不打开 Sheet。
     if (detail === null) {
       return
     }
@@ -518,7 +514,7 @@ export struct DetailCardsView {
     this.isShowDetailSheet        = true
   }
 
-  // 与 iOS：present EBookSelectView(originalDetail:)，此处用 bindSheet 承载
+  /// 打开当前页词条的 EBook 选择 Sheet（与 iOS present EBookSelectView 对齐）
   private async openEBookSelectForCurrentWord(): Promise<void> {
 
     const w = this.words[this.pageIndex]
@@ -527,6 +523,7 @@ export struct DetailCardsView {
 
     const detail = await w.getWordDetail()
 
+    // 分支：当前词条无详情时，不打开 Sheet。
     if (detail === null) {
       return
     }
@@ -537,9 +534,9 @@ export struct DetailCardsView {
   }
 
   @Builder
-  // 单一 Sheet 出口：按 detailSheetType 分发 EWord/EBook 页面（参考 BooksLocalView 的单 bindSheet 模式）
+  // 单一 Sheet 出口：按 detailSheetType 分发 EWord/EBook 页面（参考 BooksLocalView 的单 bindSheet 模式）。
   buildDetailSheet() {
-
+    // 分支：当前类型为 EWordPicker，构建 EWord 字段选择页。
     if (this.detailSheetType === DetailSheetType.EWordPicker && this.wordDetailForEWordPicker !== null) {
 
       EWordItemPickerView({
@@ -551,6 +548,7 @@ export struct DetailCardsView {
           this.isShowDetailSheet = false
         }
       })
+    // 分支：当前类型为 EBookSelect，构建 EBook 选择页。
     } else if (this.detailSheetType === DetailSheetType.EBookSelect && this.wordDetailForEBookSelect !== null) {
 
       EBookSelectView({
@@ -563,7 +561,7 @@ export struct DetailCardsView {
     }
   }
 
-  //打开QuizStart
+  /// 打开 QuizStart（自定义范围：当前卡片集）
   openTestStart(){
     QuizManager.shared.quizType    = QuizType.Custom
     QuizManager.shared.customWords = this.words

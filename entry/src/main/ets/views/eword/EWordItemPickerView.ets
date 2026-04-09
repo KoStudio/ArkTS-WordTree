@@ -10,6 +10,7 @@ import { getString } from '../../common/utils/ResourceUtils'
 import { Toast } from '../../common/utils/Toast'
 import { SimpleEventBus } from '../../common/components/eventbus/SimpleEventBus'
 import { BookManagerNotification } from '../../models/datas/book/BookManager'
+import { SearchManager } from '../../models/datas/model/SearchManager'
 import { CigenWord } from '../../models/datas/cigen/CigenWord'
 import { CigenWordHelper } from '../../models/datas/cigen/CigenWordHelper'
 import { Word } from '../../models/datas/word/Word'
@@ -232,6 +233,9 @@ export struct EWordItemPickerView {
 
     // 调用：删除该词所有覆盖
     await EWordManager.shared.deleteAllOverrides(this.currentTitleEn)
+
+    // 先同步内存对象（同词条旧引用立即更新），再统一发刷新通知。
+    await SearchManager.shared.syncWordMemoryByTitleEn(this.currentTitleEn)
 
     // 调用：通知详情页刷新
     SimpleEventBus.emit(BookManagerNotification.currentBookUpdated)
