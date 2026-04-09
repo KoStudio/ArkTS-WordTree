@@ -87,6 +87,9 @@
     { "name": "gain_gold_for_install"                        , "value": "初次安裝成功，獲得%d個金幣!" },
 
     { "name": "set_txt_got_gold"                             , "value": "獲得%d個金幣，已經有金幣%d個" },
+    { "name": "set_txt_btn_gain_gold"                        , "value": "免費獲得金幣" },
+    { "name": "set_txt_gold_txt"                             , "value": "金幣：" },
+    { "name": "set_txt_be_member"                            , "value": "會員用戶" },
 
     { "name": "books_msg_updated_book_txt"                   , "value": "更新:%s 詞彙成功！" },
     { "name": "books_msg_updated_book_sound"                 , "value": "更新:%s 聲音成功！" },

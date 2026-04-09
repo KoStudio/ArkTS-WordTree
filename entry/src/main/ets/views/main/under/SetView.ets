@@ -1,12 +1,10 @@
 import { buildNavTitle } from "../../../app/constants/AppBuilders";
 import { dAppVersion, dNavBackIcon, isDebugMode } from "../../../app/constants/AppDefines";
 import { buildStandardMenu } from "../../../app/constants/AppFunctions";
-import { IconButton } from "../../../app/views/buttons/IconButton";
 import { TintImage } from "../../../app/views/TintImage";
 import AlarmManager from "../../../common/components/Alarm/AlarmManager";
 import { DateUtils } from "../../../common/utils/DateUtils";
 import { ReviewUtils } from "../../../common/utils/ReviewUtils";
-import { ShareUtils } from "../../../common/utils/ShareUtils";
 import { ItemOption, Toast } from "../../../common/utils/Toast";
 import { SettingManager } from "../../../models/managers/setting/SettingManager";
 import { UserManager } from "../../../models/managers/user/UserManager";
@@ -44,6 +42,9 @@ import { MyRecordsViewConfig } from "../../setting/mine/MyRecordsView";
 import { BookManager } from "../../../models/datas/book/BookManager";
 import { PlanDbAccess } from "../../../models/managers/plan/plandb/PlanDbAccess";
 import { SpeechRecordDbAccessor } from "../../../common/components/Speech/Recorder/SpeechRecordDbAccessor";
+import { GoldManager } from "../../../models/managers/gold/GoldManager";
+import { MarqueeManager } from "../../../models/managers/marquee/MarqueeManager";
+import { AppCfg } from "../../../models/managers/servercfg/AppCfgManager";
 
 export namespace SetViewConfig {
 
@@ -79,8 +80,9 @@ export struct SetView {
   @Local   memberExpiryDateColor        : ResourceColor                   = $r('app.color.color_detail')
   @Local   memberIcon                   : Resource                        = $r('app.media.sdiamond')
   @Local   memberIconColor?             : string
+  @Local   goldCountText                : string                          = '0'
+  @Local   gainGoldPolicyText?          : string
   @Local   shareEncourageText?          : ResourceStr
-  private  needEncourageForShareApp     : boolean                          = false //记录是否需要奖励
 
 
   async aboutToAppear() {
@@ -117,12 +119,22 @@ export struct SetView {
 
     ///显示会员信息
     this.showMemberInfo()
+
+    // 显示金币信息与分享奖励说明。
+    this.showGoldInfo()
+
+    // 显示分享应用奖励说明。
+    this.showShareEncourageInfo()
   }
 
   @Monitor('userManager.userId')
   onChangeOfLogin(){
     this.isLogin = UserManager.shared.isLogin()
     this.loadUserData()
+
+    // 登录态变化后，同步刷新金币与分享说明。
+    this.showGoldInfo()
+    this.showShareEncourageInfo()
   }
 
   build() {
@@ -180,7 +192,7 @@ export struct SetView {
           this.buildHeaderRow()
 
         }
-        .height(60)
+        .height(80)
         .backgroundColor(Color.Transparent)
 
       }
@@ -362,9 +374,9 @@ export struct SetView {
 
 
         /// 分享应用的 Cell
-        this.buildListItem({icon: $r('app.media.share'), isSvg: true, title: $r('app.string.set_cell_txt_share'), onClicked: ()=>{
+        this.buildListItem({icon: $r('app.media.share'), isSvg: true, title: $r('app.string.set_cell_txt_share'), textDown: this.shareEncourageText, onClicked: ()=>{
           /// 打开
-          ShareUtils.shareThisAppWithLoadedLink()
+          this.shareApp()
         }})
 
         // 关于
@@ -389,7 +401,7 @@ export struct SetView {
 
   @Builder
   buildHeaderRow(){
-    Row({space: 5}){
+    Row({space: 10}){
       Stack(){
         Circle()
           .width(50)
@@ -414,20 +426,95 @@ export struct SetView {
         }
       }
 
-      if (UserManager.shared.userName?.length ?? 0 > 0) {
-        Text(UserManager.shared.userName)
-        IconButton({icon: $r('app.media.profile_circled'), onClickCallBack: () => {
-          LogOffViewConfig.open()
-        }})
-      }else{
-        Text($r('app.string.set_txt_not_login'))
-          .onClick(() =>{
-            this.isShowLoginView = true
-          })
-      }
+      Column({space: 4}){
+        if (UserManager.shared.userName?.length ?? 0 > 0) {
+          Text(UserManager.shared.userName)
+            .fontSize(22)
+            .fontColor($r('app.color.color_btn_bg2'))
+        }else{
+          Text($r('app.string.set_txt_not_login'))
+            .fontSize(22)
+            .fontColor($r('app.color.color_btn_bg2'))
+            .onClick(() =>{
+              this.isShowLoginView = true
+            })
+        }
 
+        // 与 iOS / Android 一致：金币或会员信息显示在用户名下方。
+        if (!MemberManager.shared.isActive) {
+          this.buildGoldInfoRow()
+        }else{
+          this.buildMemberInfoRow()
+        }
+      }
+      .alignItems(HorizontalAlign.Start)
+      .layoutWeight(1)
+
+      Button(this.isLogin ? $r('app.string.set_btn_logout') : $r('app.string.set_btn_login'))
+        .fontSize(12)
+        .height(32)
+        .padding({ left: 14, right: 14 })
+        .backgroundColor($r('app.color.color_btn_bg2'))
+        .fontColor(Color.White)
+        .borderRadius(6)
+        .onClick(() => {
+          if (this.isLogin) {
+            LogOffViewConfig.open()
+          }else{
+            this.isShowLoginView = true
+          }
+        })
     }
     .width('100%')
+    .alignItems(VerticalAlign.Center)
+  }
+
+  // 用户名下方金币行：与 iOS / Android 头部 `goldPanel` 一致。
+  @Builder
+  buildGoldInfoRow(): void {
+    Row({ space: 5 }) {
+      Image($r('app.media.golds'))
+        .width(20)
+        .height(20)
+        .objectFit(ImageFit.Contain)
+
+      Text($r('app.string.set_txt_gold_txt'))
+        .fontSize(12)
+        .fontColor($r('app.color.color_title'))
+
+      Text(this.goldCountText)
+        .fontSize(12)
+        .fontColor('#ed0ea3')
+
+      // 无规则文案时隐藏“免费获得金币”按钮，与 iOS `btnGainGold.isHidden` 语义一致。
+      if (this.gainGoldPolicyText && this.gainGoldPolicyText.length > 0) {
+        Button($r('app.string.set_txt_btn_gain_gold'))
+          .fontSize(12)
+          .height(22)
+          .padding({ left: 4, right: 4 })
+          .backgroundColor(Color.Transparent)
+          .fontColor($r('app.color.color_link'))
+          .onClick(() => {
+            this.actionGainGold()
+          })
+      }
+    }
+    .alignItems(VerticalAlign.Center)
+  }
+
+  // 用户名下方会员行：与 iOS / Android 头部 `memberPanel` 一致。
+  @Builder
+  buildMemberInfoRow(): void {
+    Row({ space: 5 }) {
+      TintImage({src: $r('app.media.set_icon_crown'), colorStr: '#FFD700'})
+        .width(25)
+        .height(25)
+
+      Text($r('app.string.set_txt_be_member'))
+        .fontSize(12)
+        .fontColor($r('app.color.color_gold'))
+    }
+    .alignItems(VerticalAlign.Center)
   }
 
 
@@ -682,6 +769,68 @@ export struct SetView {
       this.memberIconColor          = undefined //green color
     }
 
+  }
+
+  // 与 iOS `ProfileViewController.reloadDatas` / `actionGainGold` 对齐：
+  // 刷新金币总数与“赚金币”规则文案。
+  showGoldInfo(): void {
+    // 会员不显示金币入口。
+    if (MemberManager.shared.isActive) {
+      this.goldCountText      = '0'
+      this.gainGoldPolicyText = undefined
+      return
+    }
+
+    this.goldCountText = `${GoldManager.shared.golds}`
+
+    // 读取所有金币规则文案，显示在“赚金币”列表项下方。
+    GoldManager.shared.loadPolicyTexts((texts: Array<string | null>) => {
+      const text = texts
+        .map((it: string | null) => (it ?? '').trim())
+        .filter((it: string) => it.length > 0)
+        .join('\n')
+
+      this.gainGoldPolicyText = text.length > 0 ? text : undefined
+    })
+  }
+
+  // 与 iOS `ProfileViewController` 中 shareapp cell 的副标题逻辑对齐：
+  // 首次分享显示金币策略；已领过首奖后，显示每日发音奖励说明。
+  showShareEncourageInfo(): void {
+    // 会员不显示分享奖励提示。
+    if (MemberManager.shared.isActive) {
+      this.shareEncourageText = undefined
+      return
+    }
+
+    // 已领过首次分享金币后，显示每日分享发音奖励说明。
+    if (GoldManager.shared.getGoldProvideLastDateForShareApp() != null) {
+      this.shareEncourageText = $r('app.string.set_cell_txt_share_info')
+      return
+    }
+
+    // 首次分享前，显示分享赠金币策略文案。
+    GoldManager.shared.loadPolicyTextWith(LanguageManager.isTraditionalChinese() ? AppCfg.G_WTT_ShareApp : AppCfg.G_WTS_ShareApp, (text: string | null) => {
+      this.shareEncourageText = text ?? undefined
+    })
+  }
+
+  // 打开“赚金币”规则说明弹窗。
+  private actionGainGold(): void {
+    // 无文案时，不显示弹窗。
+    if (!this.gainGoldPolicyText || this.gainGoldPolicyText.length === 0) {
+      return
+    }
+
+    // 显示金币规则说明。
+    Toast.showSelectOptions(getString($r('app.string.set_txt_btn_gain_gold')), this.gainGoldPolicyText, undefined, $r('app.string.confirm_btn_ok'))
+  }
+
+  // 与 iOS `ProfileViewController` 的“分享应用”入口对齐：
+  // 统一走分享成功后的金币/发音奖励逻辑。
+  private shareApp(): void {
+    // 通过统一分享入口发起分享，并复用前台回归后的奖励处理。
+    MarqueeManager.shared.shareApp()
   }
 
   ///学习履历删除

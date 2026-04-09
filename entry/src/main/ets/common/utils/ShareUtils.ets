@@ -4,6 +4,8 @@ import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { fileUri } from '@kit.CoreFileKit';
 import { AppSettings } from '../../app/constants/AppSettings';
+import { InstructionLinker } from '../../models/managers/instruction/InstructionLinker';
+import { AppCfgManager } from '../../models/managers/servercfg/AppCfgManager';
 import { getString } from './ResourceUtils';
 
 
@@ -39,9 +41,27 @@ export class ShareUtils {
     ShareUtils.context = context;
   }
 
-  static shareThisAppWithLoadedLink(){
-    ShareUtils.shareLink(AppSettings.Address.share_app, getString($r('app.string.app_name')), "高效的英文单词学习助手")
+/**
+ * 分享应用：优先使用服务端下发链接，失败时回退本地默认链接
+ */
+static shareThisAppWithLoadedLink(): void {
+  const title = getString($r('app.string.app_name'))
+  const summary = "高效的英文单词学习助手"
+  const fallbackLink = AppSettings.Address.share_app
+  const idx = AppCfgManager.shared.getAndroid_ShareAppLink_idx_in_Instruction()
+
+  // idx 无效时，不查询服务端，直接使用本地默认链接
+  if (idx <= 0) {
+    ShareUtils.shareLink(fallbackLink, title, summary)
+    return
   }
+
+  // 优先读取服务端 Instruction 链接；读取失败或为空时回退本地默认链接
+  InstructionLinker.shared.loadInstructionsIfNeeds(idx, (instruction) => {
+    const link = instruction?.link?.trim()
+    ShareUtils.shareLink(link && link.length > 0 ? link : fallbackLink, title, summary)
+  })
+}
   /**
    * 分享PDF文件
    * @param pdfPath - PDF文件路径

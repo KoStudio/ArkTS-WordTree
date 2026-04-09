@@ -42,6 +42,7 @@ import { WordDetail } from "../../../models/datas/word/WordDetail"
 import { BookManager } from "../../../models/datas/book/BookManager"
 import { EWordItemPickerView } from "../../eword/EWordItemPickerView"
 import { EBookSelectView } from "../../ebook/EBookSelectView"
+import { GoldManager } from "../../../models/managers/gold/GoldManager"
 
 export namespace DetailCardsViewConfig {
 
@@ -134,6 +135,9 @@ export struct DetailCardsView {
     ///会员检查 并恢复默认设置
     if (!MemberManager.shared.isActive) {
       SettingManager.shared.restoreSettingsForNonMember()
+
+      // 与 iOS `DetailViewController.viewDidAppear` 一致：非会员进入学习详情时检查每日学习金币。
+      GoldManager.shared.provideGoldsForEveryDayStudyIfNeedsWithBlock(null)
     }
 
     // ShareMemoManager2 同步公开/私有笔记变更（与 iOS NotificationCenter 一致）

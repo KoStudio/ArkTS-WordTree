@@ -200,10 +200,11 @@ export struct BooksOnlineView {
 
     const isFirstDownload: boolean = BookManager.shared.currentBook === null
 
-    // 非首次下载且金币不足时，非会员需走会员检查（与 iOS）
+    // 非首次下载且金币不足时，非会员需走会员检查。
+    // 与 iOS `MemberManager.shared.checkBooksDownloadable()` 一致，这里使用默认参数。
     if (!isFirstDownload && GoldManager.shared.golds < (book.golds ?? 0)) {
 
-      if (!MemberManager.shared.checkBooksDownloadable(true, true)) {
+      if (!MemberManager.shared.checkBooksDownloadable()) {
         return
       }
     }

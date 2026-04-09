@@ -21,6 +21,11 @@ import { QuickLearnViewConfig } from "../../quicklearn/QuickLearnView"
 import { QuizChallengeView, QuizChallengeViewConfig } from "../../quiz/running/QuizChallengeView"
 import { ChallengeTopViewConfig } from "../../test/ChallengeTopView"
 import { TestTopViewConfig } from "../../test/TestTopView"
+import { GoldManager } from "../../../models/managers/gold/GoldManager"
+import { MemberManager } from "../../../models/managers/member/MemberManager"
+import { Toast } from "../../../common/utils/Toast"
+import { getString } from "../../../common/utils/ResourceUtils"
+import { VersionChecker } from "../../../common/components/VersionChecker/VersionChecker"
 
 @ComponentV2
 export struct SubLearnView {
@@ -55,6 +60,9 @@ export struct SubLearnView {
       BookListViewConfig.open({ isShowAllOnly: true }) //首次进入，需要下载单词本
     }else{
       this.loadData()
+
+      // 与 iOS / Android 首页一致：已有 currentBook 时再检查首次安装金币与金币提示。
+      this.checkProvideGoldsIfNeeds()
     }
 
     if (!this.marqueeBusBound) {
@@ -88,6 +96,9 @@ export struct SubLearnView {
       this.loadData()
       this.showBannerNoticeIfNeeds()
       MarqueeManager.shared.sharedAppDoEncourageIfNeeds()
+
+      // 与 iOS `RootViewController` 一致：首页再次显示时检查金币逻辑。
+      this.checkProvideGoldsIfNeeds()
     }
   }
 
@@ -107,6 +118,45 @@ export struct SubLearnView {
     await SearchManager.shared.refreshData()
 
     this.loadData()
+
+    // 当前课本变化后，重新按首页逻辑检查首次安装金币与金币提示。
+    this.checkProvideGoldsIfNeeds()
+  }
+
+  // 与 iOS `RootViewController` / Android `MainActivity.checkBookUpdates` 对齐：
+  // 仅在已有 currentBook 时检查首次安装金币，并对非会员显示一次金币规则提示。
+  private checkProvideGoldsIfNeeds(): void {
+    // 无 currentBook 时，不触发首次安装金币与提示。
+    if (BookManager.shared.currentBook === null) {
+      return
+    }
+
+    // 与 iOS 一致：首次下载后首次回首页时，才尝试发放首次安装金币。
+    GoldManager.shared.provideGoldsForFirstInstallIfNeeds(null)
+
+    // 非会员时，才显示金币规则提示。
+    if (!MemberManager.shared.isActive) {
+
+      // 读取所有金币规则文案，用于首次提示。
+      GoldManager.shared.loadPolicyTexts((texts: Array<string | null>) => {
+        const text = texts
+          .map((it: string | null) => (it ?? '').trim())
+          .filter((it: string) => it.length > 0)
+          .join('\n')
+
+        // 无有效文案时，不显示弹窗，也不消耗 runOnce token。
+        if (text.length === 0) {
+          return
+        }
+
+        // 与 iOS / Android 一致：金币提示仅显示一次。
+        VersionChecker.shared.runOnceWithTokenSync('GoldTipShow0', () => {
+
+          // 弹出金币规则说明。
+          Toast.showSelectOptions(getString($r('app.string.set_txt_btn_gain_gold')), text, undefined, $r('app.string.confirm_btn_ok'))
+        })
+      })
+    }
   }
 
   async loadData(){
@@ -471,6 +521,4 @@ export struct SubLearnView {
     }
   }
 }
-
-
 

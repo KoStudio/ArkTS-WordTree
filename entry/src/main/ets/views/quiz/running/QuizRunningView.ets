@@ -18,6 +18,7 @@ import { MemberManager } from "../../../models/managers/member/MemberManager"
 import { NavPop, NavPopTop, NavTo } from "../../../pages/NavPathManager"
 import { QuizResultViewConfig } from "../result/QuizResultView"
 import { FadeInOutMov } from "./FadeInOutMov"
+import { GoldManager } from "../../../models/managers/gold/GoldManager"
 
 
 export namespace QuizRunningViewConfig {
@@ -53,6 +54,12 @@ export struct QuizRunningView {
 
   aboutToAppear() {
     logEvent("quiz_running_showed") //日志
+
+    // 与 iOS `TestRunningViewController` / Android `TestRunningActivity` 一致：
+    // 非会员进入测试运行页时，检查每日测试金币。
+    if (!MemberManager.shared.isActive) {
+      GoldManager.shared.provideGoldsForEveryDayTestIfNeedsWithBlock(null)
+    }
   }
 
   build() {

@@ -1,5 +1,6 @@
 import { getString } from "../../common/utils/ResourceUtils"
 import { StringEncoder } from "../../common/utils/strings/StringEncrypt"
+import { LanguageManager } from "../../common/components/Language/LanguageManager"
 
 // AppSettings.ets
 export namespace AppSettings {
@@ -26,7 +27,12 @@ export namespace AppSettings {
     static readonly privacy            = "http://www.dancishu.com/privacy.html"
     static readonly privacy_kid        = "http://www.dancishu.com/privacy_kid.html"
     static readonly contact            = "http://www.dancishu.com/contact.html"
-    static readonly share_app          = "http://www.dancishu.com/index.html"//'https://appgallery.huawei.com/app/detail?id=com.ou.hm.wordtree'
+static get share_app(): string {
+  if (LanguageManager.isTraditionalChinese()) {
+    return "https://www.dancishu.com/dcshtml/wordtree/shareapp/share_wtt.html"
+  }
+  return "https://www.dancishu.com/dcshtml/index.html"
+}
   }
 
   export class CfgWeixin {
