@@ -5,6 +5,7 @@ import { getAppContext } from '../../../app/constants/AppContext'
 import { dMyDataFolderPath, MyDatas } from '../../../app/constants/AppDefines'
 import { createFolderIfNeeds } from '../../../app/constants/AppFunctions'
 import { DebugLog } from '../../../app/debug/DebugLog'
+import { SimpleEventBus } from '../../../common/components/eventbus/SimpleEventBus'
 import { PathUtility } from '../../../common/utils/PathUtility'
 import { Toast } from '../../../common/utils/Toast'
 import { Book } from './Book'
@@ -274,7 +275,10 @@ export class BookManager {
     this.saveCurrentBook()
     const newId = book?.bookId ?? null
     if (oldId !== newId) {
-      // 与 iOS `NotificationCenter.post(name: .bookChanged)` 对齐时可广播 `BookManagerNotification.bookChanged`
+      // 与 iOS/Android 对齐：统一在 setCurrentBook 内发送 bookChanged。
+      // 调用方（BooksLocal/BooksOnline/导入恢复等）只需调用 setCurrentBook，
+      // 不应在页面层重复发送，避免漏发或双发。
+      SimpleEventBus.emit(BookManagerNotification.bookChanged)
     }
   }
 

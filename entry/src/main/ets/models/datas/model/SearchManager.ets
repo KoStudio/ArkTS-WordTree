@@ -13,10 +13,12 @@ import { OnlineWord } from "../../managers/onlinesearch/OnlineWord";
 import { Word } from "../word/Word";
 import call from "@ohos.telephony.call";
 import { Toast } from "../../../common/utils/Toast";
+import { getStringF } from "../../../common/utils/ResourceUtils";
 import { SpeechRecordManager } from "../../../common/components/Speech/Recorder/SpeechRecordManager";
 import { getAppContext } from "../../../app/constants/AppContext";
 import { SimpleEventBus } from "../../../common/components/eventbus/SimpleEventBus";
 import { BookManagerNotification } from "../book/BookManager";
+import { PlanManager } from "../../managers/plan/plancurve/PlanManager";
 
 // MARK: - 常量定义（类似Swift的static let或Kotlin的const val）
 export class SearchConstants {
@@ -69,6 +71,7 @@ export class SearchManager {
   private allWords                  : WordUser[]                = [];
 
   private allCnTexts: Record<string, string>[] = []
+  private refreshingTask: Promise<void> | null = null
 
   // MARK: - 私有构造函数
   private constructor() {
@@ -76,27 +79,27 @@ export class SearchManager {
   }
 
   // MARK: - 初始化方法
-  // 初始化：注册与 iOS SearchManager 一致的书本事件监听，并首次加载缓存数据。
+  // 初始化：注册与 iOS/Android SearchManager 一致的书本事件监听，并首次加载缓存数据。
   // SearchManager 为全局单例常驻，不维护 on(...) 的解绑句柄。
   private initialize(): void {
 
-    // 调用：监听书本切换（bookChanged）后重建缓存
+    // 调用：监听书本切换（bookChanged）后，先 clear 再 rebuild（与 iOS/Android 一致）
     SimpleEventBus.on(BookManagerNotification.bookChanged, () => {
-      void this.refreshData()
+      void this.actionBookChanged()
     })
 
-    // 调用：监听当前书更新（currentBookUpdated）后重建缓存
+    // 调用：监听当前书更新（currentBookUpdated）后，先 clear 再 rebuild（与 iOS/Android 一致）
     SimpleEventBus.on(BookManagerNotification.currentBookUpdated, () => {
-      void this.refreshData()
+      void this.actionBookUpdated()
     })
 
-    // 调用：监听书单更新（bookListUpdated）后重建缓存
+    // 调用：监听书单更新（bookListUpdated）后，按 updated 同链路重建缓存
     SimpleEventBus.on(BookManagerNotification.bookListUpdated, () => {
-      void this.refreshData()
+      void this.actionBookUpdated()
     })
 
     // 调用：首次加载数据缓存
-    void this.loadWords();
+    void this.actionBookUpdated();
 
     // 调用：输出初始化日志
     DebugLog.d('SearchManager: 初始化完成');
@@ -113,7 +116,59 @@ export class SearchManager {
    * 刷新数据（在数据修改后调用）
    */
   async refreshData(): Promise<void> {
-    await this.loadWords();
+    // 对齐 iOS/Android：刷新时统一走 clear + rebuild，而非仅增量覆盖
+    await this.actionBookUpdated();
+  }
+
+  // 与 iOS/Android SearchManager.clearDatas 对齐：清空全部内存缓存
+  private clearDatas(): void {
+    this.parts      = [];
+    this.units      = [];
+    this.allWords   = [];
+    this.allCnTexts = [];
+  }
+
+  // 串行化重建任务，避免并发 refresh 造成缓存抖动
+  private async rebuildCaches(): Promise<void> {
+    if (this.refreshingTask) {
+      await this.refreshingTask
+      return
+    }
+
+    this.refreshingTask = (async () => {
+      this.clearDatas()
+      await this.loadWords()
+    })()
+
+    try {
+      await this.refreshingTask
+    } finally {
+      this.refreshingTask = null
+    }
+  }
+
+  // 对齐 iOS/Android actionBookChanged：切书后重建缓存
+  private async actionBookChanged(): Promise<void> {
+    await this.rebuildCaches()
+
+    // 对齐 iOS/Android：切书后提示当前词书名称
+    const bookName = BookManager.shared.currentBook?.bookName
+    if (bookName) {
+      Toast.showMessage(getStringF($r('app.string.books_msg_change_book'), bookName))
+    }
+
+    // 对齐 iOS/Android：切书后重新初始化 Plan
+    // Harmony 当前无 reInit 命名方法，这里用 init() 重新加载当前 Plan 状态。
+    void PlanManager.shared.init()
+  }
+
+  // 对齐 iOS/Android actionBookUpdated：当前书数据变化后重建缓存
+  private async actionBookUpdated(): Promise<void> {
+    await this.rebuildCaches()
+
+    // 对齐 iOS/Android：当前书数据更新后重新初始化 Plan（无需 toast）
+    // Harmony 当前无 reInit 命名方法，这里用 init() 重新加载当前 Plan 状态。
+    void PlanManager.shared.init()
   }
 
   private async loadWords(): Promise<void> {
@@ -886,8 +941,9 @@ export class SearchManager {
    * 更改单词的收藏等级
    */
   async changeFavoriteLevelForWord(word: WordUser, newLevel: number): Promise<void> {
-    word.favoriteLevel = newLevel;
-    await WordUserDbAccess.shared.saveWordUser(word);
+    // 与 Android 对齐：先改内存对象，再通过 WordUser 统一入口持久化
+    word.changeFavorite(newLevel);
+    await word.saveWordUserDatas();
   }
 
   /**
@@ -895,7 +951,7 @@ export class SearchManager {
    */
   async incrementLearnTimesForWord(word: WordUser): Promise<void> {
     word.incrementLearnTimes();
-    await WordUserDbAccess.shared.saveWordUser(word);
+    await word.saveWordUserDatas();
   }
 
   /**
@@ -903,7 +959,7 @@ export class SearchManager {
    */
   async incrementTestResultForWord(word: WordUser, result: number): Promise<void> {
     word.incrementTestResult(result);
-     await WordUserDbAccess.shared.saveWordUser(word);
+    await word.saveWordUserDatas();
   }
 
   /**
@@ -911,7 +967,7 @@ export class SearchManager {
    */
   async saveLocalMemoForWord(word: WordUser, memo: string): Promise<void> {
     word.memo = memo;
-     await WordUserDbAccess.shared.saveWordUser(word);
+    await word.saveWordUserDatas();
   }
 
   // MARK: - 工具方法

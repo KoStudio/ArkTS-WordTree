@@ -74,6 +74,11 @@ export class WordUser extends Word {
     this.learnTimes++;
   }
 
+  // 改变收藏等级（与 Android Word.changeFavorite 语义一致）
+  changeFavorite(newFavLevel: number): void {
+    this.favoriteLevel = newFavLevel;
+  }
+
   // 增加测试结果
   incrementTestResult(result: number): void {
     this.lastResultType = result;
@@ -97,6 +102,11 @@ export class WordUser extends Word {
 
   public getWrangDate(): Date {
     return TEUtility.convertDateFromYMD(this.wrangYear, this.wrangMonth, this.wrangDay);
+  }
+
+  // 统一保存入口（与 Android Word.saveWordUserDatas 对齐）
+  async saveWordUserDatas(): Promise<void> {
+    await WordUserDbAccess.shared.saveWordUser(this);
   }
 
   public async changeDeletedWord(toDelete: boolean): Promise<void> {
