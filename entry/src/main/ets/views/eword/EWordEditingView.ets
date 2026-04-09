@@ -9,6 +9,7 @@ import { NavBarView, NavButtonItem } from '../../app/views/NavBarView'
 import { CSoundHelper } from '../../common/components/Sounds/Cloud/Manager/CSoundHelper'
 import { SimpleEventBus } from '../../common/components/eventbus/SimpleEventBus'
 import { BookManager, BookManagerNotification } from '../../models/datas/book/BookManager'
+import { SearchManager } from '../../models/datas/model/SearchManager'
 import { WordDbAccess } from '../../models/datas/word/WordDbAccess'
 import { EBookManager } from '../../models/managers/ebook/EBookManager'
 import { EWordEditManager, EWordEditableField } from '../../models/managers/eword/EWordEditManager'
@@ -163,6 +164,9 @@ export struct EWordEditingView {
       void CSoundHelper.startDownloadOrGenerateSound(this.editText)
     }
 
+    // 保存后先把内存中的同词对象同步到最新值，避免 Detail/Quiz 仍持有旧引用。
+    await SearchManager.shared.syncWordMemoryByTitleEn(this.titleEn)
+
     // 调用：通知详情页刷新（对齐 iOS currentBookUpdated）
     SimpleEventBus.emit(BookManagerNotification.currentBookUpdated)
 
@@ -183,6 +187,9 @@ export struct EWordEditingView {
     if (!succeed) {
       return
     }
+
+    // 恢复后同样同步内存对象，确保移除覆盖后的原值立即生效。
+    await SearchManager.shared.syncWordMemoryByTitleEn(this.titleEn)
 
     // 调用：通知详情页刷新（对齐 iOS currentBookUpdated）
     SimpleEventBus.emit(BookManagerNotification.currentBookUpdated)

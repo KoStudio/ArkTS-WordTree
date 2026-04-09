@@ -537,6 +537,55 @@ export class SearchManager {
   }
 
   /**
+   * EWord 保存/恢复后，同步更新内存中的 WordUser 数据（与 iOS/Android 立即可见行为对齐）。
+   * 说明：
+   * - Detail/Quiz 等页面常持有 WordUser 对象引用；
+   * - 若只发通知不更新对象本身，UI 局部可刷新，但后续流程仍可能读到旧内存字段。
+   */
+  async syncWordMemoryByTitleEn(titleEn: string): Promise<void> {
+    if (!titleEn || titleEn.length === 0) {
+      return
+    }
+
+    // 1) 读取当前持久层中的基础词条数据（当前书 Word 表；若不存在再查在线临时表）。
+    let latest = await this.getWordDbAccess()?.getWordDetailByTitleEn(titleEn) ?? null
+    if (latest === null) {
+      latest = await WordUserDbAccess.shared.getOnlineWordDetailByTitleEn(titleEn) ?? null
+    }
+
+    // 2) 读取该词覆盖并应用到列表层（与 allWords 初始化时 applyEWordOverrideMap 一致）。
+    const ewm = await import('../../managers/eword/EWordManager')
+    const overrideMap = await ewm.EWordManager.shared.loadOverrides(titleEn)
+
+    // 3) 把最新值回写到内存中所有同 titleEn 对象，确保旧引用也被同步更新。
+    for (let i = 0; i < this.allWords.length; i++) {
+      const w = this.allWords[i]
+      if (w.titleEn !== titleEn) {
+        continue
+      }
+
+      if (latest !== null) {
+        w.titleCn1   = latest.titleCn1
+        w.titleCn2   = latest.titleCn2
+        w.titleCn3   = latest.titleCn3
+        w.pronEn     = latest.pronEn
+        w.pronUs     = latest.pronUs
+        w.exampleEn1 = latest.exampleEn1
+        w.exampleCn1 = latest.exampleCn1
+      }
+
+      // 列表层覆盖（当前主要影响 titleCn1 等列表可见字段）
+      w.applyEWordOverrideMap(overrideMap)
+
+      // 详情缓存失效，确保后续 getWordDetail() 使用最新数据重新合成。
+      w.clearWordDetailCache()
+    }
+
+    // 中文候选缓存依赖 titleCn 字段，编辑后需失效重建。
+    this.allCnTexts = []
+  }
+
+  /**
    * 根据单元ID获取单词
    */
   getWordsByUnitId(unitId: number): WordUser[] {
