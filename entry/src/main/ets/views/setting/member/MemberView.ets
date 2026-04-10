@@ -23,46 +23,48 @@ import { UserManager } from "../../../models/managers/user/UserManager"
 import { dScreenWidth } from "../../../app/constants/AppDefines"
 
 export namespace MemberViewConfig {
-
-  export const kNavPath = "Member_kNavPath"
+  export const kNavPath = "Member_kNavPath" // 会员页内部协议页面导航栈 key
 }
 
 interface PriceDisplayItem {
-  tag          : number
-  product      : iap.Product
-  isConsumable : boolean
+  tag          : number       // 价格按钮序号：0~2 为订阅，3+ 为一次性购买
+  product      : iap.Product  // 华为商品信息
+  isConsumable : boolean      // 是否为一次性购买商品
 }
 
 interface PriceCompareItem {
-  productId    : string
-  microsPrice  : number
-  months       : number
+  productId    : string  // 商品 id
+  microsPrice  : number  // 商品总价（微单位）
+  months       : number  // 对应会员月数
 }
 
 @ComponentV2
 export struct MemberView {
-  private static readonly PRICE_BUTTON_WIDTH_VP      : number = 112
-  private static readonly PRICE_BUTTON_SPACING_VP    : number = 15
-  private static readonly CONTENT_HORIZONTAL_PAD_VP  : number = 40
+  private static readonly PRICE_BUTTON_WIDTH_VP      : number = 90  // 单个价格按钮宽度
+  private static readonly PRICE_SCROLL_PADDING_VP    : number = 20  // 横向滚动区左右总留白
+  private static readonly PRICE_BUTTON_SPACING_VP    : number = 15  // 价格按钮之间的间距
+  private static readonly CONTENT_HORIZONTAL_PAD_VP  : number = 40  // 内容区左右内边距总和
 
-  @Param   @Require isShowing                      : boolean
-  @Event   $isShowing                              : (val: boolean) => void = (_val: boolean) => {}
-  @Event   onClose                                 : (changed: boolean) => void = (_changed: boolean) => {}
+  @Param   @Require isShowing                        : boolean                            // 当前会员页是否显示
+  @Event   $isShowing                                : (val: boolean) => void             = (_val: boolean) => {}
+  @Event   onClose                                   : (changed: boolean) => void         = (_changed: boolean) => {}
 
-  @Local private memberExpiryDate                  : string         = ''
-  @Local private memberExpiryDateColor             : ResourceColor  = Color.White
-  @Local private isAgree                           : boolean        = false
-  @Local private isBuyButtonEnabled                : boolean        = false
-  @Local private isSubscribeEnable                 : boolean        = false
-  @Local private showConsumablePriceButtons        : boolean        = true
-  @Local private subscriptionProducts              : iap.Product[]  = []
-  @Local private consumableProducts                : iap.Product[]  = []
-  @Local private selectedPriceTag                  : number         = -1
-  @Local private isShowConfirmSubscribe            : boolean        = false
-  @Local private checkAgreeShakeOffsetX            : number         = 0
-  @Local private isRestoringConsumablePurchases    : boolean        = false
+  @Local private memberExpiryDate                    : string                             = ''           // 顶部会员到期时间文案
+  @Local private memberExpiryDateColor               : ResourceColor                      = Color.White  // 顶部会员到期时间颜色
+  @Local private isAgree                             : boolean                            = false        // 是否已勾选协议
+  @Local private isBuyButtonEnabled                  : boolean                            = false        // 购买按钮是否可点击
+  @Local private isSubscribeEnable                   : boolean                            = false        // 华为 IAP 环境是否可用
 
-  @Provider(MemberViewConfig.kNavPath) navPath: NavPathStack = new NavPathStack()
+  @Local private showConsumablePriceButtons          : boolean                            = true         // 是否显示一次性购买按钮
+  @Local private subscriptionProducts                : iap.Product[]                      = []           // 订阅商品列表
+  @Local private consumableProducts                  : iap.Product[]                      = []           // 一次性购买商品列表
+  @Local private selectedPriceTag                    : number                             = -1           // 当前选中的价格按钮 tag
+
+  @Local private isShowConfirmSubscribe              : boolean                            = false        // 是否显示订阅确认弹层
+  @Local private checkAgreeShakeOffsetX              : number                             = 0            // 协议区域抖动偏移量
+  @Local private isRestoringConsumablePurchases      : boolean                            = false        // 是否正在恢复一次性购买订单
+
+  @Provider(MemberViewConfig.kNavPath) navPath       : NavPathStack                       = new NavPathStack() // 内部协议页导航栈
 
   aboutToAppear(): void {
 
@@ -225,6 +227,13 @@ export struct MemberView {
 
         // 调用：构建价格卡片区域
         this.buildPriceOptions()
+
+        Text(this.getPriceTip())
+          .fontColor($r('app.color.colorAccent'))
+          .fontSize(12)
+          .textAlign(TextAlign.Center)
+          .width('100%')
+          .margin({ top: 10 })
       } else {
 
         // 调用：构建价格加载态
@@ -238,12 +247,6 @@ export struct MemberView {
         .width('100%')
         .margin({ top: 5 })
 
-      Text(this.getPriceTip())
-        .fontColor($r('app.color.colorAccent'))
-        .fontSize(12)
-        .textAlign(TextAlign.Center)
-        .width('100%')
-        .margin({ top: 10 })
     }
       .width('100%')
       .padding({ left: 20, right: 20, top: 20 })
@@ -276,6 +279,7 @@ export struct MemberView {
         .margin({ top: 10 })
     }
       .width('100%')
+      .padding({ left: 10, right: 10 })
       .scrollable(ScrollDirection.Horizontal)
       .scrollBar(BarState.Off)
   }
@@ -830,7 +834,9 @@ export struct MemberView {
     const totalButtonsWidth = visibleCount * MemberView.PRICE_BUTTON_WIDTH_VP
     const totalSpacingWidth = (visibleCount - 1) * MemberView.PRICE_BUTTON_SPACING_VP
     const contentWidth      = totalButtonsWidth + totalSpacingWidth
-    const availableWidth    = dScreenWidth - MemberView.CONTENT_HORIZONTAL_PAD_VP
+    const availableWidth    = dScreenWidth
+      - MemberView.CONTENT_HORIZONTAL_PAD_VP
+      - MemberView.PRICE_SCROLL_PADDING_VP
 
     // 分支：只有当全部按钮总宽度能放进当前内容区时，才居中显示。
     // 放不下时保持左对齐，并通过横向 Scroll 允许继续滚动查看。
