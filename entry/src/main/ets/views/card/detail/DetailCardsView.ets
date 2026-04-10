@@ -383,6 +383,9 @@ export struct DetailCardsView {
               this.showingDictText = text
               this.isShowDictView = true
             },
+            onNeedEditWord:()=>{
+              void this.openEWordItemPickerForCurrentWord()
+            },
           })
         }, (word: WordUser, index: number) => `${word.titleEn}_${index}_${this.shareMemoUiTick}`)
       }

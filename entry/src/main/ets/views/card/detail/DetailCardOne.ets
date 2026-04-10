@@ -25,8 +25,7 @@ import {
 import { DetailStyle, StyleItem } from '../detailstyle/DetailStyle';
 import { CigenWordsViewConfig } from '../cigen/CigenWordsView';
 import { ReclaimWordViewConfig } from '../../reclaimword/ReclaimWordView';
-import { EWordItemPickerView } from '../../eword/EWordItemPickerView';
-import { BookManager, BookManagerNotification } from '../../../models/datas/book/BookManager';
+import { BookManagerNotification } from '../../../models/datas/book/BookManager';
 
 
 @ComponentV2
@@ -40,6 +39,7 @@ export struct DetailCardOne {
   @Event onClickedBtnWordPron: (word: WordUser) => void
   @Event onClickedBtnExamplePron: (text: string) => void
   @Event onClickedText: (text: string) => void
+  @Event onNeedEditWord: () => void
 
   @Local settingManager                        : SettingManager                   = SettingManager.shared
   @Local isHideWordTranslation                 : boolean                          = SettingManager.shared.hideTranslation
@@ -58,7 +58,6 @@ export struct DetailCardOne {
   // @Local subCells        : SubCell[]       = []
 
   @Local sectionedCells                        : SectionDatas<string, SubCell>    = new SectionDatas()
-  @Local isShowEWordPickerSheet                : boolean                          = false
   // 与 iOS DetailView.wordMemos 一致：自建 + shareMemos 合并列表（ShareMemoManager2.loadLocalMemosOfWord）
   @Local wordMemos                             : Array<Record<string, string>>    = []
 
@@ -160,7 +159,6 @@ export struct DetailCardOne {
 
     // 详情刷新后同步笔记区（含 shareMemos）
     this.reloadWordMemos()
-
   }
 
   @Monitor('settingManager.hideTranslation')
@@ -206,15 +204,6 @@ export struct DetailCardOne {
     }
     .width('100%')
     .height('100%')
-    .bindSheet($$this.isShowEWordPickerSheet, this.buildEWordItemPickerSheet(), {
-      detents: [SheetSize.LARGE],
-      preferType: SheetType.CENTER,
-      backgroundColor: $r('app.color.colorPrimary'),
-      showClose: false,
-      onDisappear: () => {
-        this.isShowEWordPickerSheet = false
-      }
-    })
 
   }
 
@@ -538,38 +527,6 @@ export struct DetailCardOne {
     .margin({ top: 5, left: 5, right: 5 })
   }
 
-  // 打开 EWord 字段选择 Sheet（按 iOS present sheet 路径对齐）
-  async openEWordItemPickerSheet(): Promise<void> {
-    // 与 iOS/Android 一致：打开编辑页时不主动清缓存，避免页面无变更也闪动。
-    // 缓存失效统一放在数据真正变化后（save/restore -> syncWordMemoryByTitleEn）处理。
-    this.wordDetail = await this.word.getWordDetail()
-
-    if (this.wordDetail === null) {
-      return
-    }
-
-    this.isShowEWordPickerSheet = true
-  }
-
-  // 构建 EWord 字段选择 Sheet
-  @Builder
-  buildEWordItemPickerSheet() {
-    if (this.wordDetail !== null) {
-      EWordItemPickerView({
-        originalDetail : this.wordDetail as WordDetail,
-        isEBook        : BookManager.shared.currentBook?.isEBook === true,
-        isOnlineWord   : this.word.isOnlineWord,
-        onDismiss      : () => {
-          this.isShowEWordPickerSheet = false
-
-          // 关闭后立即强制刷新（与 iOS dismiss 后刷新一致）
-          this.word.clearWordDetailCache()
-          void this.loadData()
-        }
-      })
-    }
-  }
-
   // 纠错行：EWord「编辑」+ 纠错入口（与 iOS Detail 行为一致）
   @Builder buildReclaimPanel(){
     Row(){
@@ -583,8 +540,8 @@ export struct DetailCardOne {
       .backgroundColor(Color.Transparent)
       .margin({ right: 16 })
       .onClick(()=> {
-        // 在当前详情页内弹出 EWord 编辑 Sheet
-        void this.openEWordItemPickerSheet()
+        // 交由父层 DetailCardsView 统一打开 EWord 编辑页，复用已验证可立即刷新的路径。
+        this.onNeedEditWord()
       })
 
       Button(){
