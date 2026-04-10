@@ -30,7 +30,7 @@ export enum Route {
   reclaimWord      = 'reclaim_word',
   memo             = 'memo',
   subscription     = 'subscription',
-  instruction      = 'instruction',
+  instruction      = 'instruction_harmony',//鸿蒙
   servercfg        = 'servercfg',
   book_download    = 'book_download',
   /**
