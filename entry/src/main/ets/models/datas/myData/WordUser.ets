@@ -66,7 +66,7 @@ export class WordUser extends Word {
 
   // 获取错误日期字符串
   get wrangDateString(): string {
-    return `${this.wrangYear}/${this.wrangMonth}/${this.wrangDay}`;
+    return `${this.wrangYear}-${this.wrangMonth}-${this.wrangDay}`;
   }
 
   // 增加学习次数（类似Swift的mutating方法）
