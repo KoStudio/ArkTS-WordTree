@@ -35,16 +35,16 @@ export struct PriceButtonView {
           if (this.perMonth !== null && this.perMonth !== undefined && this.perMonth.length > 0) {
             Text(this.perMonth)
               .fontSize(11)
-              .fontColor(this.isSelected ? $r('app.color.color_gray') : $r('app.color.color_gray'))
+              .fontColor($r('app.color.color_gray'))
               .textAlign(TextAlign.Center)
-          } else if (false) {
-            // 与 Android `PriceButtonView.setTerm(...)` 保持一致：
-            // term 文案目前先保留赋值能力，但 UI 上暂时不显示；
-            // 后续若需要恢复显示，只需把这里放开即可。
+          } else {
+            // 与 Android `PriceButtonView.setTerm(...)` 当前行为保持一致：
+            // term 行先保留占位，但默认隐藏，这样没有月均价时按钮高度也不会变化。
             Text(this.term)
               .fontSize(14)
               .fontColor($r('app.color.color_gray'))
               .textAlign(TextAlign.Center)
+              .visibility(Visibility.Hidden)
           }
         }
           .width(PriceButtonView.BUTTON_WIDTH_VP)
@@ -77,4 +77,5 @@ export struct PriceButtonView {
         this.onClickCallBack()
       })
   }
+
 }
