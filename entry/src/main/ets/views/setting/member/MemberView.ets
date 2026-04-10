@@ -41,11 +41,10 @@ interface PriceCompareItem {
 @ComponentV2
 export struct MemberView {
   private static readonly PRICE_BUTTON_WIDTH_VP      : number = 90  // 单个价格按钮宽度
-  private static readonly PRICE_SCROLL_PADDING_VP    : number = 20  // 横向滚动区左右总留白
   private static readonly PRICE_BUTTON_SPACING_VP    : number = 15  // 3 个及以下按钮时的标准间距
-  private static readonly PRICE_BUTTON_SPACING_PEEK  : number = 11   // 超过 3 个按钮时的紧凑间距，便于露出第 4 个按钮
+  private static readonly PRICE_BUTTON_SPACING_MORE  : number = 12  // 超过 3 个按钮时的按钮间距
   private static readonly CONTENT_HORIZONTAL_PAD_VP  : number = 40  // 内容区左右内边距总和
-  private static readonly PRICE_PEEK_WIDTH_VP        : number = 28  // 超过 3 个按钮时，右侧额外露出的提示宽度
+  private static readonly COMMON_SCREEN_WIDTH_VP     : number = 360 // 常用手机宽度阈值；达到此宽度时露出一点第 4 个按钮
 
   @Param   @Require isShowing                        : boolean                            // 当前会员页是否显示
   @Event   $isShowing                                : (val: boolean) => void             = (_val: boolean) => {}
@@ -837,11 +836,18 @@ export struct MemberView {
       return '100%'
     }
 
+    // 当前内容区在屏幕中的可用宽度；需要先扣掉内容区左右内边距
     const availableWidth     = dScreenWidth - MemberView.CONTENT_HORIZONTAL_PAD_VP
+
+    // 目标内部宽度：前三个完整按钮 + 两个按钮间距 + 第 4 个按钮露出的一点提示宽度
     const targetInnerWidth   = (MemberView.PRICE_BUTTON_WIDTH_VP * 3)
       + (this.priceButtonSpacing() * 2)
-      + MemberView.PRICE_PEEK_WIDTH_VP
-    const targetScrollWidth  = targetInnerWidth + MemberView.PRICE_SCROLL_PADDING_VP
+      + this.pricePeekWidth()
+
+    // Scroll 组件自身还有左右各 10vp 的内边距，所以这里额外补上 20vp
+    const targetScrollWidth  = targetInnerWidth + 20
+
+    // 最终滚动区宽度不能超过当前内容区实际可用宽度
     const finalWidth         = Math.min(availableWidth, targetScrollWidth)
 
     // 分支：按钮超过 3 个时，优先保证前三个按钮完整显示，
@@ -849,11 +855,21 @@ export struct MemberView {
     return `${finalWidth}vp`
   }
 
+  // 按当前屏幕决定第 4 个按钮是否露出一点；常用屏幕宽度及以上才保留这个提示
+  private pricePeekWidth(): number {
+    return dScreenWidth >= MemberView.COMMON_SCREEN_WIDTH_VP ? 28 : 0
+  }
+
   // 当前价格按钮间距；超过 3 个按钮时使用更紧凑的间距，便于露出第 4 个按钮
   private priceButtonSpacing(): number {
-    return this.shouldCenterPriceButtons()
-      ? MemberView.PRICE_BUTTON_SPACING_VP
-      : MemberView.PRICE_BUTTON_SPACING_PEEK
+    // 分支：3 个及以下按钮时，保持标准间距并整体居中
+    if (this.shouldCenterPriceButtons()) {
+      return MemberView.PRICE_BUTTON_SPACING_VP
+    }
+
+    // 分支：按钮超过 3 个时，固定使用更紧凑的间距，
+    // 并配合价格滚动区宽度让第 4 个按钮露出一点提示可横向滑动。
+    return MemberView.PRICE_BUTTON_SPACING_MORE
   }
 
   // 当前选中的价格项
