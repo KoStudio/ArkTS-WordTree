@@ -26,7 +26,7 @@ export struct PriceButtonView {
             .textAlign(TextAlign.Center)
             .maxLines(1)
 
-          Text(this.price)
+          Text(this.displayPriceText())
             .fontSize(22)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.isSelected ? $r('app.color.colorPrimary') : Color.White)
@@ -76,6 +76,28 @@ export struct PriceButtonView {
       .onClick(() => {
         this.onClickCallBack()
       })
+  }
+
+  // 价格显示文案；与 Android `setPrice(...)` 语义一致，去掉末尾的 `.00`
+  private displayPriceText(): string {
+    const dotIndex = this.price.lastIndexOf('.00')
+
+    // 分支：没有 `.00` 时直接返回原文案
+    if (dotIndex < 0) {
+      return this.price
+    }
+
+    const suffix = this.price.substring(dotIndex + 3)
+
+    // 分支：`.00` 后面如果还跟着数字，则不是末尾金额格式，不做处理
+    for (let i = 0; i < suffix.length; i++) {
+      const ch = suffix[i]
+      if (ch >= '0' && ch <= '9') {
+        return this.price
+      }
+    }
+
+    return this.price.substring(0, dotIndex) + suffix
   }
 
 }

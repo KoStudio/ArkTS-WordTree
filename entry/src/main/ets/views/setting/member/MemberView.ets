@@ -378,7 +378,7 @@ export struct MemberView {
   private async loadPriceAndShowInfoIfNeeds(): Promise<void> {
 
     // 调用：读取服务器配置，决定是否显示后三个单次购买按钮
-    this.showConsumablePriceButtons = false //AppCfgManager.shared.isHwMember_Show_ConsumablePriceButtons_is_ON()
+    this.showConsumablePriceButtons = AppCfgManager.shared.isHwMember_Show_ConsumablePriceButtons_is_ON()
 
     // 调用：进入页面时，先恢复一次可能遗留的未完成单次购买订单。
     // 这里是一次性购买的恢复逻辑，和订阅恢复要区分开。
