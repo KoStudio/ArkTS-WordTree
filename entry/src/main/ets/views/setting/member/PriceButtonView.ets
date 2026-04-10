@@ -3,6 +3,7 @@ export struct PriceButtonView {
   private static readonly BUTTON_WIDTH_VP          : number            = 90   // 价格按钮宽度
   private static readonly BUTTON_HEIGHT_VP         : number            = 110  // 价格按钮高度
   private static readonly BUTTON_RADIUS_VP         : number            = 3    // 价格按钮圆角，参考 Android 3dp
+  private static readonly BORDER_WIDTH_VP          : number            = 1    // 按钮边框宽度；选中与未选中保持一致，避免左上角标位置变化
 
   @Param title                                     : string            = ''    // 按钮标题
   @Param price                                     : string            = ''    // 价格文案
@@ -34,12 +35,15 @@ export struct PriceButtonView {
           if (this.perMonth !== null && this.perMonth !== undefined && this.perMonth.length > 0) {
             Text(this.perMonth)
               .fontSize(11)
-              .fontColor(this.isSelected ? $r('app.color.color_obscure') : Color.White)
+              .fontColor(this.isSelected ? $r('app.color.color_gray') : $r('app.color.color_gray'))
               .textAlign(TextAlign.Center)
-          } else {
+          } else if (false) {
+            // 与 Android `PriceButtonView.setTerm(...)` 保持一致：
+            // term 文案目前先保留赋值能力，但 UI 上暂时不显示；
+            // 后续若需要恢复显示，只需把这里放开即可。
             Text(this.term)
               .fontSize(14)
-              .fontColor(this.isSelected ? $r('app.color.colorPrimary') : Color.White)
+              .fontColor($r('app.color.color_gray'))
               .textAlign(TextAlign.Center)
           }
         }
@@ -59,9 +63,12 @@ export struct PriceButtonView {
       }
     }
       .type(ButtonType.Normal)
+      .width(PriceButtonView.BUTTON_WIDTH_VP)
+      .height(PriceButtonView.BUTTON_HEIGHT_VP)
+      .padding(0)
       .backgroundColor(this.isSelected ? Color.White : Color.Transparent)
       .border({
-        width  : this.isSelected ? 2 : 1,
+        width  : PriceButtonView.BORDER_WIDTH_VP,
         color  : this.isSelected ? $r('app.color.color_white') : Color.White,
         radius : PriceButtonView.BUTTON_RADIUS_VP
       })
