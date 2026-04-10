@@ -241,7 +241,7 @@ export struct MemberView {
         this.buildPriceOptions()
 
         Text(this.getPriceTip())
-          .fontColor($r('app.color.colorAccent'))
+          .fontColor($r('app.color.color_text_marked'))
           .fontSize(12)
           .textAlign(TextAlign.Center)
           .width('100%')

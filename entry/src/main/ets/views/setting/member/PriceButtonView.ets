@@ -58,7 +58,7 @@ export struct PriceButtonView {
             .fontSize(10)
             .fontColor(Color.White)
             .padding({ left: 6, right: 6, top: 2, bottom: 2 })
-            .backgroundColor($r('app.color.color_red'))
+            .backgroundColor($r('app.color.color_text_marked'))
         }
       }
     }

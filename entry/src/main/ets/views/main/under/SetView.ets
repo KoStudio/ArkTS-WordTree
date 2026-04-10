@@ -433,7 +433,7 @@ export struct SetView {
           if (UserManager.shared.userName?.length ?? 0 > 0) {
             Text(UserManager.shared.userName)
               .fontSize(22)
-              .fontColor($r('app.color.color_btn_bg2'))
+              .fontColor($r('app.color.colorPrimary'))
 
             IconButton({icon: $r('app.media.profile_circled'), onClickCallBack: () => {
               LogOffViewConfig.open()
@@ -441,7 +441,7 @@ export struct SetView {
           }else{
             Text($r('app.string.set_txt_not_login'))
               .fontSize(22)
-              .fontColor($r('app.color.color_btn_bg2'))
+              .fontColor($r('app.color.colorPrimary'))
               .onClick(() =>{
                 this.isShowLoginView = true
               })
@@ -765,7 +765,7 @@ export struct SetView {
         this.memberExpiryDateColor  = $r('app.color.color_detail')
 
         this.memberIcon             = $r('app.media.set_icon_crown')//sdiamonded
-        this.memberIconColor        = '#FFD700' //gold color
+        this.memberIconColor        = undefined//'#FFD700' //gold color
 
       } else {
 
