@@ -21,6 +21,7 @@ import { HwPurchaseConstants } from "../../../common/iab/huawei/HwPurchaseConsta
 import { PriceButtonView } from "./PriceButtonView"
 import { UserManager } from "../../../models/managers/user/UserManager"
 import { dScreenWidth } from "../../../app/constants/AppDefines"
+import { LoginView } from "../../login/LoginView"
 
 export namespace MemberViewConfig {
   export const kNavPath = "Member_kNavPath" // 会员页内部协议页面导航栈 key
@@ -62,6 +63,7 @@ export struct MemberView {
   @Local private selectedPriceTag                    : number                             = -1           // 当前选中的价格按钮 tag
 
   @Local private isShowConfirmSubscribe              : boolean                            = false        // 是否显示订阅确认弹层
+  @Local private isShowLoginView                     : boolean                            = false        // 是否显示登录页面
   @Local private checkAgreeShakeOffsetX              : number                             = 0            // 协议区域抖动偏移量
   @Local private isRestoringConsumablePurchases      : boolean                            = false        // 是否正在恢复一次性购买订单
 
@@ -163,6 +165,15 @@ export struct MemberView {
       .width('100%')
       .height('100%')
       .backgroundColor($r('app.color.colorPrimary'))
+      .bindSheet($$this.isShowLoginView, this.buildLoginView(), {
+        detents         : [SheetSize.LARGE],
+        preferType      : SheetType.CENTER,
+        backgroundColor : $r('app.color.colorPrimary'),
+        showClose       : false,
+        onDisappear     : () => {
+          this.isShowLoginView = false
+        }
+      })
   }
 
   // 构建导航栏
@@ -428,7 +439,13 @@ export struct MemberView {
 
     // 分支：一次性购买需先登录，便于后续把会员时间写回当前登录账户。
     if (this.isSelectedConsumablePrice() && !UserManager.shared.isLogin()) {
-      Toast.showMessage($r('app.string.login_not_login'))
+      this.isShowLoginView = true
+
+      setTimeout(()=>{
+        // 调用：先显示登录页面，再提示当前需要先登录
+        Toast.showMessage($r('app.string.login_not_login'))
+      },500)
+
       return
     }
 
@@ -881,6 +898,16 @@ export struct MemberView {
   // 格式化价格
   private formatFloat(value: number): string {
     return value % 1 === 0 ? `${value | 0}` : value.toFixed(1)
+  }
+
+  // 构建登录页面
+  @Builder
+  private buildLoginView() {
+    LoginView({
+      onDismiss : (_loginSucceed: boolean) => {
+        this.isShowLoginView = false
+      }
+    })
   }
 
   /**
