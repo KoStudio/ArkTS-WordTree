@@ -830,7 +830,10 @@ export struct DetailCardOne {
           break;
 
         case DetailItem.Cigens        :// 词根助记
-          if (this.cigenWords) {
+          // 与 iOS DetailView 一致：优先显示 EWord 覆盖的 root，没有覆盖时再显示 Cigen 词根库内容。
+          if ((word.root?.length ?? 0) > 0) {
+            cells.push({type: SubCellType.text, section: getString($r('app.string.learn_detail_txt_mnemonic')), subTitle: word.root})
+          } else if (this.cigenWords) {
             for (const cigenWord of this.cigenWords) {
               cells.push({type: SubCellType.text, section: getString($r('app.string.learn_detail_txt_mnemonic')), subTitle: cigenWord.mnemonic, detail: cigenWord.getDetail(), hasMoreBtn: cigenWord.getDetail() !== null})
             }
@@ -839,7 +842,10 @@ export struct DetailCardOne {
           break;
 
         case DetailItem.SameRootDesc  :// 同根词
-          if ((this.sameRootDesc?.length  ?? 0) > 0) {
+          // 与 iOS DetailView 一致：优先显示 EWord 覆盖的 cognates，没有覆盖时再回退到同根词库说明。
+          if ((word.cognates?.length ?? 0) > 0) {
+            cells.push({type: SubCellType.text, section: getString($r('app.string.learn_detail_txt_samerootdesc')), subTitle: word.cognates})
+          } else if ((this.sameRootDesc?.length  ?? 0) > 0) {
             cells.push({type: SubCellType.text, section: getString($r('app.string.learn_detail_txt_samerootdesc')), subTitle: this.sameRootDesc})
           }
           break;
