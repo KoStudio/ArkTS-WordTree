@@ -476,22 +476,25 @@ export struct BooksLocalView {
     if (this.eBookSheetType === EBookSheetType.Import) {
       EBookImportView({
         onDismiss: () => {
+
+          // 关闭外层 Sheet；类型清理由 bindSheet.onDisappear 统一处理，避免收起动画期间内容被提前清空后只剩蓝色底板
           this.isShowEBookSheet = false
-          this.eBookSheetType = EBookSheetType.None
         }
       })
     } else if (this.eBookSheetType === EBookSheetType.MyBackedUp) {
       MyBackedUpEBooksView({
         onDismiss: () => {
+
+          // 关闭外层 Sheet；类型清理由 bindSheet.onDisappear 统一处理，避免收起动画期间内容被提前清空后只剩蓝色底板
           this.isShowEBookSheet = false
-          this.eBookSheetType = EBookSheetType.None
         }
       })
-    } else {
+    } else if (this.eBookSheetType === EBookSheetType.AddWord) {
       EWordSearchAddView({
         onDismiss: () => {
+
+          // 关闭外层 Sheet；类型清理由 bindSheet.onDisappear 统一处理，避免收起动画期间内容被提前清空后只剩蓝色底板
           this.isShowEBookSheet = false
-          this.eBookSheetType = EBookSheetType.None
         }
       })
     }
