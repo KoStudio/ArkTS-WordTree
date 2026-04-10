@@ -45,6 +45,8 @@ export struct MyBackedUpEBooksView {
 
   private finishAfterRestoreSuccess(): void {
 
+    // learnDb 已被整体替换；先刷新底层访问器与搜索缓存，
+    // 再发当前书/书单更新事件，兼容鸿蒙现有页面订阅体系。
     WordUserDbAccess.shared.refreshDb()
     void SearchManager.shared.refreshData()
     SimpleEventBus.emit(BookManagerNotification.currentBookUpdated)

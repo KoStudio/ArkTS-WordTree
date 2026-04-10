@@ -27,12 +27,13 @@ export namespace AppSettings {
     static readonly privacy            = "http://www.dancishu.com/privacy.html"
     static readonly privacy_kid        = "http://www.dancishu.com/privacy_kid.html"
     static readonly contact            = "http://www.dancishu.com/contact.html"
-static get share_app(): string {
-  if (LanguageManager.isTraditionalChinese()) {
-    return "https://www.dancishu.com/dcshtml/wordtree/shareapp/share_wtt.html"
-  }
-  return "https://www.dancishu.com/dcshtml/index.html"
-}
+    static get share_app(): string {
+      if (LanguageManager.isTraditionalChinese()) {
+        return "https://www.dancishu.com/dcshtml/wordtree/shareapp/share_wtt.html"
+      }
+      return "https://www.dancishu.com/dcshtml/index.html"
+    }
+
   }
 
   export class CfgWeixin {

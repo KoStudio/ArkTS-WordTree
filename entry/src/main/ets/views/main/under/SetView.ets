@@ -1,6 +1,7 @@
 import { buildNavTitle } from "../../../app/constants/AppBuilders";
 import { dAppVersion, dNavBackIcon, isDebugMode } from "../../../app/constants/AppDefines";
 import { buildStandardMenu } from "../../../app/constants/AppFunctions";
+import { IconButton } from "../../../app/views/buttons/IconButton";
 import { TintImage } from "../../../app/views/TintImage";
 import AlarmManager from "../../../common/components/Alarm/AlarmManager";
 import { DateUtils } from "../../../common/utils/DateUtils";
@@ -39,9 +40,10 @@ import { PlanManager } from "../../../models/managers/plan/plancurve/PlanManager
 import { CosDownloader } from "../../../common/components/Sounds/Cloud/Download/Downloader/CosDownloader";
 import { MyMemosViewConfig } from "../../setting/mine/MyMemosView";
 import { MyRecordsViewConfig } from "../../setting/mine/MyRecordsView";
-import { BookManager } from "../../../models/datas/book/BookManager";
+import { BookManager, BookManagerNotification } from "../../../models/datas/book/BookManager";
 import { PlanDbAccess } from "../../../models/managers/plan/plandb/PlanDbAccess";
 import { SpeechRecordDbAccessor } from "../../../common/components/Speech/Recorder/SpeechRecordDbAccessor";
+import { NetWorkTool } from "../../../common/utils/NetworkUtils";
 import { GoldManager } from "../../../models/managers/gold/GoldManager";
 import { MarqueeManager } from "../../../models/managers/marquee/MarqueeManager";
 import { AppCfg } from "../../../models/managers/servercfg/AppCfgManager";
@@ -427,18 +429,25 @@ export struct SetView {
       }
 
       Column({space: 4}){
-        if (UserManager.shared.userName?.length ?? 0 > 0) {
-          Text(UserManager.shared.userName)
-            .fontSize(22)
-            .fontColor($r('app.color.color_btn_bg2'))
-        }else{
-          Text($r('app.string.set_txt_not_login'))
-            .fontSize(22)
-            .fontColor($r('app.color.color_btn_bg2'))
-            .onClick(() =>{
-              this.isShowLoginView = true
-            })
+        Row({space: 4}) {
+          if (UserManager.shared.userName?.length ?? 0 > 0) {
+            Text(UserManager.shared.userName)
+              .fontSize(22)
+              .fontColor($r('app.color.color_btn_bg2'))
+
+            IconButton({icon: $r('app.media.profile_circled'), onClickCallBack: () => {
+              LogOffViewConfig.open()
+            }})
+          }else{
+            Text($r('app.string.set_txt_not_login'))
+              .fontSize(22)
+              .fontColor($r('app.color.color_btn_bg2'))
+              .onClick(() =>{
+                this.isShowLoginView = true
+              })
+          }
         }
+        .alignItems(VerticalAlign.Center)
 
         // 与 iOS / Android 一致：金币或会员信息显示在用户名下方。
         if (!MemberManager.shared.isActive) {
@@ -449,21 +458,6 @@ export struct SetView {
       }
       .alignItems(HorizontalAlign.Start)
       .layoutWeight(1)
-
-      Button(this.isLogin ? $r('app.string.set_btn_logout') : $r('app.string.set_btn_login'))
-        .fontSize(12)
-        .height(32)
-        .padding({ left: 14, right: 14 })
-        .backgroundColor($r('app.color.color_btn_bg2'))
-        .fontColor(Color.White)
-        .borderRadius(6)
-        .onClick(() => {
-          if (this.isLogin) {
-            LogOffViewConfig.open()
-          }else{
-            this.isShowLoginView = true
-          }
-        })
     }
     .width('100%')
     .alignItems(VerticalAlign.Center)
@@ -690,10 +684,10 @@ export struct SetView {
   }
 
   updateBackupRestoreSubtitle() {
-    if (this.userData.updateDate) {
-      const dateStr = DateUtils.toDateTimeString(this.userData.updateDate)
-      this.subTitleForBackup  =  $r('app.string.set_txt_data_last_backup', dateStr)
-      this.subTitleForRestore =  getStringF($r('app.string.set_txt_data_to_restore'), (BookManager.shared.currentBook?.bookName　?? ""))
+    if (this.userData.updateDate || this.userData.createDate) {
+      const dateStr = DateUtils.toDateTimeString(this.userData.updateDate ?? this.userData.createDate!)
+      this.subTitleForBackup  =  $r('app.string.set_more_txt_last_backup', dateStr)
+      this.subTitleForRestore =  getStringF($r('app.string.set_more_txt_restore_cloud'), (BookManager.shared.currentBook?.bookName ?? ""))
     }else {
       this.subTitleForBackup  = undefined
       this.subTitleForRestore = undefined
@@ -702,6 +696,10 @@ export struct SetView {
   }
 
   private loadUserData(){
+    if (!NetWorkTool.checkInternetConnection(false)) {
+      return
+    }
+
     if (!UserManager.shared.isLogin()) {
       this.userData.userId       = null
       this.userData.bookId       = null
@@ -716,13 +714,33 @@ export struct SetView {
 
     UserDataManager.loadUserData((succeed: boolean, msg: string | null, UserDataJsons: UserDataJson[] | null) => {
 
-      if (UserDataJsons != null && UserDataJsons?.length > 0) {
-        const oneData              =  UserData.fromJson(UserDataJsons[0])
-        this.userData.userId       = oneData.userId
-        this.userData.bookId       = oneData.bookId
-        this.userData.createDate   = oneData.createDate
-        this.userData.updateDate   = oneData.updateDate
-        this.userData.userDataAddr = oneData.userDataAddr
+      // 与 iOS `SettingViewConroller.loadUserData` 一致：
+      // 以 updateDate（或 createDate）最新的一条作为当前备份记录。
+      if (succeed && UserDataJsons != null && UserDataJsons.length > 0) {
+        let latestData = UserData.fromJson(UserDataJsons[0])
+
+        for (let i = 1; i < UserDataJsons.length; i++) {
+          const current     = UserData.fromJson(UserDataJsons[i])
+          const latestTime  = latestData.updateDate?.getTime() ?? latestData.createDate?.getTime() ?? 0
+          const currentTime = current.updateDate?.getTime() ?? current.createDate?.getTime() ?? 0
+
+          if (currentTime > latestTime) {
+            latestData = current
+          }
+        }
+
+        this.userData.userId       = latestData.userId
+        this.userData.bookId       = latestData.bookId
+        this.userData.createDate   = latestData.createDate
+        this.userData.updateDate   = latestData.updateDate
+        this.userData.userDataAddr = latestData.userDataAddr
+      } else {
+        // 与 iOS 一致：拉取失败或无数据时，清空当前备份显示状态。
+        this.userData.userId       = null
+        this.userData.bookId       = null
+        this.userData.createDate   = null
+        this.userData.updateDate   = null
+        this.userData.userDataAddr = null
       }
 
       //更新UI
@@ -922,7 +940,7 @@ export struct SetView {
 
     Toast.showAlert({
       title: $r('app.string.alert_title_confirm'),
-      message: $r('app.string.set_alert_backup_msg'),
+      message: $r('app.string.set_more_msg_backup'),
       secondaryButton: {value: $r('app.string.cfm_btn_cancel'), fontColor: Color.Gray, action: () => {}},
       primaryButton: {value: $r('app.string.set_alert_backup_btn_yes'), action: () => {
 
@@ -943,7 +961,7 @@ export struct SetView {
 
     Toast.showAlert({
       title: $r('app.string.alert_title_confirm'),
-      message: $r('app.string.set_alert_restore_msg'),
+      message: $r('app.string.set_more_msg_restore'),
       secondaryButton: {value: $r('app.string.cfm_btn_cancel'), fontColor: Color.Gray, action: () => {}},
       primaryButton: {value: $r('app.string.set_alert_restore_btn_yes'), action: () => {
 
@@ -957,31 +975,39 @@ export struct SetView {
 
   ///执行备份
   actionBackupUserData(){
+    const bookName = BookManager.shared.currentBook?.bookName ?? ''
+
     // LoadingUtility.showLoading($r('app.string.set_msg_backuping'))
-    Toast.showCustomDialog(()=> { this.buildLoadingDialog($r('app.string.set_msg_backuping'))}, false)
+    Toast.showCustomDialog(()=> { this.buildLoadingDialog($r('app.string.set_more_ing_backup'))}, false)
     UserDataManager.upload((success: boolean, msg: string | null) => {
       // LoadingUtility.hideLoading()
       Toast.closeCustomDialog()
 
       if (success) {
-        Toast.showMessage($r('app.string.set_msg_backup_done'))
+        Toast.showMessage(getStringF($r('app.string.set_more_success_backup'), bookName))
         this.loadUserData()
       }else{
-        Toast.showMessage(`${$r('app.string.set_msg_backup_failed') }: ${msg}`)
+        Toast.showMessage(msg ?? getString($r('app.string.set_more_failure_backup')))
       }
     })
   }
 
   ///执行恢复
   actionRestoreUserData(){
+    const bookName = BookManager.shared.currentBook?.bookName ?? ''
+
+    if (!this.subTitleForBackup) {
+      Toast.showMessage(getStringF($r('app.string.set_more_txt_restore_not_found'), bookName))
+      return
+    }
 
     if (!this.userData.userDataAddr) {
-      Toast.showMessage("app.string.set_msg_restore_no_found")
+      Toast.showMessage(getStringF($r('app.string.set_more_txt_restore_not_found'), bookName))
       return
     }
 
     // LoadingUtility.showLoading($r('app.string.set_msg_restoreing'))
-    Toast.showCustomDialog(()=> { this.buildLoadingDialog($r('app.string.set_msg_restoreing'))}, false)
+    Toast.showCustomDialog(()=> { this.buildLoadingDialog($r('app.string.set_more_ing_restore'))}, false)
     // this.loadingView.showLoading(`${getString($r('app.string.set_msg_restoreing'))}....`)
     UserDataManager.download(this.userData,
       (progress: number) => {
@@ -994,7 +1020,7 @@ export struct SetView {
         //   this.loadingView.hide()
 
         if (success) {
-          Toast.showMessage($r('app.string.set_msg_restore_done'))
+          Toast.showMessage($r('app.string.set_more_success_restore'))
 
           ///重新加载当前页面数据
           this.loadUserData()
@@ -1002,8 +1028,11 @@ export struct SetView {
           //检查 DB结构，刷新缓存
           this.refreshDbAndCache()
 
+          // 通知依赖 learnDb 的页面刷新，与 iOS `NeedReloadDBData` 对齐
+          SimpleEventBus.emit(BookManagerNotification.currentBookUpdated)
+
         }else{
-          Toast.showMessage(`${$r('app.string.set_msg_restore_failed') }: ${msg}`)
+          Toast.showMessage(msg ?? getString($r('app.string.set_more_failure_backup')))
         }
       })
 
