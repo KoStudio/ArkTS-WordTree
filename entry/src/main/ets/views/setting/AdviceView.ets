@@ -14,6 +14,8 @@ import { buildNavTitle } from '../../app/constants/AppBuilders';
 import { dNavBackIcon } from '../../app/constants/AppDefines';
 import { MemberManager } from '../../models/managers/member/MemberManager';
 import { NavTo } from '../../pages/NavPathManager';
+import { IconButton } from '../../app/views/buttons/IconButton';
+import { BookManager } from '../../models/datas/book/BookManager';
 
 export namespace AdviceViewConfig {
 
@@ -40,7 +42,7 @@ export struct AdviceView {
 
   // === 常量 ===
   private readonly MAX_COUNT: number = 500; // 最大字符数
-  private readonly MIN_COUNT: number = 0;   // 最小字符数
+  private readonly MIN_COUNT: number = 2;   // 最小字符数（与 iOS `minCount = 2` 一致）
 
   @Local isShowLoginView: boolean = false
 
@@ -69,7 +71,7 @@ export struct AdviceView {
             .border({width: 1, color: $r('app.color.color_obscure'), radius: 5})
 
           // 图片选择区域
-          //this.buildImagePicker();
+          this.buildImagePicker();
 
           ///发送按钮
           TextButton({
@@ -136,36 +138,84 @@ export struct AdviceView {
   @Builder
   buildImagePicker() {
     Row() {
-      ImagePickerButton({
-        onImagePicked: (uri: string | null) => {
-          this.pickedUri = uri
-          this.refreshUIState()
-          console.info('✅ 已选图片：', uri)
-        },
-        btnWidth: 66,
-        btnHeight: 66,
-        cornerRadius: 8
-      })
+      Stack({ alignContent: Alignment.TopEnd }) {
 
+        // 分支：已选择图片时显示预览图；与 iOS `btnImg1.setImage(...)` 的单图入口一致
+        if (this.pickedUri !== null) {
+          Image(this.pickedUri)
+            .width(66)
+            .height(66)
+            .borderRadius(8)
+            .objectFit(ImageFit.Cover)
+            .backgroundColor($r('app.color.color_obscure'))
+            .clip(true)
+
+          IconButton({
+            icon             : $r('app.media.trash'),
+            iconSize         : 18,
+            iconColor        : Color.White,
+            bgColor          : Color.Red,
+            buttonType       : ButtonType.Circle,
+            onClickCallBack  : () => {
+
+              // 调用：删除已选择图片，恢复为未选择状态
+              this.removePickedImage()
+            }
+          })
+            .width(20)
+            .height(20)
+            .margin({ top: 0, right: 0 })
+        } else {
+          ImagePickerButton({
+            onImagePicked: (uri: string | null) => {
+
+              // 调用：保存所选图片 URI，用于预览与后续上传
+              this.setPickedImage(uri)
+            },
+            btnWidth     : 66,
+            btnHeight    : 66,
+            cornerRadius : 8
+          })
+        }
+      }
     }
     .width('100%')
     .justifyContent(FlexAlign.Start)
 
   }
 
+  /**
+   * 保存已选择的图片 URI
+   * @param uri 图片 URI；为 null 时表示未选择
+   */
+  private setPickedImage(uri: string | null): void {
+
+    this.pickedUri = uri
+
+    // 调用：图片状态变化后刷新发送按钮状态与计数显示
+    this.refreshUIState()
+  }
+
+  // 删除当前已选择图片
+  private removePickedImage(): void {
+
+    this.pickedUri = null
+
+    // 调用：图片状态变化后刷新发送按钮状态与计数显示
+    this.refreshUIState()
+  }
+
   // === 功能方法 ===
 
   /** 刷新UI状态 */
   private refreshUIState() {
-    if (this.pickedUri) {
-      this.isSendButtonEnabled = true
-    }else{
-      const trimmedContent = this.content.trim();
-      this.characterCount = trimmedContent.length;
-      this.isSendButtonEnabled =
-        this.characterCount > this.MIN_COUNT &&
-          this.characterCount <= this.MAX_COUNT;
-    }
+    const trimmedContent = this.content.trim();
+    this.characterCount  = trimmedContent.length;
+
+    // 分支：发送按钮启用规则与 iOS 一致，仅按正文长度判断
+    this.isSendButtonEnabled =
+      this.characterCount > this.MIN_COUNT &&
+        this.characterCount <= this.MAX_COUNT;
 
   }
 
@@ -204,7 +254,13 @@ export struct AdviceView {
     content += `应用版本: ${BundleUtils.getBundleInfoSync().versionName}\n`;
     content += `用户ID: ${UserManager.shared.userId}\n`;
     content += `用户名: ${UserManager.shared.userName}`;
+    
+    const book = BookManager.shared.currentBook
 
+    // 分支：当前书存在时，将书名附加到反馈正文；与 iOS `bookName` 拼接一致
+    if (book !== null) {
+      content += `\n书名: ${book.bookName ?? ''}`
+    }
 
     content += `\nMember: ${MemberManager.shared.isActive ? 'Yes' : 'No'}`
     return content;

@@ -65,7 +65,7 @@ export class CosDownloaderAdviceData {
       // 上传成功处理
       onSuccess: (request, result: CosXmlUploadTaskResult) => {
         DebugLog.i(`Upload succeeded at: ${result.accessUrl}`);
-        finished(true, `https://zhikabucket-1256782283.cos.ap-shanghai.myqcloud.com/${CosConfig.UserDataPrefix}${toName}`);
+        finished(true, `https://wordtreebucket-1256782283.cos.ap-shanghai.myqcloud.com/${CosConfig.UserDataPrefix}${toName}`);
       },
 
       // 上传失败处理
