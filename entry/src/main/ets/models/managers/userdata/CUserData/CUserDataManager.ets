@@ -139,16 +139,16 @@ export class CUserDataManager {
   private static uploadEBookContentThenLearnDb(userId: number, book: Book, bookIdForUpdate: number,
     completion: (succeed: boolean, msg: string | null) => void): void {
 
-    const baseName = book.textDb
+    const textDbBaseName = book.textDb
 
     // 无教材库名则只上传 learnDb
-    if (baseName === null || baseName === undefined) {
+    if (textDbBaseName === null || textDbBaseName === undefined) {
       CUserDataManager.uploadLearnDbOnly(userId, bookIdForUpdate, completion)
       return
     }
 
-    // 教材 sqlite 路径
-    const textDbPath = EBookManager.textDbPath(baseName)
+    // 调用：生成当前 EBook 的教材 sqlite 路径；步骤与 iOS `EBookManager.textDbPath(for:)` 一致
+    const textDbPath = EBookManager.textDbPath(textDbBaseName)
 
     // 本地无教材库文件则只上传 learnDb
     if (!FileUtility.isFileExistAt(textDbPath)) {
@@ -156,7 +156,7 @@ export class CUserDataManager {
       return
     }
 
-    // 1) textDb 单文件打 zip（ZipUtility 支持文件路径）
+    // 调用：将 textDb 单文件打为 zip；步骤与 iOS `ZipUtility.createZip(at:)` 一致
     void CUserDataManager.createZipForSingleFileAtPath(textDbPath).then((zipPath: string | null) => {
 
       // 打 zip 失败
@@ -634,26 +634,45 @@ export class CUserDataManager {
    */
   private static async createZipForSingleFileAtPath(srcPath: string): Promise<string | null> {
 
-    const base     = PathUtility.getLastComponentName(srcPath)
-    const parent   = FileUtility.deleteLastPathComponent(srcPath)
-    const jobId    = `${Date.now()}`
-    const wrapDir  = FileUtility.appendPathComponent(parent, `_ebook_up_${jobId}`)
-    const innerDir = FileUtility.appendPathComponent(wrapDir, 'inner')
+    const baseName      = PathUtility.getLastComponentName(srcPath)
+    const parentPath    = FileUtility.deleteLastPathComponent(srcPath)
+    const jobId         = `${Date.now()}`
+    const wrapperDir    = FileUtility.appendPathComponent(parentPath, `_ebook_up_${jobId}`)
+    const sourceDir     = FileUtility.appendPathComponent(wrapperDir, 'inner')
+    const resultZipPath = FileUtility.appendPathComponent(parentPath, `_ebook_up_${jobId}.zip`)
 
-    createFolderIfNeeds(innerDir)
+    // 调用：创建临时包裹目录；鸿蒙 `ZipTool.createOneZip(...)` 以目录为输入，这里用目录适配到 iOS 的“单文件打 zip”语义
+    createFolderIfNeeds(sourceDir)
 
-    const innerFile = FileUtility.appendPathComponent(innerDir, base)
+    const copiedFilePath = FileUtility.appendPathComponent(sourceDir, baseName)
 
-    // 复制进临时 inner 再打 zip
-    if (!FileUtility.copyFile(srcPath, innerFile)) {
-      FileUtility.deleteDirectoryAt(wrapDir)
+    // 分支：先复制 sqlite 到临时目录；复制失败则结束
+    if (!FileUtility.copyFile(srcPath, copiedFilePath)) {
+      FileUtility.deleteDirectoryAt(wrapperDir)
       return null
     }
 
-    const zipPath = await ZipTool.createOneZip(innerDir)
+    // 调用：生成临时 zip；输出路径为 `sourceDir + ".zip"`，仍位于 wrapperDir 内
+    const tempZipPath = await ZipTool.createOneZip(sourceDir)
 
-    FileUtility.deleteDirectoryAt(wrapDir)
+    // 分支：打 zip 失败时直接清理临时目录
+    if (tempZipPath === null) {
+      FileUtility.deleteDirectoryAt(wrapperDir)
+      return null
+    }
 
-    return zipPath
+    // 调用：将最终 zip 移到临时目录外；这样后续清理 wrapperDir 时不会把待上传 zip 一起删掉
+    FileUtility.deleteFileAt(resultZipPath)
+
+    // 分支：移动失败时清理临时目录并返回失败；这是鸿蒙端此前 `No such file or directory` 的根因点
+    if (!FileUtility.moveFile(tempZipPath, resultZipPath)) {
+      FileUtility.deleteDirectoryAt(wrapperDir)
+      return null
+    }
+
+    // 调用：清理仅用于中转打包的临时目录；最终 zip 已独立保留在外层目录
+    FileUtility.deleteDirectoryAt(wrapperDir)
+
+    return resultZipPath
   }
 }
