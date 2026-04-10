@@ -22,12 +22,12 @@ import { UserManager } from '../../user/UserManager'
 import { EWordManager } from '../../eword/EWordManager'
 import { WordUserDbAccess } from '../../../datas/myData/WordUserDbAccess'
 
-// COS 备份/恢复：仅负责 COS 上传下载与本地 zip，Dcs 写回由 UserDataManager2 完成
+// COS 备份/恢复：仅负责 COS 上传下载与本地 zip，Dcs 写回由 UserDataManager 完成
 export class CUserDataManager {
 
   /////////////////////////////////////////////////////////////////////////////
   //使用Cos备份后的处理逻辑 by ko 2022.01.09
-  // (1).备份：learnDb zip → COS，路径写回 Dcs 由 UserDataManager2 完成
+  // (1).备份：learnDb zip → COS，路径写回 Dcs 由 UserDataManager 完成
   // (2).恢复：从 Dcs 取路径后从 COS 下载并解压
   // (3).EBook：EBook 内容文件先上传/下载 COS，再 learnDb 同 CBook
   /////////////////////////////////////////////////////////////////////////////
@@ -73,29 +73,29 @@ export class CUserDataManager {
     await EWordManager.shared.closeWalIfNeeds()
 
     // 异步后再次校验登录态
-    const uidAgain = UserManager.shared.userId
+    const userId = UserManager.shared.userId
 
     // 已登出则中止
-    if (uidAgain === null || uidAgain === undefined || !UserManager.shared.isLogin()) {
+    if (userId === null || userId === undefined || !UserManager.shared.isLogin()) {
       return
     }
 
     // 异步后再次取当前书
-    const bookAgain = BookManager.shared.currentBook
+    const book = BookManager.shared.currentBook
 
     // 书已被切换或清空则中止
-    if (bookAgain === null) {
+    if (book === null) {
       return
     }
 
     // EBook：先内容 zip 再 learnDb zip
-    if (bookAgain.isEBook) {
+    if (book.isEBook) {
 
       // 尚无服务端 EBook id：先 Dcs 建记录
-      if (bookAgain.serverEBookId === null || bookAgain.serverEBookId === undefined) {
+      if (book.serverEBookId === null || book.serverEBookId === undefined) {
 
         // 无 serverEBookId：先 Dcs 创建记录，拿到 sid 后持久化，再走 EBook 内容 + learnDb 上传（首次创建 textDbAddr 留空）
-        UserDataManager.createEBookRecord(bookAgain.bookName, null, bookAgain.unitsCount ?? 0, bookAgain.wordsCount ?? 0,
+        UserDataManager.createEBookRecord(book.bookName, null, book.unitsCount ?? 0, book.wordsCount ?? 0,
           (succeed: boolean, msg: string | null, bookId: number | null) => {
 
             // 创建失败
@@ -106,27 +106,27 @@ export class CUserDataManager {
 
             const sid = bookId
 
-            bookAgain.serverEBookId = sid
+            book.serverEBookId = sid
 
             // 持久化当前书的 serverEBookId
-            BookManager.shared.saveBook(bookAgain)
+            BookManager.shared.saveBook(book)
 
             // EBook 内容 zip→COS + Dcs 写回 text_db_addr，再 learnDb zip→COS
-            CUserDataManager.uploadEBookContentThenLearnDb(uidAgain, bookAgain, sid, completion)
+            CUserDataManager.uploadEBookContentThenLearnDb(userId, book, sid, completion)
           })
 
         return
       }
 
       // 已有 serverEBookId：直接走内容 + learnDb 上传
-      CUserDataManager.uploadEBookContentThenLearnDb(uidAgain, bookAgain, bookAgain.serverEBookId!, completion)
+      CUserDataManager.uploadEBookContentThenLearnDb(userId, book, book.serverEBookId!, completion)
       return
     }
 
     // CBook：仅 learnDb 目录 zip → COS，路径写回 Dcs
-    const bookIdForUpdate = bookAgain.bookId ?? 0
+    const bookIdForUpdate = book.bookId ?? 0
 
-    CUserDataManager.uploadLearnDbOnly(uidAgain, bookIdForUpdate, completion)
+    CUserDataManager.uploadLearnDbOnly(userId, bookIdForUpdate, completion)
   }
 
   /**
@@ -191,11 +191,11 @@ export class CUserDataManager {
             objectName,
             book.unitsCount ?? 0,
             book.wordsCount ?? 0,
-            (ok: boolean, em: string | null) => {
+            (ok: boolean, errMsg: string | null) => {
 
               // 元数据更新失败
               if (!ok) {
-                completion(false, em ?? 'update EBook meta failed')
+                completion(false, errMsg ?? 'update EBook meta failed')
                 return
               }
 
@@ -297,16 +297,16 @@ export class CUserDataManager {
         }
 
         // learnDb zip 下载并解压到当前书用户数据目录
-        CUserDataManager.doDownloadLearnDb(userData, onProgress, (succeed2: boolean, msg2: string | null) => {
+        CUserDataManager.doDownloadLearnDb(userData, onProgress, (succeed: boolean, msg: string | null) => {
 
           // 恢复成功后刷新统计
-          if (succeed2 && BookManager.shared.currentBook?.isEBook === true) {
+          if (succeed && BookManager.shared.currentBook?.isEBook === true) {
 
             // 恢复后刷新 unitsCount / wordsCount（与本地添加单词后一致）
             void BookManager.shared.refreshBookCounts(textDbPath)
           }
 
-          completion(succeed2, msg2)
+          completion(succeed, msg)
         })
       })
     } else {
