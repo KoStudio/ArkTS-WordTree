@@ -4,11 +4,18 @@ import { ColorPickerButton } from '../../../app/views/picker/colorpicer/ColorPic
 import { TintImage } from '../../../app/views/TintImage';
 import { WordClickableText } from '../../../app/views/WordClickableText';
 import { TEUtility } from '../../../common/utils/TEUtility';
+import { getString } from '../../../common/utils/ResourceUtils';
+import { SimpleEventBus } from '../../../common/components/eventbus/SimpleEventBus';
 import { Toast } from '../../../common/utils/Toast';
 import { SearchConstants, SearchManager } from '../../../models/datas/model/SearchManager';
 import { WordUser } from '../../../models/datas/myData/WordUser';
 import { MemberManager } from '../../../models/managers/member/MemberManager';
 import { SettingManager } from '../../../models/managers/setting/SettingManager';
+import {
+  ShareMemoManager2,
+  ShareMemoManager2Notification,
+  ShareMemoNotificationPayload
+} from '../../../models/managers/sharedata2/ShareMemoManager2';
 import { ReclaimWordViewConfig } from '../../reclaimword/ReclaimWordView';
 import { ReclaimViewConfig } from '../../setting/ReclaimView';
 import { DetailCardsViewConfig } from '../detail/DetailCardsView';
@@ -33,6 +40,65 @@ export struct WordCardOne {
   @Local isHideExampleTranslation              : boolean                          = SettingManager.shared.hideTranslation
 
   @Local isRefreshing                          : boolean                          = false
+  @Local wordMemos                             : Array<Record<string, string>>    = []
+
+  private unsubShareMemoPrivate                : (() => void) | undefined         = undefined
+  private unsubShareMemoPublic                 : (() => void) | undefined         = undefined
+
+  aboutToAppear(): void {
+    this.reloadWordMemos()
+
+    if (this.unsubShareMemoPrivate === undefined) {
+
+      // 与 iOS / Android CardView 一致：笔记变化后刷新卡片下方 memo 区
+      this.unsubShareMemoPrivate = SimpleEventBus.on<ShareMemoNotificationPayload>(
+        ShareMemoManager2Notification.Name.PrivateChanged,
+        (p?: ShareMemoNotificationPayload) => {
+          this.handleShareMemoNotification(p)
+        })
+
+      this.unsubShareMemoPublic = SimpleEventBus.on<ShareMemoNotificationPayload>(
+        ShareMemoManager2Notification.Name.PublicChanged,
+        (p?: ShareMemoNotificationPayload) => {
+          this.handleShareMemoNotification(p)
+        })
+    }
+  }
+
+  aboutToDisappear(): void {
+
+    if (this.unsubShareMemoPrivate !== undefined) {
+      this.unsubShareMemoPrivate()
+      this.unsubShareMemoPrivate = undefined
+    }
+
+    if (this.unsubShareMemoPublic !== undefined) {
+      this.unsubShareMemoPublic()
+      this.unsubShareMemoPublic = undefined
+    }
+  }
+
+  private handleShareMemoNotification(p?: ShareMemoNotificationPayload): void {
+
+    if (!p) {
+      return
+    }
+
+    if (p.word.titleEn !== this.word.titleEn) {
+      return
+    }
+
+    this.reloadWordMemos()
+  }
+
+  // 与 iOS / Android QuickLearn CardView 一致：合并自写笔记与收藏的分享笔记
+  private reloadWordMemos(): void {
+
+    ShareMemoManager2.shared.loadLocalMemosOfWord(this.word, (localMemos: Array<Record<string, string>>) => {
+
+      this.wordMemos = localMemos
+    })
+  }
 
 
   @Monitor('settingManager.hideTranslation')
@@ -385,35 +451,65 @@ export struct WordCardOne {
   buildMemoPanel() {
     Column(){
 
-      if (this.word.memo){
-        //笔记 标题
+      if (this.wordMemos.length > 0) {
+        // 笔记标题
         Text($r('app.string.wordcard_memo_txt_title')) //笔记
           .fontSize(14)
           .fontColor($r('app.color.color_detail'))
           .textAlign(TextAlign.Start)
-          .margin({ top: 25, left:10 })
+          .margin({ top: 25, left: 10 })
       }
 
-      //笔记内容
       Column(){
-        if (this.word.memo){ //有笔记
+        if (this.wordMemos.length > 0) { // 有笔记
 
-          Column(){
-            Text(this.word.memo)
-              .fontSize(16)
-              .fontColor($r('app.color.color_list_item_subtitle'))
-              .textAlign(TextAlign.Start)
+          ForEach(this.wordMemos, (memoDict: Record<string, string>, rowIndex: number) => {
 
-            Row(){
-              // 删除按钮
-              IconTintButton({ icon: $r('app.media.trash'), iconSize: 26, onClickCallBack:()=>{ this.actionRemoveMemo() } })
+            Column({ space: 6 }) {
+
+              Column({ space: 4 }) {
+                Text(memoDict[WordUser.KShareMemo_MemoText] ?? '')
+                  .fontSize(16)
+                  .fontColor($r('app.color.color_list_item_subtitle'))
+                  .textAlign(TextAlign.Start)
+                  .width('100%')
+
+                Text(this.memoAuthorLineFor(memoDict))
+                  .fontSize(12)
+                  .fontColor($r('app.color.color_list_item_detail'))
+                  .textAlign(TextAlign.Start)
+                  .width('100%')
+              }
+              .width('100%')
+              .onClick(() => {
+                // 编辑笔记
+                ComposeMemoViewConfig.open({ word: this.word, wordIndexOnPage: this.wordIndexOnPage })
+              })
+
+              Row(){
+                // 删除按钮
+                IconTintButton({
+                  icon            : $r('app.media.trash'),
+                  iconSize        : 26,
+                  onClickCallBack : () => {
+                    this.actionRemoveMemoAtRow(rowIndex)
+                  }
+                })
+              }
+              .padding({ right: 10 })
+              .justifyContent(FlexAlign.End)
+              .width('100%')
             }
-            .padding({right: 10})
-            .justifyContent(FlexAlign.End)
             .width('100%')
-          }
-          .justifyContent(FlexAlign.Start)
-          .alignItems(HorizontalAlign.Start)
+            .padding({ top: 8, bottom: 10 })
+            .border({
+              width : { bottom: rowIndex < this.wordMemos.length - 1 ? 1 : 0 },
+              style : BorderStyle.Dashed,
+              color : $r('app.color.color_line')
+            })
+          },
+            (memoDict: Record<string, string>, idx: number) =>
+              `${idx}_${memoDict[WordUser.KShareMemo_MemoId] ?? ''}`)
 
         }else{
           ///写笔记
@@ -438,7 +534,7 @@ export struct WordCardOne {
       .width('100%')
       .padding(10)
       .backgroundColor(this.word.deleted ? Color.Transparent : Color.White)
-      .border({width: {top: 1, bottom: 1, left: 0, right: 0}, color: $r('app.color.color_line')})
+      .border({ width: { top: 1, bottom: 1, left: 0, right: 0 }, color: $r('app.color.color_line') })
       .onClick(()=>{
         //编辑笔记
         ComposeMemoViewConfig.open({ word: this.word, wordIndexOnPage: this.wordIndexOnPage })
@@ -450,6 +546,59 @@ export struct WordCardOne {
     .justifyContent(FlexAlign.Start)
     .alignItems(HorizontalAlign.Start)
 
+  }
+
+  // 与 iOS / Android CardView 一致：根据 memoId 显示作者
+  private memoAuthorLineFor(memoDict: Record<string, string>): string {
+
+    const base      = getString($r('app.string.memo_author_txt'))
+    const memoIdStr = memoDict[WordUser.KShareMemo_MemoId] ?? ''
+
+    if (memoIdStr === ShareMemoManager2.PrivateMemoId) {
+      return `${base}: ${getString($r('app.string.memo_author_self'))}`
+    }
+
+    return `${base}: ${memoDict[WordUser.KShareMemo_AuthorName] ?? ''}`
+  }
+
+  // 与 iOS / Android CardView 一致：支持删除自写笔记和收藏的分享笔记
+  private actionRemoveMemoAtRow(rowIndex: number): void {
+
+    const memoDict = this.wordMemos[rowIndex]
+
+    if (!memoDict) {
+      return
+    }
+
+    const memoIdStr = memoDict[WordUser.KShareMemo_MemoId] ?? ''
+
+    if (memoIdStr === ShareMemoManager2.PrivateMemoId) {
+
+      void ShareMemoManager2.shared.removeLocalSelfMemoFromWord(this.word, (succeed: boolean) => {
+
+        if (succeed) {
+          Toast.showMessage($r('app.string.memo_msg_remove_memo_success'))
+          ShareMemoManager2.shared.postNotification(false, this.word, this.wordIndexOnPage)
+          this.reloadWordMemos()
+        }
+      })
+      return
+    }
+
+    let shareIndex = rowIndex
+
+    if (this.word.memo !== null && (this.word.memo?.length ?? 0) > 0) {
+      shareIndex = rowIndex - 1
+    }
+
+    ShareMemoManager2.shared.removeLocalShareMemoFromWordByIndex(this.word, shareIndex, (succeed: boolean) => {
+
+      if (succeed) {
+        Toast.showMessage($r('app.string.memo_msg_remove_memo_success'))
+        ShareMemoManager2.shared.postNotification(false, this.word, this.wordIndexOnPage)
+        this.reloadWordMemos()
+      }
+    })
   }
 
   // 构建已删除标签
@@ -472,11 +621,6 @@ export struct WordCardOne {
     //删除或恢复
     this.word.changeDeletedWord(!this.word.isDeleted())
     this.isRefreshing = false
-  }
-
-  actionRemoveMemo(){
-    //删除笔记
-    SearchManager.shared.saveLocalMemoForWord(this.word, '');
   }
 
   getHilightTexts(): string [] {
