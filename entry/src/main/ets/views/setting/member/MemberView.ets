@@ -42,8 +42,10 @@ interface PriceCompareItem {
 export struct MemberView {
   private static readonly PRICE_BUTTON_WIDTH_VP      : number = 90  // 单个价格按钮宽度
   private static readonly PRICE_SCROLL_PADDING_VP    : number = 20  // 横向滚动区左右总留白
-  private static readonly PRICE_BUTTON_SPACING_VP    : number = 15  // 价格按钮之间的间距
+  private static readonly PRICE_BUTTON_SPACING_VP    : number = 15  // 3 个及以下按钮时的标准间距
+  private static readonly PRICE_BUTTON_SPACING_PEEK  : number = 11   // 超过 3 个按钮时的紧凑间距，便于露出第 4 个按钮
   private static readonly CONTENT_HORIZONTAL_PAD_VP  : number = 40  // 内容区左右内边距总和
+  private static readonly PRICE_PEEK_WIDTH_VP        : number = 28  // 超过 3 个按钮时，右侧额外露出的提示宽度
 
   @Param   @Require isShowing                        : boolean                            // 当前会员页是否显示
   @Event   $isShowing                                : (val: boolean) => void             = (_val: boolean) => {}
@@ -257,7 +259,7 @@ export struct MemberView {
   @Builder
   private buildPriceOptions() {
     Scroll() {
-      Row({ space: 15 }) {
+      Row({ space: this.priceButtonSpacing() }) {
         ForEach(this.visiblePriceItems(), (item: PriceDisplayItem) => {
           PriceButtonView({
             title           : this.loadPriceTitle(item.product.id),
@@ -278,7 +280,7 @@ export struct MemberView {
         .justifyContent(this.shouldCenterPriceButtons() ? FlexAlign.Center : FlexAlign.Start)
         .margin({ top: 10 })
     }
-      .width('100%')
+      .width(this.priceScrollWidth())
       .padding({ left: 10, right: 10 })
       .scrollable(ScrollDirection.Horizontal)
       .scrollBar(BarState.Off)
@@ -824,23 +826,34 @@ export struct MemberView {
 
   // 当前价格按钮是否应居中显示
   private shouldCenterPriceButtons(): boolean {
-    const visibleCount = this.visiblePriceItems().length
+    return this.visiblePriceItems().length <= 3
+  }
 
-    // 分支：无价格项时不需要居中布局判断
-    if (visibleCount < 1) {
-      return false
+  // 价格滚动区宽度；按钮超过 3 个时，右侧露出一部分后续按钮提示可横向滑动
+  private priceScrollWidth(): Length {
+
+    // 分支：3 个及以下按钮时，保持当前宽度，让内容整体居中
+    if (this.shouldCenterPriceButtons()) {
+      return '100%'
     }
 
-    const totalButtonsWidth = visibleCount * MemberView.PRICE_BUTTON_WIDTH_VP
-    const totalSpacingWidth = (visibleCount - 1) * MemberView.PRICE_BUTTON_SPACING_VP
-    const contentWidth      = totalButtonsWidth + totalSpacingWidth
-    const availableWidth    = dScreenWidth
-      - MemberView.CONTENT_HORIZONTAL_PAD_VP
-      - MemberView.PRICE_SCROLL_PADDING_VP
+    const availableWidth     = dScreenWidth - MemberView.CONTENT_HORIZONTAL_PAD_VP
+    const targetInnerWidth   = (MemberView.PRICE_BUTTON_WIDTH_VP * 3)
+      + (this.priceButtonSpacing() * 2)
+      + MemberView.PRICE_PEEK_WIDTH_VP
+    const targetScrollWidth  = targetInnerWidth + MemberView.PRICE_SCROLL_PADDING_VP
+    const finalWidth         = Math.min(availableWidth, targetScrollWidth)
 
-    // 分支：只有当全部按钮总宽度能放进当前内容区时，才居中显示。
-    // 放不下时保持左对齐，并通过横向 Scroll 允许继续滚动查看。
-    return contentWidth <= availableWidth
+    // 分支：按钮超过 3 个时，优先保证前三个按钮完整显示，
+    // 再让第 4 个按钮只露出一点，提示用户还能横向滑动查看更多套餐。
+    return `${finalWidth}vp`
+  }
+
+  // 当前价格按钮间距；超过 3 个按钮时使用更紧凑的间距，便于露出第 4 个按钮
+  private priceButtonSpacing(): number {
+    return this.shouldCenterPriceButtons()
+      ? MemberView.PRICE_BUTTON_SPACING_VP
+      : MemberView.PRICE_BUTTON_SPACING_PEEK
   }
 
   // 当前选中的价格项
