@@ -71,6 +71,11 @@ export class HwSubscriber {
     }
   }
 
+  // 加载订阅商品信息列表，与 Android `loadAllProducts(...)` 对齐
+  async loadAllProducts(): Promise<iap.Product[] | null> {
+    return await this.queryProducts();
+  }
+
   /** 创建购买 */
   async createPurchase(productId: string): Promise<boolean> {
     const param: iap.PurchaseParameter = {
@@ -98,6 +103,14 @@ export class HwSubscriber {
       }
       return false;
     }
+  }
+
+  /**
+   * 启动订阅购买流程
+   * @param productId 商品 id
+   */
+  async purchaseProduct(productId: string): Promise<boolean> {
+    return await this.createPurchase(productId);
   }
 
   ///启动时，默认执行一次自动恢复

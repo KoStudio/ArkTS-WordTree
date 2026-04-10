@@ -1,711 +1,930 @@
-import { AppSettings } from "../../../app/constants/AppSettings";
-import { GlobalKey } from "../../../app/constants/GlobalKey";
-import { TextStyleButton } from "../../../app/views/buttons/TextStyleButton";
-import { LinkText } from "../../../app/views/LinkText";
-import { LinkView, LinkViewConfig } from "../../../app/views/LinkView";
-import { NavBarView } from "../../../app/views/NavBarView";
-import { getString, getStringF } from "../../../common/utils/ResourceUtils";
+import { iap } from '@kit.IAPKit'
+import { AppSettings } from "../../../app/constants/AppSettings"
+import { TextStyleButton } from "../../../app/views/buttons/TextStyleButton"
 import { TextStyleButtonStyle } from "../../../app/views/buttons/TextStyleButton"
-import { HwSubscriber } from "../../../common/iab/huawei/HwSubscriber";
-import { SubscribeManager, SubscribeManagerNotification } from "../../../common/iab/SubscribeManager";
-import { MemberManager } from "../../../models/managers/member/MemberManager";
-import iap from "@hms.core.iap";
-import { SubscriptionInfoManager } from "../../../models/managers/subscription/SubscriptionInfoManager";
-import { Toast } from "../../../common/utils/Toast";
-import { bounce } from "../../../common/extentions/AnimBounce";
-import { TextButton } from "../../../app/views/buttons/TextButton";
-import { HwSubscribeConstants } from "../../../common/iab/huawei/HwSubscribeConstants";
-import { isDebugMode } from "../../../app/constants/AppDefines";
-import { SimpleEventBus } from "../../../common/components/eventbus/SimpleEventBus";
+import { LinkText } from "../../../app/views/LinkText"
+import { LinkView, LinkViewConfig } from "../../../app/views/LinkView"
+import { NavBarView } from "../../../app/views/NavBarView"
+import { getString, getStringF } from "../../../common/utils/ResourceUtils"
+import { HwSubscriber } from "../../../common/iab/huawei/HwSubscriber"
+import { SubscribeManager, SubscribeManagerNotification } from "../../../common/iab/SubscribeManager"
+import { MemberManager } from "../../../models/managers/member/MemberManager"
+import { SubscriptionInfoManager } from "../../../models/managers/subscription/SubscriptionInfoManager"
+import { Toast } from "../../../common/utils/Toast"
+import { bounce } from "../../../common/extentions/AnimBounce"
+import { TextButton } from "../../../app/views/buttons/TextButton"
+import { HwSubscribeConstants } from "../../../common/iab/huawei/HwSubscribeConstants"
+import { SimpleEventBus } from "../../../common/components/eventbus/SimpleEventBus"
+import { AppCfgManager } from "../../../models/managers/servercfg/AppCfgManager"
+import { HwPurchaser } from "../../../common/iab/huawei/HwPurchaser"
+import { HwPurchaseConstants } from "../../../common/iab/huawei/HwPurchaseConstants"
+import { PriceButtonView } from "./PriceButtonView"
+import { UserManager } from "../../../models/managers/user/UserManager"
+import { dScreenWidth } from "../../../app/constants/AppDefines"
 
 export namespace MemberViewConfig {
 
-  ///导航key
   export const kNavPath = "Member_kNavPath"
-
 }
 
-/**
- * 会员订阅页面组件
- * 实现会员订阅功能，包含价格选择、订阅操作等
- * 使用@ComponentV2注解和声明式UI范式
- */
+interface PriceDisplayItem {
+  tag          : number
+  product      : iap.Product
+  isConsumable : boolean
+}
+
+interface PriceCompareItem {
+  productId    : string
+  microsPrice  : number
+  months       : number
+}
+
 @ComponentV2
 export struct MemberView {
+  private static readonly PRICE_BUTTON_WIDTH_VP      : number = 112
+  private static readonly PRICE_BUTTON_SPACING_VP    : number = 15
+  private static readonly CONTENT_HORIZONTAL_PAD_VP  : number = 40
 
-  // MARK: - 参数和状态定义
-  @Param   @Require isShowing        : boolean
-  @Event   $isShowing                : (val: boolean) => void    = (val: boolean) => {}
-  @Event   onClose                   : (changed: boolean) => void
+  @Param   @Require isShowing                      : boolean
+  @Event   $isShowing                              : (val: boolean) => void = (_val: boolean) => {}
+  @Event   onClose                                 : (changed: boolean) => void = (_changed: boolean) => {}
 
-  @Local private memberExpiryDate    : string = ''; // 会员到期时间
-  @Local private memberExpiryDateColor: ResourceColor = Color.White;
+  @Local private memberExpiryDate                  : string         = ''
+  @Local private memberExpiryDateColor             : ResourceColor  = Color.White
+  @Local private isAgree                           : boolean        = false
+  @Local private isBuyButtonEnabled                : boolean        = false
+  @Local private isSubscribeEnable                 : boolean        = false
+  @Local private showConsumablePriceButtons        : boolean        = true
+  @Local private subscriptionProducts              : iap.Product[]  = []
+  @Local private consumableProducts                : iap.Product[]  = []
+  @Local private selectedPriceTag                  : number         = -1
+  @Local private isShowConfirmSubscribe            : boolean        = false
+  @Local private checkAgreeShakeOffsetX            : number         = 0
+  @Local private isRestoringConsumablePurchases    : boolean        = false
 
-  @Local private isAgree: boolean = false;
-  @Local private isBuyButtonEnabled: boolean = true; // 购买按钮是否可用
-  @Local private isSubscribeEnable: boolean = false
-
-  @Local private products: iap.Product[] = []
-  @Local private selectedPriceIndex: number = -1; // 选中的价格索引
-
-  @Local private isShowConfirmSubscribe: boolean = false //显示确认订阅窗口视图
-
-  @Local private checkAgreeShakeOffsetX: number = 0  ///动画控制变量
-
-  // 路由栈管理
   @Provider(MemberViewConfig.kNavPath) navPath: NavPathStack = new NavPathStack()
 
   aboutToAppear(): void {
-    //刷新buy按钮状态
-    this.refreshBtnBuy()
 
-    ///加载Products
-    this.loadData()
-
-    //显示会员
+    // 调用：进入页面时同步恢复订阅、本地会员信息与价格区
     this.onChangeOfShowing()
 
-    ///监听会员时间改变通知
-    SimpleEventBus.on(SubscribeManagerNotification.expireDateUpdated, () => {
-      this.showMemberInfo()
-    })
+    // 调用：加载价格、显隐控制与当前默认选中项
+    void this.loadPriceAndShowInfoIfNeeds()
 
+    // 调用：监听会员时间变化通知，及时刷新顶部文案与购买按钮状态
+    SimpleEventBus.on(SubscribeManagerNotification.expireDateUpdated, () => {
+      this.showMememberInfo()
+      this.refreshBtnBuy()
+    })
   }
 
-
   aboutToDisappear(): void {
-    ///移除 监听会员时间改变通知
+
+    // 调用：页面销毁时移除会员时间通知监听
     SimpleEventBus.off(SubscribeManagerNotification.expireDateUpdated)
   }
 
-  onChangeOfShowing(){
-    ///自动 恢复已经有的订阅(重新安装应用后)
-    HwSubscriber.shared.restore()
+  // 与 Android `onStart` / `onChangeOfShowing` 对齐：恢复订阅并刷新会员信息
+  private onChangeOfShowing(): void {
 
-    ///判断时间间隔，自动刷新订阅时间 6小时， Android版和iOS没有这个功能
+    // 调用：自动恢复已经有的订阅
+    void HwSubscriber.shared.restore()
+
+    // 调用：判断时间间隔，自动刷新订阅信息
     SubscriptionInfoManager.shared.autoRefreshSubscriptionInfoIfNeeds()
 
-    ///显示会员信息
-    this.showMemberInfo()
+    // 调用：显示会员信息
+    this.showMememberInfo()
   }
 
   build() {
-    // 导航容器（对应NavigationStack）
     Navigation(this.navPath) {
       this.buildMain()
     }
-    .navDestination(this.navigationTo)
-    .navBarPosition(NavBarPosition.Start)
-    .hideTitleBar(true)
-    .backgroundColor($r('app.color.color_background'))
-
+      .navDestination(this.navigationTo)
+      .navBarPosition(NavBarPosition.Start)
+      .hideTitleBar(true)
+      .backgroundColor($r('app.color.color_background'))
   }
+
+  /**
+   * 路由到内部协议页面
+   * @param name 目标路由名
+   * @param param 路由参数
+   */
   @Builder
-  navigationTo<T>(name: string, param: T){
-    if (name === LinkViewConfig.NavKey)                 { LinkView({ title: (param as LinkViewConfig.Param).title, url: (param as LinkViewConfig.Param).url })
-    }else{ NavDestination(){Text(`<MemberView.ets>未配置navigationTo: ${name}`)}
-    }
-  }
-  // MARK: - 组件构建方法
-
-  @Builder buildMain(){
-    Column() {
-
-      Scroll() {
-
-        Column() {
-          Stack() {
-            Column(){
-              // 导航栏
-              this.buildNavBar()
-
-              // 主要内容区域
-              this.buildContentSection()
-
-              // 底部操作区域
-              this.buildActionSection()
-            }
-
-            ///确认 开通自动续费
-            if (this.isShowConfirmSubscribe){
-              this.buildConfirmDialogView(()=>{ this.doSubscribe()})
-            }
-
-          }
-
-        }
-        .width('100%')
-        .alignItems(HorizontalAlign.Start)
+  navigationTo<T>(name: string, param: T) {
+    if (name === LinkViewConfig.NavKey) {
+      LinkView({
+        title : (param as LinkViewConfig.Param).title,
+        url   : (param as LinkViewConfig.Param).url
+      })
+    } else {
+      NavDestination() {
+        Text(`<MemberView.ets>未配置navigationTo: ${name}`)
       }
-      .scrollBar(BarState.Off)
     }
-    .width('100%')
-    .height('100%')
-    .backgroundColor($r('app.color.colorPrimary'))
   }
 
-  /**
-   * 构建导航栏
-   * 包含取消按钮和管理订阅按钮
-   */
   @Builder
-  buildNavBar() {
-    NavBarView({
-      title: $r('app.string.member_title'),
-
-      // 左侧按钮数组
-      leftButtons: [
-        {
-          text: $r('app.string.member_btn_cancel'),
-          onClick: () => { this.$isShowing(false) }
-        }
-      ],
-
-      // 右侧按钮数组
-      rightButtons: [
-        {
-          text: $r('app.string.member_btn_manage_subs'),
-          onClick: () => { this.showViewSubscription() }
-        }
-      ]
-    })
-      .backgroundColor(Color.Blue)
-      .margin(10)
-
-  }
-
-
-  /**
-   * 构建主要内容区域
-   * 包含描述文本、价格选项、提示信息等
-   */
-  @Builder
-  buildContentSection() {
+  private buildMain() {
     Column() {
-      // 描述文本
+      Scroll() {
+        Stack() {
+          Column() {
+
+            // 调用：构建顶部导航栏
+            this.buildNavBar()
+
+            // 调用：构建标题栏（标题 + 恢复按钮）
+            this.buildTitleBar()
+
+            // 调用：构建主要内容区
+            this.buildContentSection()
+
+            // 调用：构建底部购买区与协议区
+            this.buildActionSection()
+          }
+            .width('100%')
+
+          if (this.isShowConfirmSubscribe) {
+            this.buildConfirmDialogView(() => {
+              void this.doSubscribe()
+            })
+          }
+        }
+      }
+        .scrollBar(BarState.Off)
+    }
+      .width('100%')
+      .height('100%')
+      .backgroundColor($r('app.color.colorPrimary'))
+  }
+
+  // 构建导航栏
+  @Builder
+  private buildNavBar() {
+    NavBarView({
+      title       : $r('app.string.member_title'),
+      leftButtons : [{
+        text   : $r('app.string.member_btn_cancel'),
+        onClick: () => {
+          this.$isShowing(false)
+        }
+      }],
+      rightButtons: this.isSelectedConsumablePrice() ? [] : [{
+        text   : $r('app.string.member_btn_manage_subs'),
+        onClick: () => {
+
+          // 调用：打开华为已购订阅管理页面
+          this.showViewSubscription()
+        }
+      }]
+    })
+      .margin(10)
+  }
+
+  // 构建标题栏（标题 + 恢复按钮）
+  @Builder
+  private buildTitleBar() {
+    Row() {
+      Text($r('app.string.member_title'))
+        .fontSize(20)
+        .fontColor(Color.White)
+        .layoutWeight(1)
+
+      if (this.isSelectedConsumablePrice()) {
+        TextButton({
+          text            : $r('app.string.member_btn_restore'),
+          onClickCallBack : () => {
+
+            // 调用：恢复可能遗留的未完成单次购买订单
+            void this.actionRestoreConsumablePurchases()
+          }
+        })
+      }
+    }
+      .width('100%')
+      .padding({ left: 10, right: 10 })
+      .margin({ top: 10 })
+      .alignItems(VerticalAlign.Center)
+  }
+
+  // 构建主要内容区域
+  @Builder
+  private buildContentSection() {
+    Column() {
       Text($r('app.string.member_desc'))
-        .id('tvContent')
         .fontColor(Color.White)
         .fontSize(18)
         .textAlign(TextAlign.Start)
         .width('100%')
-        .margin({ bottom: 20 })
 
-      if (this.products.length > 0){
-        // 价格选项区域
+      if (this.visiblePriceItems().length > 0) {
+
+        // 调用：构建价格卡片区域
         this.buildPriceOptions()
-      }else{
-        // 加载中
+      } else {
+
+        // 调用：构建价格加载态
         this.buildLoading()
       }
 
-
-
-      // 附加信息文本
-      Text($r('app.string.member_txt_info'))
-        .id('tvInfo')
+      Text(this.currentInfoText())
         .fontColor($r('app.color.color_obscure'))
         .fontSize(12)
         .textAlign(TextAlign.Start)
         .width('100%')
         .margin({ top: 5 })
+
+      Text(this.getPriceTip())
+        .fontColor($r('app.color.colorAccent'))
+        .fontSize(12)
+        .textAlign(TextAlign.Center)
+        .width('100%')
+        .margin({ top: 10 })
     }
-    .width('100%')
-    .padding(16)
-    .alignItems(HorizontalAlign.Start)
+      .width('100%')
+      .padding({ left: 20, right: 20, top: 20 })
+      .alignItems(HorizontalAlign.Start)
   }
 
-  /**
-   * 构建价格选项区域
-   * 三个价格按钮水平排列
-   */
+  // 构建价格选项区域
   @Builder
-  buildPriceOptions() {
-    Column(){
-      Row() {
-        ForEach(this.products, (product: iap.Product, index: number) => {
+  private buildPriceOptions() {
+    Scroll() {
+      Row({ space: 15 }) {
+        ForEach(this.visiblePriceItems(), (item: PriceDisplayItem) => {
+          PriceButtonView({
+            title           : this.loadPriceTitle(item.product.id),
+            price           : item.product.localPrice,
+            term            : this.localizedPeriod(item.product.id),
+            tagText         : this.loadPriceTagText(item),
+            perMonth        : this.calcPerMonthText(item.product),
+            isSelected      : this.selectedPriceTag === item.tag,
+            onClickCallBack : () => {
 
-
-          Button({ type: ButtonType.Normal }) {
-            Column() {
-              Text(product.localPrice)
-                .fontColor(this.selectedPriceIndex === index ? $r('app.color.colorPrimary') : Color.White)
-                .fontSize(16)
-                .fontWeight(FontWeight.Medium)
-
-              Text(this.getPriceText(product))
-                .fontColor(this.selectedPriceIndex === index ? $r('app.color.colorPrimary') : Color.White)
-                .fontSize(12)
+              // 调用：选中当前价格卡片，联动刷新文案、按钮与协议区
+              this.selectPrice(item.tag)
             }
-          }
-          .id(`btnPrice${index + 1}`)
-          .width(96)
-          .height(60)
-          .backgroundColor(this.selectedPriceIndex === index ? Color.White : Color.Transparent)
-          .border({
-            width: this.selectedPriceIndex === index ? 2 : 1,
-            color: this.selectedPriceIndex === index ? $r('app.color.color_white') : Color.White,
-            radius: 4
           })
-          .onClick(() => {
-            this.handlePriceSelection(index);
-          })
-          //.margin({ left: index > 0 ? 15 : 0, right: index < this.priceOptions.length - 1 ? 15 : 0 })
-        }, (option: PriceOption) => option.price)
+        }, (item: PriceDisplayItem) => `${item.tag}_${item.product.id}`)
       }
-      .width('100%')
-      .justifyContent(FlexAlign.SpaceAround)
-
-      // 提示信息区域（默认隐藏）
-      Column() {
-        Text(this.getPriceTip())//'连续包年会员，168元/年，相当于12元/月'
-          .id('tvTip')
-          .fontColor($r('app.color.colorAccent'))
-          .fontSize(12)
-          .textAlign(TextAlign.Center)
-          .width('100%')
-      }
-      .width('100%')
-      .margin({ top: 10 })
-      .visibility(Visibility.Visible) // 对应 android:visibility="gone"
+        .width(this.shouldCenterPriceButtons() ? '100%' : 'auto')
+        .justifyContent(this.shouldCenterPriceButtons() ? FlexAlign.Center : FlexAlign.Start)
+        .margin({ top: 10 })
     }
-    .width('100%')
-    .margin({ top: 10 })
-
+      .width('100%')
+      .scrollable(ScrollDirection.Horizontal)
+      .scrollBar(BarState.Off)
   }
 
-  @Builder buildLoading(){
+  // 构建价格加载态
+  @Builder
+  private buildLoading() {
     Row() {
       LoadingProgress()
         .height(32)
         .width(48)
     }
-    .height(100)
-    .width('100%')
-    .justifyContent(FlexAlign.SpaceAround)
-    .margin({ top: 10 })
+      .height(100)
+      .width('100%')
+      .justifyContent(FlexAlign.Center)
+      .margin({ top: 10 })
   }
 
-  getPriceText(product?: iap.Product | null): string {
-    return `${product?.subscriptionInfo?.periodCount ?? 0}${this.getPeriodUnitText(product?.subscriptionInfo?.periodUnit)}`
-  }
-
-  ///沙盒环境中的订阅换算时间为10秒/天。比如订阅周期为1周，商品将在首次购买成功70秒后发生续期。1月则是300秒(5分钟)。
-  getPeriodUnitText(unit?: iap.PeriodUnit | null): string {
-    switch (unit) {
-      case iap.PeriodUnit.DAY:    return '日';
-      case iap.PeriodUnit.WEEK:   return '周';
-      case iap.PeriodUnit.MONTH:  return '月';
-      case iap.PeriodUnit.YEAR:   return '年';
-      case iap.PeriodUnit.MINUTE: return '分钟';
-      default:                return '';
-    }
-  }
-
-  ///获取价格提示
-  getPriceTip(): string {
-
-    ///把整数显示为不带小数，小数保留一位
-    const format = (value: number): string => {
-      return value % 1 === 0 ? `${value | 0}` : value.toFixed(1);
-    };
-
-    const product = this.products[this.selectedPriceIndex]
-    if (!product) {
-      return ''
-    }
-
-    const sku: string        = product.id
-    const priceFloat: number = product.microPrice / 1000000 //microPrice:商品实际价格乘以1,000,000后的微单位价格
-
-    const price              = format(priceFloat);
-    const pricePerMonth_3    = format(priceFloat / 3);
-    const pricePerMonth_12   = format(priceFloat / 12);
-
-    switch (sku) {
-      case HwSubscribeConstants.SKU_1:
-        // return `连续包月会员，${price}元/月`;
-        return getStringF($r('app.string.member_sub_tip_month'), price)
-
-      case HwSubscribeConstants.SKU_2:
-        //return `连续包季会员，${price}元/季，相当于${pricePerMonth_3}元/月`;
-        return getStringF($r('app.string.member_sub_tip_quarter'), price, pricePerMonth_3)
-
-      case HwSubscribeConstants.SKU_3:
-        //return `连续包年会员，${price}元/年，相当于${pricePerMonth_12}元/月`;
-        return getStringF($r('app.string.member_sub_tip_year'), price, pricePerMonth_12)
-
-      default:
-        return "";
-    }
-  }
-  /**
-   * 构建底部操作区域
-   * 包含订阅按钮、会员日期显示、协议链接等
-   */
+  // 构建底部购买区与协议区
   @Builder
-  buildActionSection() {
+  private buildActionSection() {
     Column() {
-      // 订阅按钮和会员日期
+
+      // 调用：构建购买按钮与会员有效期区域
       this.buildSubscribeSection()
 
-      // 协议链接区域
-      //this.buildAgreementSection()
-
-      // 同意协议区域（默认隐藏）
+      // 调用：构建协议确认区域
       this.buildAgreementCheckSection()
     }
-    .width('100%')
-    .padding(16)
-    .alignItems(HorizontalAlign.Center)
+      .width('100%')
+      .padding(16)
+      .alignItems(HorizontalAlign.Center)
   }
 
-  /**
-   * 构建订阅按钮和会员日期区域
-   */
+  // 构建购买按钮与会员日期区域
   @Builder
-  buildSubscribeSection() {
+  private buildSubscribeSection() {
     Column() {
-      // 订阅按钮
       TextStyleButton({
-        text:$r('app.string.member_btn_subscribe'),
-        style: TextStyleButtonStyle.LIGHT,
-        minWidth: 220,
-        isEnabled:this.isBuyButtonEnabled,
-        onClickCallBack:()=>{
+        text            : $r('app.string.member_btn_subscribe'),
+        style           : TextStyleButtonStyle.LIGHT,
+        minWidth        : 220,
+        isEnabled       : this.isBuyButtonEnabled,
+        onClickCallBack : () => {
+
+          // 调用：执行订阅或单次购买入口
           this.actionSubscribe()
         }
       })
-      // 会员到期日期
+
       Text(this.memberExpiryDate)
-        .id('tvMemberDate')
         .fontColor(this.memberExpiryDateColor)
         .fontSize(12)
         .textAlign(TextAlign.Center)
         .width('100%')
         .margin({ top: 5 })
     }
-    .width('100%')
-    .margin({ top: 10 })
+      .width('100%')
+      .margin({ top: 10 })
   }
 
-  /**
-   * 构建协议链接区域
-   */
+  // 构建协议确认区域
   @Builder
-  buildAgreementSection() {
+  private buildAgreementCheckSection() {
     Row() {
-      // 服务条款按钮
-      Button($r('app.string.member_btn_terms'), { type: ButtonType.Normal })
-        .id('btnTerms')
-        .fontColor($r('app.color.color_link'))
-        .backgroundColor(Color.Transparent)
-        .fontSize(12)
-        .onClick(() => {
-          this.actionTerm()
-        })
-
-      // 分隔符
-      Text('|')
-        .id('tvSep')
-        .fontColor($r('app.color.color_obscure'))
-        .fontSize(12)
-        .margin({ left: 10, right: 10 })
-
-      // 隐私政策按钮
-      Button($r('app.string.member_btn_privacy'), { type: ButtonType.Normal })
-        .id('btnPrivacy')
-        .fontColor($r('app.color.color_link'))
-        .backgroundColor(Color.Transparent)
-        .fontSize(12)
-        .onClick(() => {
-          this.actionPrivacy()
-        })
-    }
-    .width('100%')
-    .justifyContent(FlexAlign.Center)
-    .alignItems(VerticalAlign.Center)
-    .margin({ top: 10 })
-  }
-
-  /**
-   * 构建同意协议区域（复选框+文本）
-   */
-  @Builder
-  buildAgreementCheckSection() {
-    Row() {
-
-      // 同意文本
-      // 协议确认区域
       Row({ space: 0 }) {
         Checkbox()
           .select(this.isAgree)
           .onChange((value: boolean) => {
-            this.isAgree = value;
+            this.isAgree = value
           })
 
         LinkText({
-          content: getString($r('app.string.member_agree_txt')),
-          linkTexts: [getString($r('app.string.member_agree_link_terms')), getString($r('app.string.member_agree_link_terms_subscription')), getString($r('app.string.member_agree_link_privacy'))],
-          textStyle: {
-            maxLines: 2,
-            fontSize: 12,
+          content    : this.currentAgreeText(),
+          linkTexts  : this.currentAgreeLinks(),
+          textStyle  : {
+            maxLines : 2,
+            fontSize : 12
           },
-          onLinkTapped: (text) => {
-            if (text === getString($r('app.string.member_agree_link_terms'))) {
-              ///会员服务
-              LinkViewConfig.NavTo(this.navPath, { title: text, url: AppSettings.Address.terms })
-            } else if (text === getString($r('app.string.member_agree_link_privacy'))) {
-              ///隐私政策
-              LinkViewConfig.NavTo(this.navPath, { title: text, url: AppSettings.Address.privacy })
-            } else if (text === getString($r('app.string.member_agree_link_terms_subscription'))) {
-              ///自动续费协议
-              LinkViewConfig.NavTo(this.navPath, { title: text, url: AppSettings.Address.terms_subscription })
-            }
+          onLinkTapped: (text: string) => {
+
+            // 调用：按当前点击的链接打开对应协议页
+            this.openAgreeLink(text)
           }
         })
       }
-      .offset({x: this.checkAgreeShakeOffsetX, y:  0})
+        .offset({ x: this.checkAgreeShakeOffsetX, y: 0 })
     }
-    .width('100%')
-    .justifyContent(FlexAlign.Center)
-    .alignItems(VerticalAlign.Center)
-    .visibility(Visibility.Visible) // 对应 android:visibility="gone"
-    .margin({ top: 10, bottom: 60 })
+      .width('100%')
+      .justifyContent(FlexAlign.Center)
+      .alignItems(VerticalAlign.Center)
+      .margin({ top: 10, bottom: 60 })
   }
 
-  // MARK: - 业务逻辑方法
+  // 加载价格并显示会员信息
+  private async loadPriceAndShowInfoIfNeeds(): Promise<void> {
 
-  async loadData(){
+    // 调用：读取服务器配置，决定是否显示后三个单次购买按钮
+    this.showConsumablePriceButtons = false //AppCfgManager.shared.isHwMember_Show_ConsumablePriceButtons_is_ON()
+
+    // 调用：进入页面时，先恢复一次可能遗留的未完成单次购买订单。
+    // 这里是一次性购买的恢复逻辑，和订阅恢复要区分开。
+    await HwPurchaser.shared.recoverUnfinishedConsumablePurchases()
+
+    // 调用：检查华为订阅购买环境。
+    // 当前页面的购买区共用同一套华为 IAP 环境检查结果。
     this.isSubscribeEnable = await HwSubscriber.shared.queryEnvironmentStatus() === 0
-    this.products          = await HwSubscriber.shared.queryProducts() || []
 
-    //刷新buy按钮状态
+    // 调用：加载订阅商品。
+    // 订阅商品是连续包月 / 连续包季 / 连续包年。
+    this.subscriptionProducts = await HwSubscriber.shared.loadAllProducts() || []
+
+    // 分支：开启一次性购买按钮时，再加载消耗型商品。
+    // 一次性购买是固定时长会员，不会自动续期。
+    if (this.showConsumablePriceButtons) {
+      this.consumableProducts = await HwPurchaser.shared.loadAllProducts() || []
+    } else {
+      this.consumableProducts = []
+    }
+
+    // 调用：显示顶部会员信息
+    this.showMememberInfo()
+
+    // 调用：根据当前会员状态与商品列表，设置默认选中项
+    this.selectDefaultPriceIfNeeds()
+
+    // 调用：刷新购买按钮状态
+    this.refreshBtnBuy()
+  }
+
+  // 打开华为订阅管理页面
+  private showViewSubscription(): void {
+
+    // 调用：打开已购订阅管理页
+    void HwSubscriber.shared.showManagedSubscriptions()
+  }
+
+  // 执行购买入口
+  private actionSubscribe(): void {
+
+    // 分支：未勾选协议时给出提示并抖动
+    if (!this.checkAgree()) {
+      return
+    }
+
+    // 分支：一次性购买需先登录，便于后续把会员时间写回当前登录账户。
+    if (this.isSelectedConsumablePrice() && !UserManager.shared.isLogin()) {
+      Toast.showMessage($r('app.string.login_not_login'))
+      return
+    }
+
+    // 分支：订阅购买前弹确认框；一次性购买直接进入购买。
+    // 这里必须区分两个概念：
+    // 1. 订阅：华为账户自动续费
+    // 2. 一次性购买：登录账户固定时长会员，不自动续期
+    if (this.isSelectedConsumablePrice()) {
+
+      // 调用：直接发起一次性购买
+      void this.doSubscribe()
+    } else {
+      this.isShowConfirmSubscribe = true
+    }
+  }
+
+  // 执行订阅或单次购买
+  private async doSubscribe(): Promise<void> {
+    const item = this.selectedPriceItem()
+
+    // 分支：无选中商品时直接返回
+    if (item === null) {
+      return
+    }
+
+    let succeed = false
+
+    // 分支：一次性购买走 HwPurchaser；订阅走 HwSubscriber。
+    // 订阅与一次性购买的订单处理、发货与恢复逻辑都不同，不能混用。
+    if (item.isConsumable) {
+      succeed = await HwPurchaser.shared.purchaseProduct(item.product.id)
+    } else {
+      succeed = await HwSubscriber.shared.purchaseProduct(item.product.id)
+    }
+
+    // 调用：购买流程结束后刷新按钮状态
     this.refreshBtnBuy()
 
-  }
+    // 调用：显示最新会员时间
+    this.showMememberInfo()
 
-  showViewSubscription(){
-    HwSubscriber.shared.showManagedSubscriptions()
-  }
+    if (succeed) {
 
-  async actionSubscribe(){
-    if (!this.checkAgree()) return;
+      // 调用：通知外层当前会员状态已经发生变化
+      this.onClose(true)
 
-    ///确认 开通自动续费
-    this.isShowConfirmSubscribe = true
-  }
-
-  private async doSubscribe(){
-
-    const product = this.products[this.selectedPriceIndex]
-
-    const succeed = await HwSubscriber.shared.createPurchase(product.id)
-
-    //刷新购买按钮
-    this.refreshBtnBuy()
-
-    ///显示会员期限
-    this.showMemberInfo()
-
-    if (succeed) {//购买成功
-
-      //关闭当前页面
       this.$isShowing(false)
-
-      //显示消息
       Toast.showMessage($r('app.string.member_btn_subscribe_done'))
 
-      //刷新订阅信息
-      SubscriptionInfoManager.shared.asyncRefreshSubscriptionInfo() //写入server
+      // 调用：购买成功后刷新服务器订阅信息
+      SubscriptionInfoManager.shared.asyncRefreshSubscriptionInfo()
     }
-
   }
 
-  // 检查是否同意协议
+  // 恢复未完成的一次性购买订单
+  private async actionRestoreConsumablePurchases(): Promise<void> {
+
+    // 分支：避免重复触发恢复流程
+    if (this.isRestoringConsumablePurchases) {
+      return
+    }
+
+    this.isRestoringConsumablePurchases = true
+    Toast.showMessage($r('app.string.member_msg_restoring'))
+
+    // 调用：恢复并清理历史未完成的一次性购买订单。
+    // 当前恢复按钮只针对一次性购买；订阅不显示这个按钮。
+    await HwPurchaser.shared.recoverUnfinishedConsumablePurchases()
+
+    this.isRestoringConsumablePurchases = false
+
+    // 调用：恢复完成后刷新会员状态和购买按钮
+    this.showMememberInfo()
+    this.refreshBtnBuy()
+    Toast.showMessage($r('app.string.member_msg_restore_done'))
+  }
+
+  // 校验是否已同意协议
   private checkAgree(): boolean {
     if (!this.isAgree) {
       this.shakeCheckAgree()
-      Toast.showMessage($r('app.string.member_agree_tip'))
-      return false;
+      Toast.showMessage(this.isSelectedConsumablePrice()
+        ? $r('app.string.member_agree_consume_tip')
+        : $r('app.string.member_agree_tip'))
+      return false
     }
-    return true;
+
+    return true
   }
 
-  // MARK: - 登录相关方法
-  private shakeCheckAgree(){
-    bounce({set:(x,y) => { this.checkAgreeShakeOffsetX = x },isHorizontal: true, onFinished: () => {  }})
+  // 抖动协议确认区域
+  private shakeCheckAgree(): void {
+    bounce({
+      set        : (x: number, _y: number) => { this.checkAgreeShakeOffsetX = x },
+      isHorizontal : true,
+      onFinished : () => {}
+    })
   }
 
-  showMemberInfo(){
-    const expireDate = MemberManager.shared.expireDate;
+  // 显示顶部会员有效期文案
+  private showMememberInfo(): void {
+    const expireDate = MemberManager.shared.expireDate
 
     if (expireDate) {
+
+      // 分支：当前仍在会员有效期内
       if (MemberManager.shared.isActive) {
-        // 会员还在有效期
-        this.memberExpiryDate       = getStringF($r('app.string.member_txt_will_expire'), MemberManager.shared.expireDateString);
-        this.memberExpiryDateColor  = $r('app.color.color_white')
+        this.memberExpiryDate = getStringF($r('app.string.member_txt_will_expire'), MemberManager.shared.expireDateString)
+        this.memberExpiryDateColor = $r('app.color.color_white')
       } else {
-        // 会员已过期
-        this.memberExpiryDate       = getStringF($r('app.string.member_txt_was_expired'), MemberManager.shared.expireDateString);
-        this.memberExpiryDateColor  = $r('app.color.colorAccent')
+
+        // 分支：会员已过期
+        this.memberExpiryDate = getStringF($r('app.string.member_txt_was_expired'), MemberManager.shared.expireDateString)
+        this.memberExpiryDateColor = $r('app.color.colorAccent')
       }
     } else {
-      this.memberExpiryDate         = ''
+      this.memberExpiryDate = ''
     }
   }
 
   /**
-   * 处理价格选择
-   * @param index 选中的价格索引
+   * 选中某个价格按钮，并联动刷新说明区与购买按钮
+   * @param tag 价格按钮序号；0~2 为订阅，3~5 为一次性购买
    */
-  private handlePriceSelection(index: number): void {
-    this.selectedPriceIndex = index;
-    this.refreshBtnBuy();
+  private selectPrice(tag: number): void {
+    this.selectedPriceTag = tag
+
+    // 调用：价格选中变化后刷新购买按钮状态
+    this.refreshBtnBuy()
   }
 
-  /**
-   * 更新购买按钮状态
-   * 根据选中状态和协议同意状态更新按钮可用性
-   */
+  // 默认选中当前会员项或最后一个订阅项
+  private selectDefaultPriceIfNeeds(): void {
+    const currentSku = SubscribeManager.shared.currentItem?.sku
+
+    if (currentSku !== null && currentSku !== undefined) {
+      const matched = this.visiblePriceItems().find((item: PriceDisplayItem) => item.product.id === currentSku)
+
+      // 分支：当前会员 sku 在可见商品中时，默认选中该项
+      if (matched !== undefined) {
+        this.selectedPriceTag = matched.tag
+        return
+      }
+    }
+
+    // 分支：否则默认选中第三个订阅项；若不存在，则退化为最后一个可见项
+    if (this.subscriptionProducts.length >= 3) {
+      this.selectedPriceTag = 2
+      return
+    }
+
+    const visibleItems = this.visiblePriceItems()
+    const lastVisible = visibleItems.length > 0 ? visibleItems[visibleItems.length - 1] : null
+    this.selectedPriceTag = lastVisible ? lastVisible.tag : -1
+  }
+
+  // 刷新购买按钮状态
   private refreshBtnBuy(): void {
+    const item = this.selectedPriceItem()
 
-    if (this.products.length === 0) {
+    // 分支：未加载到可选商品或环境不可用时禁用购买按钮
+    if (item === null || !this.isSubscribeEnable) {
       this.isBuyButtonEnabled = false
-    }else{
+      return
+    }
 
-      ///初次 未选择时
-      if (this.selectedPriceIndex === -1) {
-        this.selectedPriceIndex = this.products.length - 1 //选中最后一个
-      }
+    // 分支：订阅型若当前已是同 sku 的有效会员，则禁用购买按钮
+    if (!item.isConsumable) {
+      const currentItem = SubscribeManager.shared.currentItem
 
-      if(SubscribeManager.shared.currentItem?.isActive
-        && this.products.length > this.selectedPriceIndex
-        && SubscribeManager.shared.currentItem?.sku === this.products[this.selectedPriceIndex].id) {
-
-        //选中的是当前项，且还在会员期间
+      if ((currentItem?.isActive ?? false) && currentItem?.sku === item.product.id) {
         this.isBuyButtonEnabled = false
-      }else{
-        this.isBuyButtonEnabled = this.isSubscribeEnable && this.selectedPriceIndex >= 0 //&& this.isAgree;
+        return
       }
     }
 
+    this.isBuyButtonEnabled = true
   }
 
+  // 获取当前价格提示文案
+  private getPriceTip(): string {
+    const item = this.selectedPriceItem()
 
-  actionTerm(){
-    ///会员服务/服务协议
-    LinkViewConfig.NavTo(this.navPath, { title: getString($r('app.string.member_btn_terms')), url: AppSettings.Address.terms })
+    if (item === null) {
+      return ''
+    }
 
+    const priceFloat = item.product.microPrice / 1_000_000
+    const price = this.formatFloat(priceFloat)
+
+    switch (item.product.id) {
+      case HwSubscribeConstants.SKU_1:
+        return getStringF($r('app.string.member_sub_tip_month'), price)
+      case HwSubscribeConstants.SKU_2:
+        return getStringF($r('app.string.member_sub_tip_quarter'), price, this.formatFloat(priceFloat / 3))
+      case HwSubscribeConstants.SKU_3:
+        return getStringF($r('app.string.member_sub_tip_year'), price, this.formatFloat(priceFloat / 12))
+      case HwPurchaseConstants.SKU_7:
+        return `12个月会员，${price}元，相当于${this.formatFloat(priceFloat / 12)}元/月`
+      case HwPurchaseConstants.SKU_8:
+        return `24个月会员，${price}元，相当于${this.formatFloat(priceFloat / 24)}元/月`
+      case HwPurchaseConstants.SKU_9:
+        return `36个月会员，${price}元，相当于${this.formatFloat(priceFloat / 36)}元/月`
+      case HwPurchaseConstants.SKU_10:
+        return `60个月会员，${price}元，相当于${this.formatFloat(priceFloat / 60)}元/月`
+      default:
+        return ''
+    }
   }
-  actionPrivacy(){
-    ///隐私政策
-    LinkViewConfig.NavTo(this.navPath, { title: getString($r('app.string.member_btn_privacy')), url: AppSettings.Address.privacy })
+
+  // 构建价格卡片主标题
+  private loadPriceTitle(sku: string): string {
+    switch (sku) {
+      case HwSubscribeConstants.SKU_1: return '连续包月'
+      case HwSubscribeConstants.SKU_2: return '连续包季'
+      case HwSubscribeConstants.SKU_3: return '连续包年'
+      case HwPurchaseConstants.SKU_7:  return '12个月会员'
+      case HwPurchaseConstants.SKU_8:  return '24个月会员'
+      case HwPurchaseConstants.SKU_9:  return '36个月会员'
+      case HwPurchaseConstants.SKU_10: return '60个月会员'
+      default: return ''
+    }
   }
 
-  ////
+  // 生成按钮周期文案
+  private localizedPeriod(sku: string): string {
+    switch (sku) {
+      case HwSubscribeConstants.SKU_1: return '1' + getString($r('app.string.member_subscribe_txt_unit_month'))
+      case HwSubscribeConstants.SKU_2: return '3' + getString($r('app.string.member_subscribe_txt_unit_months'))
+      case HwSubscribeConstants.SKU_3: return '1' + getString($r('app.string.member_subscribe_txt_unit_year'))
+      case HwPurchaseConstants.SKU_7:  return '1' + getString($r('app.string.member_subscribe_txt_unit_year'))
+      case HwPurchaseConstants.SKU_8:  return '2' + getString($r('app.string.member_subscribe_txt_unit_year'))
+      case HwPurchaseConstants.SKU_9:  return '3' + getString($r('app.string.member_subscribe_txt_unit_year'))
+      case HwPurchaseConstants.SKU_10: return '5' + getString($r('app.string.member_subscribe_txt_unit_year'))
+      default: return ''
+    }
+  }
+
+  // 生成月均价文案
+  private calcPerMonthText(product: iap.Product): string | null {
+    const months = this.monthsFor(product.id)
+
+    // 分支：按月购买不显示月均价
+    if (months === null || months <= 1) {
+      return null
+    }
+
+    const per = product.microPrice / 1_000_000 / months
+    return `${this.formatFloat(per)}元/月`
+  }
+
+  // 将 sku 映射到对应月数
+  private monthsFor(productId: string): number | null {
+    switch (productId) {
+      case HwSubscribeConstants.SKU_1: return 1
+      case HwSubscribeConstants.SKU_2: return 3
+      case HwSubscribeConstants.SKU_3: return 12
+      case HwPurchaseConstants.SKU_7:  return 12
+      case HwPurchaseConstants.SKU_8:  return 24
+      case HwPurchaseConstants.SKU_9:  return 36
+      case HwPurchaseConstants.SKU_10: return 60
+      default: return null
+    }
+  }
+
+  // 生成价格卡片角标文案
+  private loadPriceTagText(item: PriceDisplayItem): string | null {
+    const bestValueProductIds = this.bestValueProductIds()
+    const isBestValue = bestValueProductIds.has(item.product.id)
+
+    // 分支：SKU_3 保留主推位；若不是最低月均价，则显示“推荐”
+    if (item.product.id === HwSubscribeConstants.SKU_3) {
+      return isBestValue ? '最划算' : getString($r('app.string.member_txt_recommend'))
+    }
+
+    // 分支：其他商品只有在自身为最低月均价时显示“最划算”
+    return isBestValue ? '最划算' : null
+  }
+
+  // 计算所有可见商品中月均价最低的 sku 集合
+  private bestValueProductIds(): Set<string> {
+    const pairs: PriceCompareItem[] = []
+
+    this.visiblePriceItems().forEach((item: PriceDisplayItem) => {
+      const months = this.monthsFor(item.product.id)
+
+      // 分支：无法换算成月数的商品，不参与“最划算”比较
+      if (months === null) {
+        return
+      }
+
+      pairs.push({
+        productId    : item.product.id,
+        microsPrice  : item.product.microPrice,
+        months       : months
+      })
+    })
+
+    // 分支：通过交叉相乘比较月均价，避免浮点除法带来的精度误差。
+    // 只要存在其它商品满足：
+    // other.microsPrice / other.months < current.microsPrice / current.months
+    // 当前商品就不是“最划算”。
+    const ids = pairs.filter((current) => {
+      return !pairs.some((other) => {
+        return other.microsPrice * current.months < current.microsPrice * other.months
+      })
+    }).map((item) => item.productId)
+
+    return new Set(ids)
+  }
+
+  // 当前选中时是否为一次性购买
+  private isSelectedConsumablePrice(): boolean {
+    return this.selectedPriceTag >= 3
+  }
+
+  // 当前价格区说明文案
+  private currentInfoText(): string {
+
+    // 分支：一次性购买显示“计入登录账户”的说明
+    return this.isSelectedConsumablePrice()
+      ? getString($r('app.string.member_txt_info2'))
+      : getString($r('app.string.member_txt_info'))
+  }
+
+  // 当前协议说明正文
+  private currentAgreeText(): string {
+
+    // 分支：一次性购买不显示“自动续费协议”
+    return this.isSelectedConsumablePrice()
+      ? getString($r('app.string.member_agree_consume_txt'))
+      : getString($r('app.string.member_agree_txt'))
+  }
+
+  // 当前协议中可点击的链接列表
+  private currentAgreeLinks(): string[] {
+
+    // 分支：一次性购买只有“会员服务 / 隐私政策”两个链接
+    if (this.isSelectedConsumablePrice()) {
+      return [
+        getString($r('app.string.member_agree_link_terms')),
+        getString($r('app.string.member_agree_link_privacy'))
+      ]
+    }
+
+    return [
+      getString($r('app.string.member_agree_link_terms')),
+      getString($r('app.string.member_agree_link_terms_subscription')),
+      getString($r('app.string.member_agree_link_privacy'))
+    ]
+  }
+
+  /**
+   * 打开协议链接
+   * @param text 当前点击的协议文本
+   */
+  private openAgreeLink(text: string): void {
+    if (text === getString($r('app.string.member_agree_link_terms'))) {
+      LinkViewConfig.NavTo(this.navPath, { title: text, url: AppSettings.Address.terms })
+    } else if (text === getString($r('app.string.member_agree_link_privacy'))) {
+      LinkViewConfig.NavTo(this.navPath, { title: text, url: AppSettings.Address.privacy })
+    } else if (text === getString($r('app.string.member_agree_link_terms_subscription'))) {
+      LinkViewConfig.NavTo(this.navPath, { title: text, url: AppSettings.Address.terms_subscription })
+    }
+  }
+
+  // 当前可见价格列表
+  private visiblePriceItems(): PriceDisplayItem[] {
+    const items: PriceDisplayItem[] = []
+
+    // 调用：先加入订阅商品，tag 0~2 固定对应订阅区
+    this.subscriptionProducts.forEach((product: iap.Product, index: number) => {
+      items.push({
+        tag          : index,
+        product      : product,
+        isConsumable : false
+      })
+    })
+
+    // 分支：配置允许显示一次性购买按钮时，追加单次购买商品。
+    // 单次购买的 tag 从 3 开始，和前面的订阅商品明确区分。
+    if (this.showConsumablePriceButtons) {
+      this.consumableProducts.forEach((product: iap.Product, index: number) => {
+        items.push({
+          tag          : 3 + index,
+          product      : product,
+          isConsumable : true
+        })
+      })
+    }
+
+    return items
+  }
+
+  // 当前价格按钮是否应居中显示
+  private shouldCenterPriceButtons(): boolean {
+    const visibleCount = this.visiblePriceItems().length
+
+    // 分支：无价格项时不需要居中布局判断
+    if (visibleCount < 1) {
+      return false
+    }
+
+    const totalButtonsWidth = visibleCount * MemberView.PRICE_BUTTON_WIDTH_VP
+    const totalSpacingWidth = (visibleCount - 1) * MemberView.PRICE_BUTTON_SPACING_VP
+    const contentWidth      = totalButtonsWidth + totalSpacingWidth
+    const availableWidth    = dScreenWidth - MemberView.CONTENT_HORIZONTAL_PAD_VP
+
+    // 分支：只有当全部按钮总宽度能放进当前内容区时，才居中显示。
+    // 放不下时保持左对齐，并通过横向 Scroll 允许继续滚动查看。
+    return contentWidth <= availableWidth
+  }
+
+  // 当前选中的价格项
+  private selectedPriceItem(): PriceDisplayItem | null {
+    const item = this.visiblePriceItems().find((it: PriceDisplayItem) => it.tag === this.selectedPriceTag)
+    return item ?? null
+  }
+
+  // 格式化价格
+  private formatFloat(value: number): string {
+    return value % 1 === 0 ? `${value | 0}` : value.toFixed(1)
+  }
+
+  /**
+   * 构建订阅确认弹层
+   * @param yesAction 点击确认后的购买动作
+   */
   @Builder
-  buildConfirmDialogView(yesAction: ()=>void) {
+  private buildConfirmDialogView(yesAction: () => void) {
     Stack({ alignContent: Alignment.Center }) {
-      // 半透明遮罩层（捕获点击，不会让底下组件响应）
       Rect()
         .width('100%')
         .height('100%')
         .backgroundColor('#66000000')
         .fillOpacity(0.45)
 
-
-
-      Column({space: 15}) {
-
-        //title
-        Column(){
-          Text($r('app.string.member_buy_cfm_msg_title')) //确认
+      Column({ space: 15 }) {
+        Column() {
+          Text($r('app.string.member_buy_cfm_msg_title'))
             .fontWeight(FontWeight.Bold)
             .fontSize(22)
             .fontColor(Color.Black)
         }
-        .width('100%')
-        .alignItems(HorizontalAlign.Start)
+          .width('100%')
+          .alignItems(HorizontalAlign.Start)
 
-        Column({space: 10}){
+        Column({ space: 10 }) {
           LinkText({
-            content: getString($r('app.string.member_buy_cfm_msg_info')),
-            linkTexts: [getString($r('app.string.member_buy_cfm_txt_terms_link'))],
-            normalColor: $r('app.color.color_text'),
-            linkColor: $r('app.color.colorAccent'),
-            textStyle: {
-              maxLines: 2,
-              fontSize: 16,
+            content     : getString($r('app.string.member_buy_cfm_msg_info')),
+            linkTexts   : [getString($r('app.string.member_buy_cfm_txt_terms_link'))],
+            normalColor : $r('app.color.color_text'),
+            linkColor   : $r('app.color.colorAccent'),
+            textStyle   : {
+              maxLines : 3,
+              fontSize : 16
             },
-            onLinkTapped: (text) => {
+            onLinkTapped: (text: string) => {
               if (text === getString($r('app.string.member_buy_cfm_txt_terms_link'))) {
-                ///自动续费协议
                 LinkViewConfig.NavTo(this.navPath, { title: text, url: AppSettings.Address.terms_subscription })
               }
             }
           })
 
-          ///msg2
           Text($r('app.string.member_buy_cfm_msg_info2'))
             .fontSize(15)
             .fontColor(Color.Gray)
         }
-        .alignItems(HorizontalAlign.Start)
+          .alignItems(HorizontalAlign.Start)
 
-        Row({space: 20}){
+        Row({ space: 20 }) {
+          TextButton({
+            text            : $r('app.string.member_buy_cfm_btn_no'),
+            bgColor         : $r('app.color.color_gray'),
+            onClickCallBack : () => {
+              this.isShowConfirmSubscribe = false
+            }
+          })
 
-          ///取消
-          TextButton({text: $r('app.string.member_buy_cfm_btn_no'), bgColor: $r('app.color.color_gray'), onClickCallBack: ()=>{
-            this.isShowConfirmSubscribe = false
-            //Toast.closeCustomDialog()
-          }})
-
-          ///确认
-          TextButton({text: $r('app.string.member_buy_cfm_btn_yes'), onClickCallBack: async ()=>{
-            this.isShowConfirmSubscribe = false
-            ///回调
-            yesAction()
-
-            //Toast.closeCustomDialog()
-          }})
-
+          TextButton({
+            text            : $r('app.string.member_buy_cfm_btn_yes'),
+            onClickCallBack : () => {
+              this.isShowConfirmSubscribe = false
+              yesAction()
+            }
+          })
         }
-        .margin({top: 20})
-        .justifyContent(FlexAlign.Center)
+          .margin({ top: 20 })
+          .justifyContent(FlexAlign.Center)
       }
-      .justifyContent(FlexAlign.Center)
-      .width('auto')
-      .margin(10)
-      .height('auto')
-      .padding(20)
-      .borderRadius(5)
-      .backgroundColor(Color.White)
-      .shadow({ radius: 10,type: ShadowType.COLOR, color: Color.Gray, offsetX: 5, offsetY: 5 })
-
+        .justifyContent(FlexAlign.Center)
+        .width('auto')
+        .margin(10)
+        .height('auto')
+        .padding(20)
+        .borderRadius(5)
+        .backgroundColor(Color.White)
+        .shadow({ radius: 10, type: ShadowType.COLOR, color: Color.Gray, offsetX: 5, offsetY: 5 })
     }
-    .width('100%')
-    .height('100%')
-    .zIndex(999)                            // 置于最上层
-
+      .width('100%')
+      .height('100%')
+      .zIndex(999)
   }
-
-}
-/**
- * 价格选项数据模型
- */
-interface PriceOption {
-  price: string;      // 价格显示文本
-  period: string;     // 周期显示文本
-  value: number;      // 实际价格数值
-}
-
-/**
- * 会员订阅配置接口
- */
-interface MemberSubscriptionConfig {
-  priceOptions?: PriceOption[];      // 价格选项配置
-  showRestoreButton?: boolean;       // 是否显示恢复按钮
-  showAgreementCheck?: boolean;       // 是否显示协议复选框
-  memberExpiryDate?: string;          // 会员到期日期
 }

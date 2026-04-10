@@ -53,10 +53,15 @@ export namespace AppSettings {
 
   export class TEConfigs {
 
-    // 商品 SKU
-    static readonly SKU_Member1: string = "com.ou.wordtree.member1";
-    static readonly SKU_Member2: string = "com.ou.wordtree.member2";
-    static readonly SKU_Member3: string = "com.ou.wordtree.member3";
+    // 华为订阅商品 SKU：自动续费会员
+    static readonly SKU_Member1: string = "com.ou.wordtree.member1";  // 连续包月
+    static readonly SKU_Member2: string = "com.ou.wordtree.member2";  // 连续包季（3个月）
+    static readonly SKU_Member3: string = "com.ou.wordtree.member3";  // 连续包年（12个月）
+
+    // 华为一次性购买商品 SKU：固定时长会员，不自动续费
+    static readonly SKU_Member7: string = "com.ou.wordtree.member6";  // 12个月会员　本来应该用　com.ou.wordtree.member7，但Android那边创建时搞错了，member7不能再用了，只能用6，这边和安卓统一。
+    static readonly SKU_Member8: string = "com.ou.wordtree.member8";  // 24个月会员
+    static readonly SKU_Member9: string = "com.ou.wordtree.member9";  // 36个月会员
+    static readonly SKU_Member10: string = "com.ou.wordtree.member10"; // 60个月会员
   }
 }
-
