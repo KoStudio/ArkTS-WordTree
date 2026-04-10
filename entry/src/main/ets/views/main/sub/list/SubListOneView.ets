@@ -1,7 +1,7 @@
 import { SectionDatas } from "../../../../common/utils/array/SectionDatas"
 import { WordUser } from "../../../../models/datas/myData/WordUser"
 import json from "@ohos.util.json"
-import { WordCardsViewConfig } from "../../../card/wordcard/WordCardsView"
+import { DetailCardsViewConfig } from "../../../card/detail/DetailCardsView"
 import { KeyboardAvoidMode } from '@kit.ArkUI';
 import { TEUtility } from "../../../../common/utils/TEUtility";
 import { ListWordRow } from "../../../../app/views/ListWordRow";
@@ -185,11 +185,11 @@ export struct SubListOneView {
     ///abc,still
     if (this.indexers.length > 0) {
       let words = this.sectionWords.allDatas()
-      WordCardsViewConfig.open({words: words, initIndex: this.sectionWords.indexOfAllFromIndex(rowIndex, sectionIndex)})
+      DetailCardsViewConfig.open({words: words, initIndex: this.sectionWords.indexOfAllFromIndex(rowIndex, sectionIndex)})
     }else{
       //cate,fav,mistake
       let words = this.sectionWords.allDatasOfSectionIndex(sectionIndex)
-      WordCardsViewConfig.open({words: words, initIndex: rowIndex})
+      DetailCardsViewConfig.open({words: words, initIndex: rowIndex})
     }
     //   goto card
 

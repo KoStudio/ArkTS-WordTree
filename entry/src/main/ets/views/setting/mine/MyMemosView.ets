@@ -6,7 +6,7 @@ import { getString } from "../../../common/utils/ResourceUtils"
 import { SearchManager } from "../../../models/datas/model/SearchManager"
 import { WordUser } from "../../../models/datas/myData/WordUser"
 import { NavTo } from "../../../pages/NavPathManager"
-import { WordCardsViewConfig } from "../../card/wordcard/WordCardsView"
+import { DetailCardsViewConfig } from "../../card/detail/DetailCardsView"
 
 
 export namespace MyMemosViewConfig {
@@ -156,7 +156,7 @@ export struct MyMemosView {
 
   handleRowClick(rowIndex: number){
     //   goto card
-    WordCardsViewConfig.open({words: this.words, initIndex: rowIndex})
+    DetailCardsViewConfig.open({words: this.words, initIndex: rowIndex})
   }
 
 }

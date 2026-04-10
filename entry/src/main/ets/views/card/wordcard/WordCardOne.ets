@@ -1,13 +1,11 @@
 import { IconButton } from '../../../app/views/buttons/IconButton';
 import { IconTintButton } from '../../../app/views/buttons/IconTintButton';
-import { ColorPickerButton } from '../../../app/views/picker/colorpicer/ColorPickerButton';
 import { TintImage } from '../../../app/views/TintImage';
 import { WordClickableText } from '../../../app/views/WordClickableText';
 import { TEUtility } from '../../../common/utils/TEUtility';
 import { getString } from '../../../common/utils/ResourceUtils';
 import { SimpleEventBus } from '../../../common/components/eventbus/SimpleEventBus';
 import { Toast } from '../../../common/utils/Toast';
-import { SearchConstants, SearchManager } from '../../../models/datas/model/SearchManager';
 import { WordUser } from '../../../models/datas/myData/WordUser';
 import { MemberManager } from '../../../models/managers/member/MemberManager';
 import { SettingManager } from '../../../models/managers/setting/SettingManager';
@@ -17,8 +15,6 @@ import {
   ShareMemoNotificationPayload
 } from '../../../models/managers/sharedata2/ShareMemoManager2';
 import { ReclaimWordViewConfig } from '../../reclaimword/ReclaimWordView';
-import { ReclaimViewConfig } from '../../setting/ReclaimView';
-import { DetailCardsViewConfig } from '../detail/DetailCardsView';
 import { ComposeMemoViewConfig } from './memo/ComposeMemoView';
 
 

@@ -5,7 +5,7 @@ import { NavTo } from "../../pages/NavPathManager";
 import { BgImage } from "../../app/views/BgImage";
 import { WordUser } from "../../models/datas/myData/WordUser";
 import { getString } from "../../common/utils/ResourceUtils";
-import { WordCardsViewConfig } from "../card/wordcard/WordCardsView";
+import { DetailCardsViewConfig } from "../card/detail/DetailCardsView";
 import { buildStandardMenu } from "../../app/constants/AppFunctions";
 import { Toast } from "../../common/utils/Toast";
 import { NoDataPanel } from "../../app/views/NoDataView";
@@ -161,7 +161,7 @@ export struct DeletedWordsView {
 
   handleRowClick(rowIndex: number){
     //   goto card
-    WordCardsViewConfig.open({words: this.words, initIndex: rowIndex})
+    DetailCardsViewConfig.open({words: this.words, initIndex: rowIndex})
   }
 
   ///测试结果删除

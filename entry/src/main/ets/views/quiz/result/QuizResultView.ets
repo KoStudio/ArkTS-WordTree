@@ -8,7 +8,7 @@ import { SearchConstants } from '../../../models/datas/model/SearchManager'
 import { WordUser } from '../../../models/datas/myData/WordUser'
 import { MemberManager } from '../../../models/managers/member/MemberManager'
 import { NavPathManager, NavPop, NavPopToIndex, NavPopTop, NavTo } from '../../../pages/NavPathManager'
-import { WordCardsViewConfig } from '../../card/wordcard/WordCardsView'
+import { DetailCardsViewConfig } from '../../card/detail/DetailCardsView'
 import { dMemberFlag } from '../../../app/constants/AppDefines';
 import { MemberView } from '../../setting/member/MemberView'
 
@@ -240,7 +240,7 @@ export struct QuizResultView {
 
   handleRowClick(rowIndex: number){
     //   goto card
-    WordCardsViewConfig.open({words: this.questionWords, initIndex: rowIndex})
+    DetailCardsViewConfig.open({words: this.questionWords, initIndex: rowIndex})
   }
 
   // 构建底部操作栏
