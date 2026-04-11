@@ -93,7 +93,7 @@ export struct WordCardsView {
   @Local private cardSheetType                  : WordCardSheetType      = WordCardSheetType.None         // 当前 Sheet 类型
   @Local private wordDetailForEWordPicker       : WordDetail | null      = null                           // EWord 编辑使用的临时 detail
   @Local private wordDetailForEBookSelect       : WordDetail | null      = null                           // EBook 保存使用的临时 detail
-  @Local private isEWordEditChanged           : boolean                = false                          // EWord 选择 Sheet 内是否有修改
+  @Local private isEWordEditChanged             : boolean                = false                          // EWord 选择 Sheet 内是否有修改
   @Local private isEnableContrast               : boolean                = false
   @Local isRolling                              : boolean                = false
   @Local shareMemoUiTick                        : number                 = 0
@@ -228,15 +228,17 @@ export struct WordCardsView {
           this.isShowCardSheet = false
           this.cardSheetType   = WordCardSheetType.None
 
-          // 分支：EWord 编辑 Sheet 关闭后，清理临时 detail；仅在确有修改时刷新当前卡片缓存。
+          // 分支：EWord 编辑 Sheet 关闭后，清理临时 detail；确有修改时刷新 Swiper 子项 key 以重读 WordUser
           if (oldType === WordCardSheetType.EWordPicker && this.wordDetailForEWordPicker !== null) {
             this.wordDetailForEWordPicker = null
 
             if (this.isEWordEditChanged) {
               const w = this.words[this.pageIndex]
+
               w.clearWordDetailCache()
               this.shareMemoUiTick++
             }
+
             this.isEWordEditChanged = false
           // 分支：EBook 保存 Sheet 关闭后，仅清理临时 detail（保存到其它 EBook 不影响当前卡片详情，不刷新缓存）。
           } else if (oldType === WordCardSheetType.EBookSelect && this.wordDetailForEBookSelect !== null) {
@@ -354,19 +356,24 @@ export struct WordCardsView {
         ForEach(this.words, (word: WordUser, index: number) => {
 
           WordCardOne({
-            word: word,
-            pageInfo: `${index + 1}/${this.words.length}`,
-            wordIndexOnPage: index,
+            word             : word,
+            pageInfo         : `${index + 1}/${this.words.length}`,
+            wordIndexOnPage  : index,
             onClickedBtnWordPron:(wd: WordUser)=>{
-              // this.playSound(wd.wordEnSoundText)
+
+              // 调用：单词云发音（SoundKey 与 titleEn 绑定）
               this.actionPlayWordSound(wd.wordEnSoundText)
             },
 
-            onClickedBtnExamplePron:(wd: WordUser)=>{
-              // this.playSound(wd.exampleEn)
-              this.actionPlayExampleSound(wd.exampleEn1)
+            // text：例句英文；与 WordCardOne / DetailCardOne 传参一致
+            onClickedBtnExamplePron:(text: string)=>{
+
+              // 调用：例句云发音
+              this.actionPlayExampleSound(text)
             },
             onClickedText:(text: string)=>{
+
+              // 分支：非会员不可查词则返回
               if (!MemberManager.shared.checkDictShowable(true, true)) {
                 return
               }
@@ -375,7 +382,9 @@ export struct WordCardsView {
               this.isShowDictView = true
             },
             needOpenDetail: (word: WordUser)=>{
-               DetailCardsViewConfig.open({words: this.words, initIndex: index})
+
+              // 调用：进入详情页（同一 words 列表与索引）
+              DetailCardsViewConfig.open({words: this.words, initIndex: index})
             }
           })
         }, (word: WordUser, index: number) => `${word.titleEn}_${index}_${this.shareMemoUiTick}`)
@@ -498,7 +507,7 @@ export struct WordCardsView {
 
     this.wordDetailForEWordPicker = detail
     this.cardSheetType            = WordCardSheetType.EWordPicker
-    this.isEWordEditChanged     = false
+    this.isEWordEditChanged       = false
     this.isShowCardSheet          = true
   }
 

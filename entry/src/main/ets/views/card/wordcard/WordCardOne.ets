@@ -7,6 +7,8 @@ import { getString } from '../../../common/utils/ResourceUtils';
 import { SimpleEventBus } from '../../../common/components/eventbus/SimpleEventBus';
 import { Toast } from '../../../common/utils/Toast';
 import { WordUser } from '../../../models/datas/myData/WordUser';
+import { WordDetail } from '../../../models/datas/word/WordDetail';
+import { BookManagerNotification } from '../../../models/datas/book/BookManager';
 import { MemberManager } from '../../../models/managers/member/MemberManager';
 import { SettingManager } from '../../../models/managers/setting/SettingManager';
 import {
@@ -27,7 +29,8 @@ export struct WordCardOne {
   @Param wordIndexOnPage                       : number                           = 0
 
   @Event onClickedBtnWordPron: (word: WordUser) => void
-  @Event onClickedBtnExamplePron: (word: WordUser) => void
+  // 例句朗读：参数为例句英文文本（与 DetailCardOne 的 onClickedBtnExamplePron 语义一致）
+  @Event onClickedBtnExamplePron: (text: string) => void
   @Event onClickedText: (text: string) => void
   @Event needOpenDetail: (word: WordUser) => void
 
@@ -37,49 +40,91 @@ export struct WordCardOne {
 
   @Local isRefreshing                          : boolean                          = false
   @Local wordMemos                             : Array<Record<string, string>>    = []
+  @Local wordDetail                            : WordDetail | null                = null    // 卡头绑定：释义/音标/例句（getWordDetail 含 EWord）
 
-  private unsubShareMemoPrivate                : (() => void) | undefined         = undefined
-  private unsubShareMemoPublic                 : (() => void) | undefined         = undefined
+  private unsubShareMemoPrivate                : (() => void) | undefined         = undefined  // 笔记：私有变更
+  private unsubShareMemoPublic                 : (() => void) | undefined         = undefined  // 笔记：公开变更
+  private unsubBookUpdated                     : (() => void) | undefined         = undefined  // 课本或 EWord 等更新（与 DetailCardOne 同总线）
 
+  // 进入组件：拉 WordDetail、订阅读笔记与课本更新
   aboutToAppear(): void {
+
+    // 调用：拉取带 EWord 合并的详情供卡头绑定
+    void this.loadCardDetail()
+
     this.reloadWordMemos()
 
+    // 分支：尚未订阅笔记总线则注册（避免重复）
     if (this.unsubShareMemoPrivate === undefined) {
 
-      // 与 iOS / Android CardView 一致：笔记变化后刷新卡片下方 memo 区
+      // 调用：订阅笔记私有变更
       this.unsubShareMemoPrivate = SimpleEventBus.on<ShareMemoNotificationPayload>(
         ShareMemoManager2Notification.Name.PrivateChanged,
         (p?: ShareMemoNotificationPayload) => {
           this.handleShareMemoNotification(p)
         })
 
+      // 调用：订阅笔记公开变更
       this.unsubShareMemoPublic = SimpleEventBus.on<ShareMemoNotificationPayload>(
         ShareMemoManager2Notification.Name.PublicChanged,
         (p?: ShareMemoNotificationPayload) => {
           this.handleShareMemoNotification(p)
         })
     }
+
+    // 分支：尚未订阅课本更新则注册
+    if (this.unsubBookUpdated === undefined) {
+
+      // 调用：订阅 currentBookUpdated（EWord 保存后会 emit）
+      this.unsubBookUpdated = SimpleEventBus.on(BookManagerNotification.currentBookUpdated, () => {
+
+        // 调用：丢弃 Word 上缓存的 WordDetail，强制下次合并最新 EWord
+        this.word.clearWordDetailCache()
+
+        // 调用：重拉详情并写回 @Local wordDetail
+        void this.loadCardDetail()
+      })
+    }
   }
 
+  // 离开组件：取消事件订阅，避免 Swiper 复用时重复回调
   aboutToDisappear(): void {
 
+    // 分支：已订阅笔记私有变更则取消
     if (this.unsubShareMemoPrivate !== undefined) {
       this.unsubShareMemoPrivate()
       this.unsubShareMemoPrivate = undefined
     }
 
+    // 分支：已订阅笔记公开变更则取消
     if (this.unsubShareMemoPublic !== undefined) {
       this.unsubShareMemoPublic()
       this.unsubShareMemoPublic = undefined
     }
+
+    // 分支：已订阅课本更新则取消
+    if (this.unsubBookUpdated !== undefined) {
+      this.unsubBookUpdated()
+      this.unsubBookUpdated = undefined
+    }
   }
 
+  // 拉取当前卡展示用 WordDetail（与 iOS CardView / Android CardView 使用 word.getWordDetail() 对齐）
+  async loadCardDetail(): Promise<void> {
+
+    // 调用：自 textDb/learnDb 加载并 applyEWordOverrideMap 到 WordDetail
+    this.wordDetail = await this.word.getWordDetail() ?? null
+  }
+
+  // p：分享笔记事件负载；仅当前词条 titleEn 一致时刷新 memo 列表
   private handleShareMemoNotification(p?: ShareMemoNotificationPayload): void {
 
+    // 分支：无负载则忽略
     if (!p) {
       return
     }
 
+    // 分支：非本卡词条则忽略
     if (p.word.titleEn !== this.word.titleEn) {
       return
     }
@@ -90,6 +135,7 @@ export struct WordCardOne {
   // 与 iOS / Android QuickLearn CardView 一致：合并自写笔记与收藏的分享笔记
   private reloadWordMemos(): void {
 
+    // 调用：按当前 WordUser 拉合并后的笔记列表
     ShareMemoManager2.shared.loadLocalMemosOfWord(this.word, (localMemos: Array<Record<string, string>>) => {
 
       this.wordMemos = localMemos
@@ -97,10 +143,19 @@ export struct WordCardOne {
   }
 
 
+  // 全局「隐藏译文」开关变更时，同步卡内显隐初值
   @Monitor('settingManager.hideTranslation')
   onChangeOfSetting(){
     this.isHideWordTranslation    = SettingManager.shared.hideTranslation
     this.isHideExampleTranslation = SettingManager.shared.hideTranslation
+  }
+
+  // @Param word 的 titleEn 变化时重拉 WordDetail（Swiper 子项复用或换词）
+  @Monitor('word.titleEn')
+  onWordTitleEnChanged(): void {
+
+    // 调用：与 aboutToAppear / currentBookUpdated 相同拉取路径
+    void this.loadCardDetail()
   }
 
   build() {
@@ -268,10 +323,10 @@ export struct WordCardOne {
   }
 
 
-  // 构建发音显示行
+  // 构建发音显示行（绑定 WordDetail.pronUs，与 iOS CardView lblPron 对齐）
   @Builder
   buildPronunciationRow() {
-    Text(`${this.word.pronEn}`)
+    Text(`${this.wordDetail?.pronUs ?? ''}`)
       .width('100%')
       .fontSize(18)
       .fontColor($r('app.color.color_card_detail'))
@@ -279,10 +334,11 @@ export struct WordCardOne {
       .margin({ left: 30 })
   }
 
-  // 构建日文翻译行
+  // 构建释义行（绑定 WordDetail 上 titleCn1 裁剪与词性）
   @Builder
   buildWordTranslationRow() {
     Stack(){
+      // 分支：隐藏译文时显示占位提示
       if (this.isHideWordTranslation){
         Text($r('app.string.wordcard_txt_show_translation'))
           .width('100%')
@@ -294,9 +350,10 @@ export struct WordCardOne {
           .margin({ top: 5, bottom: 5})
           .backgroundColor(Color.White)
 
+      // 分支：显示 WordDetail 上释义与词性（详情未到时为空串）
       }else{
         Row(){
-          Text(this.word.titleCn1Clipped)
+          Text(this.wordDetail?.titleCn1Clipped ?? '')
             .layoutWeight(1)
             .fontSize(18)
             .minFontScale(0.1)
@@ -305,7 +362,7 @@ export struct WordCardOne {
             .textAlign(TextAlign.Start)
             .margin({ top: 5, bottom: 5})
 
-          Text(this.word.titleCn1Kind)
+          Text(this.wordDetail?.titleCn1Kind ?? '')
             .fontSize(18)
             .minFontScale(0.1)
             .padding(5)
@@ -317,10 +374,12 @@ export struct WordCardOne {
       }
     }
     .onClick(()=>{
-      ///会员检查
+
+      // 分支：非会员不可切换隐藏译文
       if(!MemberManager.shared.checkHideTransUsable(false)) {
         return
       }
+
       this.isHideWordTranslation = !this.isHideWordTranslation
     })
 
@@ -359,8 +418,12 @@ export struct WordCardOne {
 
       Blank().layoutWeight(1)
 
-        // 例句语音按钮
-        IconButton({ icon: $r('app.media.ic_langdu_nroaml'), iconSize: 26, onClickCallBack:()=>{ this.onClickedBtnExamplePron(this.word) } })
+      // 例句朗读：向父层传例句英文（WordDetail 优先，与 DetailCardOne 一致）
+      IconButton({ icon: $r('app.media.ic_langdu_nroaml'), iconSize: 26, onClickCallBack:()=>{
+
+        // 访问：取当前展示用例句英文，缺省回退 Word 表字段
+        this.onClickedBtnExamplePron(this.wordDetail?.exampleEn1 ?? this.word.exampleEn1 ?? '')
+      } })
     }
     .justifyContent(FlexAlign.SpaceBetween)
     .width('100%')
@@ -369,20 +432,21 @@ export struct WordCardOne {
 
 
 
-  // 构建例句内容区域
+  // 构建例句内容区域（英/中文例句绑定 WordDetail，缺省回退 Word）
   @Builder
   buildExampleContentPanel() {
     Column({ space: 5 }) {
-      // 英文例句
+      // 英文例句（可点查词）
       WordClickableText({
-        text:this.word.exampleEn1 || '',
-        highlightWords: this.getHilightTexts(),
-        onWordClick:(word: string)=>{
+        text            : this.wordDetail?.exampleEn1 ?? this.word.exampleEn1 ?? '',
+        highlightWords  : this.getHilightTexts(),
+        onWordClick     : (word: string)=>{
           this.onClickedText(word)
         }
       })
 
       Stack(){
+        // 分支：隐藏例句译文时占位
         if (this.isHideExampleTranslation){
           Text($r('app.string.wordcard_txt_show_translation'))
             .width('100%')
@@ -394,10 +458,11 @@ export struct WordCardOne {
             .margin({ top: 5, bottom: 5})
             .backgroundColor(Color.White)
 
+        // 分支：显示 WordDetail 上例句中文译文
         }else{
 
           // 日文例句
-          Text(this.word.exampleCn1)
+          Text(this.wordDetail?.exampleCn1 ?? this.word.exampleCn1 ?? '')
             .width('100%')
             .fontSize(20)
             .fontColor($r('app.color.color_card_subtitle'))
@@ -407,7 +472,8 @@ export struct WordCardOne {
         }
       }
       .onClick(()=>{
-        ///会员检查
+
+        // 分支：非会员不可切换例句译文显隐
         if(!MemberManager.shared.checkHideTransUsable(false)) {
           return
         }
