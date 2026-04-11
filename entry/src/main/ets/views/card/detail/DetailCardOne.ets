@@ -61,8 +61,8 @@ export struct DetailCardOne {
   // 与 iOS DetailView.wordMemos 一致：自建 + shareMemos 合并列表（ShareMemoManager2.loadLocalMemosOfWord）
   @Local wordMemos                             : Array<Record<string, string>>    = []
 
-  private unsubItemOrder   : (() => void) | undefined = undefined  // 详情块显示顺序变更
-  private unsubBookUpdated : (() => void) | undefined = undefined  // 当前课本/EWord 等数据变更
+  private unsubItemOrder       : (() => void) | undefined  = undefined  // 详情块显示顺序变更
+  private unsubBookUpdated     : (() => void) | undefined  = undefined  // 当前课本/EWord 等数据变更
   private unsubShareMemoPrivate : (() => void) | undefined = undefined  // 笔记本地变更（与 iOS PrivateChanged）
   private unsubShareMemoPublic  : (() => void) | undefined = undefined  // 公开列表/收藏变更（与 iOS PublicChanged）
 
@@ -144,9 +144,15 @@ export struct DetailCardOne {
   }
 
   async loadData(){
-    this.wordDetail   = await this.word?.getWordDetail() ?? null
-    this.cigenWords   = await CigenWordHelper.getCigensByWord(this.word)
-    this.sameRootDesc = await CigenWordHelper.getSameRootDescByWord(this.word)
+    // 并行加载：仅将原串行三步改为 Promise.all，其余逻辑保持不变。
+    const detailPromise: Promise<WordDetail | null> = this.word?.getWordDetail() ?? Promise.resolve(null)
+    const cigenPromise: Promise<CigenWord[] | null> = CigenWordHelper.getCigensByWord(this.word)
+    const sameRootPromise: Promise<string | null> = CigenWordHelper.getSameRootDescByWord(this.word)
+    const loadedAll = await Promise.all([detailPromise, cigenPromise, sameRootPromise])
+
+    this.wordDetail   = loadedAll[0] as WordDetail | null
+    this.cigenWords   = loadedAll[1] as CigenWord[] | null
+    this.sameRootDesc = loadedAll[2] as string | null
 
     if (this.wordDetail) {
       const subCells: SubCell[] = [...this.prepareSubCellDatas(this.wordDetail)]

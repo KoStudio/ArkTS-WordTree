@@ -191,11 +191,12 @@ export struct DetailCardsView {
     //显示信息
     this.showInfo()
 
-    //准备声音
-    this.preLoadSound()
+    // 延后到首帧后再做声音相关任务，避免与页面首屏渲染争抢。
+    setTimeout(() => {
+      void this.preLoadSound()
 
-    //自动发音
-    this.autoPlaySound()
+      void this.autoPlaySound()
+    }, 0)
 
     //保存学习进度
     this.saveLearn()

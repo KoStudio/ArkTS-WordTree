@@ -24,7 +24,8 @@ export class Word {
   exampleEn1      : string | null = null;
   exampleCn1      : string | null = null;
 
-  private wordDetail: WordDetail | null = null
+  private wordDetail                : WordDetail | null                 = null
+  private wordDetailLoadingPromise : Promise<WordDetail | null> | null = null
 
   // 与 iOS `OnlineWord.Constant`（PartId 999 / UnitId 0）一致，用于判断是否在线搜索词
   get isOnlineWord(): boolean {
@@ -40,8 +41,10 @@ export class Word {
   }
 
   // 使详情缓存失效（EWord 保存后需重新查库并合并 Override）
+  // 分支：除已缓存结果外，也要清理进行中的 Promise，避免旧请求结果回写。
   clearWordDetailCache(): void {
-    this.wordDetail = null
+    this.wordDetail                = null
+    this.wordDetailLoadingPromise = null
   }
 
   // async getWordDetail(): Promise<WordDetail | null> {
@@ -52,38 +55,66 @@ export class Word {
   // }
 
   async getWordDetail(): Promise<WordDetail | null> {
-    // 已缓存详情对象则直接返回，避免重复查库
+    // 分支：已有详情缓存时，直接返回，避免重复查库。
     if (this.wordDetail) {
       return this.wordDetail
     }
 
+    // 分支：已有进行中的加载任务时，直接复用同一个 Promise，避免并发重复查库。
+    const runningPromise = this.wordDetailLoadingPromise
+
+    if (runningPromise !== null) {
+      return await runningPromise
+    }
+
+    // 分支：无缓存且无进行中任务时，启动一次加载并登记 Promise。
+    const createdPromise = this.loadWordDetailFromDbAndApplyOverrides()
+    this.wordDetailLoadingPromise = createdPromise
+
+    try {
+      // 调用：等待唯一加载任务完成，并落入详情缓存。
+      const loaded = await createdPromise
+
+      this.wordDetail = loaded
+      return loaded
+    } finally {
+      // 加载结束后清理进行中标记，后续由缓存命中或重新发起加载。
+      this.wordDetailLoadingPromise = null
+    }
+  }
+
+  // 读取详情并应用 EWord 覆盖（供 getWordDetail 统一复用，避免并发重复执行）
+  private async loadWordDetailFromDbAndApplyOverrides(): Promise<WordDetail | null> {
+    const titleEn = this.titleEn
+
     // 从当前课本 textDb 的 Word 表按 titleEn 查询详情
-    this.wordDetail = await SearchManager.shared.getWordDbAccess()?.getWordDetailByTitleEn(this.titleEn) ?? null
+    let detail = await SearchManager.shared.getWordDbAccess()?.getWordDetailByTitleEn(titleEn) ?? null
 
     // 主词库中不存在时再查 learnDb 的 WordOnlineTemp
-    if (this.wordDetail === null){
+    if (detail === null){
 
       // 动态 import，减轻模块启动依赖
       let it = await import('../myData/WordUserDbAccess')
 
       // 读取在线临时表中的完整词条
-      this.wordDetail = await it.WordUserDbAccess.shared.getOnlineWordDetailByTitleEn(this.titleEn) ?? null
+      detail = await it.WordUserDbAccess.shared.getOnlineWordDetailByTitleEn(titleEn) ?? null
     }
 
     // 已得到详情且能确定 titleEn 时，合并 EWordOverride 展示覆盖
-    if (this.wordDetail !== null && this.titleEn) {
+    if (detail !== null && titleEn) {
 
-      // 动态 import EWordManager，避免 Word ↔ WordUserDbAccess 循环引用
+      // 动态 import EWordManager：避免 `Word -> EWordManager -> ... -> Word` 的模块初始化时序风险。
+      // 在方法内部按需加载，可将潜在循环依赖从“模块加载期”延后到“运行期调用点”。
       const ewm = await import('../../managers/eword/EWordManager')
 
       // 加载该词在 learnDb 中的 [fieldKey: value]
-      const ov = await ewm.EWordManager.shared.loadOverrides(this.titleEn);
+      const ov = await ewm.EWordManager.shared.loadOverrides(titleEn);
 
       // 将覆盖应用到 WordDetail（含 root、cognates 等扩展字段）
-      this.wordDetail.applyEWordOverrideMap(ov);
+      detail.applyEWordOverrideMap(ov);
     }
 
-    return this.wordDetail
+    return detail
   }
 
   /**
