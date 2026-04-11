@@ -549,10 +549,19 @@ export struct WordCardsView {
     }
   }
 
-  /// 打开 QuizStart（自定义范围：当前卡片集）
+  /// 打开 QuizStart（自定义范围：当前卡片集；customWords 与 Android DetailActivity.openTestStart 一致，按 idx 从 SearchManager 取当前实例）
   openTestStart(){
-    QuizManager.shared.quizType    = QuizType.Custom
-    QuizManager.shared.customWords = this.words
+    QuizManager.shared.quizType = QuizType.Custom
+
+    const idList: number[] = []
+
+    for (const w of this.words) {
+      idList.push(w.idx ?? 0)
+    }
+
+    // 调用：按 id 列表从当前书的活跃词中取 WordUser（避免 EWord 保存后 rebuild 导致 this.words 孤儿引用）
+    QuizManager.shared.customWords = SearchManager.shared.getWordsWithIds(idList)
+
     QuizStartViewConfig.open()
   }
 
