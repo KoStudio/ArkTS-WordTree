@@ -259,9 +259,9 @@ export struct SpellRunningView {
     const curNo              = QuizManager.shared.showingIndex + 1;
 
 
-    //Question
-    this.lblNoText           = `${curNo}/${allCnt}`;
-    this.lblQuestionText     = question.wordJpClippedString;
+    //Question（与 iOS SpellRunningViewController：titleCn1ClippedShort）
+    this.lblNoText           = `${curNo}/${allCnt}`
+    this.lblQuestionText     = question.titleCn1ClippedShort
     this.lblCorrectAnswer    = question.titleEn;
 
     //重置

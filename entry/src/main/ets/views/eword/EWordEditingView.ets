@@ -164,7 +164,7 @@ export struct EWordEditingView {
       void CSoundHelper.startDownloadOrGenerateSound(this.editText)
     }
 
-    // 保存后先把内存中的同词对象同步到最新值，避免 Detail/Quiz 仍持有旧引用。
+    // 调用：先同步 allWords 中与该词同引用的列表层字段，再发 currentBookUpdated 重建缓存
     await SearchManager.shared.syncWordMemoryByTitleEn(this.titleEn)
 
     // 调用：通知详情页刷新（对齐 iOS currentBookUpdated）
@@ -188,7 +188,7 @@ export struct EWordEditingView {
       return
     }
 
-    // 恢复后同样同步内存对象，确保移除覆盖后的原值立即生效。
+    // 调用：先同步 allWords 中与该词同引用的列表层字段，再发 currentBookUpdated 重建缓存
     await SearchManager.shared.syncWordMemoryByTitleEn(this.titleEn)
 
     // 调用：通知详情页刷新（对齐 iOS currentBookUpdated）

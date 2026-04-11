@@ -279,7 +279,7 @@ export class QuizManager {
     // 是否英文答案
     const isAnswerTextEn: boolean = this.questionType === QuestionType.Waei;
 
-    // 正确答案文本
+    // 正确答案文本（与 iOS QuizManager 一致：列表层 titleCn1ClippedShort / titleEn）
     const correctText: string = isAnswerTextEn
       ? (this.showingQuestion.titleEn ?? '')
       : (this.showingQuestion.titleCn1ClippedShort ?? '');
@@ -312,7 +312,8 @@ export class QuizManager {
       } else {
         // 中文答案：不能出现在题目的所有中文释义中
         const questionDetail = await this.showingQuestion.getWordDetail();
-        if (  questionDetail &&  !questionDetail.getTitleCnsJoined().includes(newStr)) {
+
+        if (questionDetail && !questionDetail.getTitleCnsJoined().includes(newStr)) {
           if (!wrongList.includes(newStr)) {
             wrongList.push(newStr);
           }

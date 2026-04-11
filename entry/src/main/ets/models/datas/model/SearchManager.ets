@@ -525,7 +525,7 @@ export class SearchManager {
   }
 
   /**
-   * EWord 保存/恢复后，同步更新内存中的 WordUser 数据（与 iOS/Android 立即可见行为对齐）。
+   * EWord 保存/恢复后，同步更新内存中的 WordUser 数据（与 allWords 中同 titleEn 引用对齐）。
    * @param titleEn  英文词，用于定位 allWords 与查库
    * 说明：列表层仅同步 titleCn1；音标与例句在 WordDetail，靠 clearWordDetailCache + 下次 getWordDetail 刷新。
    */

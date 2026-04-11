@@ -201,9 +201,10 @@ export struct EWordItemPickerView {
         isEBook      : this.isEBook,
         isOnlineWord : this.isOnlineWord,
         onComplete   : () => {
-          this.showEditing = false
-
+          // 先通知父级 changed（WordCardsView / DetailCardsView 依赖 isEWordEditChanged 与 bindSheet.onDisappear 顺序）；再关内层 sheet，避免 onDisappear 早于 onDismiss 导致未 bump shareMemoUiTick
           this.onDismiss(true)
+
+          this.showEditing = false
         },
         onCancel     : () => {
           this.showEditing = false
@@ -234,7 +235,7 @@ export struct EWordItemPickerView {
     // 调用：删除该词所有覆盖
     await EWordManager.shared.deleteAllOverrides(this.currentTitleEn)
 
-    // 先同步内存对象（同词条旧引用立即更新），再统一发刷新通知。
+    // 调用：先同步 allWords 中与该词同引用的列表层字段，再发 currentBookUpdated 重建缓存
     await SearchManager.shared.syncWordMemoryByTitleEn(this.currentTitleEn)
 
     // 调用：通知详情页刷新

@@ -374,10 +374,10 @@ export struct QuizChallengeView {
     const curNo          = QuizManager.shared.showingIndex + 1;
 
 
-    //Question
+    //Question（与 iOS TestRunningViewController：中→英用 titleCn1ClippedShort）
     const isEiwa         = QuizManager.shared.questionType === QuestionType.Eiwa
-    this.lblNoText       = `${curNo}/${allCnt}`;
-    this.lblQuestionText = isEiwa ? question.titleEn : question.titleCn1;
+    this.lblNoText       = `${curNo}/${allCnt}`
+    this.lblQuestionText = isEiwa ? question.titleEn : question.titleCn1ClippedShort
 
     //Answer
     const answers    = await QuizManager.shared.getAnswerTextOfShowingQuestion()
