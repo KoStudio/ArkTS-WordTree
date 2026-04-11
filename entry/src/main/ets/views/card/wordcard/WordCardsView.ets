@@ -745,8 +745,10 @@ export struct WordCardsView {
       ///预 加载 单词发音
       await this.preLoadOneSound(this.words[page].wordEnSoundText)
 
-      ///预 加载 例句发音
-      await this.preLoadOneSound(this.words[page].exampleEn1)
+      ///预 加载 例句发音（例句仅存 WordDetail，与 DetailCardsView 一致）
+      const wdPre = await this.words[page].getWordDetail()
+
+      await this.preLoadOneSound(wdPre?.exampleEn1)
     }
 
   }
@@ -816,8 +818,11 @@ export struct WordCardsView {
 
     //例句
     if (SettingManager.shared.autoPlaySoundEx) {
+      // 访问：例句英文在 WordDetail（列表 Word 无 exampleEn1）
+      const wdAuto = await this.word.getWordDetail()
+
       //排队播放
-      await AudioPlayer.shared.prepareToPlay(this.word.exampleEn1)
+      await AudioPlayer.shared.prepareToPlay(wdAuto?.exampleEn1 ?? null)
     }
 
   }

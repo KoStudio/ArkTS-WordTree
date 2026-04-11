@@ -1,4 +1,3 @@
-import { Constants } from "../../../app/constants/Constants";
 import { AppUtility } from "../../../common/utils/AppUtility";
 import { StringEncoder } from "../../../common/utils/strings/StringEncrypt";
 import { EWordEditableField } from "../../managers/eword/EWordEditManager";
@@ -16,13 +15,7 @@ export class Word {
 
   titleEn         : string | null = null;
   titleCn1        : string | null = null;
-  titleCn2        : string | null = null;
-  titleCn3        : string | null = null;
-
-  pronEn          : string | null = null;
-  pronUs          : string | null = null;
-  exampleEn1      : string | null = null;
-  exampleCn1      : string | null = null;
+  // 释义 2/3、音标、例句仅存在于 WordDetail（与 iOS/Android 列表层 Word 一致）
 
   private wordDetail                : WordDetail | null                 = null
   private wordDetailLoadingPromise : Promise<WordDetail | null> | null = null
@@ -153,25 +146,6 @@ export class Word {
     return AppUtility.getKindOfString(this.titleCn1 || '')
   }
 
-  /**
-   * 将多个中文释义合并为一个字符串（去重）
-   */
-  getTitleCnsJoined(): string {
-    const titles: string[] = [];
-
-    if (this.titleCn1) {
-      titles.push(this.titleCn1);
-    }
-    if (this.titleCn2) {
-      titles.push(this.titleCn2);
-    }
-    if (this.titleCn3) {
-      titles.push(this.titleCn3);
-    }
-
-    return AppUtility.getJoinedStringByRemovingDuplications(
-      titles,
-      Constants.TitleTextJp.wordsMaxPart
-    );
-  }
+  // getTitleCnsJoined() 已从 Word 移除（与 Android 一致：基类 Word 不提供合并释义 API）。
+  // 列表展示中文：用 titleCn1 / titleCn1Clipped / titleCn1ClippedShort；需合并释义 1～3 时先 await getWordDetail() 再调 WordDetail.getTitleCnsJoined()。
 }

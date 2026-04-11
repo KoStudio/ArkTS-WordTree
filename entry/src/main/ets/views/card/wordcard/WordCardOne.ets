@@ -421,8 +421,8 @@ export struct WordCardOne {
       // 例句朗读：向父层传例句英文（WordDetail 优先，与 DetailCardOne 一致）
       IconButton({ icon: $r('app.media.ic_langdu_nroaml'), iconSize: 26, onClickCallBack:()=>{
 
-        // 访问：取当前展示用例句英文，缺省回退 Word 表字段
-        this.onClickedBtnExamplePron(this.wordDetail?.exampleEn1 ?? this.word.exampleEn1 ?? '')
+        // 访问：例句英文仅来自 WordDetail（列表 Word 无 exampleEn1）
+        this.onClickedBtnExamplePron(this.wordDetail?.exampleEn1 ?? '')
       } })
     }
     .justifyContent(FlexAlign.SpaceBetween)
@@ -432,13 +432,13 @@ export struct WordCardOne {
 
 
 
-  // 构建例句内容区域（英/中文例句绑定 WordDetail，缺省回退 Word）
+  // 构建例句内容区域（英/中文例句仅绑定 WordDetail，与列表层模型一致）
   @Builder
   buildExampleContentPanel() {
     Column({ space: 5 }) {
       // 英文例句（可点查词）
       WordClickableText({
-        text            : this.wordDetail?.exampleEn1 ?? this.word.exampleEn1 ?? '',
+        text            : this.wordDetail?.exampleEn1 ?? '',
         highlightWords  : this.getHilightTexts(),
         onWordClick     : (word: string)=>{
           this.onClickedText(word)
@@ -461,8 +461,8 @@ export struct WordCardOne {
         // 分支：显示 WordDetail 上例句中文译文
         }else{
 
-          // 日文例句
-          Text(this.wordDetail?.exampleCn1 ?? this.word.exampleCn1 ?? '')
+          // 例句中文译文（仅 WordDetail）
+          Text(this.wordDetail?.exampleCn1 ?? '')
             .width('100%')
             .fontSize(20)
             .fontColor($r('app.color.color_card_subtitle'))

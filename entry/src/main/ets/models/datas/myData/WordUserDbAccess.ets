@@ -325,7 +325,7 @@ export class WordUserDbAccess extends UserDbSuperAccess {
       StringEncoder.encodeAndAddSalt(word.synWords),
       StringEncoder.encodeAndAddSalt(word.asynWords),
       StringEncoder.encodeAndAddSalt(word.exampleEn1),
-      StringEncoder.encodeAndAddSalt(word.titleCn1),
+      StringEncoder.encodeAndAddSalt(word.exampleCn1),
       StringEncoder.encodeAndAddSalt(word.exampleEn2),
       StringEncoder.encodeAndAddSalt(word.exampleCn2),
       StringEncoder.encodeAndAddSalt(word.exampleEn3),
@@ -583,11 +583,9 @@ export class WordUserDbAccess extends UserDbSuperAccess {
       word.unitName = ResultSetTool.decodeString(rs, WordTable.Col.UNITNAME);
       word.unitNo   = rs.getLong(rs.getColumnIndex(WordTable.Col.UNITNO));
       word.titleEn  = ResultSetTool.decodeString(rs, WordTable.Col.TITLEEN);
-      word.pronEn   = ResultSetTool.decodeString(rs, WordTable.Col.PRONEN);
-      word.pronUs   = ResultSetTool.decodeString(rs, WordTable.Col.PRONUS);
+      // 列表 Word 不映射音标与例句，与 WordDbAccess.createWordFromResultSet 一致
+
       word.titleCn1 = ResultSetTool.decodeString(rs, WordTable.Col.TITLECN1);
-      word.exampleEn1 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLEEN1);
-      word.exampleCn1 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLECN1);
 
       if (!word.unitName) {
         word.unitName = `Unit${word.unitId}`

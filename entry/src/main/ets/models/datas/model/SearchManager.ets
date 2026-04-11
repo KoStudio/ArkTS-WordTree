@@ -213,13 +213,7 @@ export class SearchManager {
         existed.unitName       = w.unitName;
         existed.titleEn        = w.titleEn;
         existed.titleCn1       = w.titleCn1;
-        existed.titleCn2       = w.titleCn2;
-        existed.titleCn3       = w.titleCn3;
-
-        existed.pronEn         = w.pronEn;
-        existed.pronUs         = w.pronUs;
-        existed.exampleEn1     = w.exampleEn1;
-        existed.exampleCn1     = w.exampleCn1;
+        // 释义 2/3、音标、例句仅存 WordDetail，合并 learn 记录时不写列表层
 
         merged[i] = existed;
       } else {
@@ -233,12 +227,6 @@ export class SearchManager {
         newWord.unitName         = w.unitName;
         newWord.titleEn          = w.titleEn;
         newWord.titleCn1         = w.titleCn1;
-        newWord.titleCn2         = w.titleCn2;
-        newWord.titleCn3         = w.titleCn3;
-        newWord.pronEn           = w.pronEn;
-        newWord.pronUs           = w.pronUs;
-        newWord.exampleEn1       = w.exampleEn1;
-        newWord.exampleCn1       = w.exampleCn1;
 
         // 初始化用户字段
         newWord.favoriteLevel    = 0;
@@ -538,9 +526,8 @@ export class SearchManager {
 
   /**
    * EWord 保存/恢复后，同步更新内存中的 WordUser 数据（与 iOS/Android 立即可见行为对齐）。
-   * 说明：
-   * - Detail/Quiz 等页面常持有 WordUser 对象引用；
-   * - 若只发通知不更新对象本身，UI 局部可刷新，但后续流程仍可能读到旧内存字段。
+   * @param titleEn  英文词，用于定位 allWords 与查库
+   * 说明：列表层仅同步 titleCn1；音标与例句在 WordDetail，靠 clearWordDetailCache + 下次 getWordDetail 刷新。
    */
   async syncWordMemoryByTitleEn(titleEn: string): Promise<void> {
     if (!titleEn || titleEn.length === 0) {
@@ -566,12 +553,6 @@ export class SearchManager {
 
       if (latest !== null) {
         w.titleCn1   = latest.titleCn1
-        w.titleCn2   = latest.titleCn2
-        w.titleCn3   = latest.titleCn3
-        w.pronEn     = latest.pronEn
-        w.pronUs     = latest.pronUs
-        w.exampleEn1 = latest.exampleEn1
-        w.exampleCn1 = latest.exampleCn1
       }
 
       // 列表层覆盖（当前主要影响 titleCn1 等列表可见字段）

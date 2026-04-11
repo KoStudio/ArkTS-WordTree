@@ -188,17 +188,20 @@ export struct DetailCardsView {
   @Monitor("pageIndex")
   async onChangeOfPageIndex(){
 
-    //显示信息
+    // 显示信息
     this.showInfo()
 
-    // 延后到首帧后再做声音相关任务，避免与页面首屏渲染争抢。
+    // 推迟预加载与自动发音到下一事件循环，与 Swiper 内 DetailCardOne.loadData 错峰，减轻首帧 getWordDetail 并发
     setTimeout(() => {
+
+      // 准备声音（内含邻页 getWordDetail）
       void this.preLoadSound()
 
+      // 自动发音（内含当前词 getWordDetail）
       void this.autoPlaySound()
     }, 0)
 
-    //保存学习进度
+    // 保存学习进度
     this.saveLearn()
 
     logEvent("CardsView_pageChanged") //日志
@@ -782,16 +785,23 @@ export struct DetailCardsView {
     ///遍历 每一页
     for (let page = pageStart; page < pageEnd; page++) {
 
-      ///预 加载 单词发音
-      await this.preLoadOneSound(this.words[page].wordEnSoundText)
+      const w = this.words[page]
 
-      ///预 加载 例句发音
-      await this.preLoadOneSound(this.words[page].exampleEn1)
-      const wordDetail = await this.words[page].getWordDetail()
+      // 单词读音
+      await this.preLoadOneSound(w.wordEnSoundText)
+
+      // 拉取 WordDetail
+      const wordDetail = await w.getWordDetail()
+
       if (wordDetail) {
-        await this.preLoadOneSound(wordDetail.exampleEn2)
-        await this.preLoadOneSound(wordDetail.exampleEn3)
+        // 例句 1～3 均在 WordDetail；三条预加载并行（preLoadOneSound 内部已过滤空串）
+        await Promise.all([
+          this.preLoadOneSound(wordDetail?.exampleEn1),
+          this.preLoadOneSound(wordDetail?.exampleEn2),
+          this.preLoadOneSound(wordDetail?.exampleEn3),
+        ])
       }
+
     }
 
   }
@@ -871,10 +881,11 @@ export struct DetailCardsView {
 
     //例句
     if (SettingManager.shared.autoPlaySoundEx) {
-      //排队播放
-      await AudioPlayer.shared.prepareToPlay(this.word.exampleEn1)
+
       const wordDetail = await this.word.getWordDetail()
+      //排队播放（例句 1～3 均在 WordDetail）
       if (wordDetail) {
+        await AudioPlayer.shared.prepareToPlay(wordDetail.exampleEn1)
         await AudioPlayer.shared.prepareToPlay(wordDetail.exampleEn2)
         await AudioPlayer.shared.prepareToPlay(wordDetail.exampleEn3)
       }

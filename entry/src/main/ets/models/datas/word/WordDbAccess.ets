@@ -216,11 +216,9 @@ export class WordDbAccess implements DBPrepareProtocol {
       word.unitName = ResultSetTool.decodeString(rs, WordTable.Col.UNITNAME);
       word.unitNo   = rs.getLong(rs.getColumnIndex(WordTable.Col.UNITNO));
       word.titleEn  = ResultSetTool.decodeString(rs, WordTable.Col.TITLEEN);
-      word.pronEn   = ResultSetTool.decodeString(rs, WordTable.Col.PRONEN);
-      word.pronUs   = ResultSetTool.decodeString(rs, WordTable.Col.PRONUS);
+      // 音标、释义 2/3、例句不在列表 Word 上填充，见 getWordDetail → WordDetail
+
       word.titleCn1 = ResultSetTool.decodeString(rs, WordTable.Col.TITLECN1);
-      word.exampleEn1 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLEEN1);
-      word.exampleCn1 = ResultSetTool.decodeString(rs, WordTable.Col.EXAMPLECN1);
 
       if (!word.unitName) {
         word.unitName = `Unit${word.unitId}`
