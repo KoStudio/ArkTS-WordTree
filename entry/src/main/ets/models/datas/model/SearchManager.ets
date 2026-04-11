@@ -525,9 +525,9 @@ export class SearchManager {
   }
 
   /**
-   * EWord 保存/恢复后，同步更新内存中的 WordUser 数据（与 allWords 中同 titleEn 引用对齐）。
+   * EWord 保存/恢复后，仅同步 allWords 中与 titleEn 相同的 WordUser 列表层（与 loadWords 后 applyEWordOverrideMap 语义一致）。
    * @param titleEn  英文词，用于定位 allWords 与查库
-   * 说明：列表层仅同步 titleCn1；音标与例句在 WordDetail，靠 clearWordDetailCache + 下次 getWordDetail 刷新。
+   * 说明：不负责 clearWordDetailCache；详情缓存由 currentBookUpdated 订阅方（如 DetailCardOne）或其它 UI 时机处理。
    */
   async syncWordMemoryByTitleEn(titleEn: string): Promise<void> {
     if (!titleEn || titleEn.length === 0) {
@@ -557,9 +557,6 @@ export class SearchManager {
 
       // 列表层覆盖（当前主要影响 titleCn1 等列表可见字段）
       w.applyEWordOverrideMap(overrideMap)
-
-      // 详情缓存失效，确保后续 getWordDetail() 使用最新数据重新合成。
-      w.clearWordDetailCache()
     }
 
     // 中文候选缓存依赖 titleCn 字段，编辑后需失效重建。

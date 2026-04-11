@@ -75,14 +75,9 @@ export struct WordCardOne {
     // 分支：尚未订阅课本更新则注册
     if (this.unsubBookUpdated === undefined) {
 
-      // 调用：订阅 currentBookUpdated（EWord 保存后会 emit）
+      // 调用：订阅 currentBookUpdated（EWord 保存后会 emit；invalidateDetail=true 内会 clear 再拉）
       this.unsubBookUpdated = SimpleEventBus.on(BookManagerNotification.currentBookUpdated, () => {
-
-        // 调用：丢弃 Word 上缓存的 WordDetail，强制下次合并最新 EWord
-        this.word.clearWordDetailCache()
-
-        // 调用：重拉详情并写回 @Local wordDetail
-        void this.loadCardDetail()
+        void this.loadCardDetail(true)
       })
     }
   }
@@ -110,7 +105,12 @@ export struct WordCardOne {
   }
 
   // 拉取当前卡展示用 WordDetail（与 iOS CardView / Android CardView 使用 word.getWordDetail() 对齐）
-  async loadCardDetail(): Promise<void> {
+  // invalidateDetail：为 true 时先丢 Word 上详情缓存再查库（课本/EWord 变更或 Swiper 换词）；为 false 时复用缓存
+  async loadCardDetail(invalidateDetail: boolean = false): Promise<void> {
+
+    if (invalidateDetail) {
+      this.word.clearWordDetailCache()
+    }
 
     // 调用：自 textDb/learnDb 加载并 applyEWordOverrideMap 到 WordDetail
     this.wordDetail = await this.word.getWordDetail() ?? null
@@ -154,8 +154,8 @@ export struct WordCardOne {
   @Monitor('word.titleEn')
   onWordTitleEnChanged(): void {
 
-    // 调用：与 aboutToAppear / currentBookUpdated 相同拉取路径
-    void this.loadCardDetail()
+    // 调用：换词须丢旧详情缓存再拉（与 aboutToAppear 首拉、currentBookUpdated 一致语义）
+    void this.loadCardDetail(true)
   }
 
   build() {

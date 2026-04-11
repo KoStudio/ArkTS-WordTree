@@ -246,8 +246,7 @@ export struct DetailCardsView {
             this.wordDetailForEWordPicker = null
 
             if (this.isEWordEditChanged) {
-              const w = this.words[this.pageIndex]
-              w.clearWordDetailCache()
+              // 详情缓存由 DetailCardOne 对 currentBookUpdated 的 clear + loadData 处理，此处仅 bump key 触发子项重建
               this.shareMemoUiTick++
             }
             this.isEWordEditChanged = false
@@ -785,23 +784,25 @@ export struct DetailCardsView {
     ///遍历 每一页
     for (let page = pageStart; page < pageEnd; page++) {
 
-      const w = this.words[page]
+      const w: WordUser = this.words[page]
 
-      // 单词读音
-      await this.preLoadOneSound(w.wordEnSoundText)
+      // 调用：单词预加载与 getWordDetail 并行（避免 Promise.all 异构结果用 [, d] 解构导致类型推断错误）
+      const loadedPair = await Promise.all([
+        this.preLoadOneSound(w.wordEnSoundText),
+        w.getWordDetail(),
+      ])
 
-      // 拉取 WordDetail
-      const wordDetail = await w.getWordDetail()
+      const d: WordDetail | null = loadedPair[1] as WordDetail | null
 
-      if (wordDetail) {
-        // 例句 1～3 均在 WordDetail；三条预加载并行（preLoadOneSound 内部已过滤空串）
+      // 分支：有详情时再并行预加载例句 1～3（空由 preLoadOneSound 内 return）
+      if (d !== null) {
+
         await Promise.all([
-          this.preLoadOneSound(wordDetail?.exampleEn1),
-          this.preLoadOneSound(wordDetail?.exampleEn2),
-          this.preLoadOneSound(wordDetail?.exampleEn3),
+          this.preLoadOneSound(d.exampleEn1),
+          this.preLoadOneSound(d.exampleEn2),
+          this.preLoadOneSound(d.exampleEn3),
         ])
       }
-
     }
 
   }
@@ -881,11 +882,11 @@ export struct DetailCardsView {
 
     //例句
     if (SettingManager.shared.autoPlaySoundEx) {
-
       const wordDetail = await this.word.getWordDetail()
+
       //排队播放（例句 1～3 均在 WordDetail）
+      await AudioPlayer.shared.prepareToPlay(wordDetail?.exampleEn1 ?? null)
       if (wordDetail) {
-        await AudioPlayer.shared.prepareToPlay(wordDetail.exampleEn1)
         await AudioPlayer.shared.prepareToPlay(wordDetail.exampleEn2)
         await AudioPlayer.shared.prepareToPlay(wordDetail.exampleEn3)
       }

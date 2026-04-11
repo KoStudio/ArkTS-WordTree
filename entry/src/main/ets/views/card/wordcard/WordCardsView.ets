@@ -233,9 +233,7 @@ export struct WordCardsView {
             this.wordDetailForEWordPicker = null
 
             if (this.isEWordEditChanged) {
-              const w = this.words[this.pageIndex]
-
-              w.clearWordDetailCache()
+              // 详情缓存由 WordCardOne 对 currentBookUpdated 的 clear + loadCardDetail 处理，此处仅 bump key 触发子项重建
               this.shareMemoUiTick++
             }
 

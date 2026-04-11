@@ -61,8 +61,8 @@ export struct DetailCardOne {
   // 与 iOS DetailView.wordMemos 一致：自建 + shareMemos 合并列表（ShareMemoManager2.loadLocalMemosOfWord）
   @Local wordMemos                             : Array<Record<string, string>>    = []
 
-  private unsubItemOrder       : (() => void) | undefined  = undefined  // 详情块显示顺序变更
-  private unsubBookUpdated     : (() => void) | undefined  = undefined  // 当前课本/EWord 等数据变更
+  private unsubItemOrder   : (() => void) | undefined = undefined  // 详情块显示顺序变更
+  private unsubBookUpdated : (() => void) | undefined = undefined  // 当前课本/EWord 等数据变更
   private unsubShareMemoPrivate : (() => void) | undefined = undefined  // 笔记本地变更（与 iOS PrivateChanged）
   private unsubShareMemoPublic  : (() => void) | undefined = undefined  // 公开列表/收藏变更（与 iOS PublicChanged）
 
@@ -73,11 +73,9 @@ export struct DetailCardOne {
       this.loadData()
     })
 
-    // EWord 保存、课本切换等与 iOS `currentBookUpdated` 对齐，需重拉详情并丢缓存
+    // EWord 保存、课本切换等与 iOS `currentBookUpdated` 对齐（invalidateDetail=true 内会 clear 再拉详情）
     this.unsubBookUpdated = SimpleEventBus.on(BookManagerNotification.currentBookUpdated, () => {
-      this.word.clearWordDetailCache()
-
-      void this.loadData()
+      void this.loadData(true)
     })
 
     // 与 iOS DetailView `ShareMemoManager2.Notification` 订阅一致，ComposeMemo 返回后刷新合并笔记区
@@ -143,28 +141,58 @@ export struct DetailCardOne {
     })
   }
 
-  async loadData(){
-    // 并行加载：仅将原串行三步改为 Promise.all，其余逻辑保持不变。
-    const detailPromise: Promise<WordDetail | null> = this.word?.getWordDetail() ?? Promise.resolve(null)
-    const cigenPromise: Promise<CigenWord[] | null> = CigenWordHelper.getCigensByWord(this.word)
-    const sameRootPromise: Promise<string | null> = CigenWordHelper.getSameRootDescByWord(this.word)
-    const loadedAll = await Promise.all([detailPromise, cigenPromise, sameRootPromise])
+  // 先拉 WordDetail 并立刻刷新 sectionedCells；词根库两次查询并行后再刷新一轮
+  // invalidateDetail：为 true 时先丢 Word 上详情缓存再查库（课本/EWord 变更）；为 false 时复用缓存（如仅详情块排序变更）
+  async loadData(invalidateDetail: boolean = false): Promise<void> {
 
-    this.wordDetail   = loadedAll[0] as WordDetail | null
-    this.cigenWords   = loadedAll[1] as CigenWord[] | null
-    this.sameRootDesc = loadedAll[2] as string | null
+    if (invalidateDetail) {
+      this.word.clearWordDetailCache()
+    }
 
-    if (this.wordDetail) {
-      const subCells: SubCell[] = [...this.prepareSubCellDatas(this.wordDetail)]
-      const sectionedCells : SectionDatas<string, SubCell> = new SectionDatas()
-      for (const cell of subCells) {
-        sectionedCells.addSectionWithData(cell.section ?? '', cell)
-      }
-      this.sectionedCells = sectionedCells
+    this.cigenWords   = []
+    this.sameRootDesc = null
+
+    this.wordDetail = await this.word?.getWordDetail() ?? null
+
+    // 分支：无详情则清空列表区
+    if (this.wordDetail === null) {
+
+      this.sectionedCells = new SectionDatas()
+    } else {
+
+      this.applySectionedCellsFromWordDetail(this.wordDetail)
+    }
+
+    const cigensPromise   : Promise<Array<CigenWord> | null> = CigenWordHelper.getCigensByWord(this.word)
+    const sameRootPromise : Promise<string | null>           = CigenWordHelper.getSameRootDescByWord(this.word)
+
+    const pair: [Array<CigenWord> | null, string | null] = await Promise.all([cigensPromise, sameRootPromise])
+
+    this.cigenWords   = pair[0]
+    this.sameRootDesc = pair[1]
+
+    // 分支：词根/同根数据到位后再合并进 sectionedCells
+    if (this.wordDetail !== null) {
+
+      this.applySectionedCellsFromWordDetail(this.wordDetail)
     }
 
     // 详情刷新后同步笔记区（含 shareMemos）
     this.reloadWordMemos()
+  }
+
+  // detail：当前词条详情；按 DetailItem 顺序写入 sectionedCells
+  private applySectionedCellsFromWordDetail(detail: WordDetail): void {
+
+    const subCells       : SubCell[]                      = [...this.prepareSubCellDatas(detail)]
+    const sectionedCells : SectionDatas<string, SubCell>  = new SectionDatas()
+
+    for (const cell of subCells) {
+
+      sectionedCells.addSectionWithData(cell.section ?? '', cell)
+    }
+
+    this.sectionedCells = sectionedCells
   }
 
   @Monitor('settingManager.hideTranslation')
