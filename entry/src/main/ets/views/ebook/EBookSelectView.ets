@@ -24,7 +24,7 @@ import { PartUnitPickerView } from './PartUnitPickerView'
 export struct EBookSelectView {
 
   @Param @Require originalDetail      : WordDetail                // 来源词条
-  @Event onDismiss                    : () => void                = () => {}   // 关闭 bindSheet（由 DetailCardsView 等传入）
+  @Event onDismiss                    : () => void                = () => {}   // 关闭 bindSheet（保存到其它 EBook 不影响当前页，无需 changed）
   @Local private eBooks               : Book[]                    = []         // 可选 EBook 列表
   @Local private isShowPartUnitSheet  : boolean                   = false      // Part/Unit sheet 显示开关
   @Local private sheetBookId          : number                    = 0          // sheet 目标书 id
@@ -336,6 +336,8 @@ export struct EBookSelectView {
         // 与 iOS `onSaved`：一次关掉 Part/Unit 与「保存到」；由父状态关内层 bindSheet，再关 DetailCards 外层，避免嵌套 Sheet 子先 dismiss 导致 Event 失效、只剩纯色底
         this.isShowPartUnitSheet = false
         this.selectedBookId = null
+
+        // 调用：仅关闭外层 Sheet；保存到其它 EBook 不会修改当前学习页词条详情。
         this.onDismiss()
       }
     })

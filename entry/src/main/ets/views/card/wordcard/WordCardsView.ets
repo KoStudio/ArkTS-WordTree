@@ -93,6 +93,7 @@ export struct WordCardsView {
   @Local private cardSheetType                  : WordCardSheetType      = WordCardSheetType.None         // 当前 Sheet 类型
   @Local private wordDetailForEWordPicker       : WordDetail | null      = null                           // EWord 编辑使用的临时 detail
   @Local private wordDetailForEBookSelect       : WordDetail | null      = null                           // EBook 保存使用的临时 detail
+  @Local private isEWordEditChanged           : boolean                = false                          // EWord 选择 Sheet 内是否有修改
   @Local private isEnableContrast               : boolean                = false
   @Local isRolling                              : boolean                = false
   @Local shareMemoUiTick                        : number                 = 0
@@ -227,18 +228,19 @@ export struct WordCardsView {
           this.isShowCardSheet = false
           this.cardSheetType   = WordCardSheetType.None
 
-          // 分支：EWord 编辑 Sheet 关闭后，清理临时 detail 并刷新当前卡片缓存。
+          // 分支：EWord 编辑 Sheet 关闭后，清理临时 detail；仅在确有修改时刷新当前卡片缓存。
           if (oldType === WordCardSheetType.EWordPicker && this.wordDetailForEWordPicker !== null) {
             this.wordDetailForEWordPicker = null
-            const w = this.words[this.pageIndex]
-            w.clearWordDetailCache()
-            this.shareMemoUiTick++
-          // 分支：EBook 保存 Sheet 关闭后，清理临时 detail 并刷新当前卡片缓存。
+
+            if (this.isEWordEditChanged) {
+              const w = this.words[this.pageIndex]
+              w.clearWordDetailCache()
+              this.shareMemoUiTick++
+            }
+            this.isEWordEditChanged = false
+          // 分支：EBook 保存 Sheet 关闭后，仅清理临时 detail（保存到其它 EBook 不影响当前卡片详情，不刷新缓存）。
           } else if (oldType === WordCardSheetType.EBookSelect && this.wordDetailForEBookSelect !== null) {
             this.wordDetailForEBookSelect = null
-            const w = this.words[this.pageIndex]
-            w.clearWordDetailCache()
-            this.shareMemoUiTick++
           }
         }
       })
@@ -496,6 +498,7 @@ export struct WordCardsView {
 
     this.wordDetailForEWordPicker = detail
     this.cardSheetType            = WordCardSheetType.EWordPicker
+    this.isEWordEditChanged     = false
     this.isShowCardSheet          = true
   }
 
@@ -522,7 +525,9 @@ export struct WordCardsView {
         originalDetail : this.wordDetailForEWordPicker as WordDetail,
         isEBook        : BookManager.shared.currentBook?.isEBook === true,
         isOnlineWord   : this.word.isOnlineWord,
-        onDismiss      : () => {
+        onDismiss      : (changed: boolean) => {
+          this.isEWordEditChanged = changed
+
           this.isShowCardSheet = false
         }
       })

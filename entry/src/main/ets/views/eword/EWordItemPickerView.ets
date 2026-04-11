@@ -25,7 +25,7 @@ export struct EWordItemPickerView {
   @Param @Require originalDetail : WordDetail
   @Param isEBook                 : boolean = false
   @Param isOnlineWord            : boolean = false
-  @Event onDismiss               : () => void = () => {}
+  @Event onDismiss               : (changed: boolean) => void = (_changed: boolean) => {}
 
   @Local selectedField           : EWordEditableField | null = null  // 当前选中字段
   @Local showEditing             : boolean                   = false  // 内层编辑页 sheet 开关
@@ -84,7 +84,7 @@ export struct EWordItemPickerView {
         leftButtons : [{
           text   : $r('app.string.online_search_btn_cancel'),
           onClick: () => {
-            this.onDismiss()
+            this.onDismiss(false)
           }
         }],
         rightButtons: this.canRestoreAll ? [{
@@ -203,7 +203,7 @@ export struct EWordItemPickerView {
         onComplete   : () => {
           this.showEditing = false
 
-          this.onDismiss()
+          this.onDismiss(true)
         },
         onCancel     : () => {
           this.showEditing = false
@@ -240,6 +240,6 @@ export struct EWordItemPickerView {
     // 调用：通知详情页刷新
     SimpleEventBus.emit(BookManagerNotification.currentBookUpdated)
 
-    this.onDismiss()
+    this.onDismiss(true)
   }
 }

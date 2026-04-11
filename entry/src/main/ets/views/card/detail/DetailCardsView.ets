@@ -68,9 +68,9 @@ export namespace DetailCardsViewConfig {
 
 // 统一管理 DetailCardsView 中单一 bindSheet 的内容类型，避免多个 bindSheet 同层互相抢占。
 enum DetailSheetType {
-  None         = 0,
-  EWordPicker  = 1,
-  EBookSelect  = 2
+  None         = 0, // 不显示 Sheet
+  EWordPicker  = 1, // 显示 EWord 字段选择页
+  EBookSelect  = 2  // 显示 EBook 保存页
 }
 
 @ComponentV2
@@ -97,6 +97,7 @@ export struct DetailCardsView {
   @Local private detailSheetType                : DetailSheetType        = DetailSheetType.None           // 当前单一 Sheet 的内容类型
   @Local private wordDetailForEWordPicker       : WordDetail | null      = null                           // EWord 编辑使用的临时 detail
   @Local private wordDetailForEBookSelect       : WordDetail | null      = null                           // EBook 保存使用的临时 detail
+  @Local private isEWordEditChanged           : boolean                = false                          // EWord 选择 Sheet 内是否有修改
   @Local private isEnableContrast               : boolean                = false
   @Local isRolling                              : boolean                = false
   @Local shareMemoUiTick                        : number                 = 0
@@ -236,20 +237,19 @@ export struct DetailCardsView {
           this.isShowDetailSheet = false
           this.detailSheetType   = DetailSheetType.None
 
-          // 分支：关闭前是 EWord 选择 Sheet，清理 EWord 的临时 detail 并刷新当前卡片缓存
+          // 分支：关闭前是 EWord 选择 Sheet，清理 EWord 的临时 detail；仅在确有修改时刷新缓存
           if (oldType === DetailSheetType.EWordPicker && this.wordDetailForEWordPicker !== null) {
             this.wordDetailForEWordPicker = null
 
-            const w = this.words[this.pageIndex]
-            w.clearWordDetailCache()
-            this.shareMemoUiTick++
-          // 分支：关闭前是 EBook 选择 Sheet，清理 EBook 的临时 detail 并刷新当前卡片缓存
+            if (this.isEWordEditChanged) {
+              const w = this.words[this.pageIndex]
+              w.clearWordDetailCache()
+              this.shareMemoUiTick++
+            }
+            this.isEWordEditChanged = false
+          // 分支：关闭前是 EBook 选择 Sheet，仅清理临时 detail（保存到其它 EBook 不影响当前卡片详情，不刷新缓存）
           } else if (oldType === DetailSheetType.EBookSelect && this.wordDetailForEBookSelect !== null) {
             this.wordDetailForEBookSelect = null
-
-            const w = this.words[this.pageIndex]
-            w.clearWordDetailCache()
-            this.shareMemoUiTick++
           }
         }
       })
@@ -507,8 +507,6 @@ export struct DetailCardsView {
 
     const w = this.words[this.pageIndex]
 
-    w.clearWordDetailCache()
-
     const detail = await w.getWordDetail()
 
     // 分支：当前词条无详情时，不打开 Sheet。
@@ -518,6 +516,7 @@ export struct DetailCardsView {
 
     this.wordDetailForEWordPicker = detail
     this.detailSheetType          = DetailSheetType.EWordPicker
+    this.isEWordEditChanged     = false
     this.isShowDetailSheet        = true
   }
 
@@ -525,8 +524,6 @@ export struct DetailCardsView {
   private async openEBookSelectForCurrentWord(): Promise<void> {
 
     const w = this.words[this.pageIndex]
-
-    w.clearWordDetailCache()
 
     const detail = await w.getWordDetail()
 
@@ -550,8 +547,8 @@ export struct DetailCardsView {
         originalDetail : this.wordDetailForEWordPicker as WordDetail,
         isEBook        : BookManager.shared.currentBook?.isEBook === true,
         isOnlineWord   : this.word.isOnlineWord,
-        onDismiss      : () => {
-
+        onDismiss      : (changed: boolean) => {
+          this.isEWordEditChanged = changed
           this.isShowDetailSheet = false
         }
       })
@@ -561,7 +558,6 @@ export struct DetailCardsView {
       EBookSelectView({
         originalDetail : this.wordDetailForEBookSelect as WordDetail,
         onDismiss        : () => {
-
           this.isShowDetailSheet = false
         }
       })
