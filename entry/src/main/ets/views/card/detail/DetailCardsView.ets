@@ -567,17 +567,14 @@ export struct DetailCardsView {
     }
   }
 
-  /// 打开 QuizStart（自定义范围：当前卡片集；customWords 与 Android DetailActivity.openTestStart 一致，按 idx 从 SearchManager 取当前实例）
+  /// 打开 QuizStart（自定义范围：当前卡片集；customWords 须经 SearchManager.getWordsWithIds，与 Android / iOS 一致）
   openTestStart(){
     QuizManager.shared.quizType = QuizType.Custom
 
-    const idList: number[] = []
+    const idList: number[] = this.words.map((w: WordUser) => w.idx ?? 0)
 
-    for (const w of this.words) {
-      idList.push(w.idx ?? 0)
-    }
-
-    // 调用：按 id 列表从当前书的活跃词中取 WordUser（避免 EWord 保存后 rebuild 导致 this.words 孤儿引用）
+    // 不能写 customWords = this.words：currentBookUpdated 后 allWords 重建，this.words 多为孤儿 WordUser；syncWordMemoryByTitleEn 只改 allWords 不会修齐整页旧引用；
+    // 列表层 titleCn1 与详情刷新路径不同，测验读列表字段会错。须 getWordsWithIds，见 SearchManager.getWordsWithIds 注释。
     QuizManager.shared.customWords = SearchManager.shared.getWordsWithIds(idList)
 
     QuizStartViewConfig.open()

@@ -511,6 +511,14 @@ export class SearchManager {
     return part ? part.aliveWords : [];
   }
 
+  // 按 idx 从当前「活跃词」取 WordUser（与 Android SearchManager.getWordsWithIds、iOS SearchManager.getWordsWithIds 语义一致）。
+  //
+  // 不能直接把学习页里的 this.words 赋给 QuizManager.customWords，原因如下（与 iOS 侧说明对齐，仅表述 ArkUI 差异）：
+  // （1）EWord 等保存后会 currentBookUpdated → rebuildCaches/loadWords，allWords 被换成一批新的 WordUser，并对新实例做列表层 applyEWordOverrideMap 等。
+  //     页面上的 @Param words / this.words 仍是进入时传入的旧引用，其中多数槽位可能已是「孤儿」实例，不再等于 allWords 里当前那条；测验若读列表层 titleCn1，会与权威内存不一致。
+  // （2）syncWordMemoryByTitleEn 等只会按 titleEn 更新 SearchManager.allWords 里对应项，不会逐个修正 this.words 数组里已脱钩的旧对象。
+  // （3）列表层 WordUser 与 WordDetail、详情 UI 的更新路径不同；详情或子组件刷新，不等于 this.words 里每一项的列表字段都已与库 + 覆盖一致（尤其连续改多词时）。
+  // 因此进自定义测验前应收集 idx 再调用本方法，从 getAliveWords() 同源逻辑取当前权威实例。
   getWordsWithIds(ids: number[]): WordUser[] {
     const array: WordUser[] = [];
     const liveWords: WordUser[] = this.getAliveWords();
