@@ -4,6 +4,7 @@ import { audio } from '@kit.AudioKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 import { SettingManager } from '../../../models/managers/setting/SettingManager';
+import { getAppContext } from '../../../app/constants/AppContext';
 
 
 // 音效类型枚举
@@ -47,9 +48,12 @@ export class SEService {
     this.context = context;
 
     try {
-      // 配置音频渲染参数
+      // 配置音频渲染参数（与华为 SoundPool 短音频开发指导一致）
+      // 官方说明：usage 为 STREAM_USAGE_UNKNOWN / MUSIC / MOVIE / AUDIOBOOK 时，SoundPool 短音为混音策略，不易与其它媒体冲突；
+      // 使用 STREAM_USAGE_NOTIFICATION 时走通知音策略，新系统上可能与「通知音量」「免打扰」等挂钩，易出现升级后无声。
+      // 参考：使用 SoundPool 播放短音频 (ArkTS) — https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/using-soundpool-for-playback
       let audioRendererInfo: audio.AudioRendererInfo = {
-        usage: audio.StreamUsage.STREAM_USAGE_NOTIFICATION, // 使用通知流类型
+        usage: audio.StreamUsage.STREAM_USAGE_MUSIC,
         rendererFlags: 1
       };
 
@@ -120,6 +124,12 @@ export class SEService {
    * 加载单个音效
    * @param type 音效类型
    */
+  private rawFilePathForType(type: SEType): string {
+    // 资源目录 rawfile/mov/：correct/wrong/warning/fanfare 为 mp3；点击音 btn_click2 为 wav（与 iOS/Android 资源命名一致）。
+    const ext: string = (type === SEType.Clicked) ? 'wav' : 'mp3';
+    return `mov/${type}.${ext}`;
+  }
+
   private async loadSound(type: SEType): Promise<boolean> {
     if (!this.soundPool || !this.context) {
       console.error('SoundPool or context not initialized');
@@ -129,7 +139,7 @@ export class SEService {
     try {
       // 获取资源文件描述符
       let resourceManager = this.context.resourceManager;
-      let rawFileValue = await resourceManager.getRawFd(`mov/${type}.mp3`);
+      let rawFileValue = await resourceManager.getRawFd(this.rawFilePathForType(type));
 
       // 使用fd、offset和length加载音效
       let soundId = await this.soundPool.load(
@@ -167,9 +177,14 @@ export class SEService {
       return false
     }
 
-    if (!this.soundPool) {
-      console.error('SoundPool not initialized');
-      return false;
+    // 与 EntryAbility 动态 import 竞态：首屏极快进入测验时 SoundPool 可能尚未就绪，此处懒加载一次（getAppContext 在 initAppContext 之后可用）。
+    if (!this.isInitialized || !this.soundPool) {
+      const ctx: common.Context = (this.context ?? getAppContext()) as common.Context;
+      const ok: boolean = await this.initialize(ctx);
+      if (!ok || !this.soundPool) {
+        console.error('SEService.playSound: initialize failed or SoundPool missing');
+        return false;
+      }
     }
 
     const soundId = this.soundMap.get(type);
@@ -307,7 +322,7 @@ export class SEService {
   }
 }
 
-// 全局播放函数
+// 全局播放函数（与业务处直接调用 SEService.shared.playSound 等价；未使用 await 时须 void 避免浮 Promise）
 export function playSE(type: SEType): void {
-  SEService.shared.playSound(type);
+  void SEService.shared.playSound(type);
 }
