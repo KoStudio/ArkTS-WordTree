@@ -260,58 +260,68 @@ export class QuizManager {
   //   return answerTexts;
   // }
 
+  // ---------------------------------------------------------------------------
+  // 获取当前题目的选项文案数组（1 个正确答案 + 若干错误答案；正确项下标写入 correctIndexOfAnswers）。
+  // 与 iOS / Android QuizManager 同一套规则：候选为空则只返正解；否则随机抽错项，带迭代上限防死循环。
+  //
+  // 【EBook 等场景为何容易出问题】
+  // 错误项来自 SearchManager.getAllTextForQuestionWord：英文答案模式会用「本题中文短释义」去过滤全书候选；
+  // 若列表层 titleCn1 为空（或释义字段异常），过滤条件会把候选池滤成空数组，或有效错项远少于 3/7 个。
+  // 若 while 仅判断 wrongList 长度而无限重试，会卡死直至崩溃。iterations / maxIterations 即与 iOS/Android 一致的保险。
+  // ---------------------------------------------------------------------------
   public async getAnswerTextOfShowingQuestion(): Promise<string[]> {
-    // 安全保护
+    // 分支：当前题目为空时，返回空数组。
     if (!this.showingQuestion) {
       return [];
     }
 
-    // Challenge = 8，其它 = 4
-    const answerCount: number =
-      this.questionMode === QuestionMode.Challenge ? 8 : 4;
+    // 本局 UI 需要几个按钮：挑战 8，其它模式 4。
+    const answerCount      : number   = this.questionMode === QuestionMode.Challenge ? 8 : 4;
 
-    // 初始化答案数组（先放 null）
-    const textArray: string[] = [];
-    for (let i = 0; i < answerCount; i++) {
-      textArray.push('');
-    }
+    // 分支：题型为「中→英」等时，正确答案为英文；否则为中文短释义（列表层 titleCn1ClippedShort）。
+    const isAnswerTextEn   : boolean  = this.questionType === QuestionType.Waei;
 
-    // 是否英文答案
-    const isAnswerTextEn: boolean = this.questionType === QuestionType.Waei;
-
-    // 正确答案文本（与 iOS QuizManager 一致：列表层 titleCn1ClippedShort / titleEn）
-    const correctText: string = isAnswerTextEn
+    // 正确答案展示用字符串（测验判分也依赖与此一致的文案）。
+    const correctText      : string   = isAnswerTextEn
       ? (this.showingQuestion.titleEn ?? '')
       : (this.showingQuestion.titleCn1ClippedShort ?? '');
 
-    // 随机正确答案位置
-    this.correctIndexOfAnswers =
-      Math.floor(Math.random() * textArray.length);
+    // 调用：从 SearchManager 拉取「可作错误选项」的候选池（可能为空，见上文 EBook 说明）。
+    const allTextList      : string[] = await SearchManager.shared.getAllTextForQuestionWord(this.showingQuestion, isAnswerTextEn);
 
-    textArray[this.correctIndexOfAnswers] = correctText;
+    // 分支：候选池为空时，只返回正解一项，并把正确下标置 0（与 iOS/Android 一致，避免后续随机抽死循环）。
+    if (!allTextList || allTextList.length === 0) {
+      this.correctIndexOfAnswers = 0;
+      return [correctText];
+    }
 
-    // 所有候选文本（来自 SearchManager）
-    const allTextList: string[] = await SearchManager.shared.getAllTextForQuestionWord(this.showingQuestion, isAnswerTextEn);
+    // wrongList        ：已接受的错误选项（去重）。
+    // targetWrongCount ：理想错误项个数 = min(按钮数-1, 候选池条数)，不会超过候选池容量。
+    // iterations       ：本轮 while 已执行次数，用于与 maxIterations 比较强制退出。
+    // maxIterations    ：while 最大轮次，与 iOS/Android 公式一致，防止过滤过严时永远凑不满 targetWrongCount。
+    const wrongList        : string[] = [];
+    const targetWrongCount : number   = Math.min(answerCount - 1, allTextList.length);
+    let   iterations       : number   = 0;
+    const maxIterations    : number   = Math.max(targetWrongCount * (allTextList.length + 1) * 2, 50);
 
-    // 错误答案列表
-    const wrongList: string[] = [];
+    // 循环：随机抽一条候选，通过英/中分支规则后压入 wrongList，直到够数或达到迭代上限。
+    while (wrongList.length < targetWrongCount && iterations < maxIterations) {
+      iterations++;
+      const index            : number   = Math.floor(Math.random() * allTextList.length);
+      const newStr           : string   = allTextList[index];
 
-    // 生成错误答案（完全对齐 Java while 逻辑）
-    while (wrongList.length < textArray.length - 1) {
-      const index: number = Math.floor(Math.random() * allTextList.length);
-
-      const newStr: string = allTextList[index];
-
+      // 分支：英文为正确答案时，错项不能与 correctText 相同，且 wrongList 内不重复。
       if (isAnswerTextEn) {
-        // 英文答案：不能等于正确答案
         if (newStr !== correctText) {
           if (!wrongList.includes(newStr)) {
             wrongList.push(newStr);
           }
         }
       } else {
-        // 中文答案：不能出现在题目的所有中文释义中
-        const questionDetail = await this.showingQuestion.getWordDetail();
+        // 分支：中文为正确答案时，错项不能落在本题全部中文释义串里，且 wrongList 内不重复。
+
+        // 调用：取 WordDetail，用 getTitleCnsJoined() 聚合同题多义字段做包含判断。
+        const questionDetail   = await this.showingQuestion.getWordDetail();
 
         if (questionDetail && !questionDetail.getTitleCnsJoined().includes(newStr)) {
           if (!wrongList.includes(newStr)) {
@@ -321,11 +331,18 @@ export class QuizManager {
       }
     }
 
-    // 把错误答案填充到剩余位置
-    for (let i = 0; i < textArray.length; i++) {
-      if (i !== this.correctIndexOfAnswers) {
-        textArray[i] = wrongList[0];
-        wrongList.shift(); // 等价 Java 的 remove(0)
+    // actualCount：最终返回条数 = 1 + 实际凑到的错误数（可能小于 answerCount-1，与 iOS/Android 一致）。
+    const actualCount      : number   = 1 + wrongList.length;
+    const textArray        : string[] = new Array(actualCount).fill('');
+
+    // 随机正确项下标，并把正解写入对应槽位。
+    this.correctIndexOfAnswers = Math.floor(Math.random() * actualCount);
+    textArray[this.correctIndexOfAnswers] = correctText;
+
+    // 将其余槽位从 wrongList 尾部依次弹出填入（与 Android remove(size-1)、iOS popLast 等价）。
+    for (let i = 0; i < actualCount; i++) {
+      if (i !== this.correctIndexOfAnswers && wrongList.length > 0) {
+        textArray[i] = wrongList.pop() ?? '';
       }
     }
 
