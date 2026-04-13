@@ -392,8 +392,7 @@ export struct MemberView {
     // 调用：读取服务器配置，决定是否显示后三个单次购买按钮
     this.showConsumablePriceButtons = AppCfgManager.shared.isHwMember_Show_ConsumablePriceButtons_is_ON()
 
-    // 调用：进入页面时，先恢复一次可能遗留的未完成单次购买订单。
-    // 这里是一次性购买的恢复逻辑，和订阅恢复要区分开。
+    // 调用：进入会员页时恢复非订阅 IAP 未发货单；消耗型会员 SKU（见 HwPurchaseConstants）在 finish 成功后会本地记 IAP 已消耗并再刷服务器。
     await HwPurchaser.shared.recoverUnfinishedConsumablePurchases()
 
     // 调用：检查华为订阅购买环境。
