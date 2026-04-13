@@ -437,8 +437,8 @@ export struct DetailCardOne {
 
       if (cell.detail){
         Row(){
-          Text(cell.detail)
-            .fontSize(this.styleItem.detail.fontSize)//(18)
+          Text(cell.detail ?? '')
+            .fontSize(this.styleItem.detail.fontSize)
             .fontColor($r('app.color.color_list_item_detail'))
             .textAlign(TextAlign.Start)
             .layoutWeight(1)
@@ -533,11 +533,11 @@ export struct DetailCardOne {
 
         }else{
 
-          // 日文例句
-          Text(cell.detail)
+          // 日文例句译文
+          Text(cell.detail ?? '')
             .width('100%')
-            .fontSize(this.styleItem.detail.fontSize)//(20)
-            .fontColor($r('app.color.color_card_subtitle'))
+            .fontSize(this.styleItem.detail.fontSize)
+            .fontColor($r('app.color.color_list_item_detail'))
             .textAlign(TextAlign.Start)
             .padding(5)
             .margin({ top: 5, bottom: 5})
