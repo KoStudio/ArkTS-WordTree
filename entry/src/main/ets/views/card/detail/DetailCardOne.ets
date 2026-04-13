@@ -365,7 +365,7 @@ export struct DetailCardOne {
           .fontSize(this.styleItem.wordCn.fontSize)//(18)
           .minFontScale(0.1)
           .fontColor($r('app.color.color_list_item_subtitle'))
-          .textAlign(TextAlign.Center)
+          .textAlign(TextAlign.Start)
           .padding(5)
           .margin({ top: 5, bottom: 5})
           .backgroundColor(Color.White)
@@ -387,6 +387,12 @@ export struct DetailCardOne {
       }
     }
     .onClick(()=>{
+
+      // 与 Android HideableTextView.setTextHideableOn / iOS isTextHideableOn：全局关闭「可隐藏译文」时不响应点击
+      if (!SettingManager.shared.hideTranslation) {
+        return
+      }
+
       ///会员检查
       if(!MemberManager.shared.checkHideTransUsable(false)) {
         return
@@ -525,8 +531,8 @@ export struct DetailCardOne {
             .width('100%')
             .fontSize(this.styleItem.detail.fontSize)//(18)
             .minFontScale(0.1)
-            .fontColor($r('app.color.color_list_item_subtitle'))
-            .textAlign(TextAlign.Center)
+            .fontColor($r('app.color.color_list_item_detail'))
+            .textAlign(TextAlign.Start)
             .padding(5)
             .margin({ top: 5, bottom: 5})
             .backgroundColor(Color.White)
@@ -544,6 +550,12 @@ export struct DetailCardOne {
         }
       }
       .onClick(()=>{
+
+        // 与 Android / iOS 例句译文：仅当全局允许「可隐藏译文」时才切换
+        if (!SettingManager.shared.hideTranslation) {
+          return
+        }
+
         ///会员检查
         if(!MemberManager.shared.checkHideTransUsable(false)) {
           return

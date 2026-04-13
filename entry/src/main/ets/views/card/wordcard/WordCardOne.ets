@@ -348,7 +348,7 @@ export struct WordCardOne {
           .textAlign(TextAlign.Center)
           .padding(5)
           .margin({ top: 5, bottom: 5})
-          .backgroundColor(Color.White)
+          .backgroundColor($r('app.color.color_white'))
 
       // 分支：显示 WordDetail 上释义与词性（详情未到时为空串）
       }else{
@@ -374,6 +374,11 @@ export struct WordCardOne {
       }
     }
     .onClick(()=>{
+
+      // 与 Android / iOS：全局关闭「可隐藏译文」时不响应点击
+      if (!SettingManager.shared.hideTranslation) {
+        return
+      }
 
       // 分支：非会员不可切换隐藏译文
       if(!MemberManager.shared.checkHideTransUsable(false)) {
@@ -456,7 +461,7 @@ export struct WordCardOne {
             .textAlign(TextAlign.Center)
             .padding(5)
             .margin({ top: 5, bottom: 5})
-            .backgroundColor(Color.White)
+            .backgroundColor($r('app.color.color_white'))
 
         // 分支：显示 WordDetail 上例句中文译文
         }else{
@@ -472,6 +477,11 @@ export struct WordCardOne {
         }
       }
       .onClick(()=>{
+
+        // 与 Android / iOS：全局关闭「可隐藏译文」时不响应点击
+        if (!SettingManager.shared.hideTranslation) {
+          return
+        }
 
         // 分支：非会员不可切换例句译文显隐
         if(!MemberManager.shared.checkHideTransUsable(false)) {
