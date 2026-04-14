@@ -636,22 +636,14 @@ export struct MemberView {
     const price = this.formatFloat(priceFloat)
 
     switch (item.product.id) {
-      case HwSubscribeConstants.SKU_1:
-        return getStringF($r('app.string.member_sub_tip_month'), price)
-      case HwSubscribeConstants.SKU_2:
-        return getStringF($r('app.string.member_sub_tip_quarter'), price, this.formatFloat(priceFloat / 3))
-      case HwSubscribeConstants.SKU_3:
-        return getStringF($r('app.string.member_sub_tip_year'), price, this.formatFloat(priceFloat / 12))
-      case HwPurchaseConstants.SKU_7:
-        return `12个月会员，${price}元，相当于${this.formatFloat(priceFloat / 12)}元/月`
-      case HwPurchaseConstants.SKU_8:
-        return `24个月会员，${price}元，相当于${this.formatFloat(priceFloat / 24)}元/月`
-      case HwPurchaseConstants.SKU_9:
-        return `36个月会员，${price}元，相当于${this.formatFloat(priceFloat / 36)}元/月`
-      case HwPurchaseConstants.SKU_10:
-        return `60个月会员，${price}元，相当于${this.formatFloat(priceFloat / 60)}元/月`
-      default:
-        return ''
+      case HwSubscribeConstants.SKU_1:　 return getStringF($r('app.string.member_sub_tip_month'), price)
+      case HwSubscribeConstants.SKU_2:　 return getStringF($r('app.string.member_sub_tip_quarter'), price, this.formatFloat(priceFloat / 3))
+      case HwSubscribeConstants.SKU_3:　 return getStringF($r('app.string.member_sub_tip_year'), price, this.formatFloat(priceFloat / 12))
+      case HwPurchaseConstants.SKU_7 :　 return `1年会员，${price}元，相当于${this.formatFloat(priceFloat / 12)}元/月`
+      case HwPurchaseConstants.SKU_8 :　 return `2年会员，${price}元，相当于${this.formatFloat(priceFloat / 24)}元/月`
+      case HwPurchaseConstants.SKU_9 :　 return `3年会员，${price}元，相当于${this.formatFloat(priceFloat / 36)}元/月`
+      case HwPurchaseConstants.SKU_10:　 return `5年会员，${price}元，相当于${this.formatFloat(priceFloat / 60)}元/月`
+      default:　return ''
     }
   }
 
@@ -661,10 +653,10 @@ export struct MemberView {
       case HwSubscribeConstants.SKU_1: return '连续包月'
       case HwSubscribeConstants.SKU_2: return '连续包季'
       case HwSubscribeConstants.SKU_3: return '连续包年'
-      case HwPurchaseConstants.SKU_7:  return '12个月会员'
-      case HwPurchaseConstants.SKU_8:  return '24个月会员'
-      case HwPurchaseConstants.SKU_9:  return '36个月会员'
-      case HwPurchaseConstants.SKU_10: return '60个月会员'
+      case HwPurchaseConstants.SKU_7:  return '1年会员'
+      case HwPurchaseConstants.SKU_8:  return '2年会员'
+      case HwPurchaseConstants.SKU_9:  return '3年会员'
+      case HwPurchaseConstants.SKU_10: return '5年会员'
       default: return ''
     }
   }
