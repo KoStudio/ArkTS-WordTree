@@ -47,6 +47,7 @@ export enum AppCfg {
   IOS_SubscribePriceShowIntroductoryFirst                = 'IOS_SubscribePriceShowIntroductoryFirst',                // [通用] 订阅价格是否优先显示推介促销价格［iOS］
   Android_SubscribePrice_is_Show_PriceTip                = 'Android_SubscribePrice_is_Show_PriceTip',                // [通用] 订阅价格是否显示价格提示［iOS］
   Android_HwMember_Show_ConsumablePriceButtons_is_ON     = 'Android_HwMember_Show_ConsumablePriceButtons_is_ON',     // [Android] 华为会员页是否显示后三个单次购买价格按钮
+  Android_HwMember_Show_ConsumablePriceAsMonths_is_ON    = 'Android_HwMember_Show_ConsumablePriceAsMonths_is_ON',    // [Android] 华为会员页单次购买价格按钮是否按“月数会员”方式显示
   Android_WxMember_Show_PriceButtons_MoreThan1Year_is_ON = 'Android_WxMember_Show_PriceButtons_MoreThan1Year_is_ON', // [Android] 微信会员页是否显示大于1年的价格按钮
   IOS_Show_Wx_QRLogin_When_Weixin_Not_installed          = 'IOS_Show_Wx_QRLogin_When_Weixin_Not_installed',          // [通用] 未安装微信时，是否显示微信QR登录。0:不显示，1:显示QR登录  [iOS]
 
@@ -114,6 +115,7 @@ export const APP_CFG_ALL: AppCfg[] = [
   AppCfg.IOS_SubscribePriceShowIntroductoryFirst,
   AppCfg.Android_SubscribePrice_is_Show_PriceTip,
   AppCfg.Android_HwMember_Show_ConsumablePriceButtons_is_ON,
+  AppCfg.Android_HwMember_Show_ConsumablePriceAsMonths_is_ON,
   AppCfg.Android_WxMember_Show_PriceButtons_MoreThan1Year_is_ON,
   AppCfg.IOS_Show_Wx_QRLogin_When_Weixin_Not_installed,
   AppCfg.AutoRefreshSubscriptionInfo_is_ON,
@@ -208,6 +210,7 @@ export class AppCfgManager {
       case AppCfg.IOS_SubscribePriceShowIntroductoryFirst:                 return 1  // [通用]iOS订阅价格是否优先显示推介促销价格 (0: 不显示促销价格，1：显示促销价格)
       case AppCfg.Android_SubscribePrice_is_Show_PriceTip:                 return 1  // [通用] 订阅价格是否显示价格提示［Android］
       case AppCfg.Android_HwMember_Show_ConsumablePriceButtons_is_ON:      return 1  // [Android] 华为会员页默认显示后三个单次购买价格按钮(0:不显示，1:显示)
+      case AppCfg.Android_HwMember_Show_ConsumablePriceAsMonths_is_ON:     return 0  // [Android] 华为会员页单次购买价格按钮显示方式(0:按年，1:按月数)
       case AppCfg.Android_WxMember_Show_PriceButtons_MoreThan1Year_is_ON:  return 1  // [Android] 微信会员页默认显示大于1年的价格按钮(0:不显示，1:显示)
       case AppCfg.IOS_Show_Wx_QRLogin_When_Weixin_Not_installed:           return 1  // [通用] 未安装微信时，是否显示微信QR登录。0:不显示，1:显示QR登录  [iOS]
       case AppCfg.AutoRefreshSubscriptionInfo_is_ON:                       return 1  // [通用] 是否启用 自动刷新会员订阅时间(0：未启用，1：已启用）
@@ -392,6 +395,12 @@ export class AppCfgManager {
   isHwMember_Show_ConsumablePriceButtons_is_ON(): boolean {
     return (this.dict.get(AppCfg.Android_HwMember_Show_ConsumablePriceButtons_is_ON) ??
       AppCfgManager.getDefaultValue(AppCfg.Android_HwMember_Show_ConsumablePriceButtons_is_ON)) === 1
+  }
+
+  /// 获取 [Android] 华为会员页单次购买价格按钮是否按“月数会员”方式显示
+  isHwMember_Show_ConsumablePriceAsMonths_is_ON(): boolean {
+    return (this.dict.get(AppCfg.Android_HwMember_Show_ConsumablePriceAsMonths_is_ON) ??
+      AppCfgManager.getDefaultValue(AppCfg.Android_HwMember_Show_ConsumablePriceAsMonths_is_ON)) === 1
   }
 
   /// 获取 [Android] 微信会员页是否显示大于1年的价格按钮

@@ -58,6 +58,7 @@ export struct MemberView {
   @Local private isSubscribeEnable                   : boolean                            = false        // 华为 IAP 环境是否可用
 
   @Local private showConsumablePriceButtons          : boolean                            = true         // 是否显示一次性购买按钮
+  @Local private showConsumablePriceAsMonths         : boolean                            = false        // 一次性购买按钮是否按“月数会员”显示
   @Local private subscriptionProducts                : iap.Product[]                      = []           // 订阅商品列表
   @Local private consumableProducts                  : iap.Product[]                      = []           // 一次性购买商品列表
   @Local private selectedPriceTag                    : number                             = -1           // 当前选中的价格按钮 tag
@@ -391,6 +392,7 @@ export struct MemberView {
 
     // 调用：读取服务器配置，决定是否显示后三个单次购买按钮
     this.showConsumablePriceButtons = AppCfgManager.shared.isHwMember_Show_ConsumablePriceButtons_is_ON()
+    this.showConsumablePriceAsMonths = AppCfgManager.shared.isHwMember_Show_ConsumablePriceAsMonths_is_ON()
 
     // 调用：进入会员页时恢复非订阅 IAP 未发货单；消耗型会员 SKU（见 HwPurchaseConstants）在 finish 成功后会本地记 IAP 已消耗并再刷服务器。
     await HwPurchaser.shared.recoverUnfinishedConsumablePurchases()
@@ -639,10 +641,10 @@ export struct MemberView {
       case HwSubscribeConstants.SKU_1:　 return getStringF($r('app.string.member_sub_tip_month'), price)
       case HwSubscribeConstants.SKU_2:　 return getStringF($r('app.string.member_sub_tip_quarter'), price, this.formatFloat(priceFloat / 3))
       case HwSubscribeConstants.SKU_3:　 return getStringF($r('app.string.member_sub_tip_year'), price, this.formatFloat(priceFloat / 12))
-      case HwPurchaseConstants.SKU_7 :　 return `1年会员，${price}元，相当于${this.formatFloat(priceFloat / 12)}元/月`
-      case HwPurchaseConstants.SKU_8 :　 return `2年会员，${price}元，相当于${this.formatFloat(priceFloat / 24)}元/月`
-      case HwPurchaseConstants.SKU_9 :　 return `3年会员，${price}元，相当于${this.formatFloat(priceFloat / 36)}元/月`
-      case HwPurchaseConstants.SKU_10:　 return `5年会员，${price}元，相当于${this.formatFloat(priceFloat / 60)}元/月`
+      case HwPurchaseConstants.SKU_7 :　 return `${this.consumableDurationTitleBySku(item.product.id)}，${price}元，相当于${this.formatFloat(priceFloat / 12)}元/月`
+      case HwPurchaseConstants.SKU_8 :　 return `${this.consumableDurationTitleBySku(item.product.id)}，${price}元，相当于${this.formatFloat(priceFloat / 24)}元/月`
+      case HwPurchaseConstants.SKU_9 :　 return `${this.consumableDurationTitleBySku(item.product.id)}，${price}元，相当于${this.formatFloat(priceFloat / 36)}元/月`
+      case HwPurchaseConstants.SKU_10:　 return `${this.consumableDurationTitleBySku(item.product.id)}，${price}元，相当于${this.formatFloat(priceFloat / 60)}元/月`
       default:　return ''
     }
   }
@@ -653,10 +655,11 @@ export struct MemberView {
       case HwSubscribeConstants.SKU_1: return '连续包月'
       case HwSubscribeConstants.SKU_2: return '连续包季'
       case HwSubscribeConstants.SKU_3: return '连续包年'
-      case HwPurchaseConstants.SKU_7:  return '1年会员'
-      case HwPurchaseConstants.SKU_8:  return '2年会员'
-      case HwPurchaseConstants.SKU_9:  return '3年会员'
-      case HwPurchaseConstants.SKU_10: return '5年会员'
+      case HwPurchaseConstants.SKU_7:
+      case HwPurchaseConstants.SKU_8:
+      case HwPurchaseConstants.SKU_9:
+      case HwPurchaseConstants.SKU_10:
+        return this.consumableDurationTitleBySku(sku)
       default: return ''
     }
   }
@@ -667,10 +670,21 @@ export struct MemberView {
       case HwSubscribeConstants.SKU_1: return '1' + getString($r('app.string.member_subscribe_txt_unit_month'))
       case HwSubscribeConstants.SKU_2: return '3' + getString($r('app.string.member_subscribe_txt_unit_months'))
       case HwSubscribeConstants.SKU_3: return '1' + getString($r('app.string.member_subscribe_txt_unit_year'))
-      case HwPurchaseConstants.SKU_7:  return '1' + getString($r('app.string.member_subscribe_txt_unit_year'))
-      case HwPurchaseConstants.SKU_8:  return '2' + getString($r('app.string.member_subscribe_txt_unit_year'))
-      case HwPurchaseConstants.SKU_9:  return '3' + getString($r('app.string.member_subscribe_txt_unit_year'))
-      case HwPurchaseConstants.SKU_10: return '5' + getString($r('app.string.member_subscribe_txt_unit_year'))
+      case HwPurchaseConstants.SKU_7:  return this.showConsumablePriceAsMonths ? '12' + getString($r('app.string.member_subscribe_txt_unit_months')) : '1' + getString($r('app.string.member_subscribe_txt_unit_year'))
+      case HwPurchaseConstants.SKU_8:  return this.showConsumablePriceAsMonths ? '24' + getString($r('app.string.member_subscribe_txt_unit_months')) : '2' + getString($r('app.string.member_subscribe_txt_unit_year'))
+      case HwPurchaseConstants.SKU_9:  return this.showConsumablePriceAsMonths ? '36' + getString($r('app.string.member_subscribe_txt_unit_months')) : '3' + getString($r('app.string.member_subscribe_txt_unit_year'))
+      case HwPurchaseConstants.SKU_10: return this.showConsumablePriceAsMonths ? '60' + getString($r('app.string.member_subscribe_txt_unit_months')) : '5' + getString($r('app.string.member_subscribe_txt_unit_year'))
+      default: return ''
+    }
+  }
+
+  // 单次购买主标题（按配置显示“年会员”或“月会员”）
+  private consumableDurationTitleBySku(sku: string): string {
+    switch (sku) {
+      case HwPurchaseConstants.SKU_7:  return this.showConsumablePriceAsMonths ? '12个月会员' : '1年会员'
+      case HwPurchaseConstants.SKU_8:  return this.showConsumablePriceAsMonths ? '24个月会员' : '2年会员'
+      case HwPurchaseConstants.SKU_9:  return this.showConsumablePriceAsMonths ? '36个月会员' : '3年会员'
+      case HwPurchaseConstants.SKU_10: return this.showConsumablePriceAsMonths ? '60个月会员' : '5年会员'
       default: return ''
     }
   }
