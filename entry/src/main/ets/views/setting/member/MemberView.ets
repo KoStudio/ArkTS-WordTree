@@ -221,6 +221,7 @@ export struct MemberView {
       }
     }
       .width('100%')
+      .height(40)
       .padding({ left: 10, right: 10 })
       .margin({ top: 10 })
       .alignItems(VerticalAlign.Center)
